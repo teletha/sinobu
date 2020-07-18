@@ -9,19 +9,15 @@
  */
 package kiss.lifestyle;
 
-import kiss.I;
-import kiss.Managed;
-import kiss.Prototype;
-
 import org.junit.jupiter.api.Test;
 
-/**
- * @version 2011/03/22 16:26:42
- */
-public class PrototypeTest {
+import kiss.I;
+import kiss.Managed;
+
+class PrototypeTest {
 
     @Test
-    public void resolve() {
+    void resolve() {
         PrototypeClass instance1 = I.make(PrototypeClass.class);
         assert instance1 != null;
 
@@ -30,10 +26,7 @@ public class PrototypeTest {
         assert instance1 != instance2;
     }
 
-    /**
-     * @version 2011/03/22 16:30:07
-     */
-    @Managed(value = Prototype.class)
+    @Managed
     private static class PrototypeClass {
     }
 }

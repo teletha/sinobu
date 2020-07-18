@@ -12,15 +12,15 @@ package kiss;
 /**
  * <p>
  * Lifestyle manages the instance in the specific context. Sinobu provides two commonly used
- * lifestyles ({@link Prototype} and {@link Singleton}.
+ * lifestyles ({@link I#prototype(Class)} and {@link Singleton}.
  * </p>
  * <p>
  * There are two ways to specify {@link Lifestyle} for the class.
  * </p>
  * <p>
  * The one is {@link Managed} annotation. This way is useful if the target class is under your
- * control. If the lifestyle is not specified, Sinobu uses {@link Prototype} lifestyle as default.
- * The following is example.
+ * control. If the lifestyle is not specified, Sinobu uses {@link I#prototype(Class)} lifestyle as
+ * default. The following is example.
  * </p>
  * <pre>
  * &#064;Manageable(lifestyle = Singleton.class)
@@ -29,20 +29,20 @@ package kiss;
  * </pre>
  * <p>
  * The other is defining custom {@link Lifestyle}. Sinobu recognizes it automatically if your custom
- * lifestyle class is loaded or unloaded by {@link I#loadE(java.nio.file.Path)} and
- * {@link I#unload(java.nio.file.Path)} methods. The following is example.
+ * lifestyle class is loaded or unloaded by {@link I#load(Class)} and
+ * {@link Disposable#dispose()}methods. The following is example.
  * </p>
  * <pre>
  * public class CustomLifestyle implements Lifestyle&lt;ClassNotUnderYourControl&gt; {
  * 
- *     public ClassNotUnderYourControl get() {
+ *     public ClassNotUnderYourControl call() {
  *         return new ClassNotUnderYourControl();
  *     }
  * }
  * </pre>
  * 
  * @param <M> A {@link Managed} class.
- * @see Prototype
+ * @see I#prototype(Class)
  * @see Singleton
  * @see Managed#value()
  */

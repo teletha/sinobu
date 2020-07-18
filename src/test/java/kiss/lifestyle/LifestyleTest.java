@@ -18,7 +18,6 @@ import kiss.I;
 import kiss.Lifestyle;
 import kiss.LoadableTestBase;
 import kiss.Managed;
-import kiss.Prototype;
 import kiss.Singleton;
 import kiss.sample.bean.Person;
 import kiss.sample.bean.Student;
@@ -168,22 +167,24 @@ public class LifestyleTest extends LoadableTestBase {
         }
     }
 
-    /**
-     * @version 2010/01/16 13:10:29
-     */
     @SuppressWarnings("unused")
-    private static class PersonLifestyle extends Prototype<Person> {
+    private static class PersonLifestyle implements Lifestyle<Person> {
 
-        public PersonLifestyle() {
-            super(Person.class);
-        }
-
-        /**
-         * @see kiss.Prototype#get()
-         */
         @Override
-        public Person get() {
-            Person person = super.get();
+        public Person call() {
+            Person person = new Person();
+            person.setFirstName(CONSTANT);
+
+            return person;
+        }
+    }
+
+    @SuppressWarnings("unused")
+    private static class StudentLifestyle implements Lifestyle<Student> {
+
+        @Override
+        public Student call() {
+            Student person = new Student();
 
             person.setFirstName(CONSTANT);
 
@@ -191,48 +192,20 @@ public class LifestyleTest extends LoadableTestBase {
         }
     }
 
-    /**
-     * @version 2010/01/16 13:10:29
-     */
-    @SuppressWarnings("unused")
-    private static class StudentLifestyle extends Prototype<Student> {
-
-        public StudentLifestyle() {
-            super(Student.class);
-        }
-
-        /**
-         * @see kiss.Prototype#get()
-         */
-        @Override
-        public Student get() {
-            Student person = super.get();
-
-            person.setFirstName(CONSTANT);
-
-            return person;
-        }
-    }
-
-    /**
-     * @version 2010/01/22 1:20:16
-     */
-    private static class CustomLifestyle<M> extends Prototype<M> {
+    static class CustomLifestyle<M> implements Lifestyle<M> {
 
         private static Set set = new HashSet();
 
+        private Lifestyle<M> lifestyle;
+
         public CustomLifestyle(Class<M> modelClass) {
-            super(modelClass);
+            this.lifestyle = I.prototype(modelClass);
             assert CustomClass.class.equals(modelClass);
         }
 
-        /**
-         * @see kiss.Prototype#get()
-         */
         @Override
-        public M get() {
-            M m = super.get();
-
+        public M call() {
+            M m = lifestyle.get();
             set.add(m);
 
             return m;

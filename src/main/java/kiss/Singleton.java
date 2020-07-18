@@ -10,14 +10,12 @@
 package kiss;
 
 /**
- * <p>
  * This lifestyle guarantees that only one instance of the specific class exists in Sinobu.
- * </p>
  * 
  * @param <M> A {@link Managed} class.
- * @see Prototype
+ * @see I#prototype(Class)
  */
-public class Singleton<M> extends Prototype<M> {
+public class Singleton<M> implements Lifestyle<M> {
 
     /** The singleton instance. */
     protected final M instance;
@@ -28,16 +26,14 @@ public class Singleton<M> extends Prototype<M> {
      * @param modelClass A target class.
      */
     protected Singleton(Class<M> modelClass) {
-        super(modelClass);
-
-        instance = super.get();
+        instance = I.prototype(modelClass).get();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public M get() {
+    public M call() {
         return instance;
     }
 }

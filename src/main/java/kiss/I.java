@@ -18,6 +18,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringReader;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
@@ -228,8 +229,6 @@ public class I {
         lifestyles.put(List.class, ArrayList::new);
         lifestyles.put(Map.class, HashMap::new);
         lifestyles.put(Set.class, HashSet::new);
-        lifestyles.put(Lifestyle.class, new Prototype(Prototype.class));
-        lifestyles.put(Prototype.class, new Prototype(Prototype.class));
         lifestyles.put(Locale.class, Locale::getDefault);
 
         try {
@@ -1271,7 +1270,11 @@ public class I {
                 Managed managed = modelClass.getAnnotation(Managed.class);
 
                 // Create new lifestyle for the actual model class
-                lifestyle = (Lifestyle) make((Class) (managed == null ? Prototype.class : managed.value()));
+                if (managed == null || managed.value() == Lifestyle.class) {
+                    lifestyle = I.prototype(modelClass);
+                } else {
+                    lifestyle = I.make(managed.value());
+                }
             }
 
             if (lifestyles.containsKey(modelClass)) {
@@ -1306,6 +1309,62 @@ public class I {
      */
     public static <Param1, Param2, Param3> Ⅲ<Param1, Param2, Param3> pair(Param1 param1, Param2 param2, Param3 param3) {
         return new Ⅲ(param1, param2, param3);
+    }
+
+    /**
+     * Build prototype-like {@link Lifestyle} that creates a new instance every time demanded. This
+     * is default lifestyle in Sinobu.
+     * <p>
+     * The created {@link Lifestyle} has the functionality of Dependency Injection. The Lifestyle
+     * attempts to create an instance using the first constructor declared with the fewest number of
+     * arguments. If the argument contains a {@link Managed} type, an instance of that type will
+     * also be created automatically. This dependency injection is done at the same time when the
+     * model is instantiated. But if you want to delay the creation of the dependency until it is
+     * needed, you can set the argument type to Lifestyle<DEPENDENCY_TYPE>.
+     * <p>
+     * You may also specify a {@link Class} type as an argument if you need the currently processing
+     * model type. This feature is mainly available when implementing the special generic
+     * {@link Lifestyle}.
+     * 
+     * @param <M> A {@link Managed} class.
+     * @param model A model type.
+     * @return A built {@link Lifestyle} that creates a new instance every time demanded.
+     * @see Singleton
+     */
+    public static <M> Lifestyle<M> prototype(Class<M> model) {
+        // find default constructor as instantiator
+        Constructor constructor = Model.collectConstructors(model)[0];
+
+        // We can safely call the method 'newInstance()' because the generated class has
+        // only one public constructor without arguments. But we should make this
+        // instantiator accessible because it makes the creation speed faster.
+        constructor.setAccessible(true);
+
+        return () -> {
+            Class[] types = constructor.getParameterTypes();
+
+            // constructor injection
+            Object[] params = null;
+
+            // We should use lazy initialization of parameter array to avoid that the constructor
+            // without parameters doesn't create futile array instance.
+            if (types.length != 0) {
+                params = new Object[types.length];
+
+                for (int i = 0; i < params.length; i++) {
+                    if (types[i] == Lifestyle.class) {
+                        params[i] = I.makeLifestyle((Class) Model
+                                .collectParameters(constructor.getGenericParameterTypes()[i], Lifestyle.class)[0]);
+                    } else if (types[i] == Class.class) {
+                        params[i] = I.dependencies.get().peekLast();
+                    } else {
+                        params[i] = I.make(types[i]);
+                    }
+                }
+            }
+            // create new instance
+            return (M) constructor.newInstance(params);
+        };
     }
 
     /**

@@ -14,9 +14,9 @@ package kiss;
  * This is a marker interface for Extension Point of your application.
  * </p>
  * <p>
- * All Extension Points are recognized automatically by Sinobu if you use
- * {@link I#load(java.nio.file.Path, boolean)} methods properly. And an Extension Point will provide
- * some Extensions.
+ * All Extension Points are recognized automatically by Sinobu if you use {@link I#load(Class)} or
+ * {@link I#load(java.net.URL)} methods properly. And an Extension Point will provide some
+ * Extensions.
  * </p>
  * <h2 id="ExtensionPoint">What is Extension Point?</h2>
  * <p>

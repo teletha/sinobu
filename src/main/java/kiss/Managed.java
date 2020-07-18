@@ -44,9 +44,10 @@ public @interface Managed {
 
     /**
      * Configure the lifestyle of the instance which is annotated class. The default value is
-     * {@link Prototype}.
+     * {@link Lifestyle#prototype(Class)}.
      * 
-     * @see Prototype
+     * @see Lifestyle#prototype(Class)
+     * @see Singleton
      */
-    Class<? extends Lifestyle> value() default Prototype.class;
+    Class<? extends Lifestyle> value() default Lifestyle.class;
 }
