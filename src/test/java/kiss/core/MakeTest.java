@@ -11,6 +11,7 @@ package kiss.core;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -104,6 +105,17 @@ class MakeTest {
     @Test
     void abstractClass() throws Exception {
         assertThrows(InstantiationException.class, () -> I.make(Abstract.class));
+    }
+
+    @Test
+    void recordClass() {
+        for (Constructor<?> c : Point.class.getDeclaredConstructors()) {
+            System.out.println(c);
+        }
+        assert I.make(Point.class) != null;
+    }
+
+    record Point(int x, int y) {
     }
 
     @Test
