@@ -20,17 +20,13 @@ import kiss.model.Model;
 import kiss.model.Property;
 
 /**
- * <p>
  * Annotation that is managed by some domain.
- * </p>
  * <p>
  * When used for any {@link Class}, it means that the instance of that {@link Class} is managed by
  * the lifestyle specified by {@link #value()}.
- * </p>
  * <p>
  * When used for any field, it means that the field is managed as {@link Property}. Specifying a
  * {@link Lifestyle} is meaningless.
- * </p>
  * 
  * @see Lifestyle
  * @see Model
@@ -44,9 +40,9 @@ public @interface Managed {
 
     /**
      * Configure the lifestyle of the instance which is annotated class. The default value is
-     * {@link Lifestyle#prototype(Class)}.
+     * {@link I#prototype(Class)}.
      * 
-     * @see Lifestyle#prototype(Class)
+     * @see I#prototype(Class)
      * @see Singleton
      */
     Class<? extends Lifestyle> value() default Lifestyle.class;
