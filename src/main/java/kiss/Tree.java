@@ -81,7 +81,7 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
                         .walk(s -> s.skip(2)
                                 .filter(f -> !f.getClassName().equals(THIS))
                                 .findFirst()
-                                .map(f -> hash(f.getByteCodeIndex() ^ id))
+                                .map(f -> f.getByteCodeIndex() ^ id)
                                 .orElse(id));
         this.followerBuilder = Objects.requireNonNullElse(followerBuilder, Consumer<Node>::accept);
     }
@@ -406,7 +406,7 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
 
             for (C child : contents) {
                 context = child;
-                modifier = hash(child == null ? 0 : child.hashCode());
+                modifier = child == null ? 0 : child.hashCode();
                 $(writer.apply(index++, child));
             }
 
@@ -488,59 +488,5 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
                 $(failure);
             }
         };
-    }
-
-    /**
-     * Murmur3 32-bit hash function.
-     *
-     * @param value A input value.
-     * @return A hash value.
-     */
-    private static int hash(int value) {
-        byte[] data = new byte[] {(byte) (value >> 24), (byte) (value >> 16), (byte) (value >> 8), (byte) value};
-
-        int hash = 0;
-        final int nblocks = 4 >> 2;
-
-        // body
-        for (int i = 0; i < nblocks; i++) {
-            int i_4 = i << 2;
-            int k = (data[i_4] & 0xff) | ((data[i_4 + 1] & 0xff) << 8) | ((data[i_4 + 2] & 0xff) << 16) | ((data[i_4 + 3] & 0xff) << 24);
-
-            // mix functions
-            k *= 0xcc9e2d51;
-            k = Integer.rotateLeft(k, 15);
-            k *= 0x1b873593;
-            hash ^= k;
-            hash = Integer.rotateLeft(hash, 13) * 5 + 0xe6546b64;
-        }
-
-        // tail
-        int idx = nblocks << 2;
-        int k1 = 0;
-        switch (4 - idx) {
-        case 3:
-            k1 ^= data[idx + 2] << 16;
-        case 2:
-            k1 ^= data[idx + 1] << 8;
-        case 1:
-            k1 ^= data[idx];
-
-            // mix functions
-            k1 *= 0xcc9e2d51;
-            k1 = Integer.rotateLeft(k1, 15);
-            k1 *= 0x1b873593;
-            hash ^= k1;
-        }
-
-        // finalization
-        hash ^= 4;
-        hash ^= (hash >>> 16);
-        hash *= 0x85ebca6b;
-        hash ^= (hash >>> 13);
-        hash *= 0xc2b2ae35;
-        hash ^= (hash >>> 16);
-
-        return hash;
     }
 }
