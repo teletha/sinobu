@@ -11,8 +11,6 @@ package kiss.core;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,7 +29,7 @@ import kiss.sample.modifier.Public;
 class MakeTest {
 
     @Test
-    void publicClass() throws Exception {
+    void publicClass() {
         assert I.make(Public.class) != null;
     }
 
@@ -43,7 +41,7 @@ class MakeTest {
     }
 
     @Test
-    void memberPublicStatic() throws Exception {
+    void memberPublicStatic() {
         assert I.make(PublicStatic.class) != null;
     }
 
@@ -69,7 +67,7 @@ class MakeTest {
     }
 
     @Test
-    void memberPublicNonStatic() throws Exception {
+    void memberPublicNonStatic() {
         assert I.make(kiss.sample.modifier.Nested.Public.class) != null;
     }
 
@@ -95,109 +93,149 @@ class MakeTest {
     }
 
     @Test
-    void finalClass() throws Exception {
+    void finalClass() {
         assert I.make(Final.class) != null;
     }
 
-    void finalBeanLikeClass() throws Exception {
+    @Test
+    void finalBeanLikeClass() {
         assert I.make(FinalBean.class) != null;
     }
 
     @Test
-    void abstractClass() throws Exception {
+    void abstractClass() {
         assertThrows(InstantiationException.class, () -> I.make(Abstract.class));
     }
 
     @Test
-    void recordClass() throws Exception {
-        for (Constructor<?> c : Point.class.getDeclaredConstructors()) {
-            System.out.println(c);
-        }
-
-        Point point = new Point(0, 10);
-        Field field = Point.class.getDeclaredField("x");
-        field.setAccessible(true);
-        field.set(point, 3);
-        System.out.println(point);
-
-        assert I.make(Point.class) != null;
-    }
-
-    record Point(int x, int y) {
-    }
-
-    @Test
-    void throwRuntimeException() {
-        assertThrows(RuntimeThrower.Bug.class, () -> I.make(RuntimeThrower.class));
-    }
-
-    private static class RuntimeThrower {
-
-        /**
-         * Create RuntimeExceptionClass instance.
-         */
-        private RuntimeThrower() {
-            throw new Bug();
-        }
-
-        private static class Bug extends RuntimeException {
-            private static final long serialVersionUID = 6965448734007115961L;
-        }
-    }
-
-    @Test
-    void throwError() {
-        assertThrows(ErrorThrower.Bug.class, () -> I.make(ErrorThrower.class));
-    }
-
-    private static class ErrorThrower {
-
-        /**
-         * Create ErrorClass instance.
-         */
-        private ErrorThrower() {
-            throw new Bug();
-        }
-
-        private static class Bug extends Error {
-            private static final long serialVersionUID = 219714084165765163L;
-        }
-    }
-
-    @Test
-    void throwException() {
-        assertThrows(ExceptionThrower.Bug.class, () -> I.make(ExceptionThrower.class));
-    }
-
-    private static class ExceptionThrower {
-
-        /**
-         * Create ExceptionClass instance.
-         */
-        private ExceptionThrower() throws Bug {
-            throw new Bug();
-        }
-
-        private static class Bug extends Exception {
-            private static final long serialVersionUID = 5333091127457345270L;
-        }
-    }
-
-    @Test
-    void interfaceList() throws Exception {
+    void interfaceList() {
         assert I.make(List.class) instanceof ArrayList;
     }
 
     @Test
-    void interfaceMap() throws Exception {
+    void interfaceMap() {
         assert I.make(Map.class) instanceof HashMap;
     }
 
-    /**
-     * Test int name.
-     */
     @Test
-    void testReservedName01() {
+    void throwRuntimeException() {
+        class RuntimeThrower {
+            private RuntimeThrower() {
+                throw new Bug();
+            }
+
+            @SuppressWarnings("serial")
+            class Bug extends RuntimeException {
+            }
+        }
+
+        assertThrows(RuntimeThrower.Bug.class, () -> I.make(RuntimeThrower.class));
+    }
+
+    @Test
+    void throwError() {
+        class ErrorThrower {
+            private ErrorThrower() {
+                throw new Bug();
+            }
+
+            @SuppressWarnings("serial")
+            class Bug extends Error {
+            }
+        }
+
+        assertThrows(ErrorThrower.Bug.class, () -> I.make(ErrorThrower.class));
+    }
+
+    @Test
+    void throwException() {
+        class ExceptionThrower {
+            private ExceptionThrower() throws Exception {
+                throw new Bug();
+            }
+
+            @SuppressWarnings("serial")
+            class Bug extends Exception {
+            }
+        }
+
+        assertThrows(ExceptionThrower.Bug.class, () -> I.make(ExceptionThrower.class));
+    }
+
+    @Test
+    void injectPrimitiveInt() {
+        @SuppressWarnings("unused")
+        record Primitive(int value) {
+        };
+
+        assert I.make(Primitive.class).value == 0;
+    }
+
+    @Test
+    void injectPrimitiveLong() {
+        @SuppressWarnings("unused")
+        record Primitive(long value) {
+        };
+
+        assert I.make(Primitive.class).value == 0;
+    }
+
+    @Test
+    void injectPrimitiveFloat() {
+        @SuppressWarnings("unused")
+        record Primitive(float value) {
+        };
+
+        assert I.make(Primitive.class).value == 0;
+    }
+
+    @Test
+    void injectPrimitiveDouble() {
+        @SuppressWarnings("unused")
+        record Primitive(double value) {
+        };
+
+        assert I.make(Primitive.class).value == 0;
+    }
+
+    @Test
+    void injectPrimitiveByte() {
+        @SuppressWarnings("unused")
+        record Primitive(byte value) {
+        };
+
+        assert I.make(Primitive.class).value == 0;
+    }
+
+    @Test
+    void injectPrimitiveShort() {
+        @SuppressWarnings("unused")
+        record Primitive(short value) {
+        };
+
+        assert I.make(Primitive.class).value == 0;
+    }
+
+    @Test
+    void injectPrimitiveBoolean() {
+        @SuppressWarnings("unused")
+        record Primitive(boolean value) {
+        };
+
+        assert I.make(Primitive.class).value == false;
+    }
+
+    @Test
+    void injectPrimitiveChar() {
+        @SuppressWarnings("unused")
+        record Primitive(char value) {
+        };
+
+        assert I.make(Primitive.class).value == '\0';
+    }
+
+    @Test
+    void testReservedKeyword01() {
         Primitive primitive = I.make(Primitive.class);
         assert primitive != null;
         assert 0 == primitive.getInt();
@@ -206,11 +244,8 @@ class MakeTest {
         assert 100 == primitive.getInt();
     }
 
-    /**
-     * Test long name.
-     */
     @Test
-    void testReservedName02() {
+    void testReservedKeyword02() {
         Primitive primitive = I.make(Primitive.class);
         assert primitive != null;
         assert 0L == primitive.getLong();
@@ -219,11 +254,8 @@ class MakeTest {
         assert 100L == primitive.getLong();
     }
 
-    /**
-     * Test boolean name.
-     */
     @Test
-    void testReservedName03() {
+    void testReservedKeyword03() {
         Primitive primitive = I.make(Primitive.class);
         assert primitive != null;
         assert false == primitive.isBoolean();

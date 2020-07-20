@@ -1252,7 +1252,7 @@ public class I {
         // if (modelClass == null) throw new NullPointerException("NPE");
 
         // The model class have some preconditions to have to meet.
-        if (modelClass.isLocalClass()) {
+        if (modelClass.isAnonymousClass()) {
             throw new UnsupportedOperationException(modelClass + " is  inner class.");
         }
 
