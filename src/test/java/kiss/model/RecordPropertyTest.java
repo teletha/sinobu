@@ -31,4 +31,19 @@ class RecordPropertyTest {
         assert propertyY.name.equals("y");
         assert propertyY.model.type == int.class;
     }
+
+    @Test
+    void generic() {
+        @SuppressWarnings("unused")
+        record Generic<T> (T value) {
+        }
+
+        Model<Generic> model = Model.of(Generic.class);
+        assert model.type == Generic.class;
+        assert model.properties().size() == 1;
+
+        Property propertyX = model.property("value");
+        assert propertyX.name.equals("value");
+        assert propertyX.model.type == Object.class;
+    }
 }

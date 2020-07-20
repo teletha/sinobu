@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import kiss.Extensible;
@@ -45,8 +46,7 @@ public class ExtensibleTest extends LoadableTestBase {
 
     @Test
     public void listByNull() {
-        List<Extensible> find = I.find(null);
-        assert find.size() == 0;
+        Assertions.assertThrows(NullPointerException.class, () -> I.find(null));
     }
 
     @Test

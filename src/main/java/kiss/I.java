@@ -194,7 +194,7 @@ public class I {
     private static final Map<Class, Lifestyle> lifestyles = new ConcurrentHashMap<>();
 
     /** The definitions of extensions. */
-    private static final Map<Class, Ⅱ> extensions = new HashMap<>();
+    private static final Map<Class, Ⅱ> extensions = new ConcurrentHashMap<>();
 
     /** The parallel task scheduler. */
     static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(8, run -> {
@@ -671,6 +671,7 @@ public class I {
      *            <a href="Extensible#ExtensionPoint">Extension Point</a> class is only accepted,
      *            otherwise this method will return empty list.
      * @return All Extensions of the given Extension Point or empty list.
+     * @throws NullPointerException If the extension point is null.
      */
     public static <E extends Extensible> List<E> find(Class<E> extensionPoint) {
         return I.signal(findBy(extensionPoint)).flatIterable(Ⅱ::ⅰ).skip(e -> Modifier.isAbstract(e.getModifiers())).map(I::make).toList();
@@ -753,6 +754,7 @@ public class I {
      * 
      * @param extensionPoint A target extension point.
      * @return A extension definition.
+     * @throws NullPointerException If the extension point is null.
      */
     private static <E extends Extensible> Ⅱ<List<Class<E>>, Map<Class, Lifestyle<E>>> findBy(Class<E> extensionPoint) {
         return extensions.computeIfAbsent(extensionPoint, p -> pair(new CopyOnWriteArrayList(), new ConcurrentHashMap()));
