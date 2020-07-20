@@ -12,6 +12,7 @@ package kiss.core;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -108,10 +109,17 @@ class MakeTest {
     }
 
     @Test
-    void recordClass() {
+    void recordClass() throws Exception {
         for (Constructor<?> c : Point.class.getDeclaredConstructors()) {
             System.out.println(c);
         }
+
+        Point point = new Point(0, 10);
+        Field field = Point.class.getDeclaredField("x");
+        field.setAccessible(true);
+        field.set(point, 3);
+        System.out.println(point);
+
         assert I.make(Point.class) != null;
     }
 

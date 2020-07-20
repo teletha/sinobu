@@ -18,6 +18,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringReader;
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -1357,6 +1358,8 @@ public class I {
                                 .collectParameters(constructor.getGenericParameterTypes()[i], Lifestyle.class)[0]);
                     } else if (types[i] == Class.class) {
                         params[i] = I.dependencies.get().peekLast();
+                    } else if (types[i].isPrimitive()) {
+                        params[i] = Array.get(Array.newInstance(types[i], 1), 0);
                     } else {
                         params[i] = I.make(types[i]);
                     }
