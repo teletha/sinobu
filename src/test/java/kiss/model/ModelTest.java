@@ -9,7 +9,7 @@
  */
 package kiss.model;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Comparator;
 import java.util.List;
@@ -66,7 +66,7 @@ class ModelTest {
     }
 
     @Test
-    void identicalCehck() throws Exception {
+    void identicalCehck() {
         // from class
         Model model = Model.of(Person.class);
         assert model != null;
@@ -461,13 +461,13 @@ class ModelTest {
     }
 
     @Test
-    void list() throws Exception {
+    void list() {
         Model model = Model.of(StringList.class);
         assert model instanceof ListModel;
     }
 
     @Test
-    void map() throws Exception {
+    void map() {
         Model model = Model.of(StringMap.class);
         assert model instanceof MapModel;
     }
@@ -500,7 +500,7 @@ class ModelTest {
     }
 
     @Test
-    void testWildcardTypeSetterBean() throws Exception {
+    void testWildcardTypeSetterBean() {
         Model model = Model.of(WildcardTypeSetter.class);
 
         assertProperty(model, "list", List.class);
@@ -603,7 +603,7 @@ class ModelTest {
     }
 
     @Test
-    void proxy() throws Exception {
+    void proxy() {
         ProxyModel proxy = I.make(ProxyModel.class, (p, m, a) -> null);
         Model model = Model.of(proxy);
         List<Property> properties = model.properties();

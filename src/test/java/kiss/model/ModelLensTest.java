@@ -38,6 +38,17 @@ class ModelLensTest {
     }
 
     @Test
+    void getAtRecord() {
+        record Point(int x, double y) {
+        }
+
+        Point point = new Point(10, 20);
+        Model model = Model.of(Point.class);
+        assert (Integer) model.get(point, model.property("x")) == 10;
+        assert (Double) model.get(point, model.property("y")) == 20d;
+    }
+
+    @Test
     void getNullObject() throws Exception {
         Model model = Model.of(Person.class);
         assert model.get(null, model.property("firstName")) == null;
@@ -65,6 +76,19 @@ class ModelLensTest {
         model.set(bean, model.property("generic"), "value");
 
         assert "value" == bean.getGeneric();
+    }
+
+    @Test
+    void setAtRecord() {
+        record Point(int x, double y) {
+        }
+
+        Point point = new Point(0, 0);
+        Model model = Model.of(Point.class);
+        model.set(point, model.property("x"), 10);
+        assert point.x == 10;
+        model.set(point, model.property("y"), 20);
+        assert point.y == 20d;
     }
 
     @Test

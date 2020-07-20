@@ -140,8 +140,8 @@ public class Model<M> {
                 }
 
                 // build valid properties
-                ArrayList properties = new ArrayList(); // don't use type parameter to reduce
-                                                        // footprint
+                // don't use type parameter to reduce footprint
+                ArrayList properties = new ArrayList();
 
                 for (Entry<String, Method[]> entry : candidates.entrySet()) {
                     Method[] methods = entry.getValue();
@@ -173,12 +173,17 @@ public class Model<M> {
                 while (clazz != null) {
                     for (Field field : clazz.getDeclaredFields()) {
                         int modifier = field.getModifiers();
-                        boolean notFinal = (FINAL & modifier) == 0;
+                        boolean notFinal = (FINAL & modifier) == 0 || type.isRecord();
 
-                        // exclude the field which modifier is static or native
+                        // reject the field which modifier is static or native
                         if (((STATIC | NATIVE) & modifier) == 0) {
-                            // include the field which modifier is public or is annotated by Managed
-                            if ((PUBLIC & modifier) == PUBLIC || field.isAnnotationPresent(Managed.class)) {
+                            // accept fields which
+                            // -- is public modifier (implicitely)
+                            // -- is annotated by Managed (explicitely)
+                            // -- is Record component (implicitely)
+                            if ((PUBLIC & modifier) == PUBLIC //
+                                    || field.isAnnotationPresent(Managed.class) //
+                                    || (type.isRecord() && (PRIVATE & modifier) == PRIVATE)) {
                                 field.setAccessible(true);
                                 Model fieldModel = of(field.getGenericType(), type);
 
