@@ -1234,7 +1234,7 @@ public class I {
      * @return A instance of the specified model class. This instance is managed by Sinobu.
      * @throws NullPointerException If the model class is <code>null</code>.
      * @throws IllegalArgumentException If the model class is non-accessible or final class.
-     * @throws UnsupportedOperationException If the model class is inner-class.
+     * @throws UnsupportedOperationException If the model class is anonymous-class.
      * @throws ClassCircularityError If the model has circular dependency.
      * @throws InstantiationException If Sinobu can't instantiate(resolve) the model class.
      */

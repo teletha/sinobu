@@ -21,8 +21,6 @@ import org.junit.jupiter.api.Test;
 import kiss.I;
 import kiss.sample.bean.FinalBean;
 import kiss.sample.bean.Primitive;
-import kiss.sample.modifier.Abstract;
-import kiss.sample.modifier.Final;
 import kiss.sample.modifier.Nested.PublicStatic;
 import kiss.sample.modifier.Public;
 
@@ -94,6 +92,9 @@ class MakeTest {
 
     @Test
     void finalClass() {
+        final class Final {
+        }
+
         assert I.make(Final.class) != null;
     }
 
@@ -103,7 +104,18 @@ class MakeTest {
     }
 
     @Test
+    void localClass() {
+        class Local {
+        }
+
+        assert I.make(Local.class) != null;
+    }
+
+    @Test
     void abstractClass() {
+        abstract class Abstract {
+        }
+
         assertThrows(InstantiationException.class, () -> I.make(Abstract.class));
     }
 
