@@ -9,7 +9,7 @@
  */
 package kiss.core;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,7 +19,6 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
-import kiss.sample.bean.FinalBean;
 import kiss.sample.bean.Primitive;
 import kiss.sample.modifier.Nested.PublicStatic;
 import kiss.sample.modifier.Public;
@@ -99,7 +98,19 @@ class MakeTest {
     }
 
     @Test
-    void finalBeanLikeClass() {
+    void finalBean() {
+        @SuppressWarnings("unused")
+        final class FinalBean {
+            private int value;
+
+            public int getValue() {
+                return value;
+            }
+
+            public void setValue(int value) {
+                this.value = value;
+            }
+        }
         assert I.make(FinalBean.class) != null;
     }
 

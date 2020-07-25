@@ -9,7 +9,7 @@
  */
 package kiss.json;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -28,7 +28,6 @@ import kiss.model.Model;
 import kiss.model.Property;
 import kiss.sample.bean.BuiltinBean;
 import kiss.sample.bean.ChainBean;
-import kiss.sample.bean.DefaultValue;
 import kiss.sample.bean.NestingList;
 import kiss.sample.bean.Person;
 import kiss.sample.bean.Primitive;
@@ -107,9 +106,17 @@ class JSONTest {
         // @formatter:on
     }
 
+    @SuppressWarnings("unused")
     @Test
     void defaultValue() {
-        DefaultValue instant = new DefaultValue();
+        class PropertyWithDefaultValue {
+
+            public String value = "default";
+
+            public List<String> items = new ArrayList(Collections.singleton("default"));
+        }
+
+        PropertyWithDefaultValue instant = new PropertyWithDefaultValue();
 
         // @formatter:off
         validate(instant,
