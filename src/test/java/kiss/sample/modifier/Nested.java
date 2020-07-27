@@ -9,9 +9,6 @@
  */
 package kiss.sample.modifier;
 
-/**
- * @version 2010/01/21 11:17:44
- */
 public class Nested {
 
     public static class PublicStatic {

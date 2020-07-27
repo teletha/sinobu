@@ -9,8 +9,5 @@
  */
 package kiss.sample.modifier;
 
-/**
- * @version 2010/01/21 11:17:53
- */
 class PackagePrivate {
 }
