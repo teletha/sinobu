@@ -9,7 +9,7 @@
  */
 package kiss.model;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Comparator;
 import java.util.List;
@@ -19,7 +19,6 @@ import org.junit.jupiter.api.Test;
 
 import kiss.I;
 import kiss.sample.bean.CompatibleKeyMap;
-import kiss.sample.bean.FinalFieldProperty;
 import kiss.sample.bean.GenericBean;
 import kiss.sample.bean.GenericBoundedTypedBean;
 import kiss.sample.bean.GenericGetterBean;
@@ -147,6 +146,18 @@ class ModelTest {
 
     @Test
     void noneAttributeFinalFieldProperty() {
+        class FinalFieldProperty<T> {
+
+            public final String attribute = "";
+
+            public final Person noneAttribute = new Person();
+
+            {
+                noneAttribute.setFirstName("First");
+                noneAttribute.setAge(10);
+            }
+        }
+
         Model<FinalFieldProperty> model = Model.of(FinalFieldProperty.class);
         assert model.properties().size() == 1;
 
