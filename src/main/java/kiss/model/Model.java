@@ -173,7 +173,9 @@ public class Model<M> {
                 while (clazz != null) {
                     for (Field field : clazz.getDeclaredFields()) {
                         int modifier = field.getModifiers();
-                        boolean notFinal = (FINAL & modifier) == 0 || type.isRecord();
+                        // We are not using Class#isRecord to support java11.
+                        boolean isRecord = type.getSuperclass().getName().equals("java.lang.Record");
+                        boolean notFinal = (FINAL & modifier) == 0 || isRecord;
 
                         // reject the field which modifier is static or native
                         if (((STATIC | NATIVE) & modifier) == 0) {
@@ -183,7 +185,7 @@ public class Model<M> {
                             // -- is Record component (implicitely)
                             if ((PUBLIC & modifier) == PUBLIC //
                                     || field.isAnnotationPresent(Managed.class) //
-                                    || (type.isRecord() && (PRIVATE & modifier) == PRIVATE)) {
+                                    || (isRecord && (PRIVATE & modifier) == PRIVATE)) {
                                 field.setAccessible(true);
                                 Model fieldModel = of(field.getGenericType(), type);
 
