@@ -9,6 +9,8 @@
  */
 package kiss;
 
+import javax.lang.model.SourceVersion;
+
 import bee.task.Test;
 
 public class Project extends bee.api.Project {
@@ -27,6 +29,7 @@ public class Project extends bee.api.Project {
         require("com.google.code.gson", "gson").atTest();
         require("com.alibaba", "fastjson").atTest();
 
+        target(SourceVersion.RELEASE_11);
         versionControlSystem("https://github.com/teletha/sinobu");
     }
 
