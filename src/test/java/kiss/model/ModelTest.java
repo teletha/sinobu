@@ -146,6 +146,7 @@ class ModelTest {
 
     @Test
     void noneAttributeFinalFieldProperty() {
+        @SuppressWarnings("unused")
         class FinalFieldProperty<T> {
 
             public final String attribute = "";
