@@ -90,13 +90,17 @@
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<source>11</source>
+					<source>14</source>
 					<target>11</target>
 					<encoding>UTF-8</encoding>
 					<compilerArgs>
 						<arg>-proc:none</arg>
 					</compilerArgs>
 				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.0.0-M5</version>
 			</plugin>
 		</plugins>
 	</build>
