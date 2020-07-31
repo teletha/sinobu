@@ -19,6 +19,6 @@ jobs:
     - name: Set up JDK 11
       uses: xlui/action-maven-cli/jdk11@master
       with:
-        java-version: 11
+        lifecycle: 'clean package test'
     - name: Build with Maven
       run: mvn -B package --file pom.xml
