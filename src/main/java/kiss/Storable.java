@@ -26,40 +26,40 @@ import kiss.model.Model;
 public interface Storable<Self> {
 
     /**
-     * <p>
      * Restore all properties from persistence domain.
-     * </p>
      * 
      * @return Chainable API.
      */
     default Self restore() {
-        try {
-            I.json(Files.newBufferedReader(Paths.get(locate()))).as(this);
-        } catch (Throwable e) {
-            // ignore error
+        synchronized (this) {
+            try {
+                I.json(Files.newBufferedReader(Paths.get(locate()))).as(this);
+            } catch (Throwable e) {
+                // ignore error
+            }
+            return (Self) this;
         }
-        return (Self) this;
     }
 
     /**
-     * <p>
      * Store all properties to persistence domain.
-     * </p>
      * 
      * @return Chainable API.
      */
     default Self store() {
-        try {
-            Path path = Paths.get(locate());
+        synchronized (this) {
+            try {
+                Path path = Paths.get(locate());
 
-            if (Files.notExists(path)) {
-                Files.createDirectories(path.getParent());
+                if (Files.notExists(path)) {
+                    Files.createDirectories(path.getParent());
+                }
+                I.write(this, Files.newBufferedWriter(path));
+            } catch (Throwable e) {
+                // ignore error
             }
-            I.write(this, Files.newBufferedWriter(path));
-        } catch (Throwable e) {
-            // ignore error
+            return (Self) this;
         }
-        return (Self) this;
     }
 
     /**

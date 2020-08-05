@@ -9,7 +9,7 @@
  */
 package kiss;
 
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.*;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
