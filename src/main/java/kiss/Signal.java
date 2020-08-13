@@ -46,7 +46,6 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.BinaryOperator;
-import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.LongPredicate;
@@ -3655,14 +3654,6 @@ public final class Signal<V> {
      */
     public final <C> Signal<V> take(Supplier<C> contextSupplier, BiPredicate<C, ? super V> condition) {
         return take(contextSupplier, condition, true, false, false);
-    }
-
-    public final Signal<V> take(BooleanSupplier condition) {
-        return take(v -> condition.getAsBoolean());
-    }
-
-    public final Signal<V> take(Supplier<Boolean> condition) {
-        return take(v -> condition.get());
     }
 
     /**
