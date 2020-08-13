@@ -787,7 +787,7 @@ public class I {
      */
     public static <T> Signal<T> http(HttpRequest.Builder request, Class<T> type, HttpClient... client) {
         return new Signal<>((observer, disposer) -> {
-            CompletableFuture future = I.signal(client)
+            return disposer.add(I.signal(client)
                     .to()
                     .or(I.client)
                     .sendAsync(request.build(), BodyHandlers.ofInputStream())
@@ -828,8 +828,7 @@ public class I {
                             }
                         }
                         observer.error(e);
-                    });
-            return disposer.add(future);
+                    }));
         });
     }
 
@@ -850,7 +849,7 @@ public class I {
             sub.text = new StringBuilder();
             sub.next = open;
 
-            CompletableFuture<WebSocket> future = I.signal(client)
+            return disposer.add(I.signal(client)
                     .to()
                     .or(I.client)
                     .newWebSocketBuilder()
@@ -860,9 +859,7 @@ public class I {
                         if (e != null) {
                             observer.error(e);
                         }
-                    });
-
-            return disposer.add(future);
+                    }));
         });
     }
 
