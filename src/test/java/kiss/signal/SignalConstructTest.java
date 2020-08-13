@@ -40,26 +40,6 @@ class SignalConstructTest extends SignalTester {
     }
 
     @Test
-    void multipleCompletesWithValues() {
-        List<String> values = new ArrayList();
-        List<Throwable> errors = new ArrayList();
-        AtomicInteger completes = new AtomicInteger();
-
-        new Signal<String>((observer, disposer) -> {
-            observer.accept("Before");
-            observer.complete();
-            observer.complete();
-            observer.accept("After");
-
-            return disposer;
-        }).to(values::add, errors::add, completes::incrementAndGet);
-
-        assert values.size() == 1;
-        assert errors.size() == 0;
-        assert completes.get() == 1;
-    }
-
-    @Test
     void multipleErrors() {
         List<String> values = new ArrayList();
         List<Throwable> errors = new ArrayList();
@@ -71,25 +51,6 @@ class SignalConstructTest extends SignalTester {
         }).to(values::add, e -> errors.add(e));
 
         assert values.size() == 0;
-        assert errors.size() == 1;
-        assert errors.get(0) instanceof FirstError;
-    }
-
-    @Test
-    void multipleErrorsWithValues() {
-        List<String> values = new ArrayList();
-        List<Throwable> errors = new ArrayList();
-
-        new Signal<String>((observer, disposer) -> {
-            observer.accept("Before");
-            observer.error(new FirstError());
-            observer.error(new SecondError());
-            observer.accept("After");
-
-            return disposer;
-        }).to(values::add, e -> errors.add(e));
-
-        assert values.size() == 1;
         assert errors.size() == 1;
         assert errors.get(0) instanceof FirstError;
     }

@@ -1206,7 +1206,7 @@ public final class Signal<V> {
                 if (item != null) {
                     if (item.ⅰ == this) {
                         observer.complete();
-                    } else {
+                    } else if (!disposer.isDisposed()) {
                         observer.accept((V) item.ⅰ);
                     }
                 }
