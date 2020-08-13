@@ -11,10 +11,7 @@ package kiss.signal;
 
 import org.junit.jupiter.api.Test;
 
-/**
- * @version 2018/09/23 16:37:54
- */
-class SwitchOnTest extends SignalTester {
+class SwitchOnOffTest extends SignalTester {
 
     @Test
     void on() {
@@ -48,6 +45,44 @@ class SwitchOnTest extends SignalTester {
 
         // restart
         other.emit(true);
+        assert main.emit("Success").value("Success");
+        assert main.isNotCompleted();
+        assert main.isNotDisposed();
+        assert main.countObservers() == 1;
+
+        // dispose
+        main.dispose();
+        assert main.emit("Failed").value();
+        assert main.isNotCompleted();
+        assert main.isDisposed();
+        assert main.countObservers() == 0;
+    }
+
+    @Test
+    void off() {
+        monitor(signal -> signal.switchOff(other.signal().startWith(true)));
+
+        assert main.emit("Fail").value();
+        assert main.isNotCompleted();
+        assert main.isNotDisposed();
+        assert main.countObservers() == 0;
+
+        // start
+        other.emit(false);
+        assert main.emit("Success").value("Success");
+        assert main.isNotCompleted();
+        assert main.isNotDisposed();
+        assert main.countObservers() == 1;
+
+        // restop
+        other.emit(true);
+        assert main.emit("Fail").value();
+        assert main.isNotCompleted();
+        assert main.isNotDisposed();
+        assert main.countObservers() == 0;
+
+        // restart
+        other.emit(false);
         assert main.emit("Success").value("Success");
         assert main.isNotCompleted();
         assert main.isNotDisposed();

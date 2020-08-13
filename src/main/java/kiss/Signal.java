@@ -10,7 +10,7 @@
 package kiss;
 
 import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.NANOSECONDS;
+import static java.util.concurrent.TimeUnit.*;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -3524,17 +3524,27 @@ public final class Signal<V> {
 
     /**
      * Return an {@link Signal} that is observed as long as the specified timing {@link Signal}
+     * indicates false. When the timing {@link Signal} returns true, the currently subscribed
+     * {@link Signal} is immediately disposed.
+     *
+     * @param timing A timing whether the {@link Signal} is observed or not.
+     * @return Chainable API.
+     * @throws NullPointerException Timing is null.
+     */
+    public final Signal<V> switchOff(Signal<Boolean> timing) {
+        return switchOn(timing.map(Boolean.FALSE::equals));
+    }
+
+    /**
+     * Return an {@link Signal} that is observed as long as the specified timing {@link Signal}
      * indicates true. When the timing {@link Signal} returns false, the currently subscribed
      * {@link Signal} is immediately disposed.
      *
      * @param timing A timing whether the {@link Signal} is observed or not.
      * @return Chainable API.
+     * @throws NullPointerException Timing is null.
      */
     public final Signal<V> switchOn(Signal<Boolean> timing) {
-        if (timing == null) {
-            return this;
-        }
-
         return new Signal<>((observer, disposer) -> {
             Disposable[] root = {Disposable.empty()};
 
