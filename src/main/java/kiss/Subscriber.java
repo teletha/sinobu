@@ -89,6 +89,14 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
      */
     @Override
     public void accept(T value) {
+        // To reduce CPU computation, the termination of the event stream must be confirmed
+        // by the caller of the accept method, not by the callee.
+        //
+        // When the callee confirms the termination, the action is to enumerate all the values and
+        // ignore the ones after the termination, but if the caller confirms the termination, the
+        // enumeration of the values can be interrupted immediately upon termination.
+        //
+        // if (disposer == null || disposer.isDisposed() == false) {
         try {
             if (next != null) {
                 next.accept(value);
@@ -98,6 +106,7 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
         } catch (Throwable e) {
             error(e);
         }
+        // }
     }
 
     /**
