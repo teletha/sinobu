@@ -829,7 +829,7 @@ public class I {
                         }
                         observer.error(e);
                     });
-            return disposer.add(() -> future.cancel(true));
+            return disposer.add(future);
         });
     }
 
@@ -862,7 +862,7 @@ public class I {
                         }
                     });
 
-            return disposer.add(() -> future.cancel(true));
+            return disposer.add(future);
         });
     }
 
