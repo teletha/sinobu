@@ -37,7 +37,7 @@ class ScheduleTest {
         });
 
         assert value == null;
-        assert result.isNotDisposed();
+        assert result.isDisposed() == false;
         chronus.await();
         assert value.equals("scheduled");
         assert result.isDisposed();

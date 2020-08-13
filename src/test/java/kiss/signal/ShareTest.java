@@ -130,7 +130,7 @@ class ShareTest extends SignalTester {
         observers.stream().forEach(o -> o.accept("Success"));
         assert observers.size() == 1;
         assert result1.size() == 1;
-        assert disposable1.isNotDisposed();
+        assert disposable1.isDisposed() == false;
 
         // complete 1
         observers.stream().forEach(o -> o.complete());
@@ -144,7 +144,7 @@ class ShareTest extends SignalTester {
         observers.stream().forEach(o -> o.accept("Success"));
         assert observers.size() == 1;
         assert result1.size() == 2;
-        assert disposable2.isNotDisposed();
+        assert disposable2.isDisposed() == false;
 
         // complete again
         observers.stream().forEach(o -> o.complete());

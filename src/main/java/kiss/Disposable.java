@@ -68,17 +68,6 @@ public interface Disposable {
     }
 
     /**
-     * <p>
-     * Check the state of operation. (default : true)
-     * </p>
-     * 
-     * @return A result.
-     */
-    default boolean isNotDisposed() {
-        return !isDisposed();
-    }
-
-    /**
      * Append companion {@link Disposable}.
      * 
      * @param next A next {@link Disposable} to execute.

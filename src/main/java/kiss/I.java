@@ -1700,7 +1700,7 @@ public class I {
      */
     public static <V> Signal<V> signal(V... values) {
         return new Signal<V>((observer, disposer) -> {
-            if (disposer.isNotDisposed()) observer.complete();
+            if (!disposer.isDisposed()) observer.complete();
             return disposer;
         }).startWith(values);
     }

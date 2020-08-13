@@ -136,7 +136,7 @@ class StartWithTest extends SignalTester {
     @Test
     void signalChildCompleteWillNotAffectMain() {
         Disposable disposable = Signal.never().startWith(I.signal()).to(I.NoOP);
-        assert disposable.isNotDisposed();
+        assert disposable.isDisposed() == false;
     }
 
     @Test

@@ -10,7 +10,7 @@
 package kiss;
 
 import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.*;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -2386,7 +2386,7 @@ public final class Signal<V> {
                     LinkedTransferQueue<Signal<V>> signal = new LinkedTransferQueue();
                     signal.put(I.signal(init));
 
-                    while (disposer.isNotDisposed()) {
+                    while (!disposer.isDisposed()) {
                         signal.take().to(v -> {
                             values.addLast(v);
                             observer.accept(v);
@@ -3346,7 +3346,7 @@ public final class Signal<V> {
         }
 
         return new Signal<>((observer, disposer) -> {
-            if (disposer.isNotDisposed()) {
+            if (!disposer.isDisposed()) {
                 observer.accept(value.get());
             }
             return to(observer, disposer);
