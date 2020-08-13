@@ -13,30 +13,22 @@ import java.util.ArrayList;
 import java.util.concurrent.Future;
 
 /**
- * <p>
  * The {@link Disposable} interface is used when components need to deallocate and dispose resources
  * prior to their destruction.
- * </p>
  * 
- * @version 2018/03/21 09:22:17
  */
 public interface Disposable {
 
     /**
-     * <p>
      * Functional interface method to implement actual dispose action, this operation should be
      * idempotent.
-     * </p>
      * <p>
      * User SHOULD NOT call this method directly.
-     * </p>
      */
     void vandalize();
 
     /**
-     * <p>
      * Dispose the resource, this operation should be idempotent.
-     * </p>
      */
     default void dispose() {
         // dispose children
@@ -57,9 +49,7 @@ public interface Disposable {
     }
 
     /**
-     * <p>
      * Check the state of operation. (default : false)
-     * </p>
      * 
      * @return A result.
      */
@@ -92,13 +82,11 @@ public interface Disposable {
      * @return A composed {@link Disposable}.
      */
     default Disposable add(Future next) {
-        return add(next == null ? null : () -> next.cancel(true));
+        return next == null ? this : add(() -> next.cancel(true));
     }
 
     /**
-     * <p>
      * Create child {@link Disposable}.
-     * </p>
      * 
      * @return A child {@link Disposable}.
      */
@@ -109,9 +97,7 @@ public interface Disposable {
     }
 
     /**
-     * <p>
      * Create new empty {@link Disposable}.
-     * </p>
      * 
      * @return A created empty {@link Disposable}.
      */
