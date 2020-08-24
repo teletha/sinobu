@@ -127,7 +127,7 @@ public class JSON {
      * @return A result.
      */
     public boolean has(String key, Object value) {
-        return root instanceof Map ? Objects.equals(((Map) root).get(key), value) : false;
+        return root instanceof Map ? Objects.equals(((Map) root).get(key), String.valueOf(value)) : false;
     }
 
     /**
@@ -299,9 +299,9 @@ public class JSON {
         case 'n':
             return keyword(null);
         case 't':
-            return keyword(Boolean.TRUE);
+            return keyword("true");
         case 'f':
-            return keyword(Boolean.FALSE);
+            return keyword("false");
 
         // string
         case '"':

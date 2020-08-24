@@ -97,26 +97,49 @@ class ManipulateTest {
     @Test
     void hasUnknownKey() {
         JSON json = write("{ 'key':'value' }");
-        assert json.has("unknown", null);
+        assert json.has("unknown", null) == false;
         assert json.has("unknown", "value") == false;
     }
 
     @Test
     void hasNullKey() {
         JSON json = write("{ 'key':'value' }");
-        assert json.has(null, null);
+        assert json.has(null, null) == false;
         assert json.has(null, "value") == false;
     }
 
     @Test
-    void hasDifferentType() {
-        JSON json = write("{ 'key':'12' }");
+    void hasIntegral() {
+        JSON json = write("{ 'key':12 }");
         assert json.has("key", "12");
-        assert json.has("key", 12) == false;
+        assert json.has("key", 12);
+    }
 
-        json = write("{ 'key':'true' }");
+    @Test
+    void hasNegative() {
+        JSON json = write("{ 'key':-12 }");
+        assert json.has("key", "-12");
+        assert json.has("key", -12);
+    }
+
+    @Test
+    void hasDecimal() {
+        JSON json = write("{ 'key':1.2 }");
+        assert json.has("key", "1.2");
+        assert json.has("key", 1.2);
+    }
+
+    @Test
+    void hasTrue() {
+        JSON json = write("{ 'key':true }");
         assert json.has("key", "true");
-        assert json.has("key", true) == false;
+        assert json.has("key", true);
+    }
+
+    void hasFalse() {
+        JSON json = write("{ 'key':false }");
+        assert json.has("key", "false");
+        assert json.has("key", false);
     }
 
     /**
