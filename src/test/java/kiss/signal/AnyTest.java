@@ -9,13 +9,10 @@
  */
 package kiss.signal;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
-/**
- * @version 2018/09/28 13:30:22
- */
 class AnyTest extends SignalTester {
 
     @Test
@@ -49,6 +46,17 @@ class AnyTest extends SignalTester {
 
         assert main.emit(Complete).value(false);
         assert main.isCompleted();
+        assert main.isDisposed();
+        assert main.isNotError();
+    }
+
+    @Test
+    void error() {
+        monitor(Integer.class, Boolean.class, signal -> signal.any(v -> v % 2 == 0));
+
+        assert main.emit(Error).value();
+        assert main.isNotCompleted();
+        assert main.isError();
         assert main.isDisposed();
     }
 }
