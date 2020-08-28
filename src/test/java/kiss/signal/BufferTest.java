@@ -197,4 +197,24 @@ class BufferTest extends SignalTester {
         assert main.isError();
         assert main.isDisposed();
     }
+
+    @Test
+    void complete() {
+        monitor(signal -> signal.buffer().map(composer));
+
+        assert main.emit(Complete).value();
+        assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void error() {
+        monitor(signal -> signal.buffer().map(composer));
+
+        assert main.emit(Error).value();
+        assert main.isNotCompleted();
+        assert main.isError();
+        assert main.isDisposed();
+    }
 }
