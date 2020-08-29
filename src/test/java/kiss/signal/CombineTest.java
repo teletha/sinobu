@@ -323,4 +323,15 @@ class CombineTest extends SignalTester {
         assert other.isNotCompleted();
         assert another.isNotCompleted();
     }
+
+    @Test
+    void error() {
+        monitor(signal -> signal.combine(other.signal()).map(composer2));
+
+        // from main
+        assert main.emit(Error).value();
+        assert main.isNotCompleted();
+        assert main.isError();
+        assert other.isDisposed();
+    }
 }
