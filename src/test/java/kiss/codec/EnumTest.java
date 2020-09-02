@@ -54,4 +54,31 @@ class EnumTest extends LoadableTestBase {
             return name;
         }
     }
+
+    @Test
+    void extended() {
+        // by enum-type
+        assert I.transform("A", Extended.class).value().equals("A");
+
+        // by sub-type
+        assert I.transform("A", Extended.A.getClass()).value().equals("A");
+        assert I.transform("B", Extended.B.getClass()).value().equals("B");
+    }
+
+    private enum Extended {
+        A {
+            @Override
+            String value() {
+                return "A";
+            }
+        },
+        B {
+            @Override
+            String value() {
+                return "B";
+            }
+        };
+
+        abstract String value();
+    }
 }

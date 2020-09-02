@@ -1767,6 +1767,14 @@ public class I {
             return (Out) encoded;
         }
 
+        // support abstract enum
+        if (output.isAnonymousClass()) {
+            Class parent = output.getEnclosingClass();
+            if (parent.isEnum()) {
+                output = parent;
+            }
+        }
+
         Decoder<Out> out = I.find(Decoder.class, output);
         return out == null ? I.make(output) : out.decode(encoded);
     }
