@@ -84,10 +84,10 @@ class ModelLensTest {
         }
 
         Point point = new Point(0, 0);
-        Model model = Model.of(Point.class);
-        model.set(point, model.property("x"), 10);
+        Model<Point> model = Model.of(Point.class);
+        point = model.set(point, model.property("x"), 10);
         assert point.x == 10;
-        model.set(point, model.property("y"), 20);
+        point = model.set(point, model.property("y"), 20);
         assert point.y == 20d;
     }
 
