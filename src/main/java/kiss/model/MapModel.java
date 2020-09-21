@@ -68,12 +68,13 @@ class MapModel<K, V> extends Model<Map<K, V>> {
      * {@inheritDoc}
      */
     @Override
-    public void set(Map object, Property property, Object value) {
+    public Map set(Map object, Property property, Object value) {
         if (!key.atomic) {
-            super.set(object, property, value);
+            object = super.set(object, property, value);
         } else {
             object.put(I.transform(property.name, key.type), value);
         }
+        return object;
     }
 
     /**

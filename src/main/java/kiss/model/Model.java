@@ -19,6 +19,7 @@ import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.GenericDeclaration;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Parameter;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
@@ -157,7 +158,10 @@ public class Model<M> {
                                 // this property is valid
                                 Property property = new Property(model, entry.getKey(), null);
                                 property.getter = m -> methods[0].invoke(m);
-                                property.setter = (m, v) -> methods[1].invoke(m, v);
+                                property.setter = (m, v) -> {
+                                    methods[1].invoke(m, v);
+                                    return m;
+                                };
 
                                 // register it
                                 properties.add(property);
@@ -175,7 +179,7 @@ public class Model<M> {
                         int modifier = field.getModifiers();
                         // We are not using Class#isRecord to support java11.
                         boolean isRecord = type.getSuperclass().getName().equals("java.lang.Record");
-                        boolean notFinal = (FINAL & modifier) == 0 || isRecord;
+                        boolean notFinal = (FINAL & modifier) == 0;
 
                         // reject the field which modifier is static or native
                         if (((STATIC | NATIVE) & modifier) == 0) {
@@ -194,18 +198,32 @@ public class Model<M> {
                                     Property property = new Property(of(collectParameters(field
                                             .getGenericType(), Variable.class, type)[0], Variable.class), field.getName(), field);
                                     property.getter = m -> ((Variable) field.get(m)).v;
-                                    property.setter = (m, v) -> ((Variable) field.get(m)).set(v);
+                                    property.setter = (m, v) -> {
+                                        ((Variable) field.get(m)).set(v);
+                                        return m;
+                                    };
                                     property.observer = m -> ((Variable) field.get(m)).observe();
 
                                     // register it
                                     properties.add(property);
-                                } else if ((fieldModel.atomic && notFinal) || !fieldModel.atomic) {
+                                } else if ((fieldModel.atomic && notFinal) || !fieldModel.atomic || isRecord) {
                                     // field
                                     field.setAccessible(true);
 
                                     Property property = new Property(fieldModel, field.getName(), field);
                                     property.getter = m -> field.get(m);
-                                    property.setter = notFinal ? (m, v) -> field.set(m, v) : (m, v) -> {
+                                    property.setter = notFinal ? (m, v) -> {
+                                        field.set(m, v);
+                                        return m;
+                                    } : (m, v) -> {
+                                        Constructor c = collectConstructors(type)[0];
+                                        Parameter[] params = c.getParameters();
+                                        Object[] values = new Object[params.length];
+                                        for (int i = 0; i < params.length; i++) {
+                                            String name = params[i].getName();
+                                            values[i] = name.equals(property.name) ? v : get((M) m, name);
+                                        }
+                                        return c.newInstance(values);
                                     };
 
                                     // register it
@@ -249,9 +267,7 @@ public class Model<M> {
     }
 
     /**
-     * <p>
      * List up all properties.
-     * </p>
      * 
      * @return
      */
@@ -294,15 +310,16 @@ public class Model<M> {
      * @param value A new property value that you want to set. This value accepts <code>null</code>.
      * @throws IllegalArgumentException If the given object can't resolve the given property.
      */
-    public void set(M object, Property property, Object value) {
+    public M set(M object, Property property, Object value) {
         if (object != null && property != null) {
             // field or method access
             Class type = property.model.type;
 
             if ((!type.isPrimitive() && !type.isEnum()) || value != null) {
-                property.setter.accept(object, value);
+                return (M) property.setter.apply(object, value);
             }
         }
+        return object;
     }
 
     /**

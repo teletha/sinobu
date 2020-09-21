@@ -11,36 +11,51 @@ package kiss.jdk;
 
 import java.lang.reflect.Field;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-/**
- * @version 2016/10/24 15:52:32
- */
-public class FinalFieldModificationTest {
+class FinalFieldModificationTest {
 
     @Test
-    public void byReflection() throws Exception {
-        Final instance = new Final("final");
+    void clazz() throws Exception {
+        Final instance = new Final("final", 10);
         assert instance.text.equals("final");
+        assert instance.primitive == 10;
 
         Field field = Final.class.getDeclaredField("text");
         field.setAccessible(true);
         field.set(instance, "modified");
         assert instance.text.equals("modified"); // OMG
+
+        field = Final.class.getDeclaredField("primitive");
+        field.setAccessible(true);
+        field.set(instance, 20);
+        assert instance.primitive == 20; // OMG
     }
 
-    /**
-     * @version 2016/10/24 15:52:53
-     */
     private static class Final {
 
         private final String text;
 
-        /**
-         * @param text
-         */
-        private Final(String text) {
+        private final int primitive;
+
+        private Final(String text, int primitive) {
             this.text = text;
+            this.primitive = primitive;
         }
+    }
+
+    @Test
+    void record() throws Exception {
+        Rec instance = new Rec("final", 10);
+        assert instance.text.equals("final");
+        assert instance.primitive == 10;
+
+        Field field = Rec.class.getDeclaredField("text");
+        field.setAccessible(true);
+        Assertions.assertThrows(IllegalAccessException.class, () -> field.set(instance, "FAIL!"));
+    }
+
+    public record Rec(String text, int primitive) {
     }
 }

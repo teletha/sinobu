@@ -61,17 +61,18 @@ class ListModel<V> extends Model<List<V>> {
      * {@inheritDoc}
      */
     @Override
-    public void set(List object, Property property, Object value) {
-        List list = object;
+    public List set(List object, Property property, Object value) {
         int id = Integer.valueOf(property.name);
 
-        if (list.size() <= id) {
-            int o = id - list.size() + 1;
+        if (object.size() <= id) {
+            int o = id - object.size() + 1;
             for (int i = 0; i < o; i++) {
-                list.add(null);
+                object.add(null);
             }
         }
-        list.set(id, value);
+        object.set(id, value);
+
+        return object;
     }
 
     /**

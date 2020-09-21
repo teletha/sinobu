@@ -14,7 +14,7 @@ import static java.lang.reflect.Modifier.*;
 import java.lang.reflect.Member;
 
 import kiss.Signal;
-import kiss.WiseBiConsumer;
+import kiss.WiseBiFunction;
 import kiss.WiseFunction;
 
 /**
@@ -40,7 +40,7 @@ public class Property {
     WiseFunction getter;
 
     /** The property accessor. */
-    WiseBiConsumer setter;
+    WiseBiFunction setter;
 
     /** The property ovserver. */
     WiseFunction<Object, Signal> observer;

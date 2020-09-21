@@ -110,7 +110,7 @@ public class JSON {
                     }
 
                     // assign value
-                    model.set(java, p, value);
+                    java = model.set(java, p, value);
                 }
             }
         }
