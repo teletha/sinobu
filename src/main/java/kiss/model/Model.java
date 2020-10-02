@@ -212,8 +212,8 @@ public class Model<M> {
 
                                     Property property = new Property(fieldModel, field.getName(), field);
                                     property.getter = m -> field.get(m);
-                                    property.setter = notFinal ? (m, v) -> {
-                                        field.set(m, v);
+                                    property.setter = !isRecord ? (m, v) -> {
+                                        if (notFinal) field.set(m, v);
                                         return m;
                                     } : (m, v) -> {
                                         Constructor c = collectConstructors(type)[0];
