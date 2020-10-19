@@ -220,22 +220,19 @@ class FieldVariablePropertyTest {
 
     @Test
     void ExtendedVariable() {
+        class DoubleVariable extends Variable<Double> {
+
+            public DoubleVariable(Double value) {
+                super(value);
+            }
+        }
+
         class Declare {
             public DoubleVariable property = new DoubleVariable(0D);
         }
 
         assert validatePropertyAccess(new Declare(), 0D, 10D);
         assert Model.of(Declare.class).property("property").model.type == Double.class;
-    }
-
-    /**
-     * Specialized {@link Variable}.
-     */
-    private static class DoubleVariable extends Variable<Double> {
-
-        public DoubleVariable(Double value) {
-            super(value);
-        }
     }
 
     @Test
@@ -246,14 +243,14 @@ class FieldVariablePropertyTest {
             }
         }
 
-        class Primitive extends Generic<Double> {
-            public Primitive(double value) {
+        class ForDouble extends Generic<Double> {
+            public ForDouble(double value) {
                 super(value);
             }
         }
 
         class Declare {
-            public Primitive property = new Primitive(0D);
+            public ForDouble property = new ForDouble(0D);
         }
 
         assert validatePropertyAccess(new Declare(), 0D, 10D);
