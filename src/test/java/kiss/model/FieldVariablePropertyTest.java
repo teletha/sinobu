@@ -225,6 +225,7 @@ class FieldVariablePropertyTest {
         }
 
         assert validatePropertyAccess(new Declare(), 0D, 10D);
+        assert Model.of(Declare.class).property("property").model.type == Double.class;
     }
 
     /**
@@ -235,6 +236,28 @@ class FieldVariablePropertyTest {
         public DoubleVariable(Double value) {
             super(value);
         }
+    }
+
+    @Test
+    void MultiExtendedVariable() {
+        class Generic<V> extends Variable<V> {
+            public Generic(V value) {
+                super(value);
+            }
+        }
+
+        class Primitive extends Generic<Double> {
+            public Primitive(double value) {
+                super(value);
+            }
+        }
+
+        class Declare {
+            public Primitive property = new Primitive(0D);
+        }
+
+        assert validatePropertyAccess(new Declare(), 0D, 10D);
+        assert Model.of(Declare.class).property("property").model.type == Double.class;
     }
 
     @Test
@@ -256,6 +279,7 @@ class FieldVariablePropertyTest {
         }
 
         assert validatePropertyAccess(new Declare(), null, "specialized");
+        assert Model.of(Declare.class).property("property").model.type == String.class;
     }
 
     @Test

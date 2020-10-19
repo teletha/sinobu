@@ -194,9 +194,12 @@ public class Model<M> {
                                 Model fieldModel = of(field.getGenericType(), type);
 
                                 if (Variable.class.isAssignableFrom(fieldModel.type)) {
+                                    System.out.println(field.getGenericType() + " " + fieldModel.type + " " + type + " " + Arrays
+                                            .toString(collectParameters(field.getGenericType(), Variable.class)));
+
                                     // variable
                                     Property property = new Property(of(collectParameters(field
-                                            .getGenericType(), fieldModel.type, type)[0], Variable.class), field.getName(), field);
+                                            .getGenericType(), Variable.class, type)[0]), field.getName(), field);
                                     property.getter = m -> ((Variable) field.get(m)).v;
                                     property.setter = (m, v) -> {
                                         ((Variable) field.get(m)).set(v);
@@ -488,6 +491,8 @@ public class Model<M> {
                     if (base == variable.getGenericDeclaration()) {
                         return of(variable.getBounds()[0], base);
                     } else {
+                        System.out.println(base + "   " + variable.getGenericDeclaration() + "    " + Arrays
+                                .toString(Model.collectParameters(base, variable.getGenericDeclaration())));
                         return of(Model.collectParameters(base, variable.getGenericDeclaration())[i], base);
                     }
                 }
