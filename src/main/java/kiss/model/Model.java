@@ -488,7 +488,7 @@ public class Model<M> {
                     if (base == variable.getGenericDeclaration()) {
                         return of(variable.getBounds()[0], base);
                     } else {
-                        return of(Model.collectParameters(base, variable.getGenericDeclaration())[i], base);
+                        return of(collectParameters(base, variable.getGenericDeclaration())[i], base);
                     }
                 }
             }
@@ -690,10 +690,13 @@ public class Model<M> {
                 // check raw type
                 if (target == param.getRawType()) {
                     Type[] args = param.getActualTypeArguments();
-
                     for (int i = 0; i < args.length; i++) {
                         if (args[i] instanceof TypeVariable) {
-                            args[i] = Model.of(args[i], base).type;
+                            try {
+                                args[i] = Model.of(args[i], base).type;
+                            } catch (ArrayIndexOutOfBoundsException e) {
+                                args[i] = collectParameters(clazz, target)[i];
+                            }
                         }
                     }
                     return args;
