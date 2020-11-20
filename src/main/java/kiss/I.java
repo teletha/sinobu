@@ -43,6 +43,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.FileTime;
 import java.time.Duration;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -2116,6 +2118,27 @@ public class I {
         } finally {
             // close carefuly
             I.quiet(out);
+        }
+    }
+
+    public static void transact(Path path, boolean read, WiseConsumer<Path> process) {
+        try {
+            Path valid = path;
+            Path backup = path.resolveSibling(path.getFileName().toString().concat(".back"));
+            if (Files.exists(backup) && Files.getLastModifiedTime(backup).toMillis() == 0) {
+                valid = backup;
+            } else {
+                if (!read && Files.exists(path)) {
+                    Files.move(path, backup, StandardCopyOption.ATOMIC_MOVE);
+                    Files.setLastModifiedTime(backup, FileTime.fromMillis(0));
+                }
+            }
+
+            process.accept(valid);
+
+            if (!read) Files.delete(backup);
+        } catch (Throwable e) {
+            throw I.quiet(e);
         }
     }
 
