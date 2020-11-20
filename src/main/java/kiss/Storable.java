@@ -9,7 +9,7 @@
  */
 package kiss;
 
-import static java.util.concurrent.TimeUnit.*;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -33,7 +33,7 @@ public interface Storable<Self> {
     default Self restore() {
         synchronized (this) {
             try {
-                I.json(Files.newBufferedReader(Paths.get(locate()))).as(this);
+                I.vouch(Paths.get(locate()), true, file -> I.json(Files.newBufferedReader(file)).as(this));
             } catch (Throwable e) {
                 // ignore error
             }
@@ -54,7 +54,7 @@ public interface Storable<Self> {
                 if (Files.notExists(path)) {
                     Files.createDirectories(path.getParent());
                 }
-                I.write(this, Files.newBufferedWriter(path));
+                I.vouch(path, false, file -> I.write(this, Files.newBufferedWriter(file)));
             } catch (Throwable e) {
                 // ignore error
             }

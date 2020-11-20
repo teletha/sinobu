@@ -11,8 +11,11 @@ package kiss.core;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
@@ -21,28 +24,120 @@ import kiss.I;
 
 class TransactionalIOTest {
 
+    private static final String FILE = "base file";
+
+    private static final String BACKUP = "backup";
+
+    private static final String WRITE = "success to write";
+
     @RegisterExtension
     CleanRoom room = new CleanRoom();
 
     @Test
-    void write() throws IOException {
-        Path file = sceneFileExist("base");
-        I.transact(file, true, out -> Files.writeString(out, "success to write"));
+    void read() {
+        Path file = withFile();
 
-        assert Files.readString(file).equals("success to write");
+        assert read(file).equals(FILE);
     }
 
     @Test
-    void writeFailWhen() throws IOException {
-        Path file = room.locateFile("test", "original");
-        I.transact(file, true, out -> Files.writeString(out, "ok"));
+    void readNoFile() {
+        Path file = withoutFile();
 
-        assert Files.readString(file).equals("ok");
+        Assertions.assertThrows(NoSuchFileException.class, () -> read(file));
     }
 
-    private Path sceneFileExist(String content) {
-        return room.locateFile("test", content);
+    @Test
+    void readImcompletedBackup() throws IOException {
+        Path file = withFile();
+        withImcompletedBackup();
+
+        assert read(file).equals(FILE);
     }
-    
-    private 
+
+    @Test
+    void readCompletedBackup() throws IOException {
+        Path file = withFile();
+        withCompletedBackup();
+
+        assert read(file).equals(BACKUP);
+    }
+
+    @Test
+    void write() {
+        Path file = withFile();
+
+        assert write(file).equals(WRITE);
+    }
+
+    @Test
+    void writeNoFile() {
+        Path file = withoutFile();
+
+        assert write(file).equals(WRITE);
+    }
+
+    @Test
+    void writeImcompletedBackup() throws IOException {
+        Path file = withFile();
+        withImcompletedBackup();
+
+        assert write(file).equals(WRITE);
+    }
+
+    @Test
+    void writeCompletedBackup() throws IOException {
+        Path file = withFile();
+        withCompletedBackup();
+
+        assert write(file).equals(WRITE);
+    }
+
+    private String read(Path path) {
+        String[] contents = {null};
+        I.vouch(path, true, file -> {
+            contents[0] = Files.readString(file);
+        });
+        return contents[0];
+    }
+
+    private String write(Path path) {
+        I.vouch(path, false, file -> {
+            Files.writeString(file, WRITE);
+        });
+
+        try {
+            return Files.readString(path);
+        } catch (IOException e) {
+            throw I.quiet(e);
+        }
+    }
+
+    private Path withFile() {
+        return room.locateFile("test", FILE);
+    }
+
+    private Path withoutFile() {
+        return room.locate("test");
+    }
+
+    private Path withImcompletedBackup() {
+        try {
+            Path path = room.locateFile("test.back", BACKUP);
+            Files.setLastModifiedTime(path, FileTime.fromMillis(System.currentTimeMillis()));
+            return path;
+        } catch (IOException e) {
+            throw I.quiet(e);
+        }
+    }
+
+    private Path withCompletedBackup() {
+        try {
+            Path path = room.locateFile("test.back", BACKUP);
+            Files.setLastModifiedTime(path, FileTime.fromMillis(0));
+            return path;
+        } catch (IOException e) {
+            throw I.quiet(e);
+        }
+    }
 }
