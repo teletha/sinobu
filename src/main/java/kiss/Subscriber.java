@@ -9,13 +9,18 @@
  */
 package kiss;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStreamReader;
 import java.net.http.WebSocket;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.function.Consumer;
+import java.util.zip.GZIPInputStream;
 
 /**
  * In order to reduce code size, a variety of less relevant interfaces are implemented in a single
@@ -167,6 +172,23 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
             text = new StringBuilder();
         }
         return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CompletionStage<?> onBinary(WebSocket web, ByteBuffer data, boolean last) {
+        try {
+            byte[] b = new byte[data.remaining()];
+            data.get(b);
+
+            StringBuilder out = new StringBuilder();
+            I.copy(new InputStreamReader(new GZIPInputStream(new ByteArrayInputStream(b)), StandardCharsets.UTF_8), out, true);
+            return onText(web, out, last);
+        } catch (Exception e) {
+            throw I.quiet(e);
+        }
     }
 
     /**
