@@ -768,7 +768,7 @@ public class I {
      * 
      * @param <T>
      * @param request Request URI.
-     * @param type Response handler. (String, byte[], XML or your bean class)
+     * @param type Response handler. (String, InputStream, XML or your bean class)
      * @return If the request is successful, the content will be sent. If the request is
      *         unsuccessful, an error will be sent.
      * @throws NullPointerException When one of the arguments is null.
@@ -782,7 +782,7 @@ public class I {
      * 
      * @param <T>
      * @param request Request builder.
-     * @param type Response handler. (String, byte[], XML or your bean class)
+     * @param type Response handler. (String, InputStream, XML or your bean class)
      * @return If the request is successful, the content will be sent. If the request is
      *         unsuccessful, an error will be sent.
      * @throws NullPointerException When one of the arguments is null.
@@ -813,8 +813,7 @@ public class I {
                                     // Materializing Phase
                                     // =============================================
                                     T v = (T) (type == String.class ? new String(in.readAllBytes(), StandardCharsets.UTF_8)
-                                            : type == byte[].class ? in.readAllBytes()
-                                                    : type == XML.class ? I.xml(in) : I.json(in).as(type));
+                                            : type == InputStream.class ? in : type == XML.class ? I.xml(in) : I.json(in).as(type));
 
                                     // =============================================
                                     // Signaling Phase
