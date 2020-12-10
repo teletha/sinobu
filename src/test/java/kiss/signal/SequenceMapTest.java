@@ -9,7 +9,10 @@
  */
 package kiss.signal;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -91,12 +94,17 @@ class SequenceMapTest extends SignalTester {
 
     @Test
     void delayAndInterval() {
-        monitor(Integer.class, signal -> signal
-                .sequenceMap(time -> signal(time, time + 1).delay(time, ms, scheduler).interval(50, ms, scheduler)));
+        List<Integer> list = new ArrayList();
+
+        monitor(1, Integer.class, signal -> signal
+                .sequenceMap(time -> signal(time, time + 1).delay(time, ms, scheduler).interval(50, ms, scheduler).effect(list::add)));
 
         main.emit(60, 40, 20);
         scheduler.await();
         assert main.value(60, 61, 40, 41, 20, 21);
+        assert list.get(0) == 20;
+        assert list.get(1) == 40;
+        assert list.get(2) == 60;
     }
 
     @Test

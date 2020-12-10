@@ -906,6 +906,48 @@ public final class Signal<V> {
     }
 
     /**
+     * Returns a new {@link Signal} that emits items resulting from applying a function that you
+     * supply to each item emitted by the current {@link Signal}, where that function returns an
+     * {@link Signal}, and then emitting the items that result from concatenating those returned
+     * {@link Signal}.
+     * 
+     * @param <R>
+     * @param function A function that, when applied to an item emitted by the current
+     *            {@link Signal}, returns an {@link Signal}
+     * @return Chainable API.
+     */
+    public final <R> Signal<R> concatMap(WiseFunction<V, Signal<R>> function) {
+        Objects.requireNonNull(function);
+
+        return new Signal<>((observer, disposer) -> {
+            Subscriber count = countable(observer, 1);
+
+            AtomicBoolean now = new AtomicBoolean();
+            LinkedList<V> values = new LinkedList();
+
+            WiseRunnable end = I.recurse(self -> {
+                count.complete();
+
+                if (!values.isEmpty()) {
+                    disposer.add(function.apply(values.pollFirst()).to(observer, count::error, self));
+                } else {
+                    now.set(false);
+                }
+            });
+
+            return to(v -> {
+                count.index++;
+
+                if (now.compareAndSet(false, true)) {
+                    disposer.add(function.apply(v).to(observer, count::error, end));
+                } else {
+                    values.add(v);
+                }
+            }, observer::error, count::complete, disposer);
+        });
+    }
+
+    /**
      * Returns a {@link Signal} that emits a Boolean that indicates whether the source
      * {@link Signal} emitted a specified item.
      * 
@@ -2881,21 +2923,21 @@ public final class Signal<V> {
      */
     public final <R> Signal<R> sequenceMap(WiseFunction<V, Signal<R>> function) {
         Objects.requireNonNull(function);
-    
+
         return new Signal<>((observer, disposer) -> {
             AtomicLong processing = new AtomicLong();
             Map<Long, Ⅱ<AtomicBoolean, LinkedList<R>>> buffer = new ConcurrentHashMap();
-    
+
             Consumer<Long> complete = I.recurse((self, index) -> {
                 if (processing.get() == index) {
                     Ⅱ<AtomicBoolean, LinkedList<R>> next = buffer.remove(processing.incrementAndGet());
-    
+
                     if (next != null) {
                         // emit stored items
                         for (R value : next.ⅱ) {
                             observer.accept(value);
                         }
-    
+
                         // this indexed buffer has been completed already, step into next buffer
                         if (next.ⅰ.get() == true) {
                             self.accept(processing.get());
@@ -2903,15 +2945,15 @@ public final class Signal<V> {
                     }
                 }
             });
-    
+
             Subscriber end = countable(observer, 1);
-    
+
             return index().to(indexed -> {
                 AtomicBoolean completed = new AtomicBoolean();
                 LinkedList<R> items = new LinkedList();
                 buffer.put(indexed.ⅱ, I.pair(completed, items));
                 end.index++;
-    
+
                 function.apply(indexed.ⅰ).to(v -> {
                     if (processing.get() == indexed.ⅱ) {
                         observer.accept(v);
