@@ -21,6 +21,9 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.function.Consumer;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.Inflater;
+import java.util.zip.InflaterInputStream;
+import java.util.zip.ZipException;
 
 /**
  * In order to reduce code size, a variety of less relevant interfaces are implemented in a single
@@ -179,12 +182,15 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
      */
     @Override
     public CompletionStage<?> onBinary(WebSocket web, ByteBuffer data, boolean last) {
-        try {
-            byte[] b = new byte[data.remaining()];
-            data.get(b);
+        StringBuilder out = new StringBuilder();
+        byte[] b = new byte[data.remaining()];
+        data.get(b);
 
-            StringBuilder out = new StringBuilder();
+        try {
             I.copy(new InputStreamReader(new GZIPInputStream(new ByteArrayInputStream(b)), StandardCharsets.UTF_8), out, true);
+            return onText(web, out, last);
+        } catch (ZipException e) {
+            I.copy(new InputStreamReader(new InflaterInputStream(new ByteArrayInputStream(b), new Inflater(true)), StandardCharsets.UTF_8), out, true);
             return onText(web, out, last);
         } catch (Exception e) {
             throw I.quiet(e);
