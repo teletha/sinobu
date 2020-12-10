@@ -20,11 +20,11 @@ import kiss.WiseFunction;
 /**
  * @version 2018/09/28 13:34:59
  */
-class ConcatMapTest extends SignalTester {
+class SequenceMapTest extends SignalTester {
 
     @Test
     void value() {
-        monitor(Integer.class, signal -> signal.concatMap(v -> signal(v, v + 1)));
+        monitor(Integer.class, signal -> signal.sequenceMap(v -> signal(v, v + 1)));
 
         assert main.emit(10, 20).value(10, 11, 20, 21);
         assert main.isNotCompleted();
@@ -34,7 +34,7 @@ class ConcatMapTest extends SignalTester {
 
     @Test
     void complete() {
-        monitor(Integer.class, signal -> signal.concatMap(v -> signal(v, v + 1)));
+        monitor(Integer.class, signal -> signal.sequenceMap(v -> signal(v, v + 1)));
 
         assert main.emit(10, 20, Complete).value(10, 11, 20, 21);
         assert main.isCompleted();
@@ -44,7 +44,7 @@ class ConcatMapTest extends SignalTester {
 
     @Test
     void error() {
-        monitor(Integer.class, signal -> signal.concatMap(v -> signal(v, v + 1)));
+        monitor(Integer.class, signal -> signal.sequenceMap(v -> signal(v, v + 1)));
 
         assert main.emit(10, 20, Error).value(10, 11, 20, 21);
         assert main.isNotCompleted();
@@ -54,7 +54,7 @@ class ConcatMapTest extends SignalTester {
 
     @Test
     void errorInFunction() {
-        monitor(() -> signal(1, 2).concatMap(errorFunction()));
+        monitor(() -> signal(1, 2).sequenceMap(errorFunction()));
 
         assert main.value();
         assert main.isNotCompleted();
@@ -64,7 +64,7 @@ class ConcatMapTest extends SignalTester {
 
     @Test
     void innerComplete() {
-        monitor(Integer.class, signal -> signal.concatMap(v -> signal(v).take(1)));
+        monitor(Integer.class, signal -> signal.sequenceMap(v -> signal(v).take(1)));
 
         assert main.emit(10, 20).value(10, 20);
         assert main.isNotCompleted();
@@ -74,7 +74,7 @@ class ConcatMapTest extends SignalTester {
 
     @Test
     void innerError() {
-        monitor(Integer.class, signal -> signal.concatMap(v -> errorSignal()));
+        monitor(Integer.class, signal -> signal.sequenceMap(v -> errorSignal()));
 
         assert main.emit(10, 20).value();
         assert main.isNotCompleted();
@@ -85,14 +85,14 @@ class ConcatMapTest extends SignalTester {
     @Test
     void rejectNull() {
         assertThrows(NullPointerException.class, () -> {
-            monitor(() -> signal(1, 2).concatMap((WiseFunction) null));
+            monitor(() -> signal(1, 2).sequenceMap((WiseFunction) null));
         });
     }
 
     @Test
     void delayAndInterval() {
         monitor(Integer.class, signal -> signal
-                .concatMap(time -> signal(time, time + 1).delay(time, ms, scheduler).interval(50, ms, scheduler)));
+                .sequenceMap(time -> signal(time, time + 1).delay(time, ms, scheduler).interval(50, ms, scheduler)));
 
         main.emit(60, 40, 20);
         scheduler.await();
@@ -103,7 +103,7 @@ class ConcatMapTest extends SignalTester {
     void fromFinitToInfinit() {
         Signaling<String> signaling = new Signaling();
 
-        monitor(() -> I.signal(signaling).concatMap(s -> s.expose));
+        monitor(() -> I.signal(signaling).sequenceMap(s -> s.expose));
 
         assert main.isNotError();
         assert main.isNotCompleted();
@@ -116,7 +116,7 @@ class ConcatMapTest extends SignalTester {
     void fromFinitToInfinitWithComplete() {
         Signaling<String> signaling = new Signaling();
 
-        monitor(() -> I.signal(signaling).concatMap(s -> s.expose));
+        monitor(() -> I.signal(signaling).sequenceMap(s -> s.expose));
 
         assert main.isNotError();
         assert main.isNotCompleted();
@@ -131,7 +131,7 @@ class ConcatMapTest extends SignalTester {
     void fromFinitToInfinitWithError() {
         Signaling<String> signaling = new Signaling();
 
-        monitor(() -> I.signal(signaling).concatMap(s -> s.expose));
+        monitor(() -> I.signal(signaling).sequenceMap(s -> s.expose));
 
         assert main.isNotError();
         assert main.isNotCompleted();

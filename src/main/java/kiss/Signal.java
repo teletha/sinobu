@@ -906,66 +906,6 @@ public final class Signal<V> {
     }
 
     /**
-     * Maps a sequence of values into {@link Signal} and concatenates these {@link Signal} eagerly
-     * into a single {@link Signal}. Eager concatenation means that once a subscriber subscribes,
-     * this operator subscribes to all of the source {@link Signal}. The operator buffers the values
-     * emitted by these {@link Signal} and then drains them in order, each one after the previous
-     * one completes.
-     * 
-     * @param function A function that maps a sequence of values into a sequence of {@link Signal}
-     *            that will be eagerly concatenated.
-     * @return Chainable API.
-     */
-    public final <R> Signal<R> concatMap(WiseFunction<V, Signal<R>> function) {
-        Objects.requireNonNull(function);
-
-        return new Signal<>((observer, disposer) -> {
-            AtomicLong processing = new AtomicLong();
-            Map<Long, Ⅱ<AtomicBoolean, LinkedList<R>>> buffer = new ConcurrentHashMap();
-
-            Consumer<Long> complete = I.recurse((self, index) -> {
-                if (processing.get() == index) {
-                    Ⅱ<AtomicBoolean, LinkedList<R>> next = buffer.remove(processing.incrementAndGet());
-
-                    if (next != null) {
-                        // emit stored items
-                        for (R value : next.ⅱ) {
-                            observer.accept(value);
-                        }
-
-                        // this indexed buffer has been completed already, step into next buffer
-                        if (next.ⅰ.get() == true) {
-                            self.accept(processing.get());
-                        }
-                    }
-                }
-            });
-
-            Subscriber end = countable(observer, 1);
-
-            return index().to(indexed -> {
-                AtomicBoolean completed = new AtomicBoolean();
-                LinkedList<R> items = new LinkedList();
-                buffer.put(indexed.ⅱ, I.pair(completed, items));
-                end.index++;
-
-                function.apply(indexed.ⅰ).to(v -> {
-                    if (processing.get() == indexed.ⅱ) {
-                        observer.accept(v);
-                    } else {
-                        items.add(v);
-                    }
-                }, observer::error, () -> {
-                    completed.set(true);
-                    complete.accept(indexed.ⅱ);
-                    end.complete();
-                }, disposer.sub(), true);
-            }, observer::error, end::complete, disposer);
-        });
-
-    }
-
-    /**
      * Returns a {@link Signal} that emits a Boolean that indicates whether the source
      * {@link Signal} emitted a specified item.
      * 
@@ -2929,6 +2869,65 @@ public final class Signal<V> {
     }
 
     /**
+     * Maps a sequence of values into {@link Signal} and concatenates these {@link Signal} eagerly
+     * into a single {@link Signal}. Eager concatenation means that once a subscriber subscribes,
+     * this operator subscribes to all of the source {@link Signal}. The operator buffers the values
+     * emitted by these {@link Signal} and then drains them in order, each one after the previous
+     * one completes.
+     * 
+     * @param function A function that maps a sequence of values into a sequence of {@link Signal}
+     *            that will be eagerly concatenated.
+     * @return Chainable API.
+     */
+    public final <R> Signal<R> sequenceMap(WiseFunction<V, Signal<R>> function) {
+        Objects.requireNonNull(function);
+    
+        return new Signal<>((observer, disposer) -> {
+            AtomicLong processing = new AtomicLong();
+            Map<Long, Ⅱ<AtomicBoolean, LinkedList<R>>> buffer = new ConcurrentHashMap();
+    
+            Consumer<Long> complete = I.recurse((self, index) -> {
+                if (processing.get() == index) {
+                    Ⅱ<AtomicBoolean, LinkedList<R>> next = buffer.remove(processing.incrementAndGet());
+    
+                    if (next != null) {
+                        // emit stored items
+                        for (R value : next.ⅱ) {
+                            observer.accept(value);
+                        }
+    
+                        // this indexed buffer has been completed already, step into next buffer
+                        if (next.ⅰ.get() == true) {
+                            self.accept(processing.get());
+                        }
+                    }
+                }
+            });
+    
+            Subscriber end = countable(observer, 1);
+    
+            return index().to(indexed -> {
+                AtomicBoolean completed = new AtomicBoolean();
+                LinkedList<R> items = new LinkedList();
+                buffer.put(indexed.ⅱ, I.pair(completed, items));
+                end.index++;
+    
+                function.apply(indexed.ⅰ).to(v -> {
+                    if (processing.get() == indexed.ⅱ) {
+                        observer.accept(v);
+                    } else {
+                        items.add(v);
+                    }
+                }, observer::error, () -> {
+                    completed.set(true);
+                    complete.accept(indexed.ⅱ);
+                    end.complete();
+                }, disposer.sub(), true);
+            }, observer::error, end::complete, disposer);
+        });
+    }
+
+    /**
      * <p>
      * Returns a new {@link Signal} that multicasts (shares) the original {@link Signal}. As long as
      * there is at least one {@link Observer} this {@link Signal} will be subscribed and emitting
@@ -3313,7 +3312,7 @@ public final class Signal<V> {
      * </p>
      * <p>
      * If, on the other hand, you want to append a sequence of items to the end of those normally
-     * emitted by an {@link Signal}, you want the {@link #concatMap(WiseFunction)} operator.
+     * emitted by an {@link Signal}, you want the {@link #sequenceMap(WiseFunction)} operator.
      * </p>
      *
      * @param values The values that contains the items you want to emit first.
@@ -3334,7 +3333,7 @@ public final class Signal<V> {
      * </p>
      * <p>
      * If, on the other hand, you want to append a sequence of items to the end of those normally
-     * emitted by an {@link Signal}, you want the {@link #concatMap(WiseFunction)} operator.
+     * emitted by an {@link Signal}, you want the {@link #sequenceMap(WiseFunction)} operator.
      * </p>
      *
      * @param value The values that contains the items you want to emit first.
@@ -3364,7 +3363,7 @@ public final class Signal<V> {
      * </p>
      * <p>
      * If, on the other hand, you want to append a sequence of items to the end of those normally
-     * emitted by an {@link Signal}, you want the {@link #concatMap(WiseFunction)} operator.
+     * emitted by an {@link Signal}, you want the {@link #sequenceMap(WiseFunction)} operator.
      * </p>
      *
      * @param values The values that contains the items you want to emit first.
@@ -3389,7 +3388,7 @@ public final class Signal<V> {
      * </p>
      * <p>
      * If, on the other hand, you want to append a sequence of items to the end of those normally
-     * emitted by an {@link Signal}, you want the {@link #concatMap(WiseFunction)} operator.
+     * emitted by an {@link Signal}, you want the {@link #sequenceMap(WiseFunction)} operator.
      * </p>
      *
      * @param values The values that contains the items you want to emit first.
