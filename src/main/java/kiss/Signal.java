@@ -10,7 +10,7 @@
 package kiss;
 
 import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.NANOSECONDS;
+import static java.util.concurrent.TimeUnit.*;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -131,7 +131,9 @@ public final class Signal<V> {
         this((observer, disposer) -> {
             observers.add((Observer<V>) observer);
 
-            return disposer.add(() -> observers.remove(observer));
+            return disposer.add(() -> {
+                observers.remove(observer);
+            });
         });
     }
 
@@ -1530,7 +1532,7 @@ public final class Signal<V> {
      * @see #effectOnDispose(WiseRunnable)
      * @see #effectOnObserve(WiseConsumer)
      */
-    public final Signal<V> effectOnComplete(WiseConsumer<V> effect) {
+    public final Signal<V> effectOnComplete(WiseConsumer<List<V>> effect) {
         // ignore invalid parameter
         if (effect == null) {
             return this;
@@ -1543,7 +1545,7 @@ public final class Signal<V> {
                 list.add(v);
                 observer.accept(v);
             }, observer::error, () -> {
-                list.forEach(effect::accept);
+                effect.accept(list);
                 observer.complete();
             }, disposer);
         });

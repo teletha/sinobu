@@ -71,10 +71,10 @@ class EffectTest extends SignalTester {
     }
 
     @Test
-    void effectOnCompleteForEachValue() {
+    void effectOnCompleteForAllValue() {
         ArrayList<String> list = new ArrayList();
 
-        monitor(1, String.class, signal -> signal.effectOnComplete(list::add));
+        monitor(1, String.class, signal -> signal.effectOnComplete(list::addAll));
 
         assert main.emit("A", "B").value("A", "B");
         assert list.size() == 0;
