@@ -36,6 +36,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpClient.Redirect;
 import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublishers;
+import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.net.http.WebSocket;
 import java.nio.CharBuffer;
@@ -766,9 +767,11 @@ public class I {
      * Obtain a {@link Signal} to request a resource by HTTP(S). If the request is successful, the
      * content is converted to the specified type before it is sent.
      * 
-     * @param <T>
+     * @param <T> {@link String}, {@link InputStream}, {@link HttpResponse}, {@link XML}, or your
+     *            bean class
      * @param request Request URI.
-     * @param type Response handler. (String, InputStream, XML or your bean class)
+     * @param type Response handler. ({@link String}, {@link InputStream}, {@link HttpResponse},
+     *            {@link XML}, or your bean class)
      * @return If the request is successful, the content will be sent. If the request is
      *         unsuccessful, an error will be sent.
      * @throws NullPointerException When one of the arguments is null.
@@ -780,9 +783,11 @@ public class I {
     /**
      * Obtain a {@link Signal} to request a resource by HTTP(S).
      * 
-     * @param <T>
+     * @param <T> {@link String}, {@link InputStream}, {@link HttpResponse}, {@link XML}, or your
+     *            bean class
      * @param request Request builder.
-     * @param type Response handler. (String, InputStream, XML or your bean class)
+     * @param type Response handler. ({@link String}, {@link InputStream}, {@link HttpResponse},
+     *            {@link XML}, or your bean class)
      * @return If the request is successful, the content will be sent. If the request is
      *         unsuccessful, an error will be sent.
      * @throws NullPointerException When one of the arguments is null.
@@ -813,7 +818,9 @@ public class I {
                                     // Materializing Phase
                                     // =============================================
                                     T v = (T) (type == String.class ? new String(in.readAllBytes(), StandardCharsets.UTF_8)
-                                            : type == InputStream.class ? in : type == XML.class ? I.xml(in) : I.json(in).as(type));
+                                            : type == InputStream.class ? in
+                                                    : type == HttpResponse.class ? res
+                                                            : type == XML.class ? I.xml(in) : I.json(in).as(type));
 
                                     // =============================================
                                     // Signaling Phase
