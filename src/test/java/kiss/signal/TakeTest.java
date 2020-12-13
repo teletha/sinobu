@@ -278,4 +278,16 @@ class TakeTest extends SignalTester {
         assert main.isCompleted();
         assert main.isDisposed();
     }
+
+    @Test
+    void takeWhileValueConditionMultipleComplete() {
+        int[] completes = {0};
+
+        monitor(1, int.class, signal -> signal.takeWhile(value -> value != 3).effectOnComplete(() -> completes[0]++));
+        assert main.emit(1, 2, 3, 4, 5, Complete).value(1, 2);
+        assert main.isCompleted();
+        assert main.isDisposed();
+
+        assert completes[0] == 1;
+    }
 }

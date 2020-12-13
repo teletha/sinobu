@@ -10,7 +10,7 @@
 package kiss;
 
 import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.*;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -3891,7 +3891,11 @@ public final class Signal<V> {
                         }
                     }
                 }
-            }, observer::error, observer::complete, disposer);
+            }, observer::error, () -> {
+                if (stopped.get() == false) {
+                    observer.complete();
+                }
+            }, disposer);
         });
     }
 
