@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -220,6 +221,9 @@ public class JSON {
                 if (item instanceof Map) {
                     if (path[i].equals("*")) {
                         next.addAll(((Map) item).values());
+                    } else if (path[i].equals("$")) {
+                        next.addAll(((Map) item).values());
+                        Collections.reverse(next);
                     } else {
                         Object value = ((Map) item).get(path[i]);
                         if (value != null) {
