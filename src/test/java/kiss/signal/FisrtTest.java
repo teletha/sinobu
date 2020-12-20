@@ -9,11 +9,14 @@
  */
 package kiss.signal;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
-/**
- * @version 2018/03/02 16:28:04
- */
+import antibug.Chronus;
+import kiss.I;
+
 class FisrtTest extends SignalTester {
 
     @Test
@@ -70,5 +73,48 @@ class FisrtTest extends SignalTester {
         assert main.isNotCompleted();
         assert main.isError();
         assert main.isDisposed();
+    }
+
+    @Test
+    void stopSourceSignaleImmediately() {
+        List<Integer> countingItemsOnSourceSignal = new ArrayList();
+
+        assert I.signal(1, 2, 3).effect(countingItemsOnSourceSignal::add).first().to().exact() == 1;
+        assert countingItemsOnSourceSignal.size() == 1;
+    }
+
+    @Test
+    void dontStopFollowingSignalImmediately() {
+        List<Integer> countingItemsOnSourceSignal = new ArrayList();
+
+        List<Integer> result = I.signal(1, 2, 3)
+                .effect(countingItemsOnSourceSignal::add)
+                .first()
+                .flatMap(v -> I.signal(v * 10, v * 100))
+                .toList();
+
+        assert result.size() == 2;
+        assert result.get(0) == 10;
+        assert result.get(1) == 100;
+        assert countingItemsOnSourceSignal.size() == 1;
+    }
+
+    Chronus chronus = new Chronus();
+
+    @Test
+    void dontStopFollowingAsyncSignalImmediately() {
+        List<Integer> countingItemsOnSourceSignal = new ArrayList();
+
+        List<Integer> result = I.signal(1, 2, 3)
+                .effect(countingItemsOnSourceSignal::add)
+                .first()
+                .flatMap(v -> I.signal(v * 10, v * 100).delay(20, ms, chronus))
+                .toList();
+
+        chronus.await();
+        assert result.size() == 2;
+        assert result.get(0) == 10;
+        assert result.get(1) == 100;
+        assert countingItemsOnSourceSignal.size() == 1;
     }
 }
