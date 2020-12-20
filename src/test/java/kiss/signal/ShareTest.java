@@ -19,9 +19,6 @@ import kiss.Disposable;
 import kiss.Observer;
 import kiss.Signal;
 
-/**
- * @version 2018/09/22 14:21:19
- */
 class ShareTest extends SignalTester {
 
     @Test

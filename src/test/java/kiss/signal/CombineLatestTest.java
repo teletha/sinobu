@@ -16,9 +16,6 @@ import kiss.WiseFunction;
 import kiss.Ⅱ;
 import kiss.Ⅲ;
 
-/**
- * @version 2018/03/20 22:40:52
- */
 class CombineLatestTest extends SignalTester {
 
     private final WiseFunction<Ⅱ<String, String>, String> composer2 = v -> v.ⅰ + v.ⅱ;

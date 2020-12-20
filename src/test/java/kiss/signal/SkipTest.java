@@ -16,9 +16,6 @@ import org.junit.jupiter.api.Test;
 
 import kiss.I;
 
-/**
- * @version 2018/03/03 19:54:42
- */
 class SkipTest extends SignalTester {
 
     @Test

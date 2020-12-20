@@ -13,9 +13,6 @@ import org.junit.jupiter.api.Test;
 
 import kiss.Signal;
 
-/**
- * @version 2018/03/20 23:50:24
- */
 class MergeTest extends SignalTester {
 
     @Test

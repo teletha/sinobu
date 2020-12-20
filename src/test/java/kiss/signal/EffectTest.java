@@ -21,9 +21,6 @@ import kiss.Signaling;
 import kiss.WiseConsumer;
 import kiss.WiseRunnable;
 
-/**
- * @version 2018/03/21 22:56:42
- */
 class EffectTest extends SignalTester {
 
     @Test

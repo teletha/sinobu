@@ -18,9 +18,6 @@ import org.junit.jupiter.api.Test;
 import kiss.I;
 import kiss.Signal;
 
-/**
- * @version 2018/03/25 18:53:59
- */
 class RetryTest extends SignalTester {
 
     @Test

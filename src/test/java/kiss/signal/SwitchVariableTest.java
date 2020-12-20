@@ -17,9 +17,6 @@ import kiss.I;
 import kiss.Variable;
 import kiss.WiseFunction;
 
-/**
- * @version 2018/12/08 14:05:03
- */
 class SwitchVariableTest extends SignalTester {
 
     class Person {

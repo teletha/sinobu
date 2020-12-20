@@ -17,9 +17,6 @@ import org.junit.jupiter.api.Test;
 
 import kiss.WiseFunction;
 
-/**
- * @version 2018/07/20 8:38:39
- */
 class SizeTest extends SignalTester {
 
     private final WiseFunction<List<String>, String> composer = v -> v.stream().collect(Collectors.joining());

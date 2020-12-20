@@ -20,9 +20,6 @@ import kiss.I;
 import kiss.Signaling;
 import kiss.WiseFunction;
 
-/**
- * @version 2018/09/28 13:34:59
- */
 class SequenceMapTest extends SignalTester {
 
     @Test

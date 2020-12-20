@@ -11,9 +11,6 @@ package kiss.signal;
 
 import org.junit.jupiter.api.Test;
 
-/**
- * @version 2018/03/26 6:58:19
- */
 class ToggleTest extends SignalTester {
 
     @Test

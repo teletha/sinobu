@@ -21,9 +21,6 @@ import kiss.Disposable;
 import kiss.I;
 import kiss.Signal;
 
-/**
- * @version 2017/03/18 10:55:14
- */
 class SignalDebugger {
 
     private static final Class Agent;

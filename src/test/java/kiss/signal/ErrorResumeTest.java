@@ -14,9 +14,6 @@ import org.junit.jupiter.api.Test;
 import kiss.Signal;
 import kiss.WiseFunction;
 
-/**
- * @version 2018/03/11 2:53:01
- */
 class ErrorResumeTest extends SignalTester {
 
     @Test

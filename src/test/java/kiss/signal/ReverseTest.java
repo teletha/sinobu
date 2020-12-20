@@ -11,9 +11,6 @@ package kiss.signal;
 
 import org.junit.jupiter.api.Test;
 
-/**
- * @version 2018/07/23 16:39:43
- */
 class ReverseTest extends SignalTester {
 
     @Test

@@ -15,9 +15,6 @@ import org.junit.jupiter.api.Test;
 
 import kiss.WiseFunction;
 
-/**
- * @version 2018/07/21 20:22:57
- */
 class DiffTest extends SignalTester {
 
     @Test

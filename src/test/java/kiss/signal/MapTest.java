@@ -9,7 +9,7 @@
  */
 package kiss.signal;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -17,9 +17,6 @@ import org.junit.jupiter.api.Test;
 
 import kiss.I;
 
-/**
- * @version 2018/09/28 13:31:27
- */
 class MapTest extends SignalTester {
 
     @Test

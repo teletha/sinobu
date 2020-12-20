@@ -13,9 +13,6 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
-/**
- * @version 2018/05/29 8:33:10
- */
 class ScanTest extends SignalTester {
 
     @Test

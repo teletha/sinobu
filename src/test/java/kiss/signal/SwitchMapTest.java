@@ -9,7 +9,7 @@
  */
 package kiss.signal;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
@@ -17,9 +17,6 @@ import kiss.I;
 import kiss.Signaling;
 import kiss.WiseFunction;
 
-/**
- * @version 2018/12/08 8:45:33
- */
 class SwitchMapTest extends SignalTester {
 
     @Test

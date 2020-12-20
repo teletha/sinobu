@@ -13,9 +13,6 @@ import java.util.Comparator;
 
 import org.junit.jupiter.api.Test;
 
-/**
- * @version 2018/09/28 13:34:18
- */
 class SortTest extends SignalTester {
 
     @Test

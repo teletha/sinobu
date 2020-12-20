@@ -13,9 +13,6 @@ import org.junit.jupiter.api.Test;
 
 import kiss.Signal;
 
-/**
- * @version 2018/06/22 9:11:51
- */
 class ConcatTest extends SignalTester {
 
     @Test

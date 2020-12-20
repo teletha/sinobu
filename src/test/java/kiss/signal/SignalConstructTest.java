@@ -17,9 +17,6 @@ import org.junit.jupiter.api.Test;
 
 import kiss.Signal;
 
-/**
- * @version 2018/07/15 8:40:34
- */
 class SignalConstructTest extends SignalTester {
 
     @Test

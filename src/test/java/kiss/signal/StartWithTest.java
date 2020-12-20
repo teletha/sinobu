@@ -18,9 +18,6 @@ import kiss.Disposable;
 import kiss.I;
 import kiss.Signal;
 
-/**
- * @version 2018/07/31 18:25:12
- */
 class StartWithTest extends SignalTester {
 
     @Test

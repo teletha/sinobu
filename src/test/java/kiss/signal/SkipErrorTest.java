@@ -13,9 +13,6 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 
-/**
- * @version 2018/03/23 17:17:56
- */
 class SkipErrorTest extends SignalTester {
 
     @Test

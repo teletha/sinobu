@@ -4161,34 +4161,6 @@ public final class Signal<V> {
         });
     }
 
-    // return new Signal<>((observer, disposer) -> {
-    // Subscriber end = countable(observer, 1);
-    // Disposable[] source = new Disposable[1];
-    //
-    // source[0] = to(v -> {
-    // if (emitCondition != null && emitCondition.test(v) && !disposer.isDisposed()) {
-    // observer.accept(emitOutput == null ? (T) v : emitOutput);
-    // end.complete();
-    // source[0].dispose();
-    // }
-    // }, e -> {
-    // if (acceptError) {
-    // if (errorOutput != null) observer.accept(errorOutput);
-    // end.complete();
-    // source[0].dispose();
-    // } else {
-    // observer.error(e);
-    // }
-    // }, () -> {
-    // if (acceptComplete && completeOuput != null) observer.accept(completeOuput);
-    // end.complete();
-    // source[0].dispose();
-    // });
-    // disposer.add(source[0]);
-    //
-    // return source[0];
-    // });
-
     // /**
     // * <p>
     // * Append the current time to each events.

@@ -9,13 +9,10 @@
  */
 package kiss.signal;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
-/**
- * @version 2018/09/28 13:34:39
- */
 class NoneTest extends SignalTester {
 
     @Test
