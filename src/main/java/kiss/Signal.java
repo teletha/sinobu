@@ -4136,24 +4136,23 @@ public final class Signal<V> {
      */
     private <T> Signal<T> signal(Predicate<? super V> emitCondition, T emitOutput, boolean acceptError, T errorOutput, boolean acceptComplete, T completeOuput) {
         return new Signal<>((observer, disposer) -> {
+            Subscriber end = countable(observer, 1);
+
             return to(v -> {
                 if (emitCondition != null && emitCondition.test(v)) {
                     observer.accept(emitOutput == null ? (T) v : emitOutput);
-                    observer.complete();
-                    disposer.dispose();
+                    end.complete();
                 }
             }, e -> {
                 if (acceptError) {
                     if (errorOutput != null) observer.accept(errorOutput);
-                    observer.complete();
-                    disposer.dispose();
+                    end.complete();
                 } else {
                     observer.error(e);
                 }
             }, () -> {
                 if (acceptComplete && completeOuput != null) observer.accept(completeOuput);
-                observer.complete();
-                disposer.dispose();
+                end.complete();
             }, disposer);
         });
     }
