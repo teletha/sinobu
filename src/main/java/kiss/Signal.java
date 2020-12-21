@@ -10,7 +10,7 @@
 package kiss;
 
 import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.NANOSECONDS;
+import static java.util.concurrent.TimeUnit.*;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -1730,17 +1730,7 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<V> first() {
-        return first(null);
-    }
-
-    /**
-     * Returns {@link Signal} that emits only the very first item emitted by the source
-     * {@link Signal}, or completes if the source {@link Signal} is empty.
-     * 
-     * @return Chainable API.
-     */
-    public final Signal<V> first(V defaultValue) {
-        return signal(I.accept(), null, FALSE, null, TRUE, defaultValue);
+        return signal(I.accept(), null, FALSE, null, TRUE, null);
     }
 
     /**
@@ -2047,17 +2037,7 @@ public final class Signal<V> {
      * @return Chainable API.
      */
     public final Signal<V> last() {
-        return last(null);
-    }
-
-    /**
-     * Returns a {@link Signal} that emits only the last item emitted by this {@link Signal}, or a
-     * default item if this {@link Signal} completes preassignout emitting any items.
-     * 
-     * @return Chainable API.
-     */
-    public final Signal<V> last(V defaultValue) {
-        return buffer(never(), () -> new AtomicReference<V>(defaultValue), AtomicReference::set).map(AtomicReference::get).skipNull();
+        return buffer(never(), () -> new AtomicReference<V>(), AtomicReference::set).map(AtomicReference::get).skipNull();
     }
 
     /**

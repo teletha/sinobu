@@ -39,31 +39,4 @@ class LastTest extends SignalTester {
         assert main.isNotCompleted();
         assert main.isDisposed();
     }
-
-    @Test
-    void lastWithDefault() {
-        monitor(signal -> signal.last("Default"));
-
-        assert main.emit(1, 2, 3, Complete).value(3);
-        assert main.isCompleted();
-        assert main.isDisposed();
-    }
-
-    @Test
-    void completeWithDefault() {
-        monitor(signal -> signal.last("Default"));
-
-        assert main.emit(Complete).value("Default");
-        assert main.isCompleted();
-        assert main.isDisposed();
-    }
-
-    @Test
-    void errorWithDefault() {
-        monitor(signal -> signal.last("Default"));
-
-        assert main.emit(Error.class).value();
-        assert main.isNotCompleted();
-        assert main.isDisposed();
-    }
 }

@@ -48,34 +48,6 @@ class FisrtTest extends SignalTester {
     }
 
     @Test
-    void firstWithDefault() {
-        monitor(signal -> signal.first("Default"));
-
-        assert main.emit(1, 2, 3).value(1);
-        assert main.isCompleted();
-        assert main.isDisposed();
-    }
-
-    @Test
-    void completeWithDefault() {
-        monitor(signal -> signal.first("Default"));
-
-        assert main.emit(Complete).value("Default");
-        assert main.isCompleted();
-        assert main.isDisposed();
-    }
-
-    @Test
-    void errorWithDefault() {
-        monitor(signal -> signal.first("Default"));
-
-        assert main.emit(Error.class).value();
-        assert main.isNotCompleted();
-        assert main.isError();
-        assert main.isDisposed();
-    }
-
-    @Test
     void stopSourceSignaleImmediately() {
         List<Integer> countingItemsOnSourceSignal = new ArrayList();
 
