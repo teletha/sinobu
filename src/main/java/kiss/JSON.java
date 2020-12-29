@@ -121,6 +121,16 @@ public class JSON {
     }
 
     /**
+     * Check the direct child which has the specified key.
+     * 
+     * @param key A target key.
+     * @return A result.
+     */
+    public boolean has(String key) {
+        return root instanceof Map ? ((Map) root).containsKey(key) : false;
+    }
+
+    /**
      * Check the direct child value with the specified key.
      * 
      * @param key A target key.
