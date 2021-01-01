@@ -862,7 +862,7 @@ public class I {
                     .to()
                     .or(I.client)
                     .newWebSocketBuilder()
-                    .connectTimeout(Duration.ofSeconds(5))
+                    .connectTimeout(Duration.ofSeconds(15))
                     .buildAsync(URI.create(uri), sub)
                     .whenComplete((ok, e) -> {
                         if (e != null) {
