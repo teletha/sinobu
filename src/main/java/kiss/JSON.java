@@ -291,7 +291,7 @@ public class JSON {
      */
     JSON(Reader reader) throws IOException {
         this.reader = reader;
-        this.buffer = new char[1024];
+        this.buffer = new char[256];
         this.captureStart = -1;
         this.capture = new StringBuilder();
 
