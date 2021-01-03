@@ -262,6 +262,9 @@ public class JSON {
     // ===========================================================
     // Parser API
     // ===========================================================
+    /** Reuse buffers. */
+    private static final Pool<char[]> buffers = new Pool(16, () -> new char[256], null);
+
     /** The input source. */
     private Reader reader;
 
@@ -291,7 +294,7 @@ public class JSON {
      */
     JSON(Reader reader) throws IOException {
         this.reader = reader;
-        this.buffer = new char[256];
+        this.buffer = buffers.get();
         this.captureStart = -1;
         this.capture = new StringBuilder();
 
@@ -524,6 +527,7 @@ public class JSON {
             index = 0;
             if (fill == -1) {
                 current = -1;
+                buffers.accept(buffer);
                 return;
             }
         }
