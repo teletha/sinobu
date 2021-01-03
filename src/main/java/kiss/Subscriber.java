@@ -167,11 +167,16 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
     @Override
     public CompletionStage<?> onText(WebSocket web, CharSequence data, boolean last) {
         web.request(1);
-        text.append(data);
 
         if (last) {
-            observer.accept(text.toString());
-            text = new StringBuilder();
+            if (text.length() == 0) {
+                observer.accept(data.toString());
+            } else {
+                observer.accept(text.append(data).toString());
+                text.setLength(0);
+            }
+        } else {
+            text.append(data);
         }
         return null;
     }
