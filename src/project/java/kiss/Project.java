@@ -16,7 +16,7 @@ import bee.task.Test;
 public class Project extends bee.api.Project {
 
     {
-        product("com.github.teletha", "sinobu", "2.1.0");
+        product("com.github.teletha", "sinobu", "2.2.0");
         producer("Nameless Production Committee");
         describe("Sinobu is not obsolete framework but utility, which can manipulate objects as a extremely-condensed facade.");
         require(SourceVersion.latest(), SourceVersion.RELEASE_11);
