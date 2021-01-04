@@ -169,6 +169,8 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
         web.request(1);
 
         if (last) {
+            // If there is a pre-buffered string, it must be concatenated.
+            // If not, we can stringify directly to avoid unnecessary bytes copying.
             if (text.length() == 0) {
                 observer.accept(data.toString());
             } else {
