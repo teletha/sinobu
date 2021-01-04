@@ -187,7 +187,6 @@ class MakeTest {
 
     @Test
     void injectPrimitiveInt() {
-        @SuppressWarnings("unused")
         record Primitive(int value) {
         };
 
@@ -196,7 +195,6 @@ class MakeTest {
 
     @Test
     void injectPrimitiveLong() {
-        @SuppressWarnings("unused")
         record Primitive(long value) {
         };
 
@@ -205,7 +203,6 @@ class MakeTest {
 
     @Test
     void injectPrimitiveFloat() {
-        @SuppressWarnings("unused")
         record Primitive(float value) {
         };
 
@@ -214,7 +211,6 @@ class MakeTest {
 
     @Test
     void injectPrimitiveDouble() {
-        @SuppressWarnings("unused")
         record Primitive(double value) {
         };
 
@@ -223,7 +219,6 @@ class MakeTest {
 
     @Test
     void injectPrimitiveByte() {
-        @SuppressWarnings("unused")
         record Primitive(byte value) {
         };
 
@@ -232,7 +227,6 @@ class MakeTest {
 
     @Test
     void injectPrimitiveShort() {
-        @SuppressWarnings("unused")
         record Primitive(short value) {
         };
 
@@ -241,7 +235,6 @@ class MakeTest {
 
     @Test
     void injectPrimitiveBoolean() {
-        @SuppressWarnings("unused")
         record Primitive(boolean value) {
         };
 
@@ -250,7 +243,6 @@ class MakeTest {
 
     @Test
     void injectPrimitiveChar() {
-        @SuppressWarnings("unused")
         record Primitive(char value) {
         };
 

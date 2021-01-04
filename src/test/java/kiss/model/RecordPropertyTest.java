@@ -15,7 +15,6 @@ class RecordPropertyTest {
 
     @Test
     void record() {
-        @SuppressWarnings("unused")
         record Point(int x, int y) {
         }
 
@@ -34,7 +33,6 @@ class RecordPropertyTest {
 
     @Test
     void generic() {
-        @SuppressWarnings("unused")
         record Generic<T> (T value) {
         }
 
