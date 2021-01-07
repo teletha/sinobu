@@ -43,9 +43,6 @@ import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.nio.file.attribute.FileTime;
 import java.time.Duration;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -354,7 +351,7 @@ public class I {
             // ignore
         }
         try {
-            env.load(Files.newBufferedReader(Paths.get(".env")));
+            env.load(Files.newBufferedReader(Path.of(".env")));
         } catch (Exception e) {
             // ignore
         }
@@ -1866,48 +1863,6 @@ public class I {
             return Class.forName(fqcn, false, ClassLoader.getSystemClassLoader());
         } catch (ClassNotFoundException e) {
             throw quiet(e);
-        }
-    }
-
-    /**
-     * It guarantees that the original data will not be lost, even if various errors cause failure
-     * when performing file reading and writing.
-     * 
-     * @param path A target path to execute IO.
-     * @param read A reading mode or writing mode.
-     * @param process An actual process.
-     */
-    public static void vouch(Path path, boolean read, WiseConsumer<Path> process) {
-        try {
-            Path back = Path.of(path.toString().concat(".back"));
-            if (read) {
-                // =================================
-                // Reader Mode
-                // =================================
-                // When loading the files, check whether a complete backup file exists and if so,
-                // load it from there.
-                if (Files.exists(back) && Files.getLastModifiedTime(back).toMillis() == 0) {
-                    path = back;
-                }
-            } else {
-                // =================================
-                // Writer Mode
-                // =================================
-                // When writing to a file, make sure to create a complete backup file before
-                // writing.
-                if (Files.exists(path)) {
-                    Files.move(path, back, StandardCopyOption.ATOMIC_MOVE);
-                    Files.setLastModifiedTime(back, FileTime.fromMillis(0)); // mark as completed
-                }
-            }
-
-            // Invoke the actual IO process.
-            process.accept(path);
-
-            // Delete the backups as all operations have been completed without error.
-            if (!read) Files.deleteIfExists(back);
-        } catch (Throwable e) {
-            throw I.quiet(e);
         }
     }
 

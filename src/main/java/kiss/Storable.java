@@ -9,11 +9,13 @@
  */
 package kiss;
 
+import static java.nio.file.StandardCopyOption.ATOMIC_MOVE;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
+import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.function.Function;
 
 import kiss.model.Model;
@@ -33,7 +35,7 @@ public interface Storable<Self> {
     default Self restore() {
         synchronized (this) {
             try {
-                I.vouch(Paths.get(locate()), true, file -> I.json(Files.newBufferedReader(file)).as(this));
+                I.json(Files.newBufferedReader(Path.of(locate()))).as(this);
             } catch (Throwable e) {
                 // ignore error
             }
@@ -48,13 +50,18 @@ public interface Storable<Self> {
      */
     default Self store() {
         synchronized (this) {
-            try {
-                Path path = Paths.get(locate());
+            Path tmp = Path.of(locate() + ".tmp");
 
-                if (Files.notExists(path)) {
-                    Files.createDirectories(path.getParent());
+            try {
+                Files.createDirectories(tmp.getParent());
+                I.write(this, Files.newBufferedWriter(tmp));
+                Files.move(tmp, Path.of(locate()), ATOMIC_MOVE);
+            } catch (AtomicMoveNotSupportedException e) {
+                try {
+                    Files.move(tmp, Path.of(locate()), REPLACE_EXISTING);
+                } catch (Throwable r) {
+                    // ignore error
                 }
-                I.vouch(path, false, file -> I.write(this, Files.newBufferedWriter(file)));
             } catch (Throwable e) {
                 // ignore error
             }
