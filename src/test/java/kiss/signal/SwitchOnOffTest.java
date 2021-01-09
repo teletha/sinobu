@@ -59,25 +59,6 @@ class SwitchOnOffTest extends SignalTester {
     }
 
     @Test
-    void onWithUpperStream() {
-        monitor(signal -> signal.switchOn(other.signal().startWith(true)).switchMap(v -> another.signal().map(x -> v + "-" + x)));
-
-        assert main.emit("A").value();
-        assert another.emit("1", "2", "3").value("A-1", "A-2", "A-3");
-
-        assert main.emit("B").value();
-        assert another.emit("1", "2", "3").value("B-1", "B-2", "B-3");
-
-        // stop
-        other.emit(false);
-        assert another.emit("4", "5").value();
-
-        assert main.isNotCompleted();
-        assert main.isNotDisposed();
-        assert main.countObservers() == 0;
-    }
-
-    @Test
     void off() {
         monitor(signal -> signal.switchOff(other.signal().startWith(true)));
 
