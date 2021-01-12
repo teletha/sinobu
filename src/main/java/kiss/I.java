@@ -197,7 +197,7 @@ public class I {
     private static final Map<Class, Ⅱ> extensions = new ConcurrentHashMap<>();
 
     /** The parallel task scheduler. */
-    static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(8, run -> {
+    static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(5, run -> {
         Thread t = new Thread(run);
         t.setName("Sinobu Scheduler");
         t.setDaemon(true);
