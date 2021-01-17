@@ -10,7 +10,7 @@
 package kiss;
 
 import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.*;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -800,6 +800,33 @@ public final class Signal<V> {
 
     /**
      * <p>
+     * Combines several source {@link Signal} by emitting an item that aggregates the latest values
+     * of each of the source {@link Signal} each time an item is received from either of the source
+     * {@link Signal}, where this aggregation is defined by a specified function.
+     * </p>
+     *
+     * @param others Other {@link Signal} to combine.
+     * @param operator An aggregation function used to combine the items emitted by the source
+     *            {@link Signal}.
+     * @return An {@link Signal} that emits items that are the result of combining the items emitted
+     *         by the source {@link Signal} by means of the given aggregation function
+     */
+    public final Signal<Collection<V>> combineLatest(Signal<V>[] others) {
+        Signal<V>[] signals = I.array(others, this);
+        Signal<Map<Signal, V>> base = I.signal((Supplier) HashMap::new);
+
+        for (Signal<V> signal : signals) {
+            base = base.combineLatest(signal, (map, v) -> {
+                map.put(signal, v);
+                return map;
+            });
+        }
+
+        return base.map(Map<Signal, V>::values);
+    }
+
+    /**
+     * <p>
      * Combines two source {@link Signal} by emitting an item that aggregates the latest values of
      * each of the source {@link Signal} each time an item is received from either of the source
      * {@link Signal}, where this aggregation is defined by a specified function.
@@ -858,6 +885,33 @@ public final class Signal<V> {
             }
         }
         return base;
+    }
+
+    public final <R> Signal<Collection<R>> combineLatestMap(WiseFunction<V, Signal<R>> map) {
+        return buffer().flatMap(list -> {
+            Signal<R> base = map.apply(list.remove(0));
+            Signal<R>[] rest = new Signal[list.size()];
+            for (int i = 0; i < rest.length; i++) {
+                rest[i] = map.apply(list.get(i));
+            }
+
+            return base.combineLatest(rest);
+        });
+    }
+
+    public final <R> Signal<Map<V, R>> combineLatestMap2(WiseFunction<V, Signal<R>> mapper) {
+        return new Signal<>((observer, disposer) -> {
+            Map<V, R> map = new HashMap();
+
+            to(v -> {
+                mapper.apply(v).to(r -> {
+                    map.put(v, r);
+                    observer.accept(map);
+                });
+            });
+
+            return disposer;
+        });
     }
 
     /**

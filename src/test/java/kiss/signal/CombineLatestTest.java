@@ -181,6 +181,7 @@ class CombineLatestTest extends SignalTester {
         assert main.emit((String) null).value();
         other.emit("a");
         assert main.value("nulla");
+
         assert main.isNotCompleted();
         assert other.isNotCompleted();
 
