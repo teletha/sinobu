@@ -9,7 +9,8 @@
  */
 package kiss;
 
-import static java.lang.Boolean.*;
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 import java.lang.reflect.UndeclaredThrowableException;
@@ -800,33 +801,6 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Combines several source {@link Signal} by emitting an item that aggregates the latest values
-     * of each of the source {@link Signal} each time an item is received from either of the source
-     * {@link Signal}, where this aggregation is defined by a specified function.
-     * </p>
-     *
-     * @param others Other {@link Signal} to combine.
-     * @param operator An aggregation function used to combine the items emitted by the source
-     *            {@link Signal}.
-     * @return An {@link Signal} that emits items that are the result of combining the items emitted
-     *         by the source {@link Signal} by means of the given aggregation function
-     */
-    public final Signal<Collection<V>> combineLatest(Signal<V>[] others) {
-        Signal<V>[] signals = I.array(others, this);
-        Signal<Map<Signal, V>> base = I.signal((Supplier) HashMap::new);
-
-        for (Signal<V> signal : signals) {
-            base = base.combineLatest(signal, (map, v) -> {
-                map.put(signal, v);
-                return map;
-            });
-        }
-
-        return base.map(Map<Signal, V>::values);
-    }
-
-    /**
-     * <p>
      * Combines two source {@link Signal} by emitting an item that aggregates the latest values of
      * each of the source {@link Signal} each time an item is received from either of the source
      * {@link Signal}, where this aggregation is defined by a specified function.
@@ -887,30 +861,10 @@ public final class Signal<V> {
         return base;
     }
 
-    public final <R> Signal<Collection<R>> combineLatestMap(WiseFunction<V, Signal<R>> map) {
-        return buffer().flatMap(list -> {
-            Signal<R> base = map.apply(list.remove(0));
-            Signal<R>[] rest = new Signal[list.size()];
-            for (int i = 0; i < rest.length; i++) {
-                rest[i] = map.apply(list.get(i));
-            }
-
-            return base.combineLatest(rest);
-        });
-    }
-
-    public final <R> Signal<Map<V, R>> combineLatestMap2(WiseFunction<V, Signal<R>> mapper) {
-        return new Signal<>((observer, disposer) -> {
-            Map<V, R> map = new HashMap();
-
-            to(v -> {
-                mapper.apply(v).to(r -> {
-                    map.put(v, r);
-                    observer.accept(map);
-                });
-            });
-
-            return disposer;
+    public final <R> Signal<Map<V, R>> combineLatestMap(WiseFunction<V, Signal<R>> mapper) {
+        return flatMap(v -> mapper.apply(v).map(x -> I.pair(v, x))).scanBy(ConcurrentHashMap::new, (map, v) -> {
+            map.put(v.ⅰ, v.ⅱ);
+            return map;
         });
     }
 
@@ -2940,10 +2894,30 @@ public final class Signal<V> {
      * @return An {@link Signal} that emits initial value followed by the results of each call to
      *         the accumulator function.
      */
-    public final <R> Signal<R> scanWith(R init, WiseBiFunction<R, V, R> function) {
-        return scan(Collector.of(() -> new AtomicReference<R>(init), (ref, value) -> {
+    public final <R> Signal<R> scanBy(Supplier<R> init, WiseBiFunction<R, V, R> function) {
+        return scan(Collector.of(() -> new AtomicReference<R>(init.get()), (ref, value) -> {
             ref.set(function.apply(ref.get(), value));
         }, (a, b) -> a, AtomicReference<R>::get));
+    }
+
+    /**
+     * <p>
+     * Returns an {@link Signal} that applies a function of your choosing to the first item emitted
+     * by a source {@link Signal} and a seed value, then feeds the result of that function along
+     * preassign the second item emitted by the source {@link Signal} into the same function, and so
+     * on until all items have been emitted by the source {@link Signal}, emitting the result of
+     * each of these iterations.
+     * </p>
+     *
+     * @param init An initial (seed) accumulator item.
+     * @param function An accumulator function to be invoked on each item emitted by the source
+     *            {@link Signal}, whose result will be emitted to {@link Signal} via
+     *            {@link Observer#accept(Object)} and used in the next accumulator call.
+     * @return An {@link Signal} that emits initial value followed by the results of each call to
+     *         the accumulator function.
+     */
+    public final <R> Signal<R> scanWith(R init, WiseBiFunction<R, V, R> function) {
+        return scanBy(() -> init, function);
     }
 
     /**

@@ -100,4 +100,15 @@ class ScanTest extends SignalTester {
         assert main.isCompleted();
         assert main.isDisposed();
     }
+
+    @Test
+    void scanBy() {
+        monitor(int.class, signal -> signal.scanBy(() -> 10, (accumulated, value) -> accumulated + value));
+
+        assert main.emit(1).value(11); // 10 + 1
+        assert main.emit(2).value(13); // 11 + 2
+        assert main.emit(3).value(16); // 13 + 3
+        assert main.isNotCompleted();
+        assert main.isNotDisposed();
+    }
 }
