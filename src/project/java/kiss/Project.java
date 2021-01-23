@@ -23,7 +23,7 @@ public class Project extends bee.api.Project {
 
         require("com.github.teletha", "antibug").atTest();
         require("com.pgs-soft", "HttpClientMock").atTest();
-        require("io.reactivex.rxjava2", "rxjava").atTest();
+        require("io.reactivex.rxjava3", "rxjava").atTest();
 
         // For JSON Parser Benchmark
         require("com.fasterxml.jackson.core", "jackson-databind").atTest();
