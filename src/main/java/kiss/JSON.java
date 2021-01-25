@@ -26,6 +26,9 @@ import kiss.model.Property;
 
 public class JSON {
 
+    /** Strings that are frequently used as array indices can be cached to reduce GC execution. */
+    private static final String[] C = {"0", "1", "2", "3", "4"};
+
     /** The root object. */
     private Object root;
 
@@ -333,10 +336,10 @@ public class JSON {
                 return array;
             }
 
-            int count = 0;
+            int count = -1;
             do {
                 space();
-                array.put(String.valueOf(count++), value());
+                array.put(++count <= 4 ? C[count] : Integer.toString(count), value());
                 space();
             } while (read(','));
             token(']');
