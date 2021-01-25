@@ -26,9 +26,6 @@ import kiss.model.Property;
 
 public class JSON {
 
-    /** Strings that are frequently used as array indices can be cached to reduce GC execution. */
-    private static final String[] C = {"0", "1", "2", "3", "4"};
-
     /** The root object. */
     private Object root;
 
@@ -266,7 +263,10 @@ public class JSON {
     // Parser API
     // ===========================================================
     /** Reuse buffers. */
-    private static final Pool<char[]> buffers = new Pool(16, () -> new char[256], null);
+    private static final Pool<char[]> P = new Pool(16, () -> new char[256], null);
+
+    /** Reuse array's index to reduce GC execution. */
+    private static final String[] C = {"0", "1", "2", "3", "4"};
 
     /** The input source. */
     private Reader reader;
@@ -297,7 +297,7 @@ public class JSON {
      */
     JSON(Reader reader) throws IOException {
         this.reader = reader;
-        this.buffer = buffers.get();
+        this.buffer = P.get();
         this.captureStart = -1;
         this.capture = new StringBuilder();
 
@@ -530,7 +530,7 @@ public class JSON {
             index = 0;
             if (fill == -1) {
                 current = -1;
-                buffers.accept(buffer);
+                P.accept(buffer);
                 return;
             }
         }
