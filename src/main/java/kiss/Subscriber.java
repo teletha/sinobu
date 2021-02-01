@@ -190,6 +190,11 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
     public CompletionStage<?> onBinary(WebSocket web, ByteBuffer data, boolean last) {
         try {
             byte[] b = new byte[data.remaining()];
+            if (b.length == 0) {
+                web.request(1);
+                return null;
+            }
+
             data.get(b);
 
             StringBuilder out = new StringBuilder();
@@ -206,10 +211,10 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
      */
     @Override
     public CompletionStage<?> onClose(WebSocket web, int status, String reason) {
-        if (status != 1000) {
-            observer.error(new Error(reason));
-        } else {
+        if (status == 1000 || status == 1006) {
             observer.complete();
+        } else {
+            observer.error(new Error(status + reason));
         }
         return null;
     }
