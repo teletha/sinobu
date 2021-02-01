@@ -9,7 +9,11 @@
  */
 package kiss.model;
 
-import static java.lang.reflect.Modifier.*;
+import static java.lang.reflect.Modifier.FINAL;
+import static java.lang.reflect.Modifier.NATIVE;
+import static java.lang.reflect.Modifier.PRIVATE;
+import static java.lang.reflect.Modifier.PUBLIC;
+import static java.lang.reflect.Modifier.STATIC;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Repeatable;
@@ -172,13 +176,14 @@ public class Model<M> {
                     }
                 }
 
+                // We are not using Class#isRecord to support java11.
+                boolean isRecord = type.getSuperclass() != null && type.getSuperclass().getName().equals("java.lang.Record");
+
                 // Search field properties.
                 Class clazz = type;
                 while (clazz != null) {
                     for (Field field : clazz.getDeclaredFields()) {
                         int modifier = field.getModifiers();
-                        // We are not using Class#isRecord to support java11.
-                        boolean isRecord = type.getSuperclass().getName().equals("java.lang.Record");
                         boolean notFinal = (FINAL & modifier) == 0;
 
                         // reject the field which modifier is static or native

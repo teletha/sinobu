@@ -623,12 +623,23 @@ class ModelTest {
         assert properties.size() == 1;
     }
 
-    /**
-     * @version 2017/02/09 20:35:34
-     */
     static interface ProxyModel {
         int getValue();
 
         void setValue(int v);
+    }
+
+    @Test
+    void Interface() {
+        interface Type {
+        }
+        Model<Type> model = Model.of(Type.class);
+        assert model.type == Type.class;
+    }
+
+    @Test
+    void primitive() {
+        Model<Integer> model = Model.of(int.class);
+        assert model.type == int.class;
     }
 }
