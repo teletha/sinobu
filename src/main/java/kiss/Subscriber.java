@@ -152,6 +152,8 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
     // ======================================================================
     StringBuilder text;
 
+    byte[] a;
+
     /**
      * {@inheritDoc}
      */
@@ -188,22 +190,29 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
      */
     @Override
     public CompletionStage<?> onBinary(WebSocket web, ByteBuffer data, boolean last) {
+        web.request(1);
+
         try {
             byte[] b = new byte[data.remaining()];
-            if (b.length == 0) {
-                web.request(1);
-                return null;
-            }
-
             data.get(b);
 
-            StringBuilder out = new StringBuilder();
-            I.copy(new InputStreamReader(b[0] == 31 && b[1] == -117 ? new GZIPInputStream(new ByteArrayInputStream(b))
-                    : new InflaterInputStream(new ByteArrayInputStream(b), new Inflater(true)), StandardCharsets.UTF_8), out, true);
-            return onText(web, out, last);
+            if (a != null) {
+                b = ByteBuffer.allocate(a.length + b.length).put(a).put(b).array();
+                a = null;
+            }
+
+            if (last) {
+                StringBuilder out = new StringBuilder();
+                I.copy(new InputStreamReader(b[0] == 31 && b[1] == -117 ? new GZIPInputStream(new ByteArrayInputStream(b))
+                        : new InflaterInputStream(new ByteArrayInputStream(b), new Inflater(true)), StandardCharsets.UTF_8), out, true);
+                observer.accept(out.toString());
+            } else {
+                a = b;
+            }
         } catch (Exception e) {
             throw I.quiet(e);
         }
+        return null;
     }
 
     /**
