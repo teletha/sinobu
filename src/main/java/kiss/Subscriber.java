@@ -220,7 +220,7 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
      */
     @Override
     public CompletionStage<?> onClose(WebSocket web, int status, String reason) {
-        if (status == 1000 || status == 1006) {
+        if (status == 1000) {
             observer.complete();
         } else {
             observer.error(new Error(status + reason));
