@@ -209,7 +209,7 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
             } else {
                 a = b;
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw I.quiet(e);
         }
         return null;
