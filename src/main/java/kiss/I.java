@@ -44,6 +44,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.time.LocalTime;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -74,6 +75,7 @@ import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.LongSupplier;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
@@ -1663,26 +1665,79 @@ public class I {
      *         numbers after each {@code intervalTime} of time thereafter
      */
     public static Signal<Long> schedule(long delayTime, long intervalTime, TimeUnit timeUnit, boolean fixedRate, ScheduledExecutorService scheduler) {
+        return schedule(() -> delayTime, intervalTime, timeUnit, fixedRate, scheduler);
+    }
+
+    /**
+     * Returns an {@link Signal} that emits a {@code 1L} after the {@code delayTime} and ever
+     * increasing numbers after each {@code intervalTime} of time thereafter.
+     * 
+     * @param delayTime The initial delay time to wait before emitting the first value of 1L
+     * @param intervalTime The period of time between emissions of the subsequent numbers
+     * @param timeUnit the time unit for both {@code delayTime} and {@code intervalTime}
+     * @return {@link Signal} that emits a 1L after the {@code delayTime} and ever increasing
+     *         numbers after each {@code intervalTime} of time thereafter
+     */
+    private static Signal<Long> schedule(LongSupplier delayTime, long intervalTime, TimeUnit timeUnit, boolean fixedRate, ScheduledExecutorService scheduler) {
         Objects.requireNonNull(timeUnit);
 
         return new Signal<>((observer, disposer) -> {
+            long delay = delayTime.getAsLong();
             Runnable task = I.wiseC(observer).bindLast(null);
             Future future;
             ScheduledExecutorService exe = scheduler == null ? I.scheduler : scheduler;
 
             if (intervalTime <= 0) {
-                if (delayTime <= 0) {
+                if (delay <= 0) {
                     future = CompletableFuture.runAsync(task, Runnable::run);
                 } else {
-                    future = exe.schedule(task, delayTime, timeUnit);
+                    future = exe.schedule(task, delay, timeUnit);
                 }
             } else if (fixedRate) {
-                future = exe.scheduleAtFixedRate(task, delayTime, intervalTime, timeUnit);
+                future = exe.scheduleAtFixedRate(task, delay, intervalTime, timeUnit);
             } else {
-                future = exe.scheduleWithFixedDelay(task, delayTime, intervalTime, timeUnit);
+                future = exe.scheduleWithFixedDelay(task, delay, intervalTime, timeUnit);
             }
             return disposer.add(future);
         }).count();
+    }
+
+    /**
+     * Create a time-based periodic executable scheduler. It will be executed at regular intervals
+     * starting from a specified base time. (For example, if the base time is 00:05 and the interval
+     * is 30 minutes, the actual execution time will be 00:05, 00:30, 01:05, 01:35, and so on.
+     * 
+     * @param time The base time.
+     * @param interval The period of time between emissions of the subsequent numbers
+     * @param unit The interval time unit.
+     * @return {@link Signal} that emits a 1L at the {@code time} and ever increasing numbers after
+     *         each {@code interval} of time thereafter
+     */
+    public static Signal<Long> schedule(LocalTime time, long interval, TimeUnit unit) {
+        return schedule(time, interval, unit, null);
+    }
+
+    /**
+     * Create a time-based periodic executable scheduler. It will be executed at regular intervals
+     * starting from a specified base time. (For example, if the base time is 00:05 and the interval
+     * is 30 minutes, the actual execution time will be 00:05, 00:30, 01:05, 01:35, and so on.
+     * 
+     * @param time The base time.
+     * @param interval The period of time between emissions of the subsequent numbers
+     * @param unit The interval time unit.
+     * @param scheduler The task scheduler.
+     * @return {@link Signal} that emits a 1L at the {@code time} and ever increasing numbers after
+     *         each {@code interval} of time thereafter
+     */
+    public static Signal<Long> schedule(LocalTime time, long interval, TimeUnit unit, ScheduledExecutorService scheduler) {
+        return schedule(() -> {
+            long now = System.currentTimeMillis();
+            long start = now / 86400000 * 86400000 + time.toNanoOfDay() / 1000000;
+            while (start < now) {
+                start += unit.toMillis(interval);
+            }
+            return start - now;
+        }, unit.toMillis(interval), TimeUnit.MILLISECONDS, true, scheduler);
     }
 
     /**
