@@ -297,8 +297,9 @@ public class JSON {
      * @throws IOException
      */
     JSON(Reader reader) throws IOException {
+        char[] b = P.poll();
+        this.buffer = b == null ? new char[256] : b;
         this.reader = reader;
-        this.buffer = P.isEmpty() ? new char[256] : P.poll();
         this.captureStart = -1;
         this.capture = new StringBuilder();
 
