@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.concurrent.ArrayBlockingQueue;
 
 import kiss.model.Model;
 import kiss.model.Property;
@@ -263,7 +264,7 @@ public class JSON {
     // Parser API
     // ===========================================================
     /** Reuse buffers. */
-    private static final Pool<char[]> P = new Pool(16, () -> new char[256], null);
+    private static final ArrayBlockingQueue<char[]> P = new ArrayBlockingQueue(16);
 
     /** Reuse array's index to reduce GC execution. */
     private static final String[] C = {"0", "1", "2", "3", "4"};
@@ -297,7 +298,7 @@ public class JSON {
      */
     JSON(Reader reader) throws IOException {
         this.reader = reader;
-        this.buffer = P.get();
+        this.buffer = P.isEmpty() ? new char[256] : P.poll();
         this.captureStart = -1;
         this.capture = new StringBuilder();
 
@@ -530,7 +531,7 @@ public class JSON {
             index = 0;
             if (fill == -1) {
                 current = -1;
-                P.accept(buffer);
+                P.offer(buffer);
                 return;
             }
         }
