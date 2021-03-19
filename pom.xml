@@ -10,42 +10,42 @@
 		<dependency>
 			<groupId>com.pgs-soft</groupId>
 			<artifactId>HttpClientMock</artifactId>
-			<version>LATEST</version>
+			<version>1.0.0</version>
 			<scope>test</scope>
 			<exclusions/>
 		</dependency>
 		<dependency>
 			<groupId>com.github.teletha</groupId>
 			<artifactId>antibug</artifactId>
-			<version>LATEST</version>
+			<version>1.0.0</version>
 			<scope>test</scope>
 			<exclusions/>
 		</dependency>
 		<dependency>
 			<groupId>com.alibaba</groupId>
 			<artifactId>fastjson</artifactId>
-			<version>LATEST</version>
+			<version>1.2.75</version>
 			<scope>test</scope>
 			<exclusions/>
 		</dependency>
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
-			<version>LATEST</version>
+			<version>2.8.6</version>
 			<scope>test</scope>
 			<exclusions/>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>LATEST</version>
+			<version>2.12.2</version>
 			<scope>test</scope>
 			<exclusions/>
 		</dependency>
 		<dependency>
 			<groupId>io.reactivex.rxjava3</groupId>
 			<artifactId>rxjava</artifactId>
-			<version>LATEST</version>
+			<version>3.0.11</version>
 			<scope>test</scope>
 			<exclusions/>
 		</dependency>
@@ -63,9 +63,9 @@
 			<url>https://repo1.maven.org/maven2/</url>
 		</repository>
 		<repository>
-			<id>JCenter</id>
-			<name>jcenter.bintray.com</name>
-			<url>https://jcenter.bintray.com/</url>
+			<id>JitPack</id>
+			<name>jitpack.io</name>
+			<url>https://jitpack.io/</url>
 		</repository>
 	</repositories>
 	<url>https://github.com/teletha/sinobu</url>
@@ -78,13 +78,7 @@
 		<system>GitHub</system>
 		<url>https://github.com/teletha/sinobu/issues</url>
 	</issueManagement>
-	<developers>
-		<developer>
-			<name>Teletha</name>
-			<email/>
-			<url>https://github.com/Teletha</url>
-		</developer>
-	</developers>
+	<developers/>
 	<build>
 		<plugins>
 			<plugin>
@@ -92,8 +86,8 @@
 				<version>3.8.1</version>
 				<configuration>
 					<compilerId>eclipse</compilerId>
-					<source>15</source>
-					<target>15</target>
+					<source>16</source>
+					<target>16</target>
 					<encoding>UTF-8</encoding>
 					<compilerArgs>
 						<arg>-proc:none</arg>
