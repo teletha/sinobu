@@ -11,6 +11,8 @@ package kiss.experimental;
 
 import org.junit.jupiter.api.Test;
 
+import kiss.experimental.Reflectable.ReflectableConsumer;
+
 class ReflectableTest {
 
     @Test

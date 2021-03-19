@@ -12,6 +12,8 @@ package kiss.experimental;
 import java.io.Serializable;
 import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.Method;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import kiss.I;
 
@@ -36,5 +38,23 @@ public interface Reflectable extends Serializable {
         } catch (Exception e) {
             throw I.quiet(e);
         }
+    }
+
+    /**
+     * 
+     */
+    public interface ReflectableConsumer<T> extends Consumer<T>, Reflectable {
+    }
+
+    /**
+     * 
+     */
+    public interface ReflectableFunction<P, R> extends Function<P, R>, Reflectable {
+    }
+
+    /**
+     * 
+     */
+    public interface ReflectableRunnable extends Runnable, Reflectable {
     }
 }
