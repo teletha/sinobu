@@ -21,5 +21,6 @@ class ReflectableTest {
         };
 
         assert consumer.method().getDeclaringClass() == ReflectableTest.class;
+        assert Reflectable.reflect(consumer).getDeclaringClass() == ReflectableTest.class;
     }
 }

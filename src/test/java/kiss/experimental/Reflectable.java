@@ -20,6 +20,29 @@ import kiss.I;
 public interface Reflectable extends Serializable {
 
     /**
+     * Static method pattern. Don't provide Reflectable interface, user must define your original
+     * serializable interface.
+     * 
+     * @param lambda
+     * @return
+     */
+    static Method reflect(Serializable lambda) {
+        try {
+            Method m = lambda.getClass().getDeclaredMethod("writeReplace");
+            m.setAccessible(true);
+            SerializedLambda s = (SerializedLambda) m.invoke(lambda);
+
+            return I.signal(I.type(s.getImplClass().replaceAll("/", ".")).getDeclaredMethods())
+                    .take(x -> x.getName().equals(s.getImplMethodName()))
+                    .first()
+                    .to()
+                    .exact();
+        } catch (Exception e) {
+            throw I.quiet(e);
+        }
+    }
+
+    /**
      * Get the implementation of this lambda.
      * 
      * @return The implementation method of this lambda.
