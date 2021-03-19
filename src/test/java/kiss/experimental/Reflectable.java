@@ -12,37 +12,29 @@ package kiss.experimental;
 import java.io.Serializable;
 import java.lang.invoke.SerializedLambda;
 import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Objects;
+
+import kiss.I;
 
 public interface Reflectable extends Serializable {
 
-    private SerializedLambda serialized() {
-        try {
-            Method replaceMethod = getClass().getDeclaredMethod("writeReplace");
-            replaceMethod.setAccessible(true);
-            return (SerializedLambda) replaceMethod.invoke(this);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    default Class<?> clazz() {
-        try {
-            String className = serialized().getImplClass().replaceAll("/", ".");
-            return Class.forName(className);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
+    /**
+     * Get the implementation of this lambda.
+     * 
+     * @return The implementation method of this lambda.
+     */
     default Method method() {
-        SerializedLambda lambda = serialized();
-        Class<?> containingClass = clazz();
-        return List.of(containingClass.getDeclaredMethods())
-                .stream()
-                .filter(method -> Objects.equals(method.getName(), lambda.getImplMethodName()))
-                .findFirst()
-                .orElseThrow(IllegalCallerException::new);
+        try {
+            Method m = getClass().getDeclaredMethod("writeReplace");
+            m.setAccessible(true);
+            SerializedLambda s = (SerializedLambda) m.invoke(this);
+
+            return I.signal(I.type(s.getImplClass().replaceAll("/", ".")).getDeclaredMethods())
+                    .take(x -> x.getName().equals(s.getImplMethodName()))
+                    .first()
+                    .to()
+                    .exact();
+        } catch (Exception e) {
+            throw I.quiet(e);
+        }
     }
 }
