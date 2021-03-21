@@ -16,11 +16,11 @@ import bee.task.Test;
 public class Project extends bee.api.Project {
 
     {
-        product("com.github.teletha", "sinobu", "2.2.0");
+        product("com.github.teletha", "sinobu", ref("version.txt"));
         producer("Nameless Production Committee");
         describe("Sinobu is not obsolete framework but utility, which can manipulate objects as a extremely-condensed facade.");
-        require(SourceVersion.latest(), SourceVersion.RELEASE_11);
 
+        require(SourceVersion.latest(), SourceVersion.RELEASE_11);
         require("com.github.teletha", "antibug").atTest();
         require("com.pgs-soft", "HttpClientMock").atTest();
         require("io.reactivex.rxjava3", "rxjava").atTest();
