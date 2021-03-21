@@ -91,6 +91,7 @@
 					<encoding>UTF-8</encoding>
 					<compilerArgs>
 						<arg>-proc:none</arg>
+						<arg>--enable-preview</arg>
 					</compilerArgs>
 				</configuration>
 				<dependencies>
