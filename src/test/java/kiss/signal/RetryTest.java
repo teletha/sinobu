@@ -77,7 +77,7 @@ class RetryTest extends SignalTester {
 
     @Test
     void retryWhenWithDelay() {
-        monitor(signal -> signal.startWith("retry").retryWhen(fail -> fail.delay(10, ms, scheduler)));
+        monitor(signal -> signal.startWith("retry").retryWhen(fail -> fail.delay(50, ms, scheduler)));
 
         assert main.value("retry");
         assert main.countObservers() == 1;
