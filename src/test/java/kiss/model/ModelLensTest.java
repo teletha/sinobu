@@ -19,6 +19,9 @@ import kiss.sample.bean.Person;
 
 class ModelLensTest {
 
+    record Point(int x, double y) {
+    }
+
     @Test
     void getAtNonAccessibleInstance() {
         Person person = new Person();
@@ -39,9 +42,6 @@ class ModelLensTest {
 
     @Test
     void getAtRecord() {
-        record Point(int x, double y) {
-        }
-
         Point point = new Point(10, 20);
         Model model = Model.of(Point.class);
         assert (Integer) model.get(point, model.property("x")) == 10;
@@ -80,9 +80,6 @@ class ModelLensTest {
 
     @Test
     void setAtRecord() {
-        record Point(int x, double y) {
-        }
-
         Point point = new Point(0, 0);
         Model<Point> model = Model.of(Point.class);
         point = model.set(point, model.property("x"), 10);
