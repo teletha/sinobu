@@ -10,6 +10,8 @@
 package kiss.model;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 
 import kiss.Variable;
 import kiss.sample.bean.EnumProperty;
@@ -79,6 +81,7 @@ class ModelLensTest {
     }
 
     @Test
+    @EnabledForJreRange(min = JRE.JAVA_16)
     void setAtRecord() {
         Point point = new Point(0, 0);
         Model<Point> model = Model.of(Point.class);
