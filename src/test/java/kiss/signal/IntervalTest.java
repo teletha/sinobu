@@ -20,7 +20,7 @@ class IntervalTest extends SignalTester {
 
     @Test
     void interval() {
-        monitor(signal -> signal.interval(10, ms, scheduler));
+        monitor(signal -> signal.interval(delay, ms, scheduler));
 
         assert main.emit("each", "events", "has", "enough", "interval", "time").value("each");
         scheduler.await();
@@ -45,7 +45,7 @@ class IntervalTest extends SignalTester {
 
     @Test
     void complete() {
-        monitor(signal -> signal.interval(10, ms, scheduler));
+        monitor(signal -> signal.interval(delay, ms, scheduler));
 
         assert main.emit("complete", "event", "has", "interval", "time", "too", Complete).value("complete");
         scheduler.await();
@@ -57,7 +57,7 @@ class IntervalTest extends SignalTester {
 
     @Test
     void error() {
-        monitor(signal -> signal.interval(10, ms));
+        monitor(signal -> signal.interval(delay, ms));
 
         assert main.emit("dispose by error", Error).value("dispose by error");
         assert main.isNotCompleted();
@@ -81,7 +81,7 @@ class IntervalTest extends SignalTester {
 
     @Test
     void unitNull() {
-        monitor(signal -> signal.interval(10, null));
+        monitor(signal -> signal.interval(delay, null));
 
         assert main.emit("null unit", "makes", "no interval").value("null unit", "makes", "no interval");
     }
