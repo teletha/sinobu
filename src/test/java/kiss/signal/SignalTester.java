@@ -47,6 +47,9 @@ public class SignalTester {
     /** default multiplicity */
     private static final int defaultMultiplicity = 2;
 
+    /** The default delay duration. */
+    protected static final long delay = 50;
+
     /** Shorthand for {@link TimeUnit#MILLISECONDS}. */
     protected static final TimeUnit ms = TimeUnit.MILLISECONDS;
 
