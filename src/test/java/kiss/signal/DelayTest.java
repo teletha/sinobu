@@ -18,7 +18,7 @@ class DelayTest extends SignalTester {
 
     @Test
     void delay() {
-        monitor(signal -> signal.delay(30, ms, scheduler));
+        monitor(signal -> signal.delay(delay, ms, scheduler));
 
         assert main.emit("delay").value();
         scheduler.await();
@@ -54,7 +54,7 @@ class DelayTest extends SignalTester {
 
     @Test
     void delayNullUnit() {
-        monitor(signal -> signal.delay(10, null));
+        monitor(signal -> signal.delay(delay, null));
 
         assert main.emit("no delay").value("no delay");
         assert main.isNotCompleted();
@@ -64,7 +64,7 @@ class DelayTest extends SignalTester {
 
     @Test
     void delayDuration() {
-        monitor(signal -> signal.delay(Duration.ofMillis(30), scheduler));
+        monitor(signal -> signal.delay(Duration.ofMillis(delay), scheduler));
 
         assert main.emit("delay").value();
         scheduler.await();
@@ -110,7 +110,7 @@ class DelayTest extends SignalTester {
 
     @Test
     void delaySupplier() {
-        monitor(signal -> signal.delay(() -> Duration.ofMillis(30), scheduler));
+        monitor(signal -> signal.delay(() -> Duration.ofMillis(delay), scheduler));
 
         assert main.emit("delay").value();
         scheduler.await();
@@ -181,7 +181,7 @@ class DelayTest extends SignalTester {
 
     @Test
     void delayComplete() {
-        monitor(signal -> signal.delay(30, ms, scheduler));
+        monitor(signal -> signal.delay(delay, ms, scheduler));
 
         assert main.emit("1", "2").value();
         scheduler.await();
@@ -197,7 +197,7 @@ class DelayTest extends SignalTester {
 
     @Test
     void delayCompleteWithoutValues() {
-        monitor(signal -> signal.delay(30, ms, scheduler));
+        monitor(signal -> signal.delay(delay, ms, scheduler));
 
         assert main.emit(Complete).value();
         scheduler.await();

@@ -77,7 +77,7 @@ class RetryTest extends SignalTester {
 
     @Test
     void retryWhenWithDelay() {
-        monitor(signal -> signal.startWith("retry").retryWhen(fail -> fail.delay(50, ms, scheduler)));
+        monitor(signal -> signal.startWith("retry").retryWhen(fail -> fail.delay(delay, ms, scheduler)));
 
         assert main.value("retry");
         assert main.countObservers() == 1;
@@ -95,7 +95,7 @@ class RetryTest extends SignalTester {
 
     @Test
     void retryWhenWithDelayAndLimit() {
-        monitor(signal -> signal.startWith("retry").retryWhen(fail -> fail.take(2).delay(10, ms, scheduler)));
+        monitor(signal -> signal.startWith("retry").retryWhen(fail -> fail.take(2).delay(delay, ms, scheduler)));
 
         assert main.value("retry");
         assert main.emit(Error).value();
@@ -163,7 +163,7 @@ class RetryTest extends SignalTester {
         monitor(1, () -> I.signal("start")
                 .effect(log("Begin"))
                 .map(errorFunction())
-                .retryWhen(fail -> fail.delay(10, ms, scheduler).take(3).effect(log("Retry")))
+                .retryWhen(fail -> fail.delay(delay, ms, scheduler).take(3).effect(log("Retry")))
                 .effect(log("Unreached"))
                 .effectOnError(log("ErrorFinally")));
 

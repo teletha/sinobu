@@ -178,7 +178,7 @@ class RecoverTest extends SignalTester {
 
     @Test
     void recoverWhenWithDelay() {
-        monitor(signal -> signal.recoverWhen(fail -> fail.delay(50, ms, scheduler).mapTo("recover")));
+        monitor(signal -> signal.recoverWhen(fail -> fail.delay(delay, ms, scheduler).mapTo("recover")));
 
         assert main.countObservers() == 1;
         assert main.emit(Error).value();
@@ -195,7 +195,7 @@ class RecoverTest extends SignalTester {
 
     @Test
     void recoverWhenWithDelayAndLimit() {
-        monitor(signal -> signal.recoverWhen(fail -> fail.take(2).delay(50, ms, scheduler).mapTo("recover")));
+        monitor(signal -> signal.recoverWhen(fail -> fail.take(2).delay(delay, ms, scheduler).mapTo("recover")));
 
         assert main.emit(Error).value();
         scheduler.await();

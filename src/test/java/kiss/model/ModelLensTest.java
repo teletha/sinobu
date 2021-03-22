@@ -87,7 +87,7 @@ class ModelLensTest {
         Model<Point> model = Model.of(Point.class);
         point = model.set(point, model.property("x"), 10);
         assert point.x == 10;
-        point = model.set(point, model.property("y"), 20);
+        point = model.set(point, model.property("y"), 20d);
         assert point.y == 20d;
     }
 
