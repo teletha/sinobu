@@ -1,8 +1,6 @@
-#
-#Fri Mar 19 12:15:29 JST 2021
-encoding//src/test/java=UTF-8
-encoding//src/main/resources=UTF-8
-encoding//src/test/resources=UTF-8
-org.eclipse.jdt.core.compiler.processAnnotations=disabled
 eclipse.preferences.version=1
 encoding//src/main/java=UTF-8
+encoding//src/main/resources=UTF-8
+encoding//src/test/java=UTF-8
+encoding//src/test/resources=UTF-8
+org.eclipse.jdt.core.compiler.processAnnotations=disabled
