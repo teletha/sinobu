@@ -15,11 +15,11 @@ import org.junit.jupiter.api.Test;
 
 class OnTest extends SignalTester {
 
-    private Consumer<Runnable> after20ms = runner -> scheduler.schedule(runner, 20, ms);
+    private Consumer<Runnable> after = runner -> scheduler.schedule(runner, delay, ms);
 
     @Test
     void on() {
-        monitor(signal -> signal.on(after20ms).map(v -> Thread.currentThread().getName().contains("pool")));
+        monitor(signal -> signal.on(after).map(v -> Thread.currentThread().getName().contains("pool")));
 
         main.emit("START");
         assert main.value();
@@ -29,7 +29,7 @@ class OnTest extends SignalTester {
 
     @Test
     void error() {
-        monitor(signal -> signal.on(after20ms).map(v -> Thread.currentThread().getName()));
+        monitor(signal -> signal.on(after).map(v -> Thread.currentThread().getName()));
 
         main.emit(Error.class);
         assert main.isNotError();
@@ -41,7 +41,7 @@ class OnTest extends SignalTester {
 
     @Test
     void complete() {
-        monitor(signal -> signal.on(after20ms).map(v -> Thread.currentThread().getName()));
+        monitor(signal -> signal.on(after).map(v -> Thread.currentThread().getName()));
 
         main.emit(Complete);
         assert main.isNotCompleted();
@@ -55,7 +55,7 @@ class OnTest extends SignalTester {
         // Single thread executor will arrange all events in serial. (FIFO)
         scheduler.configExecutionLimit(1);
 
-        monitor(signal -> signal.take(1).on(after20ms));
+        monitor(signal -> signal.take(1).on(after));
 
         assert main.emit("First value will be accepted", "Second will not!").value();
         scheduler.await();
