@@ -9,7 +9,7 @@
  */
 package kiss.signal;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Arrays;
 
@@ -91,11 +91,11 @@ class FlatMapTest extends SignalTester {
     @Test
     void delayAndInterval() {
         monitor(Integer.class, signal -> signal
-                .flatMap(time -> signal(time, time + 1).delay(time, ms, scheduler).interval(50, ms, scheduler)));
+                .flatMap(time -> signal(time, time + 1).delay(time, ms, scheduler).interval(100, ms, scheduler)));
 
-        assert main.emit(60, 40, 20).value();
+        assert main.emit(300, 200, 100).value();
         scheduler.await();
-        assert main.valueInNoParticularOrder(20, 21, 40, 41, 60, 61);
+        assert main.valueInNoParticularOrder(100, 101, 200, 201, 300, 301);
         assert main.isNotCompleted();
         assert main.isNotError();
         assert main.isNotDisposed();
