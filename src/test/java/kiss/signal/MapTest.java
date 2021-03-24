@@ -224,7 +224,7 @@ class MapTest extends SignalTester {
 
     @Test
     void mapsWithInitial() {
-        monitor(signal -> signal.maps(1, (prev, now) -> prev + now));
+        monitor(int.class, signal -> signal.maps(1, (prev, now) -> prev + now));
 
         assert main.emit(1).value(2);
         assert main.emit(2).value(3);
@@ -243,7 +243,7 @@ class MapTest extends SignalTester {
 
     @Test
     void mapsWithInitialError() {
-        monitor(signal -> signal.maps(1, (prev, now) -> prev + now));
+        monitor(int.class, signal -> signal.maps(1, (prev, now) -> prev + now));
 
         assert main.emit(1, Error).value(2);
         assert main.isNotCompleted();
@@ -253,7 +253,7 @@ class MapTest extends SignalTester {
 
     @Test
     void mapsWithInitialComplete() {
-        monitor(signal -> signal.maps(1, (prev, now) -> prev + now));
+        monitor(int.class, signal -> signal.maps(1, (prev, now) -> prev + now));
 
         assert main.emit(1, Complete).value(2);
         assert main.isCompleted();

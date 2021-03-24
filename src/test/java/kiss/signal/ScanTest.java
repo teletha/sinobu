@@ -62,7 +62,7 @@ class ScanTest extends SignalTester {
 
     @Test
     void collector() {
-        monitor(signal -> signal.scan(Collectors.joining("-")));
+        monitor(String.class, signal -> signal.scan(Collectors.joining("-")));
 
         assert main.emit("A").value("A");
         assert main.emit("B").value("A-B");

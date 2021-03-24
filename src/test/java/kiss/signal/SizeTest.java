@@ -23,7 +23,7 @@ class SizeTest extends SignalTester {
 
     @Test
     void same() {
-        monitor(signal -> signal.size(2).map(composer));
+        monitor(String.class, signal -> signal.size(2).map(composer));
 
         assert main.emit("A", "B", Complete).value("AB");
         assert main.isCompleted();
@@ -33,7 +33,7 @@ class SizeTest extends SignalTester {
 
     @Test
     void underflow() {
-        monitor(signal -> signal.size(5).map(composer));
+        monitor(String.class, signal -> signal.size(5).map(composer));
 
         assert main.emit("A", "B", Complete).value();
         assert main.isCompleted();
@@ -43,7 +43,7 @@ class SizeTest extends SignalTester {
 
     @Test
     void overflow() {
-        monitor(signal -> signal.size(1).map(composer));
+        monitor(String.class, signal -> signal.size(1).map(composer));
 
         assert main.emit("A", "B").value();
         assert main.isCompleted();
@@ -63,7 +63,7 @@ class SizeTest extends SignalTester {
 
     @Test
     void negative() {
-        monitor(signal -> signal.size(-2).map(composer));
+        monitor(String.class, signal -> signal.size(-2).map(composer));
 
         assert main.emit("A", "B", Complete).value();
         assert main.isCompleted();

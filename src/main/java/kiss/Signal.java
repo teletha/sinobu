@@ -9,8 +9,7 @@
  */
 package kiss;
 
-import static java.lang.Boolean.FALSE;
-import static java.lang.Boolean.TRUE;
+import static java.lang.Boolean.*;
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 import java.lang.reflect.UndeclaredThrowableException;
@@ -1055,7 +1054,7 @@ public final class Signal<V> {
 
                 latest.set(I.schedule(time, unit, scheduler).to(() -> {
                     latest.set(null);
-                    observer.accept(list.getAndSet(new ArrayList()));
+                    observer.accept(list.getAndSet(new ArrayList<>()));
                 }));
             }, observer::error, observer::complete, disposer);
         });

@@ -9,7 +9,7 @@
  */
 package kiss;
 
-import static java.util.concurrent.TimeUnit.*;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -242,7 +242,7 @@ class StorableTest {
          */
         @Override
         public Disposable auto() {
-            return auto(Function.identity());
+            return auto(Function.<Signal> identity());
         }
 
         /**
