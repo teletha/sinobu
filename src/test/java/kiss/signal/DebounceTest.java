@@ -42,7 +42,7 @@ class DebounceTest extends SignalTester {
 
     @Test
     void withRepeat() {
-        monitor(signal -> signal.debounce(10, ms, scheduler).skip(1).take(1).repeat());
+        monitor(signal -> signal.debounce(delay, ms, scheduler).skip(1).take(1).repeat());
 
         assert main.emit("A", "B").value();
         scheduler.await();
