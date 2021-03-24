@@ -17,7 +17,7 @@ class DebounceAllTest extends SignalTester {
 
     @Test
     void debounce() {
-        monitor(signal -> signal.debounceAll(50, ms, scheduler));
+        monitor(signal -> signal.debounceAll(delay, ms, scheduler));
 
         assert main.emit("only", "last event", "will be", "accepted").value();
         scheduler.await();
@@ -26,7 +26,7 @@ class DebounceAllTest extends SignalTester {
 
     @Test
     void interval() {
-        monitor(signal -> signal.interval(5, ms, scheduler).debounceAll(100, ms, scheduler));
+        monitor(signal -> signal.interval(5, ms, scheduler).debounceAll(delay, ms, scheduler));
 
         assert main.emit("only", "last event", "will be", "accepted").value();
         scheduler.await();
@@ -35,7 +35,7 @@ class DebounceAllTest extends SignalTester {
 
     @Test
     void error() {
-        monitor(signal -> signal.debounceAll(10, ms));
+        monitor(signal -> signal.debounceAll(delay, ms));
 
         assert main.emit("dispose by error", Error).value();
         assert main.isNotCompleted();
