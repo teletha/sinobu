@@ -9,7 +9,8 @@
  */
 package kiss;
 
-import static java.lang.Boolean.*;
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 import java.lang.reflect.UndeclaredThrowableException;
@@ -1754,7 +1755,19 @@ public final class Signal<V> {
      *         {@link Signal} obtained from this transformation.
      */
     public final <R> Signal<R> flatArray(WiseFunction<V, R[]> function) {
-        return flatMap(I.wiseF(function.andThen(I::signal)));
+        Objects.requireNonNull(function);
+
+        // There are two reasons why you should not use the following code.
+        // return flatMap(I.wiseF(function.andThen(I::signal)));
+        //
+        // One is the issue of code size. It may seem counter-intuitive, but the code size is
+        // slightly smaller when using lambda expressions. However, if you do the same for
+        // flatIterable or flatEnum, the code size will increase.
+        //
+        // The other is the type variable issue. I don't know why, but if you don't use lambda
+        // expressions, ECJ doesn't keep information about array type variables in the class file,
+        // which causes problems in runtime environments that use Jar compiled with Javac.
+        return flatMap(v -> I.signal(function.apply(v)));
     }
 
     /**
