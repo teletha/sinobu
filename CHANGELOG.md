@@ -1,5 +1,15 @@
 # Changelog
 
+### [2.2.1](https://www.github.com/Teletha/sinobu/compare/v2.2.0...v2.2.1) (2021-03-25)
+
+
+### Bug Fixes
+
+* Delay is too short. ([dc875e9](https://www.github.com/Teletha/sinobu/commit/dc875e98259dfb7cf4030285d68aae7690ecc4ec))
+* Delay is too short. ([d29a6a4](https://www.github.com/Teletha/sinobu/commit/d29a6a4603b64ab4f904f83c7ca5d41f0c207418))
+* Make codes compilable by javac. ([ffb7e9b](https://www.github.com/Teletha/sinobu/commit/ffb7e9b7141594ead92b5dead911a47bd36f61ef))
+* Signal#flatArray is invalid signature. ([8766bb4](https://www.github.com/Teletha/sinobu/commit/8766bb40f8778e073e329ff9c4bdfa1d82bbf332))
+
 ## 2.2.0 (2021-03-21)
 
 
