@@ -1069,7 +1069,7 @@ public class I {
                 try {
                     disposer.add(loadE((Class) loader.loadClass(name)));
                 } catch (Throwable e) {
-                    throw I.quiet(e);
+                    // ignore
                 }
             }
         }
