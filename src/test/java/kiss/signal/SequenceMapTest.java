@@ -94,7 +94,7 @@ class SequenceMapTest extends SignalTester {
         List<Integer> list = new ArrayList();
 
         monitor(1, Integer.class, signal -> signal
-                .sequenceMap(time -> signal(time, time + 1).delay(time, ms, scheduler).interval(50, ms, scheduler).effect(list::add)));
+                .sequenceMap(time -> signal(time, time + 1).delay(time, ms, scheduler).interval(delay, ms, scheduler).effect(list::add)));
 
         main.emit(60, 40, 20);
         scheduler.await();
