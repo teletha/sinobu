@@ -1,5 +1,12 @@
 # Changelog
 
+### [2.2.2](https://www.github.com/Teletha/sinobu/compare/v2.2.1...v2.2.2) (2021-03-28)
+
+
+### Bug Fixes
+
+* Ignore ClassNotFoundException during classpath scanning. ([27fd7b1](https://www.github.com/Teletha/sinobu/commit/27fd7b1b265a2727209ddd8a970a1049b2bbb640))
+
 ### [2.2.1](https://www.github.com/Teletha/sinobu/compare/v2.2.0...v2.2.1) (2021-03-25)
 
 
