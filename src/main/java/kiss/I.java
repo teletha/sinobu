@@ -385,7 +385,7 @@ public class I {
     }
 
     /**
-     * Merge two arrays.
+     * Get the concatenated array of two given arrays.
      * 
      * @param one An array to merge.
      * @param other An array to merge.

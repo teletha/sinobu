@@ -9,32 +9,36 @@
  */
 package kiss.core;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 
+import antibug.Sample;
 import kiss.I;
 
+@Sample
 class ArrayTest {
 
+    /**
+     * @implNote {@link I#array(Object[], Object...)}
+     */
     @Test
     void concat() {
-        assertArrayEquals(new String[] {"a", "b", "c", "d", "e"}, I.array(new String[] {"a", "b", "c"}, "d", "e"));
+        assert Arrays.equals(new String[] {"a", "b", "c", "d", "e"}, I.array(new String[] {"a", "b", "c"}, "d", "e"));
     }
 
     @Test
     void baseNull() {
-        assertArrayEquals(new String[] {"a", "b"}, I.array(null, "a", "b"));
+        assert Arrays.equals(new String[] {"a", "b"}, I.array(null, "a", "b"));
     }
 
     @Test
     void appendNull() {
-        assertArrayEquals(new String[] {"a", "b"}, I.array(new String[] {"a", "b"}, (String[]) null));
+        assert Arrays.equals(new String[] {"a", "b"}, I.array(new String[] {"a", "b"}, (String[]) null));
     }
 
     @Test
     void bothNull() {
-        assertNull(I.array(null, (String[]) null));
+        assert I.array(null, (String[]) null) == null;
     }
 }

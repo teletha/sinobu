@@ -28,11 +28,9 @@ public class Classcan {
 
     /**
      * Retrieves a list of subclasses of the given class.
-     * <p/>
      * <p>
-     * The class must be annotated with {@link Indexable} for it's subclasses to be indexed at
-     * compile-time by {@link ClassIndexProcessor}.
-     * </p>
+     * The class must be annotated with XXX for it's subclasses to be indexed at compile-time by
+     * {@link Indexer}.
      *
      * @param superClass class to find subclasses for
      * @return list of subclasses
@@ -43,11 +41,9 @@ public class Classcan {
 
     /**
      * Retrieves a list of subclasses of the given class.
-     * <p/>
      * <p>
-     * The class must be annotated with {@link Indexable} for it's subclasses to be indexed at
-     * compile-time by {@link ClassIndexProcessor}.
-     * </p>
+     * The class must be annotated with XXX for it's subclasses to be indexed at compile-time by
+     * {@link Indexer}.
      *
      * @param type class to find subclasses for
      * @param loader classloader for loading classes

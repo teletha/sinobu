@@ -417,12 +417,9 @@ class JSONTest {
     }
 
     /**
-     * <p>
      * Write JSON.
-     * </p>
      * 
      * @param texts
-     * @return
      */
     private static <M> void validate(M object, String... texts) {
         StringBuilder output = new StringBuilder();
@@ -446,9 +443,7 @@ class JSONTest {
     }
 
     /**
-     * <p>
      * Validate object by model.
-     * </p>
      * 
      * @param model
      * @param one
