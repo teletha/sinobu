@@ -23,8 +23,6 @@ import java.util.stream.IntStream;
 
 /**
  * The skeleton of DSL for tree structure.
- * 
- * @version 2018/09/10 18:38:20
  */
 public abstract class Tree<Name, Node extends Consumer<Node>> {
 
@@ -53,9 +51,7 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
     private int modifier = 31;
 
     /**
-     * <p>
      * Create tree structure DSL.
-     * </p>
      *
      * @param namedNodeBuilder A builder for special named node. {@link Tree} provides name and
      *            unique id.
@@ -66,9 +62,7 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
     }
 
     /**
-     * <p>
      * Create tree structure DSL.
-     * </p>
      *
      * @param namedNodeBuilder A builder for special named node. {@link Tree} provides name and
      *            unique id.
@@ -87,9 +81,7 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
     }
 
     /**
-     * <p>
      * Declare nodes.
-     * </p>
      * 
      * @param nodes A list of following {@link Consumer} node.
      */
@@ -98,12 +90,9 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
     }
 
     /**
-     * <p>
      * Declare node with name.
-     * </p>
      * <p>
      * Generic named node builder because named node is frequently used in tree structure.
-     * </p>
      * 
      * @param name A name of new node.
      * @param writer A content writer that lambda expression make us readable on nested structure.
@@ -113,12 +102,9 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
     }
 
     /**
-     * <p>
      * Declare node with name.
-     * </p>
      * <p>
      * Generic named node builder because named node is frequently used in tree structure.
-     * </p>
      * 
      * @param name A name of new node.
      * @param one A following node.
@@ -129,12 +115,9 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
     }
 
     /**
-     * <p>
      * Declare node with name.
-     * </p>
      * <p>
      * Generic named node builder because named node is frequently used in tree structure.
-     * </p>
      * 
      * @param name A name of new node.
      * @param one A following node.
@@ -146,12 +129,9 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
     }
 
     /**
-     * <p>
      * Declare node with name.
-     * </p>
      * <p>
      * Generic named node builder because named node is frequently used in tree structure.
-     * </p>
      * 
      * @param name A name of new node.
      * @param one A following node.
@@ -164,12 +144,9 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
     }
 
     /**
-     * <p>
      * Declare node with name.
-     * </p>
      * <p>
      * Generic named node builder because named node is frequently used in tree structure.
-     * </p>
      * 
      * @param name A name of new node.
      * @param one A following node.
@@ -183,12 +160,9 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
     }
 
     /**
-     * <p>
      * Declare node with name.
-     * </p>
      * <p>
      * Generic named node builder because named node is frequently used in tree structure.
-     * </p>
      * 
      * @param name A name of new node.
      * @param nodes A list of following {@link Consumer} node.
@@ -198,9 +172,7 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
     }
 
     /**
-     * <p>
      * Make parent-child relationship between the current node and the specified node.
-     * </p>
      * 
      * @param node A child node.
      * @param followers
@@ -233,12 +205,9 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
     }
 
     /**
-     * <p>
      * Nest-like range writer.
-     * </p>
      * <p>
      * Each item is identified by id and its object, you can receive them on node builder.
-     * </p>
      * 
      * @param size An exclusive upper bound.
      * @param writer A content writer.
@@ -250,12 +219,9 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
     }
 
     /**
-     * <p>
      * Nest-like range writer.
-     * </p>
      * <p>
      * Each item is identified by id and its object, you can receive them on node builder.
-     * </p>
      * 
      * @param startInclusive An inclusive initial value
      * @param endExclusive An exclusive upper bound.
@@ -268,12 +234,9 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
     }
 
     /**
-     * <p>
      * Nest-like collection writer.
-     * </p>
      * <p>
      * Each item is identified by id and its object, you can receive them on node builder.
-     * </p>
      * 
      * @param type A type of {@link Enum} contents.
      * @param writer A content writer.
@@ -284,12 +247,9 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
     }
 
     /**
-     * <p>
      * Nest-like collection writer.
-     * </p>
      * <p>
      * Each item is identified by id and its object, you can receive them on node builder.
-     * </p>
      * 
      * @param type A type of {@link Enum} contents.
      * @param writer A content writer.
@@ -300,12 +260,9 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
     }
 
     /**
-     * <p>
      * Nest-like collection writer.
-     * </p>
      * <p>
      * Each item is identified by id and its object, you can receive them on node builder.
-     * </p>
      * 
      * @param contents A list of child contents.
      * @param writer A content writer.
@@ -316,12 +273,9 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
     }
 
     /**
-     * <p>
      * Nest-like collection writer.
-     * </p>
      * <p>
      * Each item is identified by id and its object, you can receive them on node builder.
-     * </p>
      * 
      * @param contents A list of child contents.
      * @param writer A content writer.
@@ -332,12 +286,9 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
     }
 
     /**
-     * <p>
      * Nest-like collection writer.
-     * </p>
      * <p>
      * Each item is identified by id and its object, you can receive them on node builder.
-     * </p>
      * 
      * @param contents A list of child contents.
      * @param writer A content writer.
@@ -350,12 +301,9 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
     }
 
     /**
-     * <p>
      * Nest-like collection writer.
-     * </p>
      * <p>
      * Each item is identified by id and its object, you can receive them on node builder.
-     * </p>
      * 
      * @param contents A list of child contents.
      * @param writer A content writer.
@@ -368,12 +316,9 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
     }
 
     /**
-     * <p>
      * Nest-like collection writer.
-     * </p>
      * <p>
      * Each item is identified by id and its object, you can receive them on node builder.
-     * </p>
      * 
      * @param contents A list of child contents.
      * @param writer A content writer.
@@ -386,12 +331,9 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
     }
 
     /**
-     * <p>
      * Nest-like collection writer.
-     * </p>
      * <p>
      * Each item is identified by id and its object, you can receive them on node builder.
-     * </p>
      * 
      * @param contents A list of child contents.
      * @param writer A content writer.
@@ -417,75 +359,78 @@ public abstract class Tree<Name, Node extends Consumer<Node>> {
     }
 
     /**
-     * <p>
-     * Conditional writer.
-     * </p>
+     * Represents an 'if' statement. If the condition is true, then the 'then' clause will be
+     * executed.
      * 
-     * @param condition A condition.
-     * @param nodes A list of successible nodes.
-     * @return A declaration of contents.
+     * @param condition A conditional expression.
+     * @param then If the condition is true, it will execute the given node under the current parent
+     *            node.
+     * @return Node that performs the equivalent of an 'if' statement.
      */
-    protected final Consumer<Node> iｆ(Supplier<Boolean> condition, Consumer<Node>... success) {
-        return either(condition, I.bundle(success), null);
+    protected final Consumer<Node> iｆ(Supplier<Boolean> condition, Consumer<Node>... then) {
+        return either(condition, I.bundle(then), null);
     }
 
     /**
-     * <p>
-     * Conditional writer.
-     * </p>
+     * Represents an 'if' statement. If the condition is true, then the 'then' clause will be
+     * executed.
      * 
      * @param condition A condition.
-     * @param nodes A list of successible nodes.
-     * @return A declaration of contents.
+     * @param then If the condition is true, it will execute the given node under the current parent
+     *            node.
+     * @return Node that performs the equivalent of an 'if' statement.
      */
-    protected final Consumer<Node> iｆ(boolean condition, Consumer<Node>... success) {
-        return either(condition, success, null);
+    protected final Consumer<Node> iｆ(boolean condition, Consumer<Node>... then) {
+        return either(condition, then, null);
     }
 
     /**
-     * <p>
-     * Conditional writer.
-     * </p>
+     * Represents an 'if-else' statement. If the condition is true, then the 'then' clause will be
+     * executed. If the condition is false, then the 'else' clause will be executed.
      * 
-     * @param condition A condition.
-     * @param success A success node.
-     * @param failure A failure node.
-     * @return A declaration of contents.
+     * @param condition A conditional expression.
+     * @param then If the condition is true, it will execute the given node under the current parent
+     *            node.
+     * @param elze If the condition is false, it will execute the given node under the current
+     *            parent node.
+     * @return Node that performs the equivalent of an 'if-else' statement.
      */
-    protected final Consumer<Node> either(Supplier<Boolean> condition, Consumer<Node> success, Consumer<Node> failure) {
-        return either(condition != null && Boolean.TRUE.equals(condition.get()), success, failure);
+    protected final Consumer<Node> either(Supplier<Boolean> condition, Consumer<Node> then, Consumer<Node> elze) {
+        return either(condition != null && Boolean.TRUE.equals(condition.get()), then, elze);
     }
 
     /**
-     * <p>
-     * Conditional writer.
-     * </p>
+     * Represents an 'if-else' statement. If the condition is true, then the 'then' clause will be
+     * executed. If the condition is false, then the 'else' clause will be executed.
      * 
      * @param condition A condition.
-     * @param success A success node.
-     * @param failure A failure node.
-     * @return A declaration of contents.
+     * @param then If the condition is true, it will execute the given node under the current parent
+     *            node.
+     * @param elze If the condition is false, it will execute the given node under the current
+     *            parent node.
+     * @return Node that performs the equivalent of an 'if-else' statement.
      */
-    protected final Consumer<Node> either(boolean condition, Consumer<Node> success, Consumer<Node> failure) {
-        return either(condition, new Consumer[] {success}, failure);
+    protected final Consumer<Node> either(boolean condition, Consumer<Node> then, Consumer<Node> elze) {
+        return either(condition, new Consumer[] {then}, elze);
     }
 
     /**
-     * <p>
-     * Conditional writer.
-     * </p>
+     * Represents an 'if-else' statement. If the condition is true, then the 'then' clause will be
+     * executed. If the condition is false, then the 'else' clause will be executed.
      * 
      * @param condition A condition.
-     * @param success A success node.
-     * @param failure A failure node.
-     * @return A declaration of contents.
+     * @param then If the condition is true, it will execute the given node under the current parent
+     *            node.
+     * @param elze If the condition is false, it will execute the given node under the current
+     *            parent node.
+     * @return Node that performs the equivalent of an 'if-else' statement.
      */
-    private final Consumer<Node> either(boolean condition, Consumer<Node>[] success, Consumer<Node> failure) {
+    private final Consumer<Node> either(boolean condition, Consumer<Node>[] then, Consumer<Node> elze) {
         return current -> {
             if (condition) {
-                $(success);
+                $(then);
             } else {
-                $(failure);
+                $(elze);
             }
         };
     }

@@ -26,7 +26,7 @@ class ListModel<V> extends Model<List<V>> {
      * Create ListModel instance.
      * 
      * @param clazz A raw class.
-     * @param type A parameter class.
+     * @param types A list of parameter classes.
      * @throws IllegalArgumentException If the list model has no parameter or invalid parameter.
      */
     ListModel(Class clazz, Type[] types, Type base) {

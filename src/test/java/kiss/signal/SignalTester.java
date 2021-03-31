@@ -9,7 +9,7 @@
  */
 package kiss.signal;
 
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -717,9 +717,7 @@ public class SignalTester {
         private boolean errored;
 
         /**
-         * <p>
          * Emit the specified values to the managed {@link Signal}.
-         * </p>
          * 
          * @param values The values to emit.
          * @return A correspoding {@link Signal} log.
@@ -762,9 +760,7 @@ public class SignalTester {
         }
 
         /**
-         * <p>
          * Create new managed {@link Signal}.
-         * </p>
          * 
          * @return
          */
@@ -780,9 +776,7 @@ public class SignalTester {
         }
 
         /**
-         * <p>
          * Check whether this {@link Signal} source is completed or not.
-         * </p>
          * 
          * @return A result.
          */
@@ -791,9 +785,7 @@ public class SignalTester {
         }
 
         /**
-         * <p>
          * Check whether this {@link Signal} source is completed or not.
-         * </p>
          * 
          * @return A result.
          */
@@ -802,23 +794,21 @@ public class SignalTester {
         }
 
         /**
-         * {@inheritDoc}
+         * @return
          */
         public boolean isError() {
             return result == null ? errored : result.isError();
         }
 
         /**
-         * {@inheritDoc}
+         * @return
          */
         public boolean isNotError() {
             return result == null ? !errored : result.isNotError();
         }
 
         /**
-         * <p>
          * Check whether this {@link Signal} source is disposed or not.
-         * </p>
          * 
          * @return A result.
          */
@@ -836,9 +826,7 @@ public class SignalTester {
         }
 
         /**
-         * <p>
          * Check whether this {@link Signal} source is disposed or not.
-         * </p>
          * 
          * @return A result.
          */
@@ -847,9 +835,7 @@ public class SignalTester {
         }
 
         /**
-         * <p>
          * Dispose all managed {@link Signal}.
-         * </p>
          */
         public void dispose() {
             for (Disposable disposable : disposers) {

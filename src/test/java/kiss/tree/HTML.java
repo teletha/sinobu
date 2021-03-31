@@ -17,9 +17,6 @@ import kiss.Tree;
 import kiss.tree.TreeTest.Id;
 import kiss.tree.TreeTest.ListItem;
 
-/**
- * @version 2017/04/18 20:56:54
- */
 public abstract class HTML extends Tree<String, HTML.ElementNode> {
 
     /**
@@ -102,7 +99,7 @@ public abstract class HTML extends Tree<String, HTML.ElementNode> {
         }
 
         /**
-         * @param listItem
+         * @param item
          */
         public void add(ListItem item) {
             HTML.ElementNode e = new ElementNode("li", 0, item);

@@ -19,9 +19,6 @@ import org.junit.jupiter.api.Test;
 import kiss.Tree;
 import kiss.TreeNode;
 
-/**
- * @version 2017/02/14 16:15:35
- */
 public class TreeDiffTest {
 
     @Test
@@ -210,9 +207,7 @@ public class TreeDiffTest {
     protected static class XML extends Tree<String, XMLNode> {
 
         /**
-         * @param namedNodeBuilder
-         * @param relationshipBuilder
-         * @param uniqueKeyBuilder
+         * 
          */
         protected XML() {
             super(XMLNode::new, null);
@@ -230,22 +225,14 @@ public class TreeDiffTest {
         }
 
         /**
-         * <p>
          * Write attribute.
-         * </p>
-         * 
-         * @param name
          */
         protected Consumer<XMLNode> attr(String name, String value) {
             return context -> $(new AttributeNode(name, null));
         }
 
         /**
-         * <p>
          * Write text.
-         * </p>
-         * 
-         * @param name
          */
         protected void text(String text) {
             $(parent -> {

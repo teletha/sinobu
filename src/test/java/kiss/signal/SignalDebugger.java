@@ -55,11 +55,7 @@ class SignalDebugger {
     }
 
     /**
-     * <p>
      * Dump infomation.
-     * </p>
-     * 
-     * @return
      */
     static void dump(Object... texts) {
         StringBuilder builder = new StringBuilder();

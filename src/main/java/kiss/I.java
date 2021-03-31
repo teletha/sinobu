@@ -114,8 +114,7 @@ import kiss.model.Property;
  * <p>
  * We do not provides the functionalities related to object lifecycle through Sinobu, because we
  * believe that it is better to use functionalities equipped in Java as much as possible. For
- * example, if you want to receive initialization callbacks, it is better to use constructor. If you
- * want to receive the destruction callbacks, it is better to use {@link #finalize()} method.
+ * example, if you want to receive initialization callbacks, it is better to use constructor.
  * </p>
  * </dd>
  * <dt>Dependency Injection</dt>
@@ -501,7 +500,6 @@ public class I {
      * @param input A {@link InputStream} to read from.
      * @param output An {@link OutputStream} to write to.
      * @param close Whether input and output steream will be closed automatically or not.
-     * @throws IOException If an I/O error occurs.
      * @throws NullPointerException If the input or output is null.
      * @throws SecurityException If a security manager exists and its
      *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
@@ -527,7 +525,6 @@ public class I {
      * @param input A {@link Readable} to read from.
      * @param output An {@link Appendable} to write to.
      * @param close Whether input and output steream will be closed automatically or not.
-     * @throws IOException If an I/O error occurs.
      * @throws NullPointerException If the input or output is null.
      */
     public static void copy(Readable input, Appendable output, boolean close) {
@@ -1170,7 +1167,6 @@ public class I {
      * @throws IllegalArgumentException If the model class is non-accessible or final class.
      * @throws UnsupportedOperationException If the model class is inner-class.
      * @throws ClassCircularityError If the model has circular dependency.
-     * @throws InstantiationException If Sinobu can't instantiate(resolve) the model class.
      */
     public static <M> M make(Class<? extends M> modelClass) {
         return makeLifestyle(modelClass).get();
@@ -1243,7 +1239,6 @@ public class I {
      * @throws IllegalArgumentException If the model class is non-accessible or final class.
      * @throws UnsupportedOperationException If the model class is anonymous-class.
      * @throws ClassCircularityError If the model has circular dependency.
-     * @throws InstantiationException If Sinobu can't instantiate(resolve) the model class.
      */
     static <M> Lifestyle<M> makeLifestyle(Class<M> modelClass) {
         // Skip null check because this method can throw NullPointerException.
@@ -1515,8 +1510,6 @@ public class I {
      * });
      * </pre>
      * 
-     * @param function A recursive function.
-     * @return A created function.
      * @param function A target function to convert.
      * @return A converted recursive function.
      */
@@ -1621,7 +1614,7 @@ public class I {
      * Returns an {@link Signal} that emits a {@code 1L} after the {@code delayTime}.
      *
      * @param delayTime The delay time to wait before emitting the first value of 1L
-     * @param timeUnit the time unit for {@code delayTime}
+     * @param unit the time unit for {@code delayTime}
      * @return {@link Signal} that emits a {@code 1L} after the {@code delayTime}
      */
     public static Signal<Long> schedule(long delayTime, TimeUnit unit) {
@@ -1632,12 +1625,12 @@ public class I {
      * Returns an {@link Signal} that emits a {@code 1L} after the {@code delayTime}.
      *
      * @param delayTime The delay time to wait before emitting the first value of 1L
-     * @param timeUnit The time unit for {@code delayTime}
+     * @param unit The time unit for {@code delayTime}
      * @param scheduler The task scheduler.
      * @return {@link Signal} that emits a {@code 1L} after the {@code delayTime}
      */
-    public static Signal<Long> schedule(long delayTime, TimeUnit timeUnit, ScheduledExecutorService scheduler) {
-        return schedule(delayTime, -1, timeUnit, false, scheduler).take(1);
+    public static Signal<Long> schedule(long delayTime, TimeUnit unit, ScheduledExecutorService scheduler) {
+        return schedule(delayTime, -1, unit, false, scheduler).take(1);
     }
 
     /**
@@ -1646,12 +1639,12 @@ public class I {
      * 
      * @param delayTime The initial delay time to wait before emitting the first value of 1L
      * @param intervalTime The period of time between emissions of the subsequent numbers
-     * @param timeUnit the time unit for both {@code delayTime} and {@code intervalTime}
+     * @param unit the time unit for both {@code delayTime} and {@code intervalTime}
      * @return {@link Signal} that emits a 1L after the {@code delayTime} and ever increasing
      *         numbers after each {@code intervalTime} of time thereafter
      */
-    public static Signal<Long> schedule(long delayTime, long intervalTime, TimeUnit timeUnit, boolean fixedRate) {
-        return schedule(delayTime, intervalTime, timeUnit, fixedRate, null);
+    public static Signal<Long> schedule(long delayTime, long intervalTime, TimeUnit unit, boolean fixedRate) {
+        return schedule(delayTime, intervalTime, unit, fixedRate, null);
     }
 
     /**
@@ -1660,12 +1653,12 @@ public class I {
      * 
      * @param delayTime The initial delay time to wait before emitting the first value of 1L
      * @param intervalTime The period of time between emissions of the subsequent numbers
-     * @param timeUnit the time unit for both {@code delayTime} and {@code intervalTime}
+     * @param unit the time unit for both {@code delayTime} and {@code intervalTime}
      * @return {@link Signal} that emits a 1L after the {@code delayTime} and ever increasing
      *         numbers after each {@code intervalTime} of time thereafter
      */
-    public static Signal<Long> schedule(long delayTime, long intervalTime, TimeUnit timeUnit, boolean fixedRate, ScheduledExecutorService scheduler) {
-        return schedule(() -> delayTime, intervalTime, timeUnit, fixedRate, scheduler);
+    public static Signal<Long> schedule(long delayTime, long intervalTime, TimeUnit unit, boolean fixedRate, ScheduledExecutorService scheduler) {
+        return schedule(() -> delayTime, intervalTime, unit, fixedRate, scheduler);
     }
 
     /**
@@ -1674,12 +1667,12 @@ public class I {
      * 
      * @param delayTime The initial delay time to wait before emitting the first value of 1L
      * @param intervalTime The period of time between emissions of the subsequent numbers
-     * @param timeUnit the time unit for both {@code delayTime} and {@code intervalTime}
+     * @param unit the time unit for both {@code delayTime} and {@code intervalTime}
      * @return {@link Signal} that emits a 1L after the {@code delayTime} and ever increasing
      *         numbers after each {@code intervalTime} of time thereafter
      */
-    private static Signal<Long> schedule(LongSupplier delayTime, long intervalTime, TimeUnit timeUnit, boolean fixedRate, ScheduledExecutorService scheduler) {
-        Objects.requireNonNull(timeUnit);
+    private static Signal<Long> schedule(LongSupplier delayTime, long intervalTime, TimeUnit unit, boolean fixedRate, ScheduledExecutorService scheduler) {
+        Objects.requireNonNull(unit);
 
         return new Signal<>((observer, disposer) -> {
             long delay = delayTime.getAsLong();
@@ -1691,12 +1684,12 @@ public class I {
                 if (delay <= 0) {
                     future = CompletableFuture.runAsync(task, Runnable::run);
                 } else {
-                    future = exe.schedule(task, delay, timeUnit);
+                    future = exe.schedule(task, delay, unit);
                 }
             } else if (fixedRate) {
-                future = exe.scheduleAtFixedRate(task, delay, intervalTime, timeUnit);
+                future = exe.scheduleAtFixedRate(task, delay, intervalTime, unit);
             } else {
-                future = exe.scheduleWithFixedDelay(task, delay, intervalTime, timeUnit);
+                future = exe.scheduleWithFixedDelay(task, delay, intervalTime, unit);
             }
             return disposer.add(future);
         }).count();
@@ -1786,7 +1779,7 @@ public class I {
     /**
      * {@link Signal} the specified values.
      *
-     * @param values A list of values to emit.
+     * @param value A value to emit.
      * @return The {@link Signal} to emit sequencial values.
      */
     public static <V> Signal<V> signal(Supplier<V> value) {

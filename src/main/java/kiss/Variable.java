@@ -148,8 +148,8 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
     /**
      * Test whether the current value fulfills the specified condition or not.
      * 
-     * @param value A value to check the equality.
-     * @return A result of equality.
+     * @param condition A value validator.
+     * @return A result of validation.
      */
     public final boolean is(Predicate<V> condition) {
         return condition == null ? false : condition.test(v);
@@ -168,8 +168,8 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
     /**
      * Test whether the current value does NOT fulfill the specified condition or not.
      * 
-     * @param value A value to check the equality.
-     * @return A result of equality.
+     * @param condition A value validator.
+     * @return A result of validation.
      */
     public final boolean isNot(Predicate<V> condition) {
         return !is(condition);
@@ -213,13 +213,14 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
     }
 
     /**
-     * Perform the specified action if the value is present.
+     * If a value is present, returns the result of applying the given {@link Variable}-bearing
+     * mapping function to the value, otherwise returns an empty {@link Variable}.
      *
-     * @param action An action to perform.
+     * @param mapper The mapping function to apply to a value, if present.
      * @return The computed {@link Variable}.
      */
-    public final <R> Variable<R> flatMap(Function<V, Variable<R>> converter) {
-        return v == null || converter == null ? new Variable(null) : converter.apply(v);
+    public final <R> Variable<R> flatMap(Function<V, Variable<R>> mapper) {
+        return v == null || mapper == null ? new Variable(null) : mapper.apply(v);
     }
 
     /**

@@ -13,10 +13,8 @@ import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 
-import antibug.Sample;
 import kiss.I;
 
-@Sample
 class ArrayTest {
 
     /**

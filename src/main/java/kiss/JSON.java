@@ -559,7 +559,6 @@ public class JSON {
      * Read the specified character surely.
      * 
      * @param c The character to be red.
-     * @return A result.
      * @throws IOException
      */
     private void token(char c) throws IOException {
