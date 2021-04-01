@@ -18,7 +18,7 @@ import kiss.I;
 class ArrayTest {
 
     /**
-     * @implNote {@link I#array(Object[], Object...)}
+     * @see I#array(Object[], Object...)
      */
     @Test
     void concat() {
