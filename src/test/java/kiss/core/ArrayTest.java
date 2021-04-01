@@ -19,6 +19,9 @@ class ArrayTest {
 
     /**
      * @see I#array(Object[], Object...)
+     * @see I#bundle(Class, java.util.Collection)
+     * @see I#wiseBC(Runnable)
+     * @see I#write(Object, Appendable)
      */
     @Test
     void concat() {
