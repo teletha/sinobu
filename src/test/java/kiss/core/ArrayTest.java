@@ -28,11 +28,17 @@ class ArrayTest {
         assert Arrays.equals(new String[] {"a", "b", "c", "d", "e"}, I.array(new String[] {"a", "b", "c"}, "d", "e"));
     }
 
+    /**
+     * @see I#array(Object[], Object...)
+     */
     @Test
     void baseNull() {
         assert Arrays.equals(new String[] {"a", "b"}, I.array(null, "a", "b"));
     }
 
+    /**
+     * @see I#array(Object[], Object...)
+     */
     @Test
     void appendNull() {
         assert Arrays.equals(new String[] {"a", "b"}, I.array(new String[] {"a", "b"}, (String[]) null));
