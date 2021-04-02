@@ -384,11 +384,12 @@ public class I {
     }
 
     /**
-     * Get the concatenated array of two given arrays.
+     * Creates a new array whose elements are the concatenated elements of the two given arrays.
      * 
-     * @param one An array to merge.
-     * @param other An array to merge.
-     * @return A merged array.
+     * @param <T> Array element types.
+     * @param one Array to be concatenated at the top.
+     * @param other Array to be concatenated at the end.
+     * @return Newly created array with concatenated elements.
      */
     public static <T> T[] array(T[] one, T... other) {
         if (one == null) {
