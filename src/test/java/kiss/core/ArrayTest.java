@@ -18,13 +18,16 @@ import kiss.I;
 class ArrayTest {
 
     /**
+     * Combine two arrays (the second array is variable arguments).
+     * 
      * @see I#array(Object[], Object...)
      * @see I#bundle(Class, java.util.Collection)
      * @see I#wiseBC(Runnable)
      * @see I#write(Object, Appendable)
      */
     @Test
-    void concat() {
+    void concat_two_arrays() {
+        // Combine two arrays (the second array is variable arguments)
         assert Arrays.equals(new String[] {"a", "b", "c", "d", "e"}, I.array(new String[] {"a", "b", "c"}, "d", "e"));
     }
 
