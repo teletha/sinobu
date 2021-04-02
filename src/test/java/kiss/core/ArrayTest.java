@@ -21,18 +21,21 @@ class ArrayTest {
      * @see I#array(Object[], Object...)
      */
     @Test
-    void concat_two_arrays() {
-        assert Arrays.equals(new String[] {"a", "b", "c", "d", "e"}, I.array(new String[] {"a", "b", "c"}, "d", "e"));
+    void concatTwoArrays() {
+        String[] head = {"a", "b", "c"};
+        String[] tail = {"d", "e"};
+
+        assert Arrays.equals(I.array(head, tail), new String[] {"a", "b", "c", "d", "e"});
     }
 
     @Test
-    void baseNull() {
-        assert Arrays.equals(new String[] {"a", "b"}, I.array(null, "a", "b"));
+    void firstNull() {
+        assert Arrays.equals(I.array(null, "a", "b"), new String[] {"a", "b"});
     }
 
     @Test
-    void appendNull() {
-        assert Arrays.equals(new String[] {"a", "b"}, I.array(new String[] {"a", "b"}, (String[]) null));
+    void secondNull() {
+        assert Arrays.equals(I.array(new String[] {"a", "b"}, (String[]) null), new String[] {"a", "b"});
     }
 
     @Test
