@@ -9,28 +9,56 @@
  */
 package kiss.core;
 
+import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
 
-/**
- * @version 2016/10/28 15:17:58
- */
-public class PredicateTest {
+class PredicateTest {
 
+    /**
+     * @see I#accept()
+     */
     @Test
-    public void accept() {
+    void accept() {
         Predicate<String> accept = I.accept();
-        assert accept.test("test") == true;
+        assert accept.test("accept") == true;
+        assert accept.test("all") == true;
         assert accept.test(null) == true;
     }
 
+    /**
+     * @see I#accepţ()
+     */
     @Test
-    public void reject() {
+    void accepţ() {
+        BiPredicate<String, Integer> accept = I.accepţ();
+        assert accept.test("accept", 1) == true;
+        assert accept.test("all", -1) == true;
+        assert accept.test(null, 0) == true;
+    }
+
+    /**
+     * @see I#reject()
+     */
+    @Test
+    void reject() {
         Predicate<String> reject = I.reject();
-        assert reject.test("test") == false;
+        assert reject.test("reject") == false;
+        assert reject.test("all") == false;
         assert reject.test(null) == false;
+    }
+
+    /**
+     * @see I#rejecţ()
+     */
+    @Test
+    void rejecţ() {
+        BiPredicate<String, Integer> accept = I.rejecţ();
+        assert accept.test("reject", 1) == false;
+        assert accept.test("all", -1) == false;
+        assert accept.test(null, 0) == false;
     }
 }

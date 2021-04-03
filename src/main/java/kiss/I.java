@@ -366,26 +366,23 @@ public class I {
     }
 
     /**
-     * Create {@link Predicate} which accepts any item. It will conform to any type except primitive
-     * types depending on the context of the caller.
+     * Create a new {@link Predicate} which accepts any item. It will conform to any type except
+     * primitive types depending on the context of the caller.
      * 
-     * @param <P> You don't need to worry about it, as it is automatically determined according to
-     *            the context of the caller.
-     * @return {@link Predicate} that always returns <code>true</code>.
+     * @param <P> Don't worry about this type as it is automatically determined.
+     * @return A new created {@link Predicate} function that always returns <code>true</code>.
      */
     public static <P> Predicate<P> accept() {
         return p -> true;
     }
 
     /**
-     * Create {@link BiPredicate} which accepts any item. It will conform to any type except
+     * Create a new {@link BiPredicate} which accepts any item. It will conform to any type except
      * primitive types depending on the context of the caller.
      * 
-     * @param <P> You don't need to worry about it, as it is automatically determined according to
-     *            the context of the caller.
-     * @param <Q> You don't need to worry about it, as it is automatically determined according to
-     *            the context of the caller.
-     * @return {@link BiPredicate} that always returns <code>true</code>.
+     * @param <P> Don't worry about this type as it is automatically determined.
+     * @param <Q> Don't worry about this type as it is automatically determined.
+     * @return A new created {@link BiPredicate} function that always returns <code>true</code>.
      */
     public static <P, Q> BiPredicate<P, Q> accepţ() {
         return (p, q) -> true;
@@ -1586,26 +1583,23 @@ public class I {
     }
 
     /**
-     * Create {@link Predicate} which rejects any item. It will conform to any type except primitive
-     * types depending on the context of the caller.
+     * Create a new {@link Predicate} which rejects any item. It will conform to any type except
+     * primitive types depending on the context of the caller.
      * 
-     * @param <P> You don't need to worry about it, as it is automatically determined according to
-     *            the context of the caller.
-     * @return {@link Predicate} that always returns <code>false</code>.
+     * @param <P> Don't worry about this type as it is automatically determined.
+     * @return A new created {@link Predicate} function that always returns <code>false</code>.
      */
     public static <P> Predicate<P> reject() {
         return p -> false;
     }
 
     /**
-     * Create {@link BiPredicate} which rejects any item. It will conform to any type except
+     * Create a new {@link BiPredicate} which rejects any item. It will conform to any type except
      * primitive types depending on the context of the caller.
      * 
-     * @param <P> You don't need to worry about it, as it is automatically determined according to
-     *            the context of the caller.
-     * @param <Q> You don't need to worry about it, as it is automatically determined according to
-     *            the context of the caller.
-     * @return {@link BiPredicate} that always returns <code>false</code>.
+     * @param <P> Don't worry about this type as it is automatically determined.
+     * @param <Q> Don't worry about this type as it is automatically determined.
+     * @return A new created {@link BiPredicate} function that always returns <code>false</code>.
      */
     public static <P, Q> BiPredicate<P, Q> rejecţ() {
         return (p, q) -> false;
