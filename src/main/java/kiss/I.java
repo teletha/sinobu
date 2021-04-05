@@ -505,7 +505,10 @@ public class I {
     }
 
     /**
-     * Create the specified {@link Collection} with the specified items.
+     * Create a new {@link Collection} to hold the specified items. Basically, the type of the
+     * collection should be a real class, but if it is a {@link List}, {@link Map}, or {@link Set},
+     * the default implementation class ({@link ArrayList} , {@link HashMap}, {@link HashSet}) will
+     * be used.
      * 
      * @param type A {@link Collection} type.
      * @param items A list of itmes.
