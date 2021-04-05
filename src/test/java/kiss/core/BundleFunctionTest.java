@@ -13,39 +13,56 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
 
-/**
- * @version 2018/04/04 1:11:33
- */
 class BundleFunctionTest {
 
+    /**
+     * @see I#bundle(Object...)
+     */
     @Test
-    void function() {
-        AtomicInteger value = new AtomicInteger();
-        assert value.get() == 0;
+    void bundleRunnables() {
+        int[] value = {0};
 
-        Runnable bundled = I.bundle(runnable(() -> value.addAndGet(1)), runnable(() -> value.addAndGet(2)));
+        Runnable bundled = I.bundle(() -> value[0] += 1, () -> value[0] += 2);
         bundled.run();
-        assert value.get() == 3;
+        assert value[0] == 3;
+
+        bundled.run();
+        assert value[0] == 6;
     }
 
+    /**
+     * @see I#bundle(Object...)
+     */
     @Test
-    void functionList() {
-        AtomicInteger value = new AtomicInteger();
-        assert value.get() == 0;
+    void returnLastInterfaceResult() {
+        Function<Integer, Integer> bundled = I.bundle(x -> x + 1, y -> y + 2);
+        assert bundled.apply(10) == 12;
+    }
 
-        List<Runnable> list = I.list(runnable(() -> value.addAndGet(1)), runnable(() -> value.addAndGet(2)));
-        Runnable bundled = I.bundle(list);
+    /**
+     * @see I#bundle(Iterable)
+     */
+    @Test
+    void bundleRunnableList() {
+        int[] value = {0};
+
+        Runnable bundled = I.bundle(List.of(() -> value[0] += 1, () -> value[0] += 2));
         bundled.run();
-        assert value.get() == 3;
+        assert value[0] == 3;
+
+        bundled.run();
+        assert value[0] == 6;
     }
 
     @Test
@@ -53,7 +70,7 @@ class BundleFunctionTest {
         AtomicInteger value = new AtomicInteger();
         assert value.get() == 0;
 
-        Consumer<Integer> bundled = I.bundle(consumer(v -> value.addAndGet(v)), consumer(v -> value.addAndGet(v * 2)));
+        Consumer<Integer> bundled = I.bundle(v -> value.addAndGet(v), v -> value.addAndGet(v * 2));
         bundled.accept(10);
         assert value.get() == 30;
     }
@@ -63,46 +80,51 @@ class BundleFunctionTest {
         AtomicInteger value = new AtomicInteger();
         assert value.get() == 0;
 
-        List<Consumer<Integer>> list = I.list(consumer(v -> value.addAndGet(v)), consumer(v -> value.addAndGet(v * 2)));
+        List<Consumer<Integer>> list = I.list(v -> value.addAndGet(v), v -> value.addAndGet(v * 2));
         Consumer<Integer> bundled = I.bundle(list);
         bundled.accept(10);
         assert value.get() == 30;
     }
 
+    /**
+     * @see I#bundle(Object...)
+     */
     @Test
-    void byClass() {
+    void cantInferCommonInterface() {
         ArrayList array = new ArrayList();
         LinkedList linked = new LinkedList();
 
         assertThrows(IllegalArgumentException.class, () -> I.bundle(array, linked));
     }
 
+    /**
+     * @see I#bundle(Class, Object...)
+     */
     @Test
-    void byInterface1() {
+    void bundleList() {
         ArrayList array = new ArrayList();
         LinkedList linked = new LinkedList();
-        List bundle = I.bundle(List.class, array, linked);
-        bundle.add(10);
+
+        List bundled = I.bundle(List.class, array, linked);
+        bundled.add(10);
+
         assert array.size() == 1;
         assert linked.size() == 1;
     }
 
+    /**
+     * @see I#bundle(Class, Iterable)
+     */
     @Test
-    void byInterface2() {
-        ArrayList<String> array = new ArrayList();
-        LinkedList<String> linked = new LinkedList();
-        Collection<String> bundle = I.bundle(Collection.class, array, linked);
-        bundle.add("test");
-        assert array.size() == 1;
+    void bundleCollectionList() {
+        HashSet<Integer> set = new HashSet();
+        LinkedList<Integer> linked = new LinkedList();
+
+        Collection<Integer> bundled = I.bundle(Collection.class, set, linked);
+        bundled.add(10);
+
+        assert set.size() == 1;
         assert linked.size() == 1;
-    }
-
-    private Runnable runnable(Runnable runnable) {
-        return runnable;
-    }
-
-    private Consumer<Integer> consumer(Consumer<Integer> consumer) {
-        return consumer;
     }
 
     @Test

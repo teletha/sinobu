@@ -409,26 +409,44 @@ public class I {
     }
 
     /**
-     * Bundle all given funcitons into single function.
+     * Create a new bundled implementation of the interface common to the given objects. Calling a
+     * method of the retrieved implementation object will transparently call the same method on all
+     * the given objects. In the case of a method with a return value, the result of the last
+     * object's call will be used.
+     * <p>
+     * In situations where the compiler cannot estimate the type of the common interface, use
+     * {@link I#bundle(Class, Object...)} instead, which can specify the type.
+     * </p>
      * 
-     * @param functions A list of functions to bundle.
-     * @return A bundled function.
+     * @param <T> Interface type.
+     * @param items A set of objects that implement a common interface.
+     * @return A bundled interface.
+     * @throws IllegalArgumentException When the compiler cannot estimate the type of the common
+     *             interface.
      */
-    public static <F> F bundle(F... functions) {
-        return bundle((Class<F>) functions.getClass().getComponentType(), functions);
+    public static <T> T bundle(T... items) {
+        return bundle((Class<T>) items.getClass().getComponentType(), items);
     }
 
     /**
+     * Create a new bundled implementation of the interface common to the given objects. Calling a
+     * method of the retrieved implementation object will transparently call the same method on all
+     * the given objects. In the case of a method with a return value, the result of the last
+     * object's call will be used.
      * <p>
-     * Bundle all given funcitons into single function.
+     * In situations where the compiler cannot estimate the type of the common interface, use
+     * {@link I#bundle(Class, Iterable)} instead, which can specify the type.
      * </p>
      * 
-     * @param functions A list of functions to bundle.
-     * @return A bundled function.
+     * @param <T> Interface type.
+     * @param items A set of objects that implement a common interface.
+     * @return A bundled interface.
+     * @throws IllegalArgumentException When the compiler cannot estimate the type of the common
+     *             interface.
      */
-    public static <F> F bundle(Collection<? extends F> functions) {
+    public static <T> T bundle(Iterable<? extends T> items) {
         Set<Class> types = null;
-        Iterator<? extends F> iterator = functions.iterator();
+        Iterator<? extends T> iterator = items.iterator();
 
         if (iterator.hasNext()) {
             types = Model.collectTypes(iterator.next().getClass());
@@ -438,33 +456,41 @@ public class I {
                 types.retainAll(Model.collectTypes(iterator.next().getClass()));
             }
         }
-        return bundle((Class<F>) (types == null || types.isEmpty() ? null : types.iterator().next()), functions);
+        return bundle((Class<T>) (types == null || types.isEmpty() ? null : types.iterator().next()), items);
     }
 
     /**
-     * Bundle all given typed funcitons into single typed function.
+     * Create a new bundled implementation of the interface common to the given objects. Calling a
+     * method of the retrieved implementation object will transparently call the same method on all
+     * the given objects. In the case of a method with a return value, the result of the last
+     * object's call will be used.
      * 
-     * @param type A function type.
-     * @param functions A list of functions to bundle.
-     * @return A bundled function.
+     * @param <T> Interface type.
+     * @param type Specify the common interfaces.
+     * @param items A set of objects that implement a common interface.
+     * @return A bundled interface.
      */
-    public static <F> F bundle(Class<F> type, F... functions) {
-        return bundle(type, Arrays.asList(functions));
+    public static <T> T bundle(Class<T> type, T... items) {
+        return bundle(type, Arrays.asList(items));
     }
 
     /**
-     * Bundle all given typed funcitons into single typed function.
+     * Create a new bundled implementation of the interface common to the given objects. Calling a
+     * method of the retrieved implementation object will transparently call the same method on all
+     * the given objects. In the case of a method with a return value, the result of the last
+     * object's call will be used.
      * 
-     * @param type A function type.
-     * @param functions A list of functions to bundle.
-     * @return A bundled function.
+     * @param <T> Interface type.
+     * @param type Specify the common interfaces.
+     * @param items A set of objects that implement a common interface.
+     * @return A bundled interface.
      */
-    public static <F> F bundle(Class<F> type, Collection<? extends F> functions) {
+    public static <T> T bundle(Class<T> type, Iterable<? extends T> items) {
         return make(type, (proxy, method, args) -> {
             Object result = null;
 
-            if (functions != null) {
-                for (Object fun : functions) {
+            if (items != null) {
+                for (Object fun : items) {
                     if (fun != null) {
                         try {
                             result = method.invoke(fun, args);
