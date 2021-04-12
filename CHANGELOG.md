@@ -1,5 +1,13 @@
 # Changelog
 
+### [2.2.3](https://www.github.com/Teletha/sinobu/compare/v2.2.2...v2.2.3) (2021-04-12)
+
+
+### Bug Fixes
+
+* Delay is too short. ([6d351cb](https://www.github.com/Teletha/sinobu/commit/6d351cbc936b263e4f61f9596d24b8b3d2f3a7d4))
+* Optimize RegEx pattern. ([c3d843c](https://www.github.com/Teletha/sinobu/commit/c3d843c6fd9b098c8bb88b17fa29bbea7d8d7c19))
+
 ### [2.2.2](https://www.github.com/Teletha/sinobu/compare/v2.2.1...v2.2.2) (2021-03-28)
 
 
