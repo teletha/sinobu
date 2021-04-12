@@ -666,7 +666,21 @@ public class I {
 
                 // evaluate expression from head
                 nextExpression: for (int j = 0; j < e.length; j++) {
-                    Model m = Model.of(c);
+                    Model<Object> m = Model.of(c);
+
+                    if (e[j].equals("*")) {
+                        matcher.appendReplacement(str, "");
+                        int start = text.lastIndexOf('\n', matcher.start()) + 1;
+                        int end = text.indexOf('\n', matcher.end()) + 1;
+                        end = end == 0 ? text.length() : end;
+                        String line = text.substring(start, end).replace('*', '.');
+
+                        str.delete(str.length() - (matcher.start() - start), str.length());
+                        m.walk(c, (x, p, o) -> str.append(express(line, o)));
+                        str.delete(str.length() - (end - matcher.end()), str.length());
+
+                        continue nextPlaceholder;
+                    }
 
                     // evaluate expression by each resolvers
                     for (int k = 0; k < resolvers.length; k++) {

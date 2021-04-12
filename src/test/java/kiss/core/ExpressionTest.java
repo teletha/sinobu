@@ -204,6 +204,28 @@ class ExpressionTest {
                 """);
     }
 
+    @Test
+    void each() {
+        StringList context = new StringList();
+        context.add("one");
+        context.add("two");
+        context.add("three");
+
+        assert I.express("""
+                <ul>
+                    {items:*}
+                    <li>{.}</li>
+                    {items}
+                </ul>
+                """, context).equals("""
+                <ul>
+                    <li>one</li>
+                    <li>two</li>
+                    <li>three</li>
+                </ul>
+                """);
+    }
+
     /**
      * Shorthand to create empty {@link Context}.
      * 
