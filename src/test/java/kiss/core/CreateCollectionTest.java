@@ -9,7 +9,7 @@
  */
 package kiss.core;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -57,21 +57,27 @@ public class CreateCollectionTest {
         assert set.size() == 0;
     }
 
+    /**
+     * @see I#collect(Class, Object...)
+     */
     @Test
     public void collect() {
-        List<Integer> list = I.collect(LinkedList.class, 1, 2, 3);
-        assert list instanceof LinkedList;
+        List<Integer> list = I.collect(List.class, 1, 2, 3);
+        assert list instanceof ArrayList;
         assert list.size() == 3;
         assert list.get(0) == 1;
         assert list.get(1) == 2;
         assert list.get(2) == 3;
     }
 
+    /**
+     * @see I#collect(Class, Object...)
+     */
     @Test
-    public void collectEMpty() {
+    public void collectWithNoItem() {
         List<Integer> list = I.collect(LinkedList.class);
         assert list instanceof LinkedList;
-        assert list.size() == 0;
+        assert list.isEmpty();
     }
 
     @Test

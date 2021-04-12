@@ -11,6 +11,8 @@ package kiss.core;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Arrays;
@@ -19,30 +21,33 @@ import org.junit.jupiter.api.Test;
 
 import kiss.I;
 
-/**
- * @version 2017/03/30 22:11:54
- */
-public class CopyTest {
+class CopyTest {
 
+    /**
+     * @see I#copy(InputStream, OutputStream, boolean)
+     */
     @Test
-    public void stream() throws Exception {
-        byte[] bytes = new byte[] {0, 1, 2, 3};
+    void copyInputStream() {
+        byte[] bytes = {0, 1, 2, 3};
         ByteArrayInputStream in = new ByteArrayInputStream(bytes);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-        assert out.toByteArray().length == 0;
         I.copy(in, out, true);
+
         assert Arrays.equals(bytes, out.toByteArray());
     }
 
+    /**
+     * @see I#copy(Readable, Appendable, boolean)
+     */
     @Test
-    public void readable() throws Exception {
+    void copyReadable() {
         String value = "test";
         StringReader in = new StringReader(value);
         StringWriter out = new StringWriter();
 
-        assert out.toString().length() == 0;
         I.copy(in, out, true);
+
         assert out.toString().equals(value);
     }
 }

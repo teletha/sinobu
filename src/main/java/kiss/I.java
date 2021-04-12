@@ -217,7 +217,7 @@ public class I {
     private static final Properties env = new Properties();
 
     /** The expression placeholder syntax. */
-    private static final Pattern express = Pattern.compile("\\{([^}]+)\\}");
+    private static final Pattern express = Pattern.compile("\\{(.+?)\\}");
 
     /** The reusable http client. */
     private static final HttpClient client = HttpClient.newBuilder()
@@ -506,13 +506,17 @@ public class I {
 
     /**
      * Create a new {@link Collection} to hold the specified items. Basically, the type of the
-     * collection should be a real class, but if it is a {@link List}, {@link Map}, or {@link Set},
-     * the default implementation class ({@link ArrayList} , {@link HashMap}, {@link HashSet}) will
-     * be used.
+     * collection should be a real class, but if it is a {@link List} or {@link Set}, the default
+     * implementation class ({@link ArrayList} , {@link HashSet}) will be used.
      * 
+     * @param <T> Specify the concrete class which implements the {@link Collection}, but the
+     *            {@link List} and {@link Set} interfaces may be specified as exceptions.
+     * @param <V> The type of the {@link Collection}'s items.
      * @param type A {@link Collection} type.
      * @param items A list of itmes.
      * @return The new created {@link Collection}.
+     * @see #list(Object...)
+     * @see #set(Object...)
      */
     public static <T extends Collection<V>, V> T collect(Class<T> type, V... items) {
         T collection = I.make(type);
@@ -524,17 +528,12 @@ public class I {
     }
 
     /**
-     * <p>
-     * Note : This method closes both input and output stream carefully.
-     * </p>
-     * <p>
-     * Copy bytes from a {@link InputStream} to an {@link OutputStream}. This method buffers the
-     * input internally, so there is no need to use a buffered stream.
-     * </p>
+     * Copies data from {@link InputStream} to {@link OutputStream}. This method does the data
+     * buffering internally, so you do not need to do the buffering explicitly.
      *
-     * @param input A {@link InputStream} to read from.
-     * @param output An {@link OutputStream} to write to.
-     * @param close Whether input and output steream will be closed automatically or not.
+     * @param input {@link InputStream} to which data will be read from.
+     * @param output {@link OutputStream} to which data will be write to.
+     * @param close Whether input and output streams will be closed automatically or not.
      * @throws NullPointerException If the input or output is null.
      * @throws SecurityException If a security manager exists and its
      *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
@@ -554,12 +553,12 @@ public class I {
     }
 
     /**
-     * Copy data from a {@link Readable} to an {@link Appendable}. This method buffers the input
-     * internally, so there is no need to use a buffer.
+     * Copies data from {@link Readable} to {@link Appendable}. This method does the data buffering
+     * internally, so you do not need to do the buffering explicitly.
      *
-     * @param input A {@link Readable} to read from.
-     * @param output An {@link Appendable} to write to.
-     * @param close Whether input and output steream will be closed automatically or not.
+     * @param input {@link Readable} to which data will be read from.
+     * @param output {@link Appendable} to which data will be write to.
+     * @param close Whether input and output streams will be closed automatically or not.
      * @throws NullPointerException If the input or output is null.
      */
     public static void copy(Readable input, Appendable output, boolean close) {
@@ -583,45 +582,53 @@ public class I {
     }
 
     /**
-     * ENV resolution order (sources higher in the list take precedence over those located lower):
+     * Read environment variables based on the following priorities (sources higher in the list take
+     * precedence over those located lower).
+     *
      * <ol>
-     * <li>System.getenv()</li>
-     * <li>.env file in current working directory (might not exist)</li>
-     * <li>.env file on the classpath (might not exist)</li>
+     * <li>{@link System#getenv(String)}</li>
+     * <li>.env property file in current working directory (optional)</li>
+     * <li>.env property file on the classpath (optional)</li>
      * </ol>
      * 
-     * @param key A environment variable name.
-     * @return
+     * @param name A environment variable name.
+     * @return The value of the environment variable with the specified name, or <code>null</code>
+     *         if it does not exist.
      */
-    public static String env(String key) {
-        return env.getProperty(key);
+    public static String env(String name) {
+        return env.getProperty(name);
     }
 
     /**
-     * ENV resolution order (sources higher in the list take precedence over those located lower):
+     * Read environment variables based on the following priorities (sources higher in the list take
+     * precedence over those located lower). If the environment variable with the specified name
+     * does not exist, the value specified as the default value will be set as the new environment
+     * variable and used.
+     *
      * <ol>
-     * <li>System.getenv()</li>
-     * <li>.env file in current working directory (might not exist)</li>
-     * <li>.env file on the classpath (might not exist)</li>
+     * <li>{@link System#getenv(String)}</li>
+     * <li>.env property file in current working directory (optional)</li>
+     * <li>.env property file on the classpath (optional)</li>
      * </ol>
      * 
-     * @param key A environment variable name.
-     * @param defaults If the specified key is not found, return this default value.
-     * @return
+     * @param name A environment variable name.
+     * @param defaults If the specified name is not found, set and return this default value.
+     * @return The value of the environment variable with the specified name.
      */
-    public static String env(String key, String defaults) {
-        String value = env.getProperty(key);
+    public static String env(String name, String defaults) {
+        String value = env.getProperty(name);
         if (value == null) {
-            env.setProperty(key, value = defaults);
+            env.setProperty(name, value = defaults);
         }
         return value;
     }
 
     /**
-     * Calculate expression language in the specified text by using the given contexts.
+     * It is a very simple template engine that can calculate a string that replaces the path of a
+     * property names enclosed in "{}" with the actual value of the property.
      * 
-     * @param text A text with {some} placefolder.
-     * @param contexts A list of value contexts.
+     * @param text A text with the path of the property names enclosed in "{}".
+     * @param contexts A list of context values.
      * @return A calculated text.
      */
     public static String express(String text, Object... contexts) {
@@ -629,10 +636,11 @@ public class I {
     }
 
     /**
-     * Calculate expression language in the specified text by using the given contexts.
+     * It is a very simple template engine that can calculate a string that replaces the path of a
+     * property names enclosed in "{}" with the actual value of the property.
      * 
-     * @param text A text with {some} placefolder.
-     * @param contexts A list of value contexts.
+     * @param text A text with the path of the property names enclosed in "{}".
+     * @param contexts A list of context values.
      * @return A calculated text.
      */
     public static String express(String text, Object[] contexts, WiseTriFunction<Model, Object, String, Object>... resolvers) {

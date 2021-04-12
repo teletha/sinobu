@@ -25,42 +25,48 @@ import kiss.sample.bean.StringMap;
  */
 class ExpressionTest {
 
+    /**
+     * @see I#express(String, Object...)
+     */
     @Test
     void variable() {
-        Object context = define("item", "minimum language");
+        Object context = context("lang", "the minimum language");
 
-        assert I.express("I want {item}.", context).equals("I want minimum language.");
+        assert I.express("I want {lang}.", context).equals("I want the minimum language.");
+    }
+
+    /**
+     * @see I#express(String, Object...)
+     */
+    @Test
+    void variables() {
+        Object context = context("multiple", "All").context("variables", "values");
+
+        assert I.express("{multiple} {variables} are accepted.", context).equals("All values are accepted.");
     }
 
     @Test
     void variableNotFound() {
-        Object context = define();
+        Object context = context();
 
         assert I.express("unknown variable is {ignored}", context).equals("unknown variable is ");
     }
 
     @Test
-    void variables() {
-        Object context = define("multiple", "all").define("variable", "values");
-
-        assert I.express("{multiple} {variable} are accepted", context).equals("all values are accepted");
-    }
-
-    @Test
     void variableLocation() {
-        assert I.express("{variableOnly}", define("variableOnly", "ok")).equals("ok");
-        assert I.express("{head} is accepted", define("head", "this")).equals("this is accepted");
-        assert I.express("tail is {accepted}", define("accepted", "ok")).equals("tail is ok");
-        assert I.express("middle {is} fine too", define("is", "is")).equals("middle is fine too");
+        assert I.express("{variableOnly}", context("variableOnly", "ok")).equals("ok");
+        assert I.express("{head} is accepted", context("head", "this")).equals("this is accepted");
+        assert I.express("tail is {accepted}", context("accepted", "ok")).equals("tail is ok");
+        assert I.express("middle {is} fine too", context("is", "is")).equals("middle is fine too");
     }
 
     @Test
     void variableDescription() {
-        assert I.express("{ spaceAtHead}", define("spaceAtHead", "ok")).equals("ok");
-        assert I.express("{spaceAtTail }", define("spaceAtTail", "ok")).equals("ok");
-        assert I.express("{ space }", define("space", "ok")).equals("ok");
-        assert I.express("{\t spaceLike　}", define("spaceLike", "ok")).equals("ok");
-        assert I.express("{separator . withSpace}", define("separator", define("withSpace", "ok"))).equals("ok");
+        assert I.express("{ spaceAtHead}", context("spaceAtHead", "ok")).equals("ok");
+        assert I.express("{spaceAtTail }", context("spaceAtTail", "ok")).equals("ok");
+        assert I.express("{ space }", context("space", "ok")).equals("ok");
+        assert I.express("{\t spaceLike　}", context("spaceLike", "ok")).equals("ok");
+        assert I.express("{separator . withSpace}", context("separator", context("withSpace", "ok"))).equals("ok");
     }
 
     @Test
@@ -72,8 +78,8 @@ class ExpressionTest {
 
     @Test
     void nestedVariable() {
-        Object context = define("acceptable", $ -> {
-            $.define("value", "ok");
+        Object context = context("acceptable", $ -> {
+            $.context("value", "ok");
         });
 
         assert I.express("nested variable is {acceptable.value}", context).equals("nested variable is ok");
@@ -81,20 +87,23 @@ class ExpressionTest {
 
     @Test
     void nestedVariableNotFound() {
-        Object context = define("is", $ -> {
+        Object context = context("is", $ -> {
         });
 
         assert I.express("nested unknown variable {is.ignored}", context).equals("nested unknown variable ");
     }
 
+    /**
+     * @see I#express(String, Object...)
+     */
     @Test
-    void object() {
-        Person context = new Person();
-        context.setAge(15);
-        context.setLastName("Kahu");
-        context.setFirstName("Tino");
+    void bean() {
+        Person bean = new Person();
+        bean.setAge(15);
+        bean.setLastName("Kahu");
+        bean.setFirstName("Tino");
 
-        assert I.express("{firstName}({age}) : It's noisy.", context).equals("Tino(15) : It's noisy.");
+        assert I.express("{firstName}({age}) : It's noisy.", bean).equals("Tino(15) : It's noisy.");
     }
 
     @Test
@@ -140,8 +149,8 @@ class ExpressionTest {
 
     @Test
     void contexts() {
-        Object c1 = define("first context", "will be ignored");
-        Object c2 = define("value", "variable");
+        Object c1 = context("first context", "will be ignored");
+        Object c2 = context("value", "variable");
 
         assert I.express("{value} is not found in first context", c1, c2).equals("variable is not found in first context");
         assert I.express("{$} is not found in both contexts", c1, c2).equals(" is not found in both contexts");
@@ -149,8 +158,8 @@ class ExpressionTest {
 
     @Test
     void contextsHaveSameProperty() {
-        Object c1 = define("highPriority", "value");
-        Object c2 = define("highPriority", "unused");
+        Object c1 = context("highPriority", "value");
+        Object c2 = context("highPriority", "unused");
 
         assert I.express("first context has {highPriority}", c1, c2).equals("first context has value");
     }
@@ -165,12 +174,42 @@ class ExpressionTest {
         assert I.express("{nooo}", new Object[] {context}, (m, o, e) -> "fail").equals("fail");
     }
 
+    @Test
+    void wildcard() {
+        StringList context = new StringList();
+        context.add("one");
+        context.add("two");
+        context.add("three");
+
+        assert I.express("{*} ", context).equals("one two three ");
+    }
+
+    @Test
+    void wildcardWithLine() {
+        StringList context = new StringList();
+        context.add("one");
+        context.add("two");
+        context.add("three");
+
+        assert I.express("""
+                <ul>
+                    <li>{*}</li>
+                </ul>
+                """, context).equals("""
+                <ul>
+                    <li>one</li>
+                    <li>two</li>
+                    <li>three</li>
+                </ul>
+                """);
+    }
+
     /**
      * Shorthand to create empty {@link Context}.
      * 
      * @return
      */
-    private Context define() {
+    private Context context() {
         return new Context();
     }
 
@@ -181,8 +220,8 @@ class ExpressionTest {
      * @param value
      * @return
      */
-    private Context define(String key, Object value) {
-        return new Context().define(key, value);
+    private Context context(String key, Object value) {
+        return new Context().context(key, value);
     }
 
     /**
@@ -192,11 +231,11 @@ class ExpressionTest {
      * @param value
      * @return
      */
-    private Context define(String key, Consumer<Context> nested) {
+    private Context context(String key, Consumer<Context> nested) {
         Context nest = new Context();
         nested.accept(nest);
 
-        return new Context().define(key, nest);
+        return new Context().context(key, nest);
     }
 
     /**
@@ -205,7 +244,7 @@ class ExpressionTest {
     @SuppressWarnings("serial")
     private static class Context extends HashMap<String, Object> {
 
-        Context define(String key, Object value) {
+        Context context(String key, Object value) {
             put(key, value);
             return this;
         }
