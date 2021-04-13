@@ -584,7 +584,6 @@ public class I {
     /**
      * Read environment variables based on the following priorities (sources higher in the list take
      * precedence over those located lower).
-     *
      * <ol>
      * <li>{@link System#getenv(String)}</li>
      * <li>.env property file in current working directory (optional)</li>
@@ -604,7 +603,6 @@ public class I {
      * precedence over those located lower). If the environment variable with the specified name
      * does not exist, the value specified as the default value will be set as the new environment
      * variable and used.
-     *
      * <ol>
      * <li>{@link System#getenv(String)}</li>
      * <li>.env property file in current working directory (optional)</li>
@@ -668,17 +666,16 @@ public class I {
                 nextExpression: for (int j = 0; j < e.length; j++) {
                     Model<Object> m = Model.of(c);
 
-                    if (e[j].equals("*")) {
+                    if (e[j].charAt(0) == '*') {
                         matcher.appendReplacement(str, "");
-                        int start = text.lastIndexOf('\n', matcher.start()) + 1;
-                        int end = text.indexOf('\n', matcher.end()) + 1;
-                        end = end == 0 ? text.length() : end;
-                        String line = text.substring(start, end).replace('*', '.');
-
-                        str.delete(str.length() - (matcher.start() - start), str.length());
-                        m.walk(c, (x, p, o) -> str.append(express(line, o)));
-                        str.delete(str.length() - (end - matcher.end()), str.length());
-
+                        String name = e[j].substring(1);
+                        int index = text.lastIndexOf("{/" + name + "}");
+                        String block = text.substring(text.indexOf('\n', matcher.end()) + 1, index).stripLeading();
+                        m.walk(c, (x, p, o) -> {
+                            str.append(I.express(block, o));
+                        });
+                        str.delete(str.length() - (index - text.lastIndexOf('\n', index)), str.length());
+                        matcher.reset(text.substring(index + 3 + name.length()));
                         continue nextPlaceholder;
                     }
 

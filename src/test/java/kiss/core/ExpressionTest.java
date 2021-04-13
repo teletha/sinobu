@@ -175,17 +175,7 @@ class ExpressionTest {
     }
 
     @Test
-    void wildcard() {
-        StringList context = new StringList();
-        context.add("one");
-        context.add("two");
-        context.add("three");
-
-        assert I.express("{*} ", context).equals("one two three ");
-    }
-
-    @Test
-    void wildcardWithLine() {
+    void block() {
         StringList context = new StringList();
         context.add("one");
         context.add("two");
@@ -193,29 +183,9 @@ class ExpressionTest {
 
         assert I.express("""
                 <ul>
-                    <li>{*}</li>
-                </ul>
-                """, context).equals("""
-                <ul>
-                    <li>one</li>
-                    <li>two</li>
-                    <li>three</li>
-                </ul>
-                """);
-    }
-
-    @Test
-    void each() {
-        StringList context = new StringList();
-        context.add("one");
-        context.add("two");
-        context.add("three");
-
-        assert I.express("""
-                <ul>
-                    {items:*}
+                    {*items}
                     <li>{.}</li>
-                    {items}
+                    {/items}
                 </ul>
                 """, context).equals("""
                 <ul>
