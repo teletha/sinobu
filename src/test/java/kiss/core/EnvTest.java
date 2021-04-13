@@ -10,9 +10,12 @@
 package kiss.core;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 
 import kiss.I;
 
+@EnabledOnOs(OS.WINDOWS)
 class EnvTest {
 
     /**
