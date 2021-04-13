@@ -217,7 +217,7 @@ public class I {
     private static final Properties env = new Properties();
 
     /** The expression placeholder syntax. */
-    private static final Pattern express = Pattern.compile("\\{(.+?)\\}");
+    private static final Pattern express = Pattern.compile("([\\r\\n\s]*)\\{(.+?)\\}");
 
     /** The reusable http client. */
     private static final HttpClient client = HttpClient.newBuilder()
@@ -647,7 +647,8 @@ public class I {
             return text;
         }
 
-        resolvers = I.array(new WiseTriFunction[] {(WiseTriFunction<Model, Object, String, Object>) Model::get}, resolvers);
+        WiseTriFunction<Model, Object, String, Object>[] resolves = I
+                .array(new WiseTriFunction[] {(WiseTriFunction<Model, Object, String, Object>) Model::get}, resolvers);
 
         StringBuilder str = new StringBuilder();
 
@@ -656,7 +657,8 @@ public class I {
 
         nextPlaceholder: while (matcher.find()) {
             // normalize expression (remove all white space) and split it
-            String[] e = matcher.group(1).replaceAll("[\\s　]", "").split("\\.");
+            String w = matcher.group(1);
+            String[] e = matcher.group(2).replaceAll("[\\s　]", "").split("\\.");
 
             // evaluate each model (first model has high priority)
             nextContext: for (int i = 0; i < contexts.length; i++) {
@@ -666,22 +668,9 @@ public class I {
                 nextExpression: for (int j = 0; j < e.length; j++) {
                     Model<Object> m = Model.of(c);
 
-                    if (e[j].charAt(0) == '*') {
-                        matcher.appendReplacement(str, "");
-                        String name = e[j].substring(1);
-                        int index = text.lastIndexOf("{/" + name + "}");
-                        String block = text.substring(text.indexOf('\n', matcher.end()) + 1, index).stripLeading();
-                        m.walk(c, (x, p, o) -> {
-                            str.append(I.express(block, o));
-                        });
-                        str.delete(str.length() - (index - text.lastIndexOf('\n', index)), str.length());
-                        matcher.reset(text.substring(index + 3 + name.length()));
-                        continue nextPlaceholder;
-                    }
-
                     // evaluate expression by each resolvers
-                    for (int k = 0; k < resolvers.length; k++) {
-                        Object o = resolvers[k].apply(m, c, e[j]);
+                    for (int k = 0; k < resolves.length; k++) {
+                        Object o = resolves[k].apply(m, c, e[j]);
 
                         if (o != null) {
                             // suitable value was found, step into next expression
@@ -690,18 +679,36 @@ public class I {
                         }
                     }
 
+                    // detect special section
+                    char type = e[j].charAt(0);
+                    if (type == '#' || type == '^') {
+                        String name = e[j].substring(1);
+                        int k = text.indexOf("{/".concat(name.concat("}")), matcher.end());
+                        String sub = text.substring(matcher.end(), k).trim();
+
+                        matcher.appendReplacement(str, "");
+                        if ((c == Boolean.TRUE && type == '#') || (type == '^' && (c == Boolean.FALSE || (c instanceof List && ((List) c)
+                                .isEmpty()) || (c instanceof Map && ((Map) c).isEmpty())))) {
+                            str.append(w).append(I.express(sub, c, resolvers));
+                        } else if (type == '#') {
+                            m.walk(c, (x, p, o) -> str.append(w).append(I.express(sub, o, resolvers)));
+                        }
+                        matcher.reset(text = text.substring(k + 3 + name.length()));
+                        continue nextPlaceholder;
+                    }
+
                     // any resolver can't find suitable value, try to next context
                     continue nextContext;
                 }
 
                 // full expression was evaluated correctly, convert it to string
-                matcher.appendReplacement(str, I.transform(c, String.class));
+                matcher.appendReplacement(str, w.concat(I.transform(c, String.class)));
 
                 continue nextPlaceholder;
             }
 
             // any context can't find suitable value, so use empty text
-            matcher.appendReplacement(str, "");
+            matcher.appendReplacement(str, w);
         }
         matcher.appendTail(str);
 

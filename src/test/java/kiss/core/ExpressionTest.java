@@ -174,8 +174,11 @@ class ExpressionTest {
         assert I.express("{nooo}", new Object[] {context}, (m, o, e) -> "fail").equals("fail");
     }
 
+    /**
+     * @see I#express(String, Object...)
+     */
     @Test
-    void block() {
+    void section() {
         StringList context = new StringList();
         context.add("one");
         context.add("two");
@@ -183,7 +186,7 @@ class ExpressionTest {
 
         assert I.express("""
                 <ul>
-                    {*items}
+                    {#items}
                     <li>{.}</li>
                     {/items}
                 </ul>
@@ -197,7 +200,7 @@ class ExpressionTest {
     }
 
     @Test
-    void block2() {
+    void sectionMultiVariables() {
         Context context = context("1", c -> {
             c.context("type", "sub");
             c.context("no", "1");
@@ -208,7 +211,7 @@ class ExpressionTest {
 
         assert I.express("""
                 <ul>
-                    {*items}
+                    {#items}
                     <li>{type} {no}</li>
                     {/items}
                 </ul>
@@ -216,6 +219,143 @@ class ExpressionTest {
                 <ul>
                     <li>sub 1</li>
                     <li>sub 2</li>
+                </ul>
+                """);
+    }
+
+    @Test
+    void sectionByEmptyCollection() {
+        StringList context = new StringList();
+
+        assert I.express("""
+                <ul>
+                    {#items}
+                    <li>{.}</li>
+                    {/items}
+                </ul>
+                """, context).equals("""
+                <ul>
+                </ul>
+                """);
+    }
+
+    @Test
+    void sectionByTrue() {
+        boolean context = true;
+
+        assert I.express("""
+                <ul>
+                    {#items}
+                    <li>{.}</li>
+                    {/items}
+                </ul>
+                """, context).equals("""
+                <ul>
+                    <li>true</li>
+                </ul>
+                """);
+    }
+
+    @Test
+    void sectionByFalse() {
+        boolean context = false;
+
+        assert I.express("""
+                <ul>
+                    {#items}
+                    <li>{.}</li>
+                    {/items}
+                </ul>
+                """, context).equals("""
+                <ul>
+                </ul>
+                """);
+    }
+
+    @Test
+    void sectionInvertByList() {
+        StringList context = new StringList();
+        context.add("one");
+        context.add("two");
+        context.add("three");
+
+        assert I.express("""
+                <ul>
+                    {#items}
+                    <li>{.}</li>
+                    {/items}
+                    {^items}
+                    <li>No Items</li>
+                    {/items}
+                </ul>
+                """, context).equals("""
+                <ul>
+                    <li>one</li>
+                    <li>two</li>
+                    <li>three</li>
+                </ul>
+                """);
+    }
+
+    /**
+     * @see I#express(String, Object...)
+     */
+    @Test
+    void sectionInvertByEmptyList() {
+        StringList context = new StringList();
+
+        assert I.express("""
+                <ul>
+                    {#items}
+                    <li>{.}</li>
+                    {/items}
+                    {^items}
+                    <li>No Items</li>
+                    {/items}
+                </ul>
+                """, context).equals("""
+                <ul>
+                    <li>No Items</li>
+                </ul>
+                """);
+    }
+
+    @Test
+    void sectionInvertByTrue() {
+        boolean context = true;
+
+        assert I.express("""
+                <ul>
+                    {#items}
+                    <li>{.}</li>
+                    {/items}
+                    {^items}
+                    <li>No Items</li>
+                    {/items}
+                </ul>
+                """, context).equals("""
+                <ul>
+                    <li>true</li>
+                </ul>
+                """);
+    }
+
+    @Test
+    void sectionInvertByFalse() {
+        boolean context = false;
+
+        assert I.express("""
+                <ul>
+                    {#items}
+                    <li>{.}</li>
+                    {/items}
+                    {^items}
+                    <li>No Items</li>
+                    {/items}
+                </ul>
+                """, context).equals("""
+                <ul>
+                    <li>No Items</li>
                 </ul>
                 """);
     }
