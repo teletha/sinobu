@@ -196,6 +196,30 @@ class ExpressionTest {
                 """);
     }
 
+    @Test
+    void block2() {
+        Context context = context("1", c -> {
+            c.context("type", "sub");
+            c.context("no", "1");
+        }).context("2", c -> {
+            c.context("type", "sub");
+            c.context("no", "2");
+        });
+
+        assert I.express("""
+                <ul>
+                    {*items}
+                    <li>{type} {no}</li>
+                    {/items}
+                </ul>
+                """, context).equals("""
+                <ul>
+                    <li>sub 1</li>
+                    <li>sub 2</li>
+                </ul>
+                """);
+    }
+
     /**
      * Shorthand to create empty {@link Context}.
      * 
@@ -239,6 +263,13 @@ class ExpressionTest {
         Context context(String key, Object value) {
             put(key, value);
             return this;
+        }
+
+        Context context(String key, Consumer<Context> nested) {
+            Context nest = new Context();
+            nested.accept(nest);
+
+            return context(key, nest);
         }
     }
 }
