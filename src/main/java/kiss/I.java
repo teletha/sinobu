@@ -668,6 +668,11 @@ public class I {
                 nextExpression: for (int j = 0; j < e.length; j++) {
                     Model<Object> m = Model.of(c);
 
+                    char type = e[j].charAt(0);
+                    if (type == '#' || type == '^') {
+                        e[j] = e[j].substring(1);
+                    }
+
                     // evaluate expression by each resolvers
                     for (int k = 0; k < resolves.length; k++) {
                         Object o = resolves[k].apply(m, c, e[j]);
@@ -675,15 +680,18 @@ public class I {
                         if (o != null) {
                             // suitable value was found, step into next expression
                             c = o;
-                            continue nextExpression;
+
+                            if (type == '#' || type == '^') {
+                                break;
+                            } else {
+                                continue nextExpression;
+                            }
                         }
                     }
 
                     // detect special section
-                    char type = e[j].charAt(0);
                     if (type == '#' || type == '^') {
-                        String name = e[j].substring(1);
-                        int k = text.indexOf("{/".concat(name.concat("}")), matcher.end());
+                        int k = text.indexOf("{/".concat(e[j].concat("}")), matcher.end());
                         String sub = text.substring(matcher.end(), k).trim();
 
                         matcher.appendReplacement(str, "");
@@ -693,7 +701,7 @@ public class I {
                         } else if (type == '#') {
                             m.walk(c, (x, p, o) -> str.append(w).append(I.express(sub, o, resolvers)));
                         }
-                        matcher.reset(text = text.substring(k + 3 + name.length()));
+                        matcher.reset(text = text.substring(k + 3 + e[j].length()));
                         continue nextPlaceholder;
                     }
 

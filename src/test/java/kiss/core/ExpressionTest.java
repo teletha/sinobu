@@ -224,6 +224,32 @@ class ExpressionTest {
     }
 
     @Test
+    void sectionNest() {
+        Context context = context("root", root -> {
+            root.context("1", c -> {
+                c.context("type", "sub");
+                c.context("no", "1");
+            }).context("2", c -> {
+                c.context("type", "sub");
+                c.context("no", "2");
+            });
+        });
+
+        assert I.express("""
+                <ul>
+                    {#root}
+                    <li>{type} {no}</li>
+                    {/root}
+                </ul>
+                """, context).equals("""
+                <ul>
+                    <li>sub 1</li>
+                    <li>sub 2</li>
+                </ul>
+                """);
+    }
+
+    @Test
     void sectionByEmptyCollection() {
         StringList context = new StringList();
 
