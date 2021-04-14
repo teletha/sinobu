@@ -30,7 +30,7 @@ class ExpressionTest {
      */
     @Test
     void variable() {
-        Object context = context("lang", "the minimum language");
+        Object context = kvs("lang", "the minimum language");
 
         assert I.express("I want {lang}.", context).equals("I want the minimum language.");
     }
@@ -40,33 +40,33 @@ class ExpressionTest {
      */
     @Test
     void variables() {
-        Object context = context("multiple", "All").context("variables", "values");
+        Object context = kvs("multiple", "All").kvs("variables", "values");
 
         assert I.express("{multiple} {variables} are accepted.", context).equals("All values are accepted.");
     }
 
     @Test
     void variableNotFound() {
-        Object context = context();
+        Object context = kvs();
 
         assert I.express("unknown variable is {ignored}", context).equals("unknown variable is ");
     }
 
     @Test
     void variableLocation() {
-        assert I.express("{variableOnly}", context("variableOnly", "ok")).equals("ok");
-        assert I.express("{head} is accepted", context("head", "this")).equals("this is accepted");
-        assert I.express("tail is {accepted}", context("accepted", "ok")).equals("tail is ok");
-        assert I.express("middle {is} fine too", context("is", "is")).equals("middle is fine too");
+        assert I.express("{variableOnly}", kvs("variableOnly", "ok")).equals("ok");
+        assert I.express("{head} is accepted", kvs("head", "this")).equals("this is accepted");
+        assert I.express("tail is {accepted}", kvs("accepted", "ok")).equals("tail is ok");
+        assert I.express("middle {is} fine too", kvs("is", "is")).equals("middle is fine too");
     }
 
     @Test
     void variableDescription() {
-        assert I.express("{ spaceAtHead}", context("spaceAtHead", "ok")).equals("ok");
-        assert I.express("{spaceAtTail }", context("spaceAtTail", "ok")).equals("ok");
-        assert I.express("{ space }", context("space", "ok")).equals("ok");
-        assert I.express("{\t spaceLike　}", context("spaceLike", "ok")).equals("ok");
-        assert I.express("{separator . withSpace}", context("separator", context("withSpace", "ok"))).equals("ok");
+        assert I.express("{ spaceAtHead}", kvs("spaceAtHead", "ok")).equals("ok");
+        assert I.express("{spaceAtTail }", kvs("spaceAtTail", "ok")).equals("ok");
+        assert I.express("{ space }", kvs("space", "ok")).equals("ok");
+        assert I.express("{\t spaceLike　}", kvs("spaceLike", "ok")).equals("ok");
+        assert I.express("{separator . withSpace}", kvs("separator", kvs("withSpace", "ok"))).equals("ok");
     }
 
     @Test
@@ -78,8 +78,8 @@ class ExpressionTest {
 
     @Test
     void nestedVariable() {
-        Object context = context("acceptable", $ -> {
-            $.context("value", "ok");
+        Object context = kvs("acceptable", $ -> {
+            $.kvs("value", "ok");
         });
 
         assert I.express("nested variable is {acceptable.value}", context).equals("nested variable is ok");
@@ -87,7 +87,7 @@ class ExpressionTest {
 
     @Test
     void nestedVariableNotFound() {
-        Object context = context("is", $ -> {
+        Object context = kvs("is", $ -> {
         });
 
         assert I.express("nested unknown variable {is.ignored}", context).equals("nested unknown variable ");
@@ -149,8 +149,8 @@ class ExpressionTest {
 
     @Test
     void contexts() {
-        Object c1 = context("first context", "will be ignored");
-        Object c2 = context("value", "variable");
+        Object c1 = kvs("first context", "will be ignored");
+        Object c2 = kvs("value", "variable");
 
         assert I.express("{value} is not found in first context", c1, c2).equals("variable is not found in first context");
         assert I.express("{$} is not found in both contexts", c1, c2).equals(" is not found in both contexts");
@@ -158,8 +158,8 @@ class ExpressionTest {
 
     @Test
     void contextsHaveSameProperty() {
-        Object c1 = context("highPriority", "value");
-        Object c2 = context("highPriority", "unused");
+        Object c1 = kvs("highPriority", "value");
+        Object c2 = kvs("highPriority", "unused");
 
         assert I.express("first context has {highPriority}", c1, c2).equals("first context has value");
     }
@@ -186,9 +186,9 @@ class ExpressionTest {
 
         assert I.express("""
                 <ul>
-                    {#items}
+                    {#this}
                     <li>{.}</li>
-                    {/items}
+                    {/this}
                 </ul>
                 """, context).equals("""
                 <ul>
@@ -200,20 +200,24 @@ class ExpressionTest {
     }
 
     @Test
-    void sectionMultiVariables() {
-        Context context = context("1", c -> {
-            c.context("type", "sub");
-            c.context("no", "1");
-        }).context("2", c -> {
-            c.context("type", "sub");
-            c.context("no", "2");
+    void sectionDeep() {
+        Context context = kvs("root", root -> {
+            root.kvs("sub", sub -> {
+                sub.kvs("1", c -> {
+                    c.kvs("type", "sub");
+                    c.kvs("no", "1");
+                }).kvs("2", c -> {
+                    c.kvs("type", "sub");
+                    c.kvs("no", "2");
+                });
+            });
         });
 
         assert I.express("""
                 <ul>
-                    {#items}
+                    {#root.sub}
                     <li>{type} {no}</li>
-                    {/items}
+                    {/root.sub}
                 </ul>
                 """, context).equals("""
                 <ul>
@@ -224,22 +228,20 @@ class ExpressionTest {
     }
 
     @Test
-    void sectionNest() {
-        Context context = context("root", root -> {
-            root.context("1", c -> {
-                c.context("type", "sub");
-                c.context("no", "1");
-            }).context("2", c -> {
-                c.context("type", "sub");
-                c.context("no", "2");
-            });
+    void sectionMultiVariables() {
+        Context context = kvs("1", c -> {
+            c.kvs("type", "sub");
+            c.kvs("no", "1");
+        }).kvs("2", c -> {
+            c.kvs("type", "sub");
+            c.kvs("no", "2");
         });
 
         assert I.express("""
                 <ul>
-                    {#root}
+                    {#this}
                     <li>{type} {no}</li>
-                    {/root}
+                    {/this}
                 </ul>
                 """, context).equals("""
                 <ul>
@@ -255,9 +257,9 @@ class ExpressionTest {
 
         assert I.express("""
                 <ul>
-                    {#items}
+                    {#this}
                     <li>{.}</li>
-                    {/items}
+                    {/this}
                 </ul>
                 """, context).equals("""
                 <ul>
@@ -271,9 +273,9 @@ class ExpressionTest {
 
         assert I.express("""
                 <ul>
-                    {#items}
+                    {#this}
                     <li>{.}</li>
-                    {/items}
+                    {/this}
                 </ul>
                 """, context).equals("""
                 <ul>
@@ -288,9 +290,9 @@ class ExpressionTest {
 
         assert I.express("""
                 <ul>
-                    {#items}
+                    {#this}
                     <li>{.}</li>
-                    {/items}
+                    {/this}
                 </ul>
                 """, context).equals("""
                 <ul>
@@ -307,12 +309,12 @@ class ExpressionTest {
 
         assert I.express("""
                 <ul>
-                    {#items}
+                    {#this}
                     <li>{.}</li>
-                    {/items}
-                    {^items}
+                    {/this}
+                    {^this}
                     <li>No Items</li>
-                    {/items}
+                    {/this}
                 </ul>
                 """, context).equals("""
                 <ul>
@@ -332,12 +334,12 @@ class ExpressionTest {
 
         assert I.express("""
                 <ul>
-                    {#items}
+                    {#this}
                     <li>{.}</li>
-                    {/items}
-                    {^items}
+                    {/this}
+                    {^this}
                     <li>No Items</li>
-                    {/items}
+                    {/this}
                 </ul>
                 """, context).equals("""
                 <ul>
@@ -352,12 +354,12 @@ class ExpressionTest {
 
         assert I.express("""
                 <ul>
-                    {#items}
+                    {#this}
                     <li>{.}</li>
-                    {/items}
-                    {^items}
+                    {/this}
+                    {^this}
                     <li>No Items</li>
-                    {/items}
+                    {/this}
                 </ul>
                 """, context).equals("""
                 <ul>
@@ -372,12 +374,12 @@ class ExpressionTest {
 
         assert I.express("""
                 <ul>
-                    {#items}
+                    {#this}
                     <li>{.}</li>
-                    {/items}
-                    {^items}
+                    {/this}
+                    {^this}
                     <li>No Items</li>
-                    {/items}
+                    {/this}
                 </ul>
                 """, context).equals("""
                 <ul>
@@ -391,7 +393,7 @@ class ExpressionTest {
      * 
      * @return
      */
-    private Context context() {
+    private Context kvs() {
         return new Context();
     }
 
@@ -402,8 +404,8 @@ class ExpressionTest {
      * @param value
      * @return
      */
-    private Context context(String key, Object value) {
-        return new Context().context(key, value);
+    private Context kvs(String key, Object value) {
+        return new Context().kvs(key, value);
     }
 
     /**
@@ -413,11 +415,11 @@ class ExpressionTest {
      * @param value
      * @return
      */
-    private Context context(String key, Consumer<Context> nested) {
+    private Context kvs(String key, Consumer<Context> nested) {
         Context nest = new Context();
         nested.accept(nest);
 
-        return new Context().context(key, nest);
+        return new Context().kvs(key, nest);
     }
 
     /**
@@ -426,16 +428,16 @@ class ExpressionTest {
     @SuppressWarnings("serial")
     private static class Context extends HashMap<String, Object> {
 
-        Context context(String key, Object value) {
+        Context kvs(String key, Object value) {
             put(key, value);
             return this;
         }
 
-        Context context(String key, Consumer<Context> nested) {
+        Context kvs(String key, Consumer<Context> nested) {
             Context nest = new Context();
             nested.accept(nest);
 
-            return context(key, nest);
+            return kvs(key, nest);
         }
     }
 }

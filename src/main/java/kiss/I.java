@@ -247,9 +247,7 @@ public class I {
 
         // built-in encoders
         load(ExtensionFactory.class, Encoder.class, () -> (ExtensionFactory<Encoder>) type -> {
-            if (type.isEnum()) {
-                return (Encoder<Enum>) Enum::name;
-            }
+            if (type.isEnum()) return (Encoder<Enum>) Enum::name;
             switch (type.getName().hashCode()) {
             case -530663260: // java.lang.Class
                 return (Encoder<Class>) Class::getName;
@@ -260,9 +258,7 @@ public class I {
 
         // built-in decoders
         load(ExtensionFactory.class, Decoder.class, () -> (ExtensionFactory<Decoder>) type -> {
-            if (type.isEnum()) {
-                return value -> Enum.valueOf((Class<Enum>) type, value);
-            }
+            if (type.isEnum()) return value -> Enum.valueOf((Class<Enum>) type, value);
             switch (type.getName().hashCode()) {
             case 64711720: // boolean
             case 344809556: // java.lang.Boolean
@@ -397,11 +393,9 @@ public class I {
      * @return Newly created array with concatenated elements.
      */
     public static <T> T[] array(T[] one, T... other) {
-        if (one == null) {
+        if (one == null)
             return other == null ? null : other;
-        } else if (other == null) {
-            return one;
-        }
+        else if (other == null) return one;
 
         T[] all = Arrays.copyOf(one, one.length + other.length);
         System.arraycopy(other, 0, all, one.length, other.length);
@@ -452,9 +446,8 @@ public class I {
             types = Model.collectTypes(iterator.next().getClass());
             types.removeIf(v -> !v.isInterface());
 
-            while (iterator.hasNext()) {
+            while (iterator.hasNext())
                 types.retainAll(Model.collectTypes(iterator.next().getClass()));
-            }
         }
         return bundle((Class<T>) (types == null || types.isEmpty() ? null : types.iterator().next()), items);
     }
@@ -489,17 +482,12 @@ public class I {
         return make(type, (proxy, method, args) -> {
             Object result = null;
 
-            if (items != null) {
-                for (Object fun : items) {
-                    if (fun != null) {
-                        try {
-                            result = method.invoke(fun, args);
-                        } catch (InvocationTargetException e) {
-                            throw e.getCause();
-                        }
-                    }
+            if (items != null) for (Object fun : items)
+                if (fun != null) try {
+                    result = method.invoke(fun, args);
+                } catch (InvocationTargetException e) {
+                    throw e.getCause();
                 }
-            }
             return result;
         });
     }
@@ -521,9 +509,7 @@ public class I {
     public static <T extends Collection<V>, V> T collect(Class<T> type, V... items) {
         T collection = I.make(type);
 
-        if (items != null) {
-            collection.addAll(Arrays.asList(items));
-        }
+        if (items != null) collection.addAll(Arrays.asList(items));
         return collection;
     }
 
@@ -615,9 +601,7 @@ public class I {
      */
     public static String env(String name, String defaults) {
         String value = env.getProperty(name);
-        if (value == null) {
-            env.setProperty(name, value = defaults);
-        }
+        if (value == null) env.setProperty(name, value = defaults);
         return value;
     }
 
@@ -630,7 +614,7 @@ public class I {
      * @return A calculated text.
      */
     public static String express(String text, Object... contexts) {
-        return express(text, contexts, (WiseTriFunction[]) null);
+        return express(text, contexts, new WiseTriFunction[0]);
     }
 
     /**
@@ -643,12 +627,7 @@ public class I {
      */
     public static String express(String text, Object[] contexts, WiseTriFunction<Model, Object, String, Object>... resolvers) {
         // skip when context is empty
-        if (contexts == null || contexts.length == 0) {
-            return text;
-        }
-
-        WiseTriFunction<Model, Object, String, Object>[] resolves = I
-                .array(new WiseTriFunction[] {(WiseTriFunction<Model, Object, String, Object>) Model::get}, resolvers);
+        if (contexts == null || contexts.length == 0) return text;
 
         StringBuilder str = new StringBuilder();
 
@@ -657,66 +636,62 @@ public class I {
 
         nextPlaceholder: while (matcher.find()) {
             // normalize expression (remove all white space) and split it
-            String w = matcher.group(1);
-            String[] e = matcher.group(2).replaceAll("[\\s　]", "").split("\\.");
+            String spaces = matcher.group(1);
+            String path = matcher.group(2);
+            char type = path.charAt(0);
+            if (type == '#' || type == '^') path = path.substring(1);
+            String[] e = path.replaceAll("[\\s　]", "").split("\\.");
 
             // evaluate each model (first model has high priority)
             nextContext: for (int i = 0; i < contexts.length; i++) {
                 Object c = contexts[i];
+                Model m = Model.of(c);
 
                 // evaluate expression from head
-                nextExpression: for (int j = 0; j < e.length; j++) {
-                    Model<Object> m = Model.of(c);
+                for (int j = 0; j < e.length; j++) {
+                    // special keyword for the current context
+                    if (e[j].equals("this")) continue;
 
-                    char type = e[j].charAt(0);
-                    if (type == '#' || type == '^') {
-                        e[j] = e[j].substring(1);
-                    }
-
-                    // evaluate expression by each resolvers
-                    for (int k = 0; k < resolves.length; k++) {
-                        Object o = resolves[k].apply(m, c, e[j]);
-
-                        if (o != null) {
-                            // suitable value was found, step into next expression
-                            c = o;
-
-                            if (type == '#' || type == '^') {
+                    // evaluate expression by property named resolver
+                    Object o = m.get(c, e[j]);
+                    if (o == null) {
+                        // evaluate expression by user defined resolvers
+                        for (int k = 0; k < resolvers.length; k++) {
+                            o = resolvers[k].apply(m, c, e[j]);
+                            if (o != null) {
                                 break;
-                            } else {
-                                continue nextExpression;
                             }
                         }
+
+                        // any resolver can't find suitable value, try to next context
+                        if (o == null) continue nextContext;
                     }
 
-                    // detect special section
-                    if (type == '#' || type == '^') {
-                        int k = text.indexOf("{/".concat(e[j].concat("}")), matcher.end());
-                        String sub = text.substring(matcher.end(), k).trim();
-
-                        matcher.appendReplacement(str, "");
-                        if ((c == Boolean.TRUE && type == '#') || (type == '^' && (c == Boolean.FALSE || (c instanceof List && ((List) c)
-                                .isEmpty()) || (c instanceof Map && ((Map) c).isEmpty())))) {
-                            str.append(w).append(I.express(sub, c, resolvers));
-                        } else if (type == '#') {
-                            m.walk(c, (x, p, o) -> str.append(w).append(I.express(sub, o, resolvers)));
-                        }
-                        matcher.reset(text = text.substring(k + 3 + e[j].length()));
-                        continue nextPlaceholder;
-                    }
-
-                    // any resolver can't find suitable value, try to next context
-                    continue nextContext;
+                    // step into the next expression
+                    m = Model.of(c = o);
                 }
 
-                // full expression was evaluated correctly, convert it to string
-                matcher.appendReplacement(str, w.concat(I.transform(c, String.class)));
+                if (type == '#' || type == '^') {
+                    // handle special sections
+                    int end = text.indexOf("{/".concat(path.concat("}")), matcher.end());
+                    String sub = text.substring(matcher.end(), end).trim();
+
+                    matcher.appendReplacement(str, "");
+                    if ((c == Boolean.TRUE && type == '#') || (type == '^' && (c == Boolean.FALSE || (c instanceof List && ((List) c)
+                            .isEmpty()) || (c instanceof Map && ((Map) c).isEmpty()))))
+                        str.append(spaces).append(I.express(sub, c, resolvers));
+                    else if (type == '#') m.walk(c, (x, p, o) -> str.append(spaces).append(I.express(sub, new Object[] {o}, resolvers)));
+                    matcher.reset(text = text.substring(end + 3 + path.length()));
+                } else {
+                    // full expression was evaluated correctly, convert it to string
+                    matcher.appendReplacement(str, spaces.concat(I.transform(c, String.class)));
+                }
 
                 continue nextPlaceholder;
             }
 
             // any context can't find suitable value, so use empty text
-            matcher.appendReplacement(str, w);
+            matcher.appendReplacement(str, spaces);
         }
         matcher.appendTail(str);
 
@@ -768,16 +743,12 @@ public class I {
             // to obtain all types of extension key, we try to save computation resource by
             // performing a searc with the specified extension key at the beginning.
             Lifestyle<E> lifestyle = extensions.ⅱ.get(key);
-            if (lifestyle != null) {
-                return lifestyle.get();
-            }
+            if (lifestyle != null) return lifestyle.get();
 
             // search from extension factory
             if (extensionPoint != ExtensionFactory.class) {
                 ExtensionFactory<E> factory = find(ExtensionFactory.class, extensionPoint);
-                if (factory != null) {
-                    return factory.create(key);
-                }
+                if (factory != null) return factory.create(key);
             }
 
             // Since a search query using the extension key itself did not find any extensions, we
@@ -785,9 +756,7 @@ public class I {
             for (Class type : Model.collectTypes(key)) {
                 lifestyle = extensions.ⅱ.get(type);
 
-                if (lifestyle != null) {
-                    return lifestyle.get();
-                }
+                if (lifestyle != null) return lifestyle.get();
             }
         }
         return null;
@@ -864,42 +833,36 @@ public class I {
                     .or(I.client)
                     .sendAsync(request.build(), BodyHandlers.ofInputStream())
                     .whenComplete((res, e) -> {
-                        if (e == null) {
-                            try {
-                                if (res.statusCode() < 400) {
-                                    InputStream in = res.body();
+                        if (e == null) try {
+                            if (res.statusCode() < 400) {
+                                InputStream in = res.body();
 
-                                    // =============================================
-                                    // Decoding Phase
-                                    // =============================================
-                                    List<String> encodings = res.headers().allValues("Content-Encoding");
-                                    if (encodings.contains("gzip")) {
-                                        in = new GZIPInputStream(in);
-                                    } else if (encodings.contains("deflate")) {
-                                        in = new InflaterInputStream(in);
-                                    }
+                                // =============================================
+                                // Decoding Phase
+                                // =============================================
+                                List<String> encodings = res.headers().allValues("Content-Encoding");
+                                if (encodings.contains("gzip"))
+                                    in = new GZIPInputStream(in);
+                                else if (encodings.contains("deflate")) in = new InflaterInputStream(in);
 
-                                    // =============================================
-                                    // Materializing Phase
-                                    // =============================================
-                                    T v = (T) (type == String.class ? new String(in.readAllBytes(), StandardCharsets.UTF_8)
-                                            : type == InputStream.class ? in
-                                                    : type == HttpResponse.class ? res
-                                                            : type == XML.class ? I.xml(in) : I.json(in).as(type));
+                                // =============================================
+                                // Materializing Phase
+                                // =============================================
+                                T v = (T) (type == String.class ? new String(in.readAllBytes(), StandardCharsets.UTF_8)
+                                        : type == InputStream.class ? in
+                                                : type == HttpResponse.class ? res : type == XML.class ? I.xml(in) : I.json(in).as(type));
 
-                                    // =============================================
-                                    // Signaling Phase
-                                    // =============================================
-                                    observer.accept(v);
-                                    observer.complete();
-                                    return;
-                                } else {
-                                    e = new HttpRetryException(new String(res.body().readAllBytes(), StandardCharsets.UTF_8), res
-                                            .statusCode(), res.uri().toString());
-                                }
-                            } catch (Exception x) {
-                                e = x; // fall-through to error handling
-                            }
+                                // =============================================
+                                // Signaling Phase
+                                // =============================================
+                                observer.accept(v);
+                                observer.complete();
+                                return;
+                            } else
+                                e = new HttpRetryException(new String(res.body().readAllBytes(), StandardCharsets.UTF_8), res
+                                        .statusCode(), res.uri().toString());
+                        } catch (Exception x) {
+                            e = x; // fall-through to error handling
                         }
                         observer.error(e);
                     }));
@@ -930,9 +893,7 @@ public class I {
                     .connectTimeout(Duration.ofSeconds(15))
                     .buildAsync(URI.create(uri), sub)
                     .whenComplete((ok, e) -> {
-                        if (e != null) {
-                            observer.error(e);
-                        }
+                        if (e != null) observer.error(e);
                     }));
         });
     }
@@ -1106,10 +1067,10 @@ public class I {
             // Scan at runtime
             File file = new File(source.toURI());
 
-            if (file.isFile()) {
+            if (file.isFile())
                 // from jar file
                 names = I.signal(new ZipFile(file).entries()).map(entry -> entry.getName().replace('/', '.'));
-            } else {
+            else {
                 // from class directory
                 int prefix = file.getPath().length() + 1;
                 names = I.signal(file)
@@ -1129,16 +1090,13 @@ public class I {
         // =======================================
         Disposable disposer = Disposable.empty();
 
-        for (String name : names.toSet()) {
+        for (String name : names.toSet())
             // exclude out of the specified package
-            if (name.startsWith(pattern)) {
-                try {
-                    disposer.add(loadE((Class) loader.loadClass(name)));
-                } catch (Throwable e) {
-                    // ignore
-                }
+            if (name.startsWith(pattern)) try {
+                disposer.add(loadE((Class) loader.loadClass(name)));
+            } catch (Throwable e) {
+                // ignore
             }
-        }
         return disposer;
     }
 
@@ -1150,27 +1108,21 @@ public class I {
      */
     static <E extends Extensible> Disposable loadE(Class<E> extension) {
         // fast check : exclude non-initializable class
-        if (extension.isEnum() || extension.isAnonymousClass()) {
-            return null;
-        }
+        if (extension.isEnum() || extension.isAnonymousClass()) return null;
 
         // slow check : exclude non-extensible class
-        if (!Extensible.class.isAssignableFrom(extension)) {
-            return null;
-        }
+        if (!Extensible.class.isAssignableFrom(extension)) return null;
 
         Disposable disposer = Disposable.empty();
 
         // search and collect information for all extension points
-        for (Class<E> extensionPoint : Model.collectTypes(extension)) {
+        for (Class<E> extensionPoint : Model.collectTypes(extension))
             if (Arrays.asList(extensionPoint.getInterfaces()).contains(Extensible.class)) {
                 // register as new extension
                 Ⅱ<List<Class<E>>, Map<Class, Lifestyle<E>>> extensions = findBy(extensionPoint);
 
                 // exclude duplication
-                if (extensions.ⅰ.contains(extension)) {
-                    return null;
-                }
+                if (extensions.ⅰ.contains(extension)) return null;
 
                 // register extension
                 extensions.ⅰ.add(extension);
@@ -1202,7 +1154,6 @@ public class I {
                     }
                 }
             }
-        }
         return disposer;
     }
 
@@ -1252,9 +1203,7 @@ public class I {
         Objects.requireNonNull(type);
         Objects.requireNonNull(handler);
 
-        if (type.isInterface() == false) {
-            throw new IllegalArgumentException("Type must be interface.");
-        }
+        if (type.isInterface() == false) throw new IllegalArgumentException("Type must be interface.");
         return (T) Proxy.newProxyInstance(I.class.getClassLoader(), new Class[] {type}, handler);
     }
 
@@ -1269,27 +1218,24 @@ public class I {
     static <F> F make(Object o, Class target, Wise handler) {
         Type type = o == null ? target : Model.collectParameters(o.getClass().getInterfaces()[0], target)[0];
 
-        if (type instanceof ParameterizedType) {
-            type = ((ParameterizedType) type).getRawType();
-        }
+        if (type instanceof ParameterizedType) type = ((ParameterizedType) type).getRawType();
 
-        if (type == WiseRunnable.class) {
+        if (type == WiseRunnable.class)
             return (F) (WiseRunnable) handler::invoke;
-        } else if (type == WiseSupplier.class) {
+        else if (type == WiseSupplier.class)
             return (F) (WiseSupplier) handler::invoke;
-        } else if (type == WiseConsumer.class) {
+        else if (type == WiseConsumer.class)
             return (F) (WiseConsumer) handler::invoke;
-        } else if (type == WiseFunction.class) {
+        else if (type == WiseFunction.class)
             return (F) (WiseFunction) handler::invoke;
-        } else if (type == WiseBiConsumer.class) {
+        else if (type == WiseBiConsumer.class)
             return (F) (WiseBiConsumer) handler::invoke;
-        } else if (type == WiseBiFunction.class) {
+        else if (type == WiseBiFunction.class)
             return (F) (WiseBiFunction) handler::invoke;
-        } else if (type == WiseTriConsumer.class) {
+        else if (type == WiseTriConsumer.class)
             return (F) (WiseTriConsumer) handler::invoke;
-        } else {
+        else
             return (F) (WiseTriFunction) handler::invoke;
-        }
     }
 
     /**
@@ -1323,9 +1269,7 @@ public class I {
         // if (modelClass == null) throw new NullPointerException("NPE");
 
         // The model class have some preconditions to have to meet.
-        if (modelClass.isAnonymousClass()) {
-            throw new UnsupportedOperationException(modelClass + " is  inner class.");
-        }
+        if (modelClass.isAnonymousClass()) throw new UnsupportedOperationException(modelClass + " is  inner class.");
 
         // Construct dependency graph for the current thraed.
         Deque<Class> dependency = dependencies.get();
@@ -1342,16 +1286,15 @@ public class I {
                 Managed managed = modelClass.getAnnotation(Managed.class);
 
                 // Create new lifestyle for the actual model class
-                if (managed == null || managed.value() == Lifestyle.class) {
+                if (managed == null || managed.value() == Lifestyle.class)
                     lifestyle = I.prototype(modelClass);
-                } else {
+                else
                     lifestyle = I.make(managed.value());
-                }
             }
 
-            if (lifestyles.containsKey(modelClass)) {
+            if (lifestyles.containsKey(modelClass))
                 return lifestyles.get(modelClass);
-            } else {
+            else {
                 lifestyles.put(modelClass, lifestyle);
                 return lifestyle;
             }
@@ -1423,18 +1366,16 @@ public class I {
             if (types.length != 0) {
                 params = new Object[types.length];
 
-                for (int i = 0; i < params.length; i++) {
-                    if (types[i] == Lifestyle.class) {
+                for (int i = 0; i < params.length; i++)
+                    if (types[i] == Lifestyle.class)
                         params[i] = I.makeLifestyle((Class) Model
                                 .collectParameters(constructor.getGenericParameterTypes()[i], Lifestyle.class)[0]);
-                    } else if (types[i] == Class.class) {
+                    else if (types[i] == Class.class)
                         params[i] = I.dependencies.get().peekLast();
-                    } else if (types[i].isPrimitive()) {
+                    else if (types[i].isPrimitive())
                         params[i] = Array.get(Array.newInstance(types[i], 1), 0);
-                    } else {
+                    else
                         params[i] = I.make(types[i]);
-                    }
-                }
             }
             // create new instance
             return (M) constructor.newInstance(params);
@@ -1507,12 +1448,10 @@ public class I {
             return I.<RuntimeException> quiet(throwable);
         }
 
-        if (object instanceof AutoCloseable) {
-            try {
-                ((AutoCloseable) object).close();
-            } catch (Exception e) {
-                throw quiet(e);
-            }
+        if (object instanceof AutoCloseable) try {
+            ((AutoCloseable) object).close();
+        } catch (Exception e) {
+            throw quiet(e);
         }
 
         // API definition
@@ -1753,16 +1692,14 @@ public class I {
             ScheduledExecutorService exe = scheduler == null ? I.scheduler : scheduler;
 
             if (intervalTime <= 0) {
-                if (delay <= 0) {
+                if (delay <= 0)
                     future = CompletableFuture.runAsync(task, Runnable::run);
-                } else {
+                else
                     future = exe.schedule(task, delay, unit);
-                }
-            } else if (fixedRate) {
+            } else if (fixedRate)
                 future = exe.scheduleAtFixedRate(task, delay, intervalTime, unit);
-            } else {
+            else
                 future = exe.scheduleWithFixedDelay(task, delay, intervalTime, unit);
-            }
             return disposer.add(future);
         }).count();
     }
@@ -1798,9 +1735,8 @@ public class I {
         return schedule(() -> {
             long now = System.currentTimeMillis();
             long start = now / 86400000 * 86400000 + time.toNanoOfDay() / 1000000;
-            while (start < now) {
+            while (start < now)
                 start += unit.toMillis(interval);
-            }
             return start - now;
         }, unit.toMillis(interval), TimeUnit.MILLISECONDS, true, scheduler);
     }
@@ -1883,22 +1819,16 @@ public class I {
      * @throws NullPointerException If the output type is <code>null</code>.
      */
     public static <In, Out> Out transform(In input, Class<Out> output) {
-        if (input == null) {
-            return null;
-        }
+        if (input == null) return null;
 
         String encoded = input instanceof String ? (String) input : find(Encoder.class, input.getClass()).encode(input);
 
-        if (output == String.class) {
-            return (Out) encoded;
-        }
+        if (output == String.class) return (Out) encoded;
 
         // support abstract enum
         if (output.isAnonymousClass()) {
             Class parent = output.getEnclosingClass();
-            if (parent.isEnum()) {
-                output = parent;
-            }
+            if (parent.isEnum()) output = parent;
         }
 
         Decoder<Out> out = I.find(Decoder.class, output);
@@ -1918,17 +1848,13 @@ public class I {
         Variable<String> t = Variable.empty();
         I.Lang.observing().switchMap(lang -> {
             // First, check inline cache.
-            if ("en".equals(lang)) {
-                return I.signal(text);
-            }
+            if ("en".equals(lang)) return I.signal(text);
 
             // The next step is to check for already translated text from
             // the locally stored bundle files. Iit can help reduce translationresources.
             Subscriber<?> bundle = bundles.computeIfAbsent(lang, Subscriber::new);
             String cached = bundle.messages.get(text);
-            if (cached != null) {
-                return I.signal(cached);
-            }
+            if (cached != null) return I.signal(cached);
 
             // Perform the translation online.
             // TODO We do not want to make more than one request at the same time,
@@ -1971,13 +1897,8 @@ public class I {
      * @return The specified class.
      */
     public static Class type(String fqcn) {
-        if (fqcn.indexOf('.') == -1) {
-            for (int i = 0; i < 9; i++) {
-                if (types[i].getName().equals(fqcn)) {
-                    return types[i];
-                }
-            }
-        }
+        if (fqcn.indexOf('.') == -1) for (int i = 0; i < 9; i++)
+            if (types[i].getName().equals(fqcn)) return types[i];
 
         try {
             return Class.forName(fqcn, false, ClassLoader.getSystemClassLoader());
@@ -2186,18 +2107,11 @@ public class I {
      * @return A non-primitive {@link Class} object.
      */
     public static Class wrap(Class type) {
-        if (type == null) {
-            return Object.class;
-        }
+        if (type == null) return Object.class;
 
-        if (type.isPrimitive()) {
-            // check primitive classes
-            for (int i = 0; i < 9; i++) {
-                if (types[i] == type) {
-                    return types[i + 9];
-                }
-            }
-        }
+        if (type.isPrimitive()) // check primitive classes
+            for (int i = 0; i < 9; i++)
+            if (types[i] == type) return types[i + 9];
 
         // the specified class is not primitive
         return type;
@@ -2323,30 +2237,24 @@ public class I {
     static synchronized XML xml(Document doc, Object xml) {
         try {
             // XML related types
-            if (xml instanceof XML) {
+            if (xml instanceof XML)
                 return (XML) xml;
-            } else if (xml instanceof Node) {
-                return new XML(((Node) xml).getOwnerDocument(), list(xml));
-            }
+            else if (xml instanceof Node) return new XML(((Node) xml).getOwnerDocument(), list(xml));
 
             // byte data types
             byte[] bytes = xml instanceof String ? ((String) xml).getBytes(StandardCharsets.UTF_8) : (byte[]) xml;
-            if (6 < bytes.length && bytes[0] == '<') {
-                // doctype declaration (starts with <! )
+            if (6 < bytes.length && bytes[0] == '<') // doctype declaration (starts with <! )
                 // root element is html (starts with <html> )
-                if (bytes[1] == '!' || (bytes[1] == 'h' && bytes[2] == 't' && bytes[3] == 'm' && bytes[4] == 'l' && bytes[5] == '>')) {
+                if (bytes[1] == '!' || (bytes[1] == 'h' && bytes[2] == 't' && bytes[3] == 'm' && bytes[4] == 'l' && bytes[5] == '>'))
                     return new XML(null, null).parse(bytes, StandardCharsets.UTF_8);
-                }
-            }
 
             String value = new String(bytes, StandardCharsets.UTF_8);
 
             if (xmlLiteral.matcher(value).matches()) {
                 doc = dom.parse(new InputSource(new StringReader("<m>".concat(value.replaceAll("<\\?.+\\?>", "")).concat("</m>"))));
                 return new XML(doc, XML.convert(doc.getFirstChild().getChildNodes()));
-            } else {
+            } else
                 return xml(doc != null ? doc.createTextNode(value) : dom.newDocument().createElement(value));
-            }
         } catch (Exception e) {
             throw I.quiet(e);
         }
