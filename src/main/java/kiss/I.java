@@ -607,7 +607,8 @@ public class I {
 
     /**
      * It is a very simple template engine that can calculate a string that replaces the path of a
-     * property names enclosed in "{}" with the actual value of the property.
+     * property names enclosed in "{}" with the actual value of the property. Support
+     * <a href="https://mustache.github.io/mustache.5.html">Mustache Syntax</a> partially.
      * 
      * @param text A text with the path of the property names enclosed in "{}".
      * @param contexts A list of context values.
@@ -619,7 +620,8 @@ public class I {
 
     /**
      * It is a very simple template engine that can calculate a string that replaces the path of a
-     * property names enclosed in "{}" with the actual value of the property.
+     * property names enclosed in "{}" with the actual value of the property. Support
+     * <a href="https://mustache.github.io/mustache.5.html">Mustache Syntax</a> partially.
      * 
      * @param text A text with the path of the property names enclosed in "{}".
      * @param contexts A list of context values.
@@ -639,6 +641,10 @@ public class I {
             String spaces = matcher.group(1);
             String path = matcher.group(2).trim();
             char type = path.charAt(0);
+            if (type == '!') {
+                matcher.appendReplacement(str, "");
+                continue;
+            }
             if (type == '#' || type == '^') path = path.substring(1);
             String[] e = path.split("[\\.\\s　]+");
 

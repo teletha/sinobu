@@ -477,6 +477,14 @@ class ExpressionTest {
                 """);
     }
 
+    @Test
+    void comment() {
+        String context = "CONTEXT";
+
+        assert I.express("Ignore {!Comments begin with a bang and are ignored.} comment", context).equals("Ignore comment");
+        assert I.express("Ignore {! comment} comment {! comment }", context).equals("Ignore comment");
+    }
+
     /** The context stack manager. */
     private static ThreadLocal<Deque<KVS>> context = ThreadLocal.withInitial(ArrayDeque::new);
 
