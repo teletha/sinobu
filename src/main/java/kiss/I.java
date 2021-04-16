@@ -637,10 +637,10 @@ public class I {
         nextPlaceholder: while (matcher.find()) {
             // normalize expression (remove all white space) and split it
             String spaces = matcher.group(1);
-            String path = matcher.group(2);
+            String path = matcher.group(2).trim();
             char type = path.charAt(0);
             if (type == '#' || type == '^') path = path.substring(1);
-            String[] e = path.replaceAll("[\\s　]", "").split("\\.");
+            String[] e = path.split("[\\.\\s　]+");
 
             // evaluate each model (first model has high priority)
             nextContext: for (int i = 0; i < contexts.length; i++) {
@@ -671,16 +671,28 @@ public class I {
                     m = Model.of(c = o);
                 }
 
+                // handle special sections
                 if (type == '#' || type == '^') {
-                    // handle special sections
-                    int end = text.indexOf("{/".concat(path.concat("}")), matcher.end());
-                    String sub = text.substring(matcher.end(), end).trim();
+                    // skip the nested sections
+                    int count = 1;
+                    int end = 0;
+                    Matcher tag = Pattern.compile("(\\{[#/^]" + path + "\\})").matcher(text.substring(matcher.end()));
+                    while (tag.find()) {
+                        count += tag.group().charAt(1) == '/' ? -1 : 1;
+                        if (count == 0) {
+                            end = matcher.end() + tag.start();
+                            break;
+                        }
+                    }
+
+                    // extract the target section
+                    String sec = text.substring(matcher.end(), end).trim();
 
                     matcher.appendReplacement(str, "");
                     if ((c == Boolean.TRUE && type == '#') || (type == '^' && (c == Boolean.FALSE || (c instanceof List && ((List) c)
                             .isEmpty()) || (c instanceof Map && ((Map) c).isEmpty()))))
-                        str.append(spaces).append(I.express(sub, c, resolvers));
-                    else if (type == '#') m.walk(c, (x, p, o) -> str.append(spaces).append(I.express(sub, new Object[] {o}, resolvers)));
+                        str.append(spaces).append(I.express(sec, c, resolvers));
+                    else if (type == '#') m.walk(c, (x, p, o) -> str.append(spaces).append(I.express(sec, new Object[] {o}, resolvers)));
                     matcher.reset(text = text.substring(end + 3 + path.length()));
                 } else {
                     // full expression was evaluated correctly, convert it to string

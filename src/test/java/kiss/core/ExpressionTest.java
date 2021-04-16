@@ -9,9 +9,12 @@
  */
 package kiss.core;
 
+import java.util.ArrayDeque;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.function.Consumer;
+import java.util.Deque;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
@@ -30,43 +33,40 @@ class ExpressionTest {
      */
     @Test
     void variable() {
-        Object context = kvs("lang", "the minimum language");
+        KVS context = $("lang", "the minimum language");
 
         assert I.express("I want {lang}.", context).equals("I want the minimum language.");
     }
 
-    /**
-     * @see I#express(String, Object...)
-     */
     @Test
     void variables() {
-        Object context = kvs("multiple", "All").kvs("variables", "values");
+        KVS context = $("multiple", "All").$("variables", "values");
 
         assert I.express("{multiple} {variables} are accepted.", context).equals("All values are accepted.");
     }
 
     @Test
     void variableNotFound() {
-        Object context = kvs();
+        KVS context = new KVS();
 
         assert I.express("unknown variable is {ignored}", context).equals("unknown variable is ");
     }
 
     @Test
     void variableLocation() {
-        assert I.express("{variableOnly}", kvs("variableOnly", "ok")).equals("ok");
-        assert I.express("{head} is accepted", kvs("head", "this")).equals("this is accepted");
-        assert I.express("tail is {accepted}", kvs("accepted", "ok")).equals("tail is ok");
-        assert I.express("middle {is} fine too", kvs("is", "is")).equals("middle is fine too");
+        assert I.express("{variableOnly}", $("variableOnly", "ok")).equals("ok");
+        assert I.express("{head} is accepted", $("head", "this")).equals("this is accepted");
+        assert I.express("tail is {accepted}", $("accepted", "ok")).equals("tail is ok");
+        assert I.express("middle {is} fine too", $("is", "is")).equals("middle is fine too");
     }
 
     @Test
     void variableDescription() {
-        assert I.express("{ spaceAtHead}", kvs("spaceAtHead", "ok")).equals("ok");
-        assert I.express("{spaceAtTail }", kvs("spaceAtTail", "ok")).equals("ok");
-        assert I.express("{ space }", kvs("space", "ok")).equals("ok");
-        assert I.express("{\t spaceLike　}", kvs("spaceLike", "ok")).equals("ok");
-        assert I.express("{separator . withSpace}", kvs("separator", kvs("withSpace", "ok"))).equals("ok");
+        assert I.express("{ spaceAtHead}", $("spaceAtHead", "ok")).equals("ok");
+        assert I.express("{spaceAtTail }", $("spaceAtTail", "ok")).equals("ok");
+        assert I.express("{ space }", $("space", "ok")).equals("ok");
+        assert I.express("{\t spaceLike　}", $("spaceLike", "ok")).equals("ok");
+        assert I.express("{separator . withSpace}", $("separator", () -> $("withSpace", "ok"))).equals("ok");
     }
 
     @Test
@@ -78,8 +78,8 @@ class ExpressionTest {
 
     @Test
     void nestedVariable() {
-        Object context = kvs("acceptable", $ -> {
-            $.kvs("value", "ok");
+        Object context = $("acceptable", () -> {
+            $("value", "ok");
         });
 
         assert I.express("nested variable is {acceptable.value}", context).equals("nested variable is ok");
@@ -87,7 +87,7 @@ class ExpressionTest {
 
     @Test
     void nestedVariableNotFound() {
-        Object context = kvs("is", $ -> {
+        Object context = $("is", () -> {
         });
 
         assert I.express("nested unknown variable {is.ignored}", context).equals("nested unknown variable ");
@@ -149,8 +149,8 @@ class ExpressionTest {
 
     @Test
     void contexts() {
-        Object c1 = kvs("first context", "will be ignored");
-        Object c2 = kvs("value", "variable");
+        Object c1 = $("first context", "will be ignored");
+        Object c2 = $("value", "variable");
 
         assert I.express("{value} is not found in first context", c1, c2).equals("variable is not found in first context");
         assert I.express("{$} is not found in both contexts", c1, c2).equals(" is not found in both contexts");
@@ -158,8 +158,8 @@ class ExpressionTest {
 
     @Test
     void contextsHaveSameProperty() {
-        Object c1 = kvs("highPriority", "value");
-        Object c2 = kvs("highPriority", "unused");
+        Object c1 = $("highPriority", "value");
+        Object c2 = $("highPriority", "unused");
 
         assert I.express("first context has {highPriority}", c1, c2).equals("first context has value");
     }
@@ -201,14 +201,15 @@ class ExpressionTest {
 
     @Test
     void sectionDeep() {
-        Context context = kvs("root", root -> {
-            root.kvs("sub", sub -> {
-                sub.kvs("1", c -> {
-                    c.kvs("type", "sub");
-                    c.kvs("no", "1");
-                }).kvs("2", c -> {
-                    c.kvs("type", "sub");
-                    c.kvs("no", "2");
+        KVS context = $("root", () -> {
+            $("sub", () -> {
+                $("item1", () -> {
+                    $("type", "sub");
+                    $("no", "1");
+                });
+                $("item2", () -> {
+                    $("type", "sub");
+                    $("no", "2");
                 });
             });
         });
@@ -228,76 +229,164 @@ class ExpressionTest {
     }
 
     @Test
-    void sectionMultiVariables() {
-        Context context = kvs("1", c -> {
-            c.kvs("type", "sub");
-            c.kvs("no", "1");
-        }).kvs("2", c -> {
-            c.kvs("type", "sub");
-            c.kvs("no", "2");
+    void sectionNest() {
+        KVS context = $("root1", () -> {
+            $("item1", () -> {
+                $("type", "item");
+                $("no", "1");
+            });
+            $("item2", () -> {
+                $("type", "item");
+                $("no", "2");
+            });
+        }).$("root2", () -> {
+            $("item3", () -> {
+                $("type", "item");
+                $("no", "3");
+            });
+            $("item4", () -> {
+                $("type", "item");
+                $("no", "4");
+            });
+        });
+
+        assert I.express("""
+                <div>
+                    {#this}
+                    <ol>
+                        {#this}
+                        <li>{type} {no}</li>
+                        {/this}
+                    </ol>
+                    {/this}
+                </div>
+                """, context).equals("""
+                <div>
+                    <ol>
+                        <li>item 1</li>
+                        <li>item 2</li>
+                    </ol>
+                    <ol>
+                        <li>item 3</li>
+                        <li>item 4</li>
+                    </ol>
+                </div>
+                """);
+    }
+
+    @Test
+    void sectionNestWithInvert() {
+        KVS context = $("root1", () -> {
+            $("item1", () -> {
+                $("type", "item");
+                $("no", "1");
+            });
+            $("item2", () -> {
+                $("type", "item");
+                $("no", "2");
+            });
+        }).$("root2", () -> {
+            $("item3", () -> {
+                $("type", "item");
+                $("no", "3");
+            });
+            $("item4", () -> {
+                $("type", "item");
+                $("no", "4");
+            });
+        });
+
+        assert I.express("""
+                <div>
+                    {#this}
+                    <ol>
+                        {#this}
+                        <li>{type} {no}</li>
+                        {/this}
+                        {^this}
+                        <li>No Item</li>
+                        {/this}
+                    </ol>
+                    {/this}
+                </div>
+                """, context).equals("""
+                <div>
+                    <ol>
+                        <li>item 1</li>
+                        <li>item 2</li>
+                    </ol>
+                    <ol>
+                        <li>item 3</li>
+                        <li>item 4</li>
+                    </ol>
+                </div>
+                """);
+    }
+
+    @Test
+    void sectionMultiple() {
+        KVS context = $("root", () -> {
+            $("item1", () -> {
+                $("type", "sub");
+                $("no", "1");
+            });
+            $("item2", () -> {
+                $("type", "sub");
+                $("no", "2");
+            });
         });
 
         assert I.express("""
                 <ul>
-                    {#this}
+                    {#root}
                     <li>{type} {no}</li>
-                    {/this}
+                    {/root}
+                    {#root}
+                    <li>item {no}</li>
+                    {/root}
                 </ul>
                 """, context).equals("""
                 <ul>
                     <li>sub 1</li>
                     <li>sub 2</li>
+                    <li>item 1</li>
+                    <li>item 2</li>
                 </ul>
                 """);
     }
 
+    /**
+     * @see I#express(String, Object...)
+     */
     @Test
-    void sectionByEmptyCollection() {
-        StringList context = new StringList();
+    void sectionByEmptyList() {
+        List context = Collections.emptyList();
 
-        assert I.express("""
-                <ul>
-                    {#this}
-                    <li>{.}</li>
-                    {/this}
-                </ul>
-                """, context).equals("""
-                <ul>
-                </ul>
-                """);
+        assert I.express("{#this}The text here will not be output.{/this}", context).equals("");
+    }
+
+    @Test
+    void sectionByEmptyMap() {
+        Map context = Collections.emptyMap();
+
+        assert I.express("{#this}The text here will not be output.{/this}", context).equals("");
     }
 
     @Test
     void sectionByTrue() {
         boolean context = true;
 
-        assert I.express("""
-                <ul>
-                    {#this}
-                    <li>{.}</li>
-                    {/this}
-                </ul>
-                """, context).equals("""
-                <ul>
-                    <li>true</li>
-                </ul>
-                """);
+        assert I.express("{#this}The text here will be output.{/this}", context).equals("The text here will be output.");
     }
 
+    /**
+     * @see I#express(String, Object...)
+     */
     @Test
     void sectionByFalse() {
         boolean context = false;
 
-        assert I.express("""
-                <ul>
-                    {#this}
-                    <li>{.}</li>
-                    {/this}
-                </ul>
-                """, context).equals("""
-                <ul>
-                </ul>
-                """);
+        assert I.express("{#this}The text here will not be output.{/this}", context).equals("");
     }
 
     @Test
@@ -388,56 +477,68 @@ class ExpressionTest {
                 """);
     }
 
-    /**
-     * Shorthand to create empty {@link Context}.
-     * 
-     * @return
-     */
-    private Context kvs() {
-        return new Context();
-    }
+    /** The context stack manager. */
+    private static ThreadLocal<Deque<KVS>> context = ThreadLocal.withInitial(ArrayDeque::new);
 
     /**
-     * Shorthand to create {@link Context}.
+     * Set String value.
      * 
      * @param key
      * @param value
-     * @return
      */
-    private Context kvs(String key, Object value) {
-        return new Context().kvs(key, value);
+    private static KVS $(String key, String value) {
+        KVS latest = context.get().peekLast();
+        if (latest == null) {
+            latest = new KVS();
+        }
+        latest.put(key, value);
+        return latest;
     }
 
     /**
-     * Shorthand to create {@link Context}.
+     * Set the nested Map.
      * 
      * @param key
-     * @param value
+     * @param inner
      * @return
      */
-    private Context kvs(String key, Consumer<Context> nested) {
-        Context nest = new Context();
-        nested.accept(nest);
+    private static KVS $(String key, Runnable inner) {
+        Deque<KVS> deque = context.get();
+        KVS latest = deque.peekLast();
+        if (latest == null) {
+            latest = new KVS();
+        }
 
-        return new Context().kvs(key, nest);
+        KVS child = new KVS();
+        latest.put(key, child);
+
+        deque.addLast(child);
+        inner.run();
+        deque.removeLast();
+
+        return latest;
     }
 
     /**
      * 
      */
     @SuppressWarnings("serial")
-    private static class Context extends HashMap<String, Object> {
+    private static class KVS extends LinkedHashMap<String, Object> {
 
-        Context kvs(String key, Object value) {
+        private KVS $(String key, String value) {
             put(key, value);
             return this;
         }
 
-        Context kvs(String key, Consumer<Context> nested) {
-            Context nest = new Context();
-            nested.accept(nest);
+        private KVS $(String key, Runnable inner) {
+            KVS child = new KVS();
+            put(key, child);
 
-            return kvs(key, nest);
+            Deque<KVS> deque = context.get();
+            deque.addLast(child);
+            inner.run();
+            deque.removeLast();
+            return this;
         }
     }
 }
