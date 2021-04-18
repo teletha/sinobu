@@ -10,6 +10,7 @@
 package kiss.core;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.LinkedHashMap;
@@ -20,7 +21,6 @@ import org.junit.jupiter.api.Test;
 
 import kiss.I;
 import kiss.sample.bean.Person;
-import kiss.sample.bean.StringList;
 import kiss.sample.bean.StringMap;
 
 /**
@@ -108,10 +108,7 @@ class ExpressionTest {
 
     @Test
     void list() {
-        StringList context = new StringList();
-        context.add("one");
-        context.add("two");
-        context.add("three");
+        List context = List.of("one", "two", "three");
 
         assert I.express("{0} {1} {2}", context).equals("one two three");
     }
@@ -128,7 +125,7 @@ class ExpressionTest {
 
     @Test
     void method() {
-        StringList context = new StringList();
+        List context = new ArrayList();
         context.add("one");
         context.add("two");
         context.add("three");
@@ -139,10 +136,7 @@ class ExpressionTest {
 
     @Test
     void methodNotFound() {
-        StringList context = new StringList();
-        context.add("one");
-        context.add("two");
-        context.add("three");
+        List context = List.of("one", "two", "three");
 
         assert I.express("unknown method is {ignored}", context).equals("unknown method is ");
     }
@@ -179,10 +173,7 @@ class ExpressionTest {
      */
     @Test
     void section() {
-        StringList context = new StringList();
-        context.add("one");
-        context.add("two");
-        context.add("three");
+        List context = List.of("one", "two", "three");
 
         assert I.express("""
                 <ul>
@@ -391,10 +382,7 @@ class ExpressionTest {
 
     @Test
     void sectionInvertByList() {
-        StringList context = new StringList();
-        context.add("one");
-        context.add("two");
-        context.add("three");
+        List context = List.of("one", "two", "three");
 
         assert I.express("""
                 <ul>
@@ -419,7 +407,7 @@ class ExpressionTest {
      */
     @Test
     void sectionInvertByEmptyList() {
-        StringList context = new StringList();
+        List context = Collections.emptyList();
 
         assert I.express("""
                 <ul>
