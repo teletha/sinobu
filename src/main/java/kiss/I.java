@@ -816,8 +816,22 @@ public class I {
     }
 
     /**
-     * Obtain a {@link Signal} to request a resource by HTTP(S). If the request is successful, the
-     * content is converted to the specified type before it is sent.
+     * Gets the response from the specified URL (including https), converting it to the specified
+     * type. Supported types are as follows:
+     * <ul>
+     * <li>{@link String}</li>
+     * <li>{@link InputStream}</li>
+     * <li>{@link HttpResponse}</li>
+     * <li>{@link XML}</li>
+     * <li>{@link JSON}</li>
+     * <li>Any types that can be mapped from JSON</li>
+     * </ul>
+     * <p>
+     * It will check the Content-Encoding header and automatically decompress the body if it is
+     * compressed with gzip or deflate. HTTP communication by this method is done asynchronously. It
+     * is possible to process it synchronously by calling the return value's
+     * {@link Signal#waitForTerminate()}.
+     * </p>
      * 
      * @param <T> {@link String}, {@link InputStream}, {@link HttpResponse}, {@link XML}, or your
      *            bean class
@@ -833,7 +847,22 @@ public class I {
     }
 
     /**
-     * Obtain a {@link Signal} to request a resource by HTTP(S).
+     * Gets the response from the specified URL (including https), converting it to the specified
+     * type. Supported types are as follows:
+     * <ul>
+     * <li>{@link String}</li>
+     * <li>{@link InputStream}</li>
+     * <li>{@link HttpResponse}</li>
+     * <li>{@link XML}</li>
+     * <li>{@link JSON}</li>
+     * <li>Any types that can be mapped from JSON</li>
+     * </ul>
+     * <p>
+     * It will check the Content-Encoding header and automatically decompress the body if it is
+     * compressed with gzip or deflate. HTTP communication by this method is done asynchronously. It
+     * is possible to process it synchronously by calling the return value's
+     * {@link Signal#waitForTerminate()}.
+     * </p>
      * 
      * @param <T> {@link String}, {@link InputStream}, {@link HttpResponse}, {@link XML}, or your
      *            bean class

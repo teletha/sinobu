@@ -30,7 +30,7 @@ import kiss.XML;
 
 class HTTPTest {
 
-    HttpClientMock client = new HttpClientMock();
+    HttpClientMock httpClientMock = new HttpClientMock();
 
     /**
      * Unescape the special characters.
@@ -42,56 +42,68 @@ class HTTPTest {
         return json.replace('\'', '"');
     }
 
+    /**
+     * @see I#http(String, Class, HttpClient...)
+     */
     @Test
-    void httpString() {
-        client.onGet().doReturn("ok");
+    void responseString() {
+        httpClientMock.onGet().doReturn("ok");
 
-        assert I.http("http://test", String.class, client).to().is("ok");
+        assert I.http("http://test.com", String.class, httpClientMock).to().is("ok");
+    }
+
+    /**
+     * @see I#http(String, Class, HttpClient...)
+     */
+    @Test
+    void responseHTML() {
+        httpClientMock.onGet().doReturnXML("<html><body>contents</body></html>");
+
+        XML xml = I.http("http://test.com", XML.class, httpClientMock).to().exact();
+        assert xml.name().equals("html");
+        assert xml.text().equals("contents");
+    }
+
+    /**
+     * @see I#http(String, Class, HttpClient...)
+     */
+    @Test
+    void responseJSON() {
+        httpClientMock.onGet().doReturnJSON(text("{'state' : 'ok'}"));
+
+        JSON json = I.http("http://test.com", JSON.class, httpClientMock).to().exact();
+        assert json.get(String.class, "state").equals("ok");
+    }
+
+    /**
+     * @see I#http(String, Class, HttpClient...)
+     */
+    @Test
+    void responseMappedType() {
+        class Response {
+            public String state;
+        }
+
+        httpClientMock.onGet().doReturnJSON(text("{'state' : 'ok'}"));
+
+        Response response = I.http("http://test.com", Response.class, httpClientMock).to().exact();
+        assert response.state.equals("ok");
     }
 
     @Test
-    void httpXML() {
-        client.onGet().doReturnXML("<root>yes</root>");
+    void responseGzip() {
+        httpClientMock.onGet().doAction(gzip("<root>gzip</root>"));
 
-        XML xml = I.http("http://test", XML.class, client).to().exact();
-        assert xml.name().equals("root");
-        assert xml.text().equals("yes");
-    }
-
-    @Test
-    void httpJSON() {
-        client.onGet().doReturnJSON(text("{'state' : 'ok'}"));
-
-        JSON json = I.http("http://test", JSON.class, client).to().exact();
-        assert json.get("state").as(String.class).equals("ok");
-    }
-
-    @Test
-    void httpType() {
-        client.onGet().doReturn(text("{'state' : 'ok'}"));
-
-        Server server = I.http("http://test", Server.class, client).to().exact();
-        assert server.state.equals("ok");
-    }
-
-    static class Server {
-        public String state;
-    }
-
-    @Test
-    void httpGzip() {
-        client.onGet().doAction(gzip("<root>gzip</root>"));
-
-        XML xml = I.http("http://test", XML.class, client).to().exact();
+        XML xml = I.http("http://test", XML.class, httpClientMock).to().exact();
         assert xml.name().equals("root");
         assert xml.text().equals("gzip");
     }
 
     @Test
-    void httpDeflate() {
-        client.onGet().doAction(deflate("<root>deflate</root>"));
+    void responseDeflate() {
+        httpClientMock.onGet().doAction(deflate("<root>deflate</root>"));
 
-        XML xml = I.http("http://test", XML.class, client).to().exact();
+        XML xml = I.http("http://test", XML.class, httpClientMock).to().exact();
         assert xml.name().equals("root");
         assert xml.text().equals("deflate");
     }
@@ -142,10 +154,10 @@ class HTTPTest {
 
     @Test
     void clientErrorResponse400() {
-        client.onGet().doReturn(400, "Bad Request");
+        httpClientMock.onGet().doReturn(400, "Bad Request");
 
         AtomicReference<Throwable> error = new AtomicReference();
-        Variable<JSON> result = I.http("http://test", JSON.class, client).effectOnError(error::set).to();
+        Variable<JSON> result = I.http("http://test", JSON.class, httpClientMock).effectOnError(error::set).to();
         assert result.isAbsent();
         assert error.get() instanceof HttpRetryException;
         assert error.get().getMessage().equals("Bad Request");
@@ -153,10 +165,10 @@ class HTTPTest {
 
     @Test
     void clientErrorResponse404() {
-        client.onGet().doReturn(404, "Not Found");
+        httpClientMock.onGet().doReturn(404, "Not Found");
 
         AtomicReference<Throwable> error = new AtomicReference();
-        Variable<JSON> result = I.http("http://test", JSON.class, client).effectOnError(error::set).to();
+        Variable<JSON> result = I.http("http://test", JSON.class, httpClientMock).effectOnError(error::set).to();
         assert result.isAbsent();
         assert error.get() instanceof HttpRetryException;
         assert error.get().getMessage().equals("Not Found");
@@ -164,10 +176,10 @@ class HTTPTest {
 
     @Test
     void serverErrorResponse500() {
-        client.onGet().doReturn(500, "Internal Server Error");
+        httpClientMock.onGet().doReturn(500, "Internal Server Error");
 
         AtomicReference<Throwable> error = new AtomicReference();
-        Variable<JSON> result = I.http("http://test", JSON.class, client).effectOnError(error::set).to();
+        Variable<JSON> result = I.http("http://test", JSON.class, httpClientMock).effectOnError(error::set).to();
         assert result.isAbsent();
         assert error.get() instanceof HttpRetryException;
         assert error.get().getMessage().equals("Internal Server Error");
@@ -175,10 +187,10 @@ class HTTPTest {
 
     @Test
     void serverErrorResponse503() {
-        client.onGet().doReturn(503, "Service Unavailable");
+        httpClientMock.onGet().doReturn(503, "Service Unavailable");
 
         AtomicReference<Throwable> error = new AtomicReference();
-        Variable<JSON> result = I.http("http://test", JSON.class, client).effectOnError(error::set).to();
+        Variable<JSON> result = I.http("http://test", JSON.class, httpClientMock).effectOnError(error::set).to();
         assert result.isAbsent();
         assert error.get() instanceof HttpRetryException;
         assert error.get().getMessage().equals("Service Unavailable");
