@@ -1,5 +1,23 @@
 # Changelog
 
+## [2.3.0](https://www.github.com/Teletha/sinobu/compare/v2.2.2...v2.3.0) (2021-04-18)
+
+
+### Features
+
+* I#express accepts wildcard [*]. ([d50d9b3](https://www.github.com/Teletha/sinobu/commit/d50d9b30101060f2cd09a78bb339a926729bfa7d))
+* I#express can accept mustache-like section. ([440d73f](https://www.github.com/Teletha/sinobu/commit/440d73f03f41478c15eac1377d9833a7d31a151d))
+* I#express supports comment section. ([fe0be3e](https://www.github.com/Teletha/sinobu/commit/fe0be3eabe8da3b6eb88baf97191ca03922666b2))
+* I#express supports line based block. ([30214a7](https://www.github.com/Teletha/sinobu/commit/30214a728b42427f7b074a849e9e7010e944fbea))
+
+
+### Bug Fixes
+
+* Delay is too short. ([6d351cb](https://www.github.com/Teletha/sinobu/commit/6d351cbc936b263e4f61f9596d24b8b3d2f3a7d4))
+* I#express can accept the nested section. ([0dcbadd](https://www.github.com/Teletha/sinobu/commit/0dcbadde269af4ad7f1579b770809285e458fd40))
+* I#express can accepts "this" keyword. ([f10d2d6](https://www.github.com/Teletha/sinobu/commit/f10d2d6bceb483f28f2b83a664d9dad8682d093c))
+* Optimize RegEx pattern. ([c3d843c](https://www.github.com/Teletha/sinobu/commit/c3d843c6fd9b098c8bb88b17fa29bbea7d8d7c19))
+
 ### [2.2.2](https://www.github.com/Teletha/sinobu/compare/v2.2.1...v2.2.2) (2021-03-28)
 
 
