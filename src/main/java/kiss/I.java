@@ -365,10 +365,10 @@ public class I {
      * Create a new {@link Predicate} which accepts any item. It will conform to any type except
      * primitive types depending on the context of the caller.
      * 
-     * @param <P> Don't worry about this type as it is automatically determined.
+     * @param <A> Don't worry about this type as it is automatically determined.
      * @return A new created {@link Predicate} function that always returns <code>true</code>.
      */
-    public static <P> Predicate<P> accept() {
+    public static <A> Predicate<A> accept() {
         return p -> true;
     }
 
@@ -376,11 +376,11 @@ public class I {
      * Create a new {@link BiPredicate} which accepts any item. It will conform to any type except
      * primitive types depending on the context of the caller.
      * 
-     * @param <P> Don't worry about this type as it is automatically determined.
-     * @param <Q> Don't worry about this type as it is automatically determined.
+     * @param <A> Don't worry about this type as it is automatically determined.
+     * @param <B> Don't worry about this type as it is automatically determined.
      * @return A new created {@link BiPredicate} function that always returns <code>true</code>.
      */
-    public static <P, Q> BiPredicate<P, Q> accepţ() {
+    public static <A, B> BiPredicate<A, B> accepţ() {
         return (p, q) -> true;
     }
 
@@ -1227,7 +1227,7 @@ public class I {
      * thrown. There is a possibility that a part of this limitation will be removed in the future.
      * </p>
      *
-     * @param <M> A model type.
+     * @param <T> A model type.
      * @param modelClass A target class to create instance.
      * @return A instance of the specified model class. This instance is managed by Sinobu.
      * @throws NullPointerException If the model class is <code>null</code>.
@@ -1235,7 +1235,7 @@ public class I {
      * @throws UnsupportedOperationException If the model class is inner-class.
      * @throws ClassCircularityError If the model has circular dependency.
      */
-    public static <M> M make(Class<? extends M> modelClass) {
+    public static <T> T make(Class<? extends T> modelClass) {
         return makeLifestyle(modelClass).get();
     }
 
@@ -1357,7 +1357,7 @@ public class I {
      * @param param2 A second parameter.
      * @return
      */
-    public static <Param1, Param2> Ⅱ<Param1, Param2> pair(Param1 param1, Param2 param2) {
+    public static <A, B> Ⅱ<A, B> pair(A param1, B param2) {
         return new Ⅱ(param1, param2);
     }
 
@@ -1369,7 +1369,7 @@ public class I {
      * @param param3 A third parameter.
      * @return
      */
-    public static <Param1, Param2, Param3> Ⅲ<Param1, Param2, Param3> pair(Param1 param1, Param2 param2, Param3 param3) {
+    public static <A, B, C> Ⅲ<A, B, C> pair(A param1, B param2, C param3) {
         return new Ⅲ(param1, param2, param3);
     }
 
@@ -1436,6 +1436,7 @@ public class I {
      * in finally block like the following.
      * </p>
      * <p>
+     * 
      * <pre>
      * AutoCloseable input = null;
      *
@@ -1458,6 +1459,7 @@ public class I {
      * caller of the method which calls this method.
      * </p>
      * <p>
+     * 
      * <pre>
      * private void callerWithoutErrorHandling() {
      *     methodQuietly();
@@ -1521,17 +1523,18 @@ public class I {
      * <p>
      * Define recursive {@link BiConsumer}.
      * </p>
+     * 
      * <pre>
      * I.recurse((self, param1, param2) -> {
-     *   // your function code
+     *     // your function code
      * });
      * </pre>
      * 
      * @param function A recursive function.
      * @return A created function.
      */
-    public static <Param1, Param2> WiseBiConsumer<Param1, Param2> recurse(WiseTriConsumer<WiseBiConsumer<Param1, Param2>, Param1, Param2> function) {
-        Variable<WiseBiConsumer<Param1, Param2>> ref = Variable.empty();
+    public static <A, B> WiseBiConsumer<A, B> recurse(WiseTriConsumer<WiseBiConsumer<A, B>, A, B> function) {
+        Variable<WiseBiConsumer<A, B>> ref = Variable.empty();
         ref.set(function.bindLazily(ref));
         return ref.v;
     }
@@ -1540,17 +1543,18 @@ public class I {
      * <p>
      * Define recursive {@link BiFunction}.
      * </p>
+     * 
      * <pre>
      * I.recurse((self, param1, param2) -> {
-     *   // your function code
+     *     // your function code
      * });
      * </pre>
      * 
      * @param function A recursive function.
      * @return A created function.
      */
-    public static <Param1, Param2, Return> WiseBiFunction<Param1, Param2, Return> recurse(WiseTriFunction<WiseBiFunction<Param1, Param2, Return>, Param1, Param2, Return> function) {
-        Variable<WiseBiFunction<Param1, Param2, Return>> ref = Variable.empty();
+    public static <A, B, R> WiseBiFunction<A, B, R> recurse(WiseTriFunction<WiseBiFunction<A, B, R>, A, B, R> function) {
+        Variable<WiseBiFunction<A, B, R>> ref = Variable.empty();
         ref.set(function.bindLazily(ref));
         return ref.v;
     }
@@ -1559,17 +1563,18 @@ public class I {
      * <p>
      * Define recursive {@link Consumer}.
      * </p>
+     * 
      * <pre>
      * I.recurse((self, param) -> {
-     *   // your function code
+     *     // your function code
      * });
      * </pre>
      * 
      * @param function A target function to convert.
      * @return A converted recursive function.
      */
-    public static <Param> WiseConsumer<Param> recurse(WiseBiConsumer<WiseConsumer<Param>, Param> function) {
-        Variable<WiseConsumer<Param>> ref = Variable.empty();
+    public static <A> WiseConsumer<A> recurse(WiseBiConsumer<WiseConsumer<A>, A> function) {
+        Variable<WiseConsumer<A>> ref = Variable.empty();
         ref.set(function.bindLazily(ref));
         return ref.v;
     }
@@ -1578,17 +1583,18 @@ public class I {
      * <p>
      * Define recursive {@link Function}.
      * </p>
+     * 
      * <pre>
      * I.recurse((self, param) -> {
-     *   // your function code
+     *     // your function code
      * });
      * </pre>
      * 
      * @param function A recursive function.
      * @return A created function.
      */
-    public static <Param, Return> WiseFunction<Param, Return> recurse(WiseBiFunction<WiseFunction<Param, Return>, Param, Return> function) {
-        Variable<WiseFunction<Param, Return>> ref = Variable.empty();
+    public static <A, R> WiseFunction<A, R> recurse(WiseBiFunction<WiseFunction<A, R>, A, R> function) {
+        Variable<WiseFunction<A, R>> ref = Variable.empty();
         ref.set(function.bindLazily(ref));
         return ref.v;
     }
@@ -1597,9 +1603,10 @@ public class I {
      * <p>
      * Define recursive {@link Runnable}.
      * </p>
+     * 
      * <pre>
      * I.recurse(self -> {
-     *   // your function code
+     *     // your function code
      * });
      * </pre>
      * 
@@ -1616,17 +1623,18 @@ public class I {
      * <p>
      * Define recursive {@link Supplier}.
      * </p>
+     * 
      * <pre>
      * I.recurse(self -> {
-     *   // your function code
+     *     // your function code
      * });
      * </pre>
      * 
      * @param function A recursive function.
      * @return A created function.
      */
-    public static <Result> WiseSupplier<Result> recurse(WiseFunction<WiseSupplier<Result>, Result> function) {
-        Variable<WiseSupplier<Result>> ref = Variable.empty();
+    public static <R> WiseSupplier<R> recurse(WiseFunction<WiseSupplier<R>, R> function) {
+        Variable<WiseSupplier<R>> ref = Variable.empty();
         ref.set(function.bindLazily(ref));
         return ref.v;
     }
@@ -1635,10 +1643,10 @@ public class I {
      * Create a new {@link Predicate} which rejects any item. It will conform to any type except
      * primitive types depending on the context of the caller.
      * 
-     * @param <P> Don't worry about this type as it is automatically determined.
+     * @param <A> Don't worry about this type as it is automatically determined.
      * @return A new created {@link Predicate} function that always returns <code>false</code>.
      */
-    public static <P> Predicate<P> reject() {
+    public static <A> Predicate<A> reject() {
         return p -> false;
     }
 
@@ -1646,11 +1654,11 @@ public class I {
      * Create a new {@link BiPredicate} which rejects any item. It will conform to any type except
      * primitive types depending on the context of the caller.
      * 
-     * @param <P> Don't worry about this type as it is automatically determined.
-     * @param <Q> Don't worry about this type as it is automatically determined.
+     * @param <A> Don't worry about this type as it is automatically determined.
+     * @param <B> Don't worry about this type as it is automatically determined.
      * @return A new created {@link BiPredicate} function that always returns <code>false</code>.
      */
-    public static <P, Q> BiPredicate<P, Q> rejecţ() {
+    public static <A, B> BiPredicate<A, B> rejecţ() {
         return (p, q) -> false;
     }
 
@@ -1970,7 +1978,7 @@ public class I {
      * @param lambda A target function.
      * @return A casted function.
      */
-    public static <P> WiseConsumer<P> wiseC(Consumer<P> lambda) {
+    public static <A> WiseConsumer<A> wiseC(Consumer<A> lambda) {
         return lambda instanceof WiseConsumer ? (WiseConsumer) lambda : lambda::accept;
     }
 
@@ -1981,7 +1989,7 @@ public class I {
      * @param lambda A target function.
      * @return A casted function.
      */
-    public static <P> WiseConsumer<P> wiseC(Runnable lambda) {
+    public static <A> WiseConsumer<A> wiseC(Runnable lambda) {
         return make(null, WiseConsumer.class, I.wiseR(lambda));
     }
 
@@ -1991,7 +1999,7 @@ public class I {
      * @param lambda A target function.
      * @return A casted function.
      */
-    public static <P1, P2> WiseBiConsumer<P1, P2> wiseBC(BiConsumer<P1, P2> lambda) {
+    public static <A, B> WiseBiConsumer<A, B> wiseBC(BiConsumer<A, B> lambda) {
         return lambda instanceof WiseBiConsumer ? (WiseBiConsumer) lambda : lambda::accept;
     }
 
@@ -2002,7 +2010,7 @@ public class I {
      * @param lambda A target function.
      * @return A casted function.
      */
-    public static <P1, P2> WiseBiConsumer<P1, P2> wiseBC(Consumer<P1> lambda) {
+    public static <A, B> WiseBiConsumer<A, B> wiseBC(Consumer<A> lambda) {
         return make(null, WiseBiConsumer.class, I.wiseC(lambda));
     }
 
@@ -2013,7 +2021,7 @@ public class I {
      * @param lambda A target function.
      * @return A casted function.
      */
-    public static <P1, P2> WiseBiConsumer<P1, P2> wiseBC(Runnable lambda) {
+    public static <A, B> WiseBiConsumer<A, B> wiseBC(Runnable lambda) {
         return make(null, WiseBiConsumer.class, I.wiseR(lambda));
     }
 
@@ -2024,7 +2032,7 @@ public class I {
      * @param lambda A target function.
      * @return A casted function.
      */
-    public static <P1, P2, P3> WiseTriConsumer<P1, P2, P3> wiseTC(BiConsumer<P1, P2> lambda) {
+    public static <A, B, C> WiseTriConsumer<A, B, C> wiseTC(BiConsumer<A, B> lambda) {
         return make(null, WiseTriConsumer.class, I.wiseBC(lambda));
     }
 
@@ -2035,7 +2043,7 @@ public class I {
      * @param lambda A target function.
      * @return A casted function.
      */
-    public static <P1, P2, P3> WiseTriConsumer<P1, P2, P3> wiseTC(Consumer<P1> lambda) {
+    public static <A, B, C> WiseTriConsumer<A, B, C> wiseTC(Consumer<A> lambda) {
         return make(null, WiseTriConsumer.class, I.wiseC(lambda));
     }
 
@@ -2046,7 +2054,7 @@ public class I {
      * @param lambda A target function.
      * @return A casted function.
      */
-    public static <P1, P2, P3> WiseTriConsumer<P1, P2, P3> wiseTC(Runnable lambda) {
+    public static <A, B, C> WiseTriConsumer<A, B, C> wiseTC(Runnable lambda) {
         return make(null, WiseTriConsumer.class, I.wiseR(lambda));
     }
 
@@ -2066,7 +2074,7 @@ public class I {
      * @param lambda A target function.
      * @return A casted function.
      */
-    public static <P, R> WiseFunction<P, R> wiseF(Function<P, R> lambda) {
+    public static <A, R> WiseFunction<A, R> wiseF(Function<A, R> lambda) {
         return lambda instanceof WiseFunction ? (WiseFunction) lambda : lambda::apply;
     }
 
@@ -2077,7 +2085,7 @@ public class I {
      * @param lambda A target function.
      * @return A casted function.
      */
-    public static <P, R> WiseFunction<P, R> wiseF(Supplier<R> lambda) {
+    public static <A, R> WiseFunction<A, R> wiseF(Supplier<R> lambda) {
         return make(null, WiseFunction.class, I.wiseS(lambda));
     }
 
@@ -2087,7 +2095,7 @@ public class I {
      * @param lambda A target function.
      * @return A casted function.
      */
-    public static <P1, P2, R> WiseBiFunction<P1, P2, R> wiseBF(BiFunction<P1, P2, R> lambda) {
+    public static <A, B, R> WiseBiFunction<A, B, R> wiseBF(BiFunction<A, B, R> lambda) {
         return lambda instanceof WiseBiFunction ? (WiseBiFunction) lambda : lambda::apply;
     }
 
@@ -2098,7 +2106,7 @@ public class I {
      * @param lambda A target function.
      * @return A casted function.
      */
-    public static <P1, P2, R> WiseBiFunction<P1, P2, R> wiseBF(Function<P1, R> lambda) {
+    public static <A, B, R> WiseBiFunction<A, B, R> wiseBF(Function<A, R> lambda) {
         return make(null, WiseBiFunction.class, I.wiseF(lambda));
     }
 
@@ -2109,7 +2117,7 @@ public class I {
      * @param lambda A target function.
      * @return A casted function.
      */
-    public static <P1, P2, R> WiseBiFunction<P1, P2, R> wiseBF(Supplier<R> lambda) {
+    public static <A, B, R> WiseBiFunction<A, B, R> wiseBF(Supplier<R> lambda) {
         return make(null, WiseBiFunction.class, I.wiseS(lambda));
     }
 
@@ -2120,7 +2128,7 @@ public class I {
      * @param lambda A target function.
      * @return A casted function.
      */
-    public static <P1, P2, P3, R> WiseTriFunction<P1, P2, P3, R> wiseTF(BiFunction<P1, P2, R> lambda) {
+    public static <A, B, C, R> WiseTriFunction<A, B, C, R> wiseTF(BiFunction<A, B, R> lambda) {
         return make(null, WiseTriFunction.class, I.wiseBF(lambda));
     }
 
@@ -2131,7 +2139,7 @@ public class I {
      * @param lambda A target function.
      * @return A casted function.
      */
-    public static <P1, P2, P3, R> WiseTriFunction<P1, P2, P3, R> wiseTF(Function<P1, R> lambda) {
+    public static <A, B, C, R> WiseTriFunction<A, B, C, R> wiseTF(Function<A, R> lambda) {
         return make(null, WiseTriFunction.class, I.wiseF(lambda));
     }
 
@@ -2142,7 +2150,7 @@ public class I {
      * @param lambda A target function.
      * @return A casted function.
      */
-    public static <P1, P2, P3, R> WiseTriFunction<P1, P2, P3, R> wiseTF(Supplier<R> lambda) {
+    public static <A, B, C, R> WiseTriFunction<A, B, C, R> wiseTF(Supplier<R> lambda) {
         return make(null, WiseTriFunction.class, I.wiseS(lambda));
     }
 
