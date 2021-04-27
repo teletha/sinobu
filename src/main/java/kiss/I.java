@@ -1436,7 +1436,6 @@ public class I {
      * in finally block like the following.
      * </p>
      * <p>
-     * 
      * <pre>
      * AutoCloseable input = null;
      *
@@ -1459,7 +1458,6 @@ public class I {
      * caller of the method which calls this method.
      * </p>
      * <p>
-     * 
      * <pre>
      * private void callerWithoutErrorHandling() {
      *     methodQuietly();
@@ -1523,7 +1521,6 @@ public class I {
      * <p>
      * Define recursive {@link BiConsumer}.
      * </p>
-     * 
      * <pre>
      * I.recurse((self, param1, param2) -> {
      *     // your function code
@@ -1543,7 +1540,6 @@ public class I {
      * <p>
      * Define recursive {@link BiFunction}.
      * </p>
-     * 
      * <pre>
      * I.recurse((self, param1, param2) -> {
      *     // your function code
@@ -1563,7 +1559,6 @@ public class I {
      * <p>
      * Define recursive {@link Consumer}.
      * </p>
-     * 
      * <pre>
      * I.recurse((self, param) -> {
      *     // your function code
@@ -1583,7 +1578,6 @@ public class I {
      * <p>
      * Define recursive {@link Function}.
      * </p>
-     * 
      * <pre>
      * I.recurse((self, param) -> {
      *     // your function code
@@ -1603,7 +1597,6 @@ public class I {
      * <p>
      * Define recursive {@link Runnable}.
      * </p>
-     * 
      * <pre>
      * I.recurse(self -> {
      *     // your function code
@@ -1623,7 +1616,6 @@ public class I {
      * <p>
      * Define recursive {@link Supplier}.
      * </p>
-     * 
      * <pre>
      * I.recurse(self -> {
      *     // your function code
@@ -1996,6 +1988,8 @@ public class I {
     /**
      * Cast from {@link BiConsumer} to {@link WiseBiConsumer}.
      * 
+     * @param <A> Any type for first parameter.
+     * @param <B> Any type for second parameter.
      * @param lambda A target function.
      * @return A casted function.
      */
