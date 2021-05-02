@@ -62,15 +62,14 @@ public class DocumentDoc {
 
     class Managing_object_lifestyle {
         /**
-         * <h2>What exactly is a lifestyle?</h2>
+         * <h2>What do you mean by lifestyle?</h2>
          * <p>
-         * モックアップとは、画面レイアウト情報をもとに、HTML形式で画面イメージを出力する機能です。通常、設計がおわった段階では設計書をもとにレビューを行いますが、この段階では動くモノ
-         * POO（アプリケーション）はありません。ですので、「コントロールがない」「桁数が異なる」といった設計ミスは見つけることができても、COOL
-         * 「画面遷移の自然さ」や、「データ入力の効率」などの使い勝手の部分までチェックすることは非常に難しいと思います。モックアップはHTML形式でアプリケーションのProtptype
-         * を出力する機能ですので、設計段階でこのような使い勝手も含めてレビューが可能となります。なお、入力は既存の設計データ（画面レイアウト情報）を使用しますので、追加のデータ入力は必要ありません。
+         * In this library, lifestyle refers to the way an object is created and managed,
+         * corresponding to the scope in terms of DI containers such as SpringFramework and Guice,
+         * but without the process of registering with the container or destroying the object.
          * </p>
          */
-        public DocumentDoc What_exactly_is_a_lifestyle;
+        public DocumentDoc What_do_you_mean_by_lifestyle;
 
         /**
          * <p>
