@@ -9,6 +9,9 @@
  */
 package doc;
 
+import kiss.I;
+import kiss.sample.bean.Person;
+
 /**
  * <h2>Document</h2>
  */
@@ -62,23 +65,45 @@ public class DocumentDoc {
 
     class Managing_object_lifestyle {
         /**
-         * <h2>What do you mean by lifestyle?</h2>
          * <p>
-         * In this library, lifestyle refers to the way an object is created and managed,
-         * corresponding to the scope in terms of DI containers such as SpringFramework and Guice,
-         * but without the process of registering with the container or destroying the object.
+         * In Sinobu, lifestyle refers to the way an object is created and managed, corresponding to
+         * the scope in terms of DI containers such as SpringFramework and Guice, but without the
+         * process of registering with the container or destroying the object.
          * </p>
          */
-        public DocumentDoc What_do_you_mean_by_lifestyle;
+        public DocumentDoc What_do_you_mean_by_lifestyle$Q;
 
         /**
          * <p>
-         * SpringのDIコンテナ（≒IoCコンテナ）が起動すると、JavaConfig またはXMLのBean定義に基づいて、Spring Beanがインスタンス化されます。
-         * インスタンス化はフレームワークが自動で行ってくれて、最終的にJava Beanが「使用可能な状態」になります。 この「使用可能な状態」になったJava
-         * BeanをDIコンテナが管理してくれて、プログラマが書いたコードに注入（DI）してくれるわけです。
+         * In Java, it is common to use the new operator on the constructor to create a new object.
+         * In many cases, this is sufficient, but in the following situations, it is a bit
+         * insufficient.
+         * </p>
+         * <ul>
+         * <li>To manage the number of objects to be created.</li>
+         * <li>To create objects associated with a specific context.</li>
+         * <li>To generate objects with complex dependencies.</li>
+         * <li>The type of the object to be generated is not statically determined.</li>
+         * </ul>
+         * <p>
+         * While DI containers such as SpringFramework or Guice are commonly used to deal with such
+         * problems, Sinobu comes with its own very simple container. The following code shows the
+         * creation of an object using a container.
+         * </p>
+         * <source />
+         * <p>
+         * As you can see from the above code, there is no actual container object; Sinobu has only
+         * one global container in the JVM, and that object cannot be accessed directly. In order to
+         * create an object from a container, we need to call the {@link I#make(Class)} method.
          * </p>
          */
-        public DocumentDoc Use_a_customized_Lifestyle;
+        class Creating_an_object {
+
+            public static void main(String[] args) {
+                Person someone = I.make(Person.class);
+                assert someone != null;
+            }
+        }
     }
 
     class Dipendency_Injection {
