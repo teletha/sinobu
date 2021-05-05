@@ -55,13 +55,17 @@ public class DocumentDoc {
          * <li><a href="https://en.wikipedia.org/wiki/Type_safety">Type safety</a></li>
          * <li>Refactoring safety</li>
          * </ul>
-         * <h2>How to install</h2>
+         */
+        public DocumentDoc Purpose_of_use;
+
+        /**
          * <p>
          * It is probably easiest to use a build tool such as
          * <a href="https://maven.apache.org/">Maven</a> or
          * <a href="https://gradle.org/">Gradle</a>.
          * </p>
          */
+        public DocumentDoc How_to_install;
     }
 
     class Managing_object_lifestyle {
@@ -90,19 +94,23 @@ public class DocumentDoc {
          * problems, Sinobu comes with its own very simple container. The following code shows the
          * creation of an object using a container.
          * </p>
-         */
-        void createObject() {
-            Person someone = I.make(Person.class);
-            assert someone != null;
-        }
-
-        /**
+         * 
+         * <pre>
+         * {@link #createObject()}
+         * </pre>
          * <p>
          * As you can see from the above code, there is no actual container object; Sinobu has only
          * one global container in the JVM, and that object cannot be accessed directly. In order to
          * create an object from a container, we need to call the {@link I#make(Class)} method.
          * </p>
          */
+        public DocumentDoc What_do_you_mean_by_lifestyle;
+
+        public void createObject() {
+            Person someone = I.make(Person.class);
+            assert someone != null;
+        }
+
     }
 
     class Dipendency_Injection {
