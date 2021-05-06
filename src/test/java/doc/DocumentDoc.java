@@ -9,7 +9,10 @@
  */
 package doc;
 
+import java.util.function.Supplier;
+
 import kiss.I;
+import kiss.Lifestyle;
 import kiss.sample.bean.Person;
 
 /**
@@ -94,19 +97,27 @@ public class DocumentDoc {
          * problems, Sinobu comes with its own very simple container. The following code shows the
          * creation of an object using a container.
          * </p>
-         * 
-         * <pre>
-         * {@link #createObject()}
-         * </pre>
+         * <pre>{@link #createObject()}</pre>
          * <p>
          * As you can see from the above code, there is no actual container object; Sinobu has only
          * one global container in the JVM, and that object cannot be accessed directly. In order to
          * create an object from a container, we need to call the {@link I#make(Class)} method.
          * </p>
+         * <h3>Defining lifestyle</h3>
+         * <p>
+         * In order to define a lifestyle, we need to write a {@link Lifestyle} interface. This
+         * interface is essentially equivalent to {@link Supplier}, but it is called when a specific
+         * type is requested for a container, and it makes the following decisions:
+         * </p>
+         * <ol>
+         * <li>Which class to instantiate actually.</li>
+         * <li>How to instantiate it.</li>
+         * <li>How to manage the instances.</li>
+         * </ol>
          */
         public DocumentDoc What_do_you_mean_by_lifestyle;
 
-        public void createObject() {
+        void createObject() {
             Person someone = I.make(Person.class);
             assert someone != null;
         }
