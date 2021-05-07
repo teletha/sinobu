@@ -11,8 +11,11 @@ package doc;
 
 import java.util.concurrent.Callable;
 
+import kiss.Disposable;
 import kiss.I;
 import kiss.Lifestyle;
+import kiss.Managed;
+import kiss.Singleton;
 import kiss.sample.bean.Person;
 
 /**
@@ -144,6 +147,40 @@ public class DocumentDoc {
             }
         }
 
+        /**
+         * <h2>Registering lifestyle</h2>
+         * <p>
+         * Lifestyle manages the instance in the specific context. Sinobu provides two commonly used
+         * lifestyles ({@link I#prototype(Class)} and {@link Singleton}.
+         * </p>
+         * <p>
+         * There are two ways to specify {@link Lifestyle} for the class.
+         * </p>
+         * <p>
+         * The one is {@link Managed} annotation. This way is useful if the target class is under
+         * your control. If the lifestyle is not specified, Sinobu uses {@link I#prototype(Class)}
+         * lifestyle as default. The following is example.
+         * </p>
+         * <pre>{@code
+         * &#64;Manageable(lifestyle = Singleton.class)
+         * public class TargetClass {
+         * }
+         * }</pre>
+         * <p>
+         * The other is defining custom {@link Lifestyle}. Sinobu recognizes it automatically if
+         * your custom lifestyle class is loaded or unloaded by {@link I#load(Class)} and
+         * {@link Disposable#dispose()}methods. The following is example.
+         * </p>
+         * <pre>{@code
+         * public class CustomLifestyle implements Lifestyle<ClassNotUnderYourControl> {
+         * 
+         *     public ClassNotUnderYourControl call() {
+         *         return new ClassNotUnderYourControl();
+         *     }
+         * }
+         * }</pre>
+         */
+        public DocumentDoc Registering_lifestyle;
     }
 
     class Dipendency_Injection {
