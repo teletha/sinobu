@@ -9,7 +9,7 @@
  */
 package doc;
 
-import java.util.function.Supplier;
+import java.util.concurrent.Callable;
 
 import kiss.I;
 import kiss.Lifestyle;
@@ -106,14 +106,28 @@ public class DocumentDoc {
          * <h3>Defining lifestyle</h3>
          * <p>
          * In order to define a lifestyle, we need to write a {@link Lifestyle} interface. This
-         * interface is essentially equivalent to {@link Supplier}, but it is called when a specific
-         * type is requested for a container, and it makes the following decisions:
+         * interface is essentially equivalent to {@link Callable}, but it is called when a specific
+         * Type (class or interface) is requested for a container, and it makes the following 3
+         * decisions:
          * </p>
          * <ol>
          * <li>Which class to instantiate actually.</li>
          * <li>How to instantiate it.</li>
          * <li>How to manage the instances.</li>
          * </ol>
+         * <p>
+         * As the simplest example, let's consider a prototype pattern that creates a new instance
+         * using the new operator each time it is requested. The following implementation is called
+         * every time an instance of Person is requested for the container, and creates and returns
+         * a new instance.
+         * </p>
+         * <pre>{@link Prototype}</pre>
+         * <p>
+         * This kind of prototype pattern is set as the default lifestyle in Sinobu because it is
+         * expected to be used most often. Also, you can use {@link I#prototype(Class)} to generate
+         * prototypical lifestyles for any type, so there is no need to actually write such an
+         * implementation.
+         * </p>
          */
         public DocumentDoc What_do_you_mean_by_lifestyle;
 
@@ -122,10 +136,29 @@ public class DocumentDoc {
             assert someone != null;
         }
 
+        class Prototype implements Lifestyle<Person> {
+
+            @Override
+            public Person call() throws Exception {
+                return new Person();
+            }
+        }
+
     }
 
     class Dipendency_Injection {
-        public DocumentDoc Injection_Type;
+        /**
+         * <h2>The need for Dependency Injection</h2>
+         * <p>
+         * Dependency Injection (DI) is a mechanism that solves various problems related to
+         * component dependencies in "a nice way". Component dependency refers to the relationship
+         * from upper layer to lower layer, such as Controller → Service → Repository in a general
+         * layered architecture. "A nice way" means that the framework will take care of the problem
+         * without the developer having to work hard manually. In modern Java application
+         * development, DI is an almost indispensable mechanism.
+         * </p>
+         */
+        public DocumentDoc The_need_for_Dependency_Injection;
 
         public DocumentDoc Circular_Reference;
     }
