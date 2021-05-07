@@ -729,9 +729,15 @@ public class XML implements Iterable<XML>, Consumer<XML> {
             case '\'':
             case '<':
             case '>':
-            case '&':
                 o.append("&#").append((int) c).append(';');
                 break;
+
+            case '&':
+                if (i + 1 == s.length() || s.charAt(i + 1) != '#') {
+                    o.append("&#").append((int) c).append(';');
+                    break;
+                }
+                // fall-through to the default process
             default:
                 o.append(c);
                 break;

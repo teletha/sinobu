@@ -71,10 +71,17 @@ class XMLWriterTest {
     }
 
     @Test
-    void unsafeText() {
+    void unsafeText1() {
         String expected = "<root attr=\"&#34;\">&#60;&#38;&#34;&#39;&#62;</root>";
 
         assert I.xml("<root attr='&quot;'>&lt;&amp;&quot;&apos;&gt;</root>").toString().equals(expected);
+    }
+
+    @Test
+    void unsafeText2() {
+        String expected = "<root attr=\"&#38;\">&#38;</root>";
+
+        assert I.xml("<root attr='&amp;'>&amp;</root>").toString().equals(expected);
     }
 
     @Test
