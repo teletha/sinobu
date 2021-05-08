@@ -9,6 +9,7 @@
  */
 package doc;
 
+import java.util.Locale;
 import java.util.concurrent.Callable;
 
 import kiss.Disposable;
@@ -99,14 +100,14 @@ public class DocumentDoc {
          * </ul>
          * <p>
          * While DI containers such as SpringFramework or Guice are commonly used to deal with such
-         * problems, Sinobu comes with its own very simple container. The following code shows the
-         * creation of an object using a container.
+         * problems, Sinobu comes with its own very simple DI container. The following code shows
+         * the creation of an object using DI container.
          * </p>
          * <pre>{@link #createObject()}</pre>
          * <p>
          * As you can see from the above code, there is no actual container object; Sinobu has only
          * one global container in the JVM, and that object cannot be accessed directly. In order to
-         * create an object from a container, we need to call the {@link I#make(Class)} method.
+         * create an object from a container, we need to call {@link I#make(Class)}.
          * </p>
          */
         public DocumentDoc What_do_you_mean_by_lifestyle;
@@ -154,6 +155,12 @@ public class DocumentDoc {
          * returns it.
          * </p>
          * <pre>{@link SingletonTest#singleton()}</pre>
+         * <h3>Custom lifestyle</h3>
+         * <p>
+         * You can also define new lifestyles based on arbitrary contexts by implementing the
+         * {@link Lifestyle} interface and defining a constructor to receive the requested type.
+         * </p>
+         * <pre>{@link PerThread}</pre>
          */
         public DocumentDoc Defining_lifestyle;
 
@@ -162,6 +169,26 @@ public class DocumentDoc {
             @Override
             public Person call() throws Exception {
                 return new Person();
+            }
+        }
+
+        class PerThread<T> implements Lifestyle<T> {
+
+            private final ThreadLocal<T> local;
+
+            PerThread(Class<T> requestedType) {
+                local = ThreadLocal.withInitial(() -> {
+                    try {
+                        return requestedType.getDeclaredConstructor().newInstance();
+                    } catch (Exception e) {
+                        throw new Error(e);
+                    }
+                });
+            }
+
+            @Override
+            public T call() throws Exception {
+                return local.get();
             }
         }
 
@@ -179,20 +206,12 @@ public class DocumentDoc {
          * {@link Managed} annotation specifies the implementation of {@link Lifestyle} you want to
          * use, but if none is specified, it is treated as if a prototype lifestyle is specified.
          * </p>
-         * <pre>{@link Asteroid}</pre>
          * <p>
          * The other is defining custom {@link Lifestyle}. Sinobu recognizes it automatically if
          * your custom lifestyle class is loaded or unloaded by {@link I#load(Class)} and
          * {@link Disposable#dispose()}methods. The following is example.
          * </p>
-         * <pre>{@code
-         * public class CustomLifestyle implements Lifestyle<ClassNotUnderYourControl> {
-         * 
-         *     public ClassNotUnderYourControl call() {
-         *         return new ClassNotUnderYourControl();
-         *     }
-         * }
-         * }</pre>
+         * <pre>{@link SingletonLocale}</pre>
          */
         public DocumentDoc Registering_lifestyle;
 
@@ -200,8 +219,14 @@ public class DocumentDoc {
         class Earth {
         }
 
-        @Managed // it means prototype
-        class Asteroid {
+        class SingletonLocale implements Lifestyle<Locale> {
+
+            private static final Locale singleton = Locale.forLanguageTag("language-tag");
+
+            @Override
+            public Locale call() throws Exception {
+                return singleton;
+            }
         }
     }
 
