@@ -9,31 +9,22 @@
  */
 package kiss.lifestyle;
 
+import org.junit.jupiter.api.Test;
+
 import kiss.I;
 import kiss.Managed;
 import kiss.Singleton;
 
-import org.junit.jupiter.api.Test;
-
-/**
- * @version 2011/03/22 16:27:26
- */
 public class SingletonTest {
 
     @Test
-    public void resolve() {
-        SingletonClass instance1 = I.make(SingletonClass.class);
-        assert instance1 != null;
+    public void singleton() {
+        @Managed(Singleton.class)
+        class Earth {
+        }
 
-        SingletonClass instance2 = I.make(SingletonClass.class);
-        assert instance2 != null;
-        assert instance1 == instance2;
-    }
-
-    /**
-     * @version 2011/03/22 16:29:43
-     */
-    @Managed(value = Singleton.class)
-    private static class SingletonClass {
+        Earth one = I.make(Earth.class);
+        Earth other = I.make(Earth.class);
+        assert one == other; // same instance
     }
 }

@@ -12,21 +12,16 @@ package kiss.lifestyle;
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
-import kiss.Managed;
 
-class PrototypeTest {
+public class PrototypeTest {
 
     @Test
-    void resolve() {
-        PrototypeClass instance1 = I.make(PrototypeClass.class);
-        assert instance1 != null;
+    public void prototype() {
+        class Person {
+        }
 
-        PrototypeClass instance2 = I.make(PrototypeClass.class);
-        assert instance2 != null;
-        assert instance1 != instance2;
-    }
-
-    @Managed
-    private static class PrototypeClass {
+        Person someone = I.make(Person.class);
+        Person anyone = I.make(Person.class);
+        assert someone != anyone; // two different instances
     }
 }

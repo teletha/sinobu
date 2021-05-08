@@ -16,6 +16,8 @@ import kiss.I;
 import kiss.Lifestyle;
 import kiss.Managed;
 import kiss.Singleton;
+import kiss.lifestyle.PrototypeTest;
+import kiss.lifestyle.SingletonTest;
 import kiss.sample.bean.Person;
 
 /**
@@ -106,7 +108,16 @@ public class DocumentDoc {
          * one global container in the JVM, and that object cannot be accessed directly. In order to
          * create an object from a container, we need to call the {@link I#make(Class)} method.
          * </p>
-         * <h3>Defining lifestyle</h3>
+         */
+        public DocumentDoc What_do_you_mean_by_lifestyle;
+
+        void createObject() {
+            Person someone = I.make(Person.class);
+            assert someone != null;
+        }
+
+        /**
+         * <h2>Defining lifestyle</h2>
          * <p>
          * In order to define a lifestyle, we need to write a {@link Lifestyle} interface. This
          * interface is essentially equivalent to {@link Callable}, but it is called when a specific
@@ -131,13 +142,20 @@ public class DocumentDoc {
          * prototypical lifestyles for any type, so there is no need to actually write such an
          * implementation.
          * </p>
+         * <h3>Pre-defined lifestyle</h3>
+         * <p>
+         * Sinobu comes with two pre-defined lifestyles. One is the prototype lifestyle described
+         * earlier, which generates a new instant every time it is requested. This is the default
+         * lifestyle in Sinobu, so you do not need to make any special settings to use it.
+         * </p>
+         * <pre>{@link PrototypeTest#prototype()}</pre>
+         * <p>
+         * The other is the singleton lifestyle, which keeps a single instance in the JVM and always
+         * returns it.
+         * </p>
+         * <pre>{@link SingletonTest#singleton()}</pre>
          */
-        public DocumentDoc What_do_you_mean_by_lifestyle;
-
-        void createObject() {
-            Person someone = I.make(Person.class);
-            assert someone != null;
-        }
+        public DocumentDoc Defining_lifestyle;
 
         class Prototype implements Lifestyle<Person> {
 
@@ -150,22 +168,18 @@ public class DocumentDoc {
         /**
          * <h2>Registering lifestyle</h2>
          * <p>
-         * Lifestyle manages the instance in the specific context. Sinobu provides two commonly used
-         * lifestyles ({@link I#prototype(Class)} and {@link Singleton}.
+         * To use a lifestyle other than the prototype lifestyle, you need to individually configure
+         * the lifestyle to be used in the class. There are two ways to do this, one is to use
+         * {@link Managed} annotation. This way is useful if you want to specify a lifestyle for a
+         * class that is under your control. The following is an example of using the
+         * {@link Singleton} lifestyle.
          * </p>
+         * <pre>{@link Earth}</pre>
          * <p>
-         * There are two ways to specify {@link Lifestyle} for the class.
+         * {@link Managed} annotation specifies the implementation of {@link Lifestyle} you want to
+         * use, but if none is specified, it is treated as if a prototype lifestyle is specified.
          * </p>
-         * <p>
-         * The one is {@link Managed} annotation. This way is useful if the target class is under
-         * your control. If the lifestyle is not specified, Sinobu uses {@link I#prototype(Class)}
-         * lifestyle as default. The following is example.
-         * </p>
-         * <pre>{@code
-         * &#64;Manageable(lifestyle = Singleton.class)
-         * public class TargetClass {
-         * }
-         * }</pre>
+         * <pre>{@link Asteroid}</pre>
          * <p>
          * The other is defining custom {@link Lifestyle}. Sinobu recognizes it automatically if
          * your custom lifestyle class is loaded or unloaded by {@link I#load(Class)} and
@@ -181,6 +195,14 @@ public class DocumentDoc {
          * }</pre>
          */
         public DocumentDoc Registering_lifestyle;
+
+        @Managed(Singleton.class)
+        class Earth {
+        }
+
+        @Managed // it means prototype
+        class Asteroid {
+        }
     }
 
     class Dipendency_Injection {
