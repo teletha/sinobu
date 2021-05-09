@@ -26,7 +26,7 @@ import kiss.sample.bean.Person;
  */
 public class DocumentDoc {
 
-    class Introduction {
+    public class Introduction {
         /**
          * <p>
          * This library aims to simplify and highly condense the functions related to domains that
@@ -65,7 +65,8 @@ public class DocumentDoc {
          * <li>Refactoring safety</li>
          * </ul>
          */
-        public DocumentDoc Purpose_of_use;
+        public class Purpose_of_use {
+        }
 
         /**
          * <p>
@@ -74,10 +75,11 @@ public class DocumentDoc {
          * <a href="https://gradle.org/">Gradle</a>.
          * </p>
          */
-        public DocumentDoc How_to_install;
+        public class How_to_install {
+        }
     }
 
-    class Managing_object_lifestyle {
+    public class Managing_object_lifestyle {
 
         /**
          * <h2>What do you mean by lifestyle?</h2>
@@ -86,35 +88,41 @@ public class DocumentDoc {
          * the scope in terms of DI containers such as SpringFramework and Guice, but without the
          * process of registering with the container or destroying the object.
          * </p>
-         * <h3>Creating an object</h3>
-         * <p>
-         * In Java, it is common to use the new operator on the constructor to create a new object.
-         * In many cases, this is sufficient, but in the following situations, it is a bit
-         * insufficient.
-         * </p>
-         * <ul>
-         * <li>To manage the number of objects to be created.</li>
-         * <li>To create objects associated with a specific context.</li>
-         * <li>To generate objects with complex dependencies.</li>
-         * <li>The type of the object to be generated is not statically determined.</li>
-         * </ul>
-         * <p>
-         * While DI containers such as SpringFramework or Guice are commonly used to deal with such
-         * problems, Sinobu comes with its own very simple DI container. The following code shows
-         * the creation of an object using DI container.
-         * </p>
-         * <pre>{@link #createObject()}</pre>
-         * <p>
-         * As you can see from the above code, there is no actual container object; Sinobu has only
-         * one global container in the JVM, and that object cannot be accessed directly. In order to
-         * create an object from a container, we need to call {@link I#make(Class)}.
-         * </p>
          */
-        public DocumentDoc What_do_you_mean_by_lifestyle;
+        public class What_do_you_mean_by_lifestyle {
 
-        void createObject() {
-            Person someone = I.make(Person.class);
-            assert someone != null;
+            /**
+             * <h3>Creating an object</h3>
+             * <p>
+             * In Java, it is common to use the new operator on the constructor to create a new
+             * object. In many cases, this is sufficient, but in the following situations, it is a
+             * bit insufficient.
+             * </p>
+             * <ul>
+             * <li>To manage the number of objects to be created.</li>
+             * <li>To create objects associated with a specific context.</li>
+             * <li>To generate objects with complex dependencies.</li>
+             * <li>The type of the object to be generated is not statically determined.</li>
+             * </ul>
+             * <p>
+             * While DI containers such as SpringFramework or Guice are commonly used to deal with
+             * such problems, Sinobu comes with its own very simple DI container. The following code
+             * shows the creation of an object using DI container.
+             * </p>
+             * <pre>{@link #createObject()}</pre>
+             * <p>
+             * As you can see from the above code, there is no actual container object; Sinobu has
+             * only one global container in the JVM, and that object cannot be accessed directly. In
+             * order to create an object from a container, we need to call {@link I#make(Class)}.
+             * </p>
+             */
+            public class Creating_an_object {
+
+                void createObject() {
+                    Person someone = I.make(Person.class);
+                    assert someone != null;
+                }
+            }
         }
 
         /**
@@ -143,52 +151,63 @@ public class DocumentDoc {
          * prototypical lifestyles for any type, so there is no need to actually write such an
          * implementation.
          * </p>
-         * <h3>Pre-defined lifestyle</h3>
-         * <p>
-         * Sinobu comes with two pre-defined lifestyles. One is the prototype lifestyle described
-         * earlier, which generates a new instant every time it is requested. This is the default
-         * lifestyle in Sinobu, so you do not need to make any special settings to use it.
-         * </p>
-         * <pre>{@link PrototypeTest#prototype()}</pre>
-         * <p>
-         * The other is the singleton lifestyle, which keeps a single instance in the JVM and always
-         * returns it.
-         * </p>
-         * <pre>{@link SingletonTest#singleton()}</pre>
-         * <h3>Custom lifestyle</h3>
-         * <p>
-         * You can also define new lifestyles based on arbitrary contexts by implementing the
-         * {@link Lifestyle} interface and defining a constructor to receive the requested type.
-         * </p>
-         * <pre>{@link PerThread}</pre>
          */
-        public DocumentDoc Defining_lifestyle;
+        public class Defining_lifestyle {
 
-        class Prototype implements Lifestyle<Person> {
+            class Prototype implements Lifestyle<Person> {
 
-            @Override
-            public Person call() throws Exception {
-                return new Person();
+                @Override
+                public Person call() throws Exception {
+                    return new Person();
+                }
             }
-        }
 
-        class PerThread<T> implements Lifestyle<T> {
+            /**
+             * <h3>Pre-defined lifestyle</h3>
+             * <p>
+             * Sinobu comes with two pre-defined lifestyles. One is the prototype lifestyle
+             * described earlier, which generates a new instant every time it is requested. This is
+             * the default lifestyle in Sinobu, so you do not need to make any special settings to
+             * use it.
+             * </p>
+             * <pre>{@link PrototypeTest#prototype()}</pre>
+             * <p>
+             * The other is the singleton lifestyle, which keeps a single instance in the JVM and
+             * always returns it.
+             * </p>
+             * <pre>{@link SingletonTest#singleton()}</pre>
+             */
+            public class Pre_defined_lifestyle {
+            }
 
-            private final ThreadLocal<T> local;
+            /**
+             * <h3>Custom lifestyle</h3>
+             * <p>
+             * You can also define new lifestyles based on arbitrary contexts by implementing the
+             * {@link Lifestyle} interface and defining a constructor to receive the requested type.
+             * </p>
+             * <pre>{@link PerThread}</pre>
+             */
+            public class Custom_lifestyle {
 
-            PerThread(Class<T> requestedType) {
-                local = ThreadLocal.withInitial(() -> {
-                    try {
-                        return requestedType.getDeclaredConstructor().newInstance();
-                    } catch (Exception e) {
-                        throw new Error(e);
+                class PerThread<T> implements Lifestyle<T> {
+                    private final ThreadLocal<T> local;
+
+                    PerThread(Class<T> requestedType) {
+                        local = ThreadLocal.withInitial(() -> {
+                            try {
+                                return requestedType.getDeclaredConstructor().newInstance();
+                            } catch (Exception e) {
+                                throw new Error(e);
+                            }
+                        });
                     }
-                });
-            }
 
-            @Override
-            public T call() throws Exception {
-                return local.get();
+                    @Override
+                    public T call() throws Exception {
+                        return local.get();
+                    }
+                }
             }
         }
 
@@ -213,24 +232,25 @@ public class DocumentDoc {
          * </p>
          * <pre>{@link SingletonLocale}</pre>
          */
-        public DocumentDoc Registering_lifestyle;
+        public class Registering_lifestyle {
 
-        @Managed(Singleton.class)
-        class Earth {
-        }
+            @Managed(Singleton.class)
+            class Earth {
+            }
 
-        class SingletonLocale implements Lifestyle<Locale> {
+            class SingletonLocale implements Lifestyle<Locale> {
 
-            private static final Locale singleton = Locale.forLanguageTag("language-tag");
+                private static final Locale singleton = Locale.forLanguageTag("language-tag");
 
-            @Override
-            public Locale call() throws Exception {
-                return singleton;
+                @Override
+                public Locale call() throws Exception {
+                    return singleton;
+                }
             }
         }
     }
 
-    class Dipendency_Injection {
+    public class Dipendency_Injection {
         /**
          * <h2>The need for Dependency Injection</h2>
          * <p>
@@ -242,87 +262,119 @@ public class DocumentDoc {
          * development, DI is an almost indispensable mechanism.
          * </p>
          */
-        public DocumentDoc The_need_for_Dependency_Injection;
+        public class The_need_for_Dependency_Injection {
+        }
 
-        public DocumentDoc Circular_Reference;
+        public class Circular_Reference {
+        }
     }
 
-    class HTTP {
-        public DocumentDoc Request_and_Response;
+    public class HTTP {
+        public class Request_and_Response {
+        }
 
-        public DocumentDoc Supported_Type;
+        public class Supported_Type {
+        }
 
-        public DocumentDoc Cookie;
+        public class Cookie {
+        }
 
-        public DocumentDoc Authentication;
+        public class Authentication {
+        }
     }
 
-    class JSON {
+    public class JSON {
 
-        public DocumentDoc Parsing;
+        public class Parsing {
+        }
 
-        public DocumentDoc Writing;
+        public class Writing {
+        }
 
-        public DocumentDoc Mapping_to_Model;
+        public class Mapping_to_Model {
+        }
 
-        public DocumentDoc Mapping_from_Model;
+        public class Mapping_from_Model {
+        }
     }
 
-    class HTML {
-        public DocumentDoc Parsing;
+    public class HTML {
+        public class Parsing {
+        }
 
-        public DocumentDoc Writing;
+        public class Writing {
+        }
 
-        public DocumentDoc Support_CSS_Selector;
+        public class Support_CSS_Selector {
+        }
 
-        public DocumentDoc Manipulation;
+        public class Manipulation {
+        }
 
-        public DocumentDoc Traverse;
+        public class Traverse {
+        }
     }
 
-    class ReactiveX {
+    public class ReactiveX {
 
-        public DocumentDoc Signal;
+        public class Signal {
+        }
 
-        public DocumentDoc Subscribe;
+        public class Subscribe {
+        }
 
-        public DocumentDoc Unsubscribe;
+        public class Unsubscribe {
+        }
 
-        public DocumentDoc Operators;
+        public class Operators {
+        }
     }
 
-    class Template_Engine {
-        public DocumentDoc Variable;
+    public class Template_Engine {
+        public class Variable {
+        }
 
-        public DocumentDoc Section;
+        public class Section {
+        }
 
-        public DocumentDoc Comment;
+        public class Comment {
+        }
     }
 
-    class Plugin {
+    public class Plugin {
 
-        public DocumentDoc Extension_Point;
+        public class Extension_Point {
+        }
 
-        public DocumentDoc Extension;
+        public class Extension {
+        }
 
-        public DocumentDoc Dynamic_Loading;
+        public class Dynamic_Loading {
+        }
 
-        public DocumentDoc Query_Extension;
+        public class Query_Extension {
+        }
     }
 
-    class DSL {
-        public DocumentDoc Tree_Structured_Data;
+    public class DSL {
+        public class Tree_Structured_Data {
+        }
 
-        public DocumentDoc Node_and_Leaf;
+        public class Node_and_Leaf {
+        }
 
-        public DocumentDoc HTML_Sample;
+        public class HTML_Sample {
+        }
     }
 
-    class Persistence {
-        public DocumentDoc Save_Data;
+    public class Persistence {
+        public class Save_Data {
+        }
 
-        public DocumentDoc Save_Automatically;
+        public class Save_Automatically {
+        }
 
-        public DocumentDoc Config_Location;
+        public class Config_Location {
+        }
     }
 }
