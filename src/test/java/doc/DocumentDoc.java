@@ -250,7 +250,7 @@ public class DocumentDoc {
         }
     }
 
-    public class Dipendency_Injection {
+    public class Dependency_Injection {
         /**
          * <h2>The need for Dependency Injection</h2>
          * <p>
