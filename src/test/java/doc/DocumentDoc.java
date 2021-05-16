@@ -9,7 +9,13 @@
  */
 package doc;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Callable;
 
 import kiss.Disposable;
@@ -208,6 +214,25 @@ public class DocumentDoc {
                         return local.get();
                     }
                 }
+            }
+
+            /**
+             * <h3>Builtin Types</h3>
+             * <p>
+             * Sinobu comes with built-in lifestles for the following types.
+             * </p>
+             * <dl>
+             * <dt>{@link List}
+             * <dd>Generate a new {@link ArrayList} each time.</dd>
+             * <dt>{@link Set}
+             * <dd>Generate a new {@link HashSet} each time.</dd>
+             * <dt>{@link Map}
+             * <dd>Generate a new {@link HashMap} each time.</dd>
+             * <dt>{@link Locale}
+             * <dd>Always returns the instance retrieved from {@link Locale#getDefault()}.</dd>
+             * </dl>
+             */
+            public class Builtin_types {
             }
         }
 
