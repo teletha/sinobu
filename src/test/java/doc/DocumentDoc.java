@@ -29,6 +29,9 @@ import kiss.sample.bean.Person;
 
 /**
  * <h2>Document</h2>
+ * 
+ * @product sinobu
+ * @project sinobu
  */
 public class DocumentDoc {
 
@@ -80,6 +83,13 @@ public class DocumentDoc {
          * <a href="https://maven.apache.org/">Maven</a> or
          * <a href="https://gradle.org/">Gradle</a>.
          * </p>
+         * <pre class="lang-xml">{@code
+         * <dependency>
+         *     <groupId>{project}</groupId>
+         *     <artifactId>{product}</artifactId>
+         *     <version>{version}<version>
+         * </dependency>
+         * }</pre>
          */
         public class How_to_install {
         }
