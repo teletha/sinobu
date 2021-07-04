@@ -300,7 +300,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      * @return An element name.
      */
     public String name() {
-        return ((org.w3c.dom.Element) nodes.iterator().next()).getTagName();
+        return nodes.isEmpty() ? "" : ((Element) nodes.get(0)).getTagName();
     }
 
     /**
@@ -312,7 +312,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      * @return Chainable API.
      */
     public String attr(String name) {
-        return ((org.w3c.dom.Element) nodes.iterator().next()).getAttribute(name);
+        return nodes.isEmpty() ? "" : ((Element) nodes.get(0)).getAttribute(name);
     }
 
     /**

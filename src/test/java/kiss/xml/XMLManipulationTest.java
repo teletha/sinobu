@@ -181,6 +181,14 @@ class XMLManipulationTest {
     }
 
     @Test
+    void attrGetNone() {
+        String xml = "<Q/>";
+
+        assert I.xml(xml).attr("name").equals("");
+        assert I.xml(xml).attr("key").equals("");
+    }
+
+    @Test
     void attrGetNS() {
         String xml = "<Q xmlns:P='p' xmlns:z='z' z:name='fail' P:name='value' name='fail'/>";
 
