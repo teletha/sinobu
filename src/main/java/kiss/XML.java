@@ -41,14 +41,15 @@ import org.w3c.dom.NodeList;
 public class XML implements Iterable<XML>, Consumer<XML> {
 
     /**
-     * Original pattern.
      * <p>
+     * Original pattern.
+     * </p>
      * <pre>
-     * ([>~+\-, ]*)?((?:(?:\w+|\*)\|)?(?:\w+(?:\\.\w+)*|\*))?(?:#(\w+))?((?:\.\w+)*)(?:\[\s?([\w:]+)(?:\s*([=~^$*|])?=\s*["]([^"]*)["])?\s?\])?(?::([\w-]+)(?:\((odd|even|(\d*)(n)?(?:\+(\d+))?|(?:.*))\))?)?
+     * ([>~+\-, ]*)?((?:(?:\w+|\*)\|)?(?:\w+(?:\\.\w*)*|\*))?(?:#(\w+))?((?:\.\w+(?:\\.\w*)*)*)(?:\[\s?([\w:]+)(?:\s*([=~^$*|])?=\s*["]([^"]*)["])?\s?\])?(?::([\w-]+)(?:\((odd|even|(\d*)(n)?(?:\+(\d+))?|(?:.*))\))?)?
      * </pre>
      */
     private static final Pattern SELECTOR = Pattern
-            .compile("([>~+\\-, ]*)?((?:(?:\\w+|\\*)\\|)?(?:\\w+(?:\\\\.\\w+)*|\\*))?(?:#(\\w+))?((?:\\.\\w+)*)(?:\\[\\s?([\\w:]+)(?:\\s*([=~^$*|])?=\\s*[\"]([^\"]*)[\"])?\\s?\\])?(?::([\\w-]+)(?:\\((odd|even|(\\d*)(n)?(?:\\+(\\d+))?|(?:.*))\\))?)?");
+            .compile("([>~+\\-, ]*)?((?:(?:\\w+|\\*)\\|)?(?:\\w+(?:\\\\.\\w*)*|\\*))?(?:#(\\w+))?((?:\\.\\w+(?:\\\\.\\w*)*)*)(?:\\[\\s?([\\w:]+)(?:\\s*([=~^$*|])?=\\s*[\"]([^\"]*)[\"])?\\s?\\])?(?::([\\w-]+)(?:\\((odd|even|(\\d*)(n)?(?:\\+(\\d+))?|(?:.*))\\))?)?");
 
     /** The cache for compiled selectors. */
     private static final Map<String, XPathExpression> selectors = new ConcurrentHashMap();
@@ -910,7 +911,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
             if (match == null || match.equals("*")) {
                 xpath.append("*");
             } else {
-                xpath.append("*[name()='").append(match.replace('|', ':').replaceAll("\\\\", "")).append("']");
+                xpath.append("*[name()='").append(match.replace('|', ':').replaceAll("\\\\(.)", "$1")).append("']");
             }
 
             // =================================================
@@ -929,7 +930,9 @@ public class XML implements Iterable<XML>, Consumer<XML> {
 
             if (match != null && match.length() != 0) {
                 for (String className : match.substring(1).split("\\.")) {
-                    xpath.append("[contains(concat(' ',normalize-space(@class),' '),' ").append(className).append(" ')]");
+                    xpath.append("[contains(concat(' ',normalize-space(@class),' '),' ")
+                            .append(className.replaceAll("\\\\(.)", "$1"))
+                            .append(" ')]");
                 }
             }
 

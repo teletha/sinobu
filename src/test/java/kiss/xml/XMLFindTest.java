@@ -14,20 +14,17 @@ import org.junit.jupiter.api.Test;
 import kiss.I;
 import kiss.XML;
 
-/**
- * @version 2012/02/05 17:08:12
- */
 public class XMLFindTest {
 
     @Test
-    public void type() throws Exception {
+    public void type() {
         String xml = "<m><E/><E/><e><E/></e></m>";
 
         assert I.xml(xml).find("E").size() == 3;
     }
 
     @Test
-    public void types() throws Exception {
+    public void types() {
         String xml = "<m><E/><F/><e><G/></e></m>";
 
         assert I.xml(xml).find("E,F").size() == 2;
@@ -36,28 +33,44 @@ public class XMLFindTest {
     }
 
     @Test
-    public void typeWithDot() throws Exception {
+    public void typeWithDot() {
         String xml = "<m><E.E.E/></m>";
 
         assert I.xml(xml).find("E\\.E\\.E").size() == 1;
     }
 
     @Test
-    public void typeWithHyphen() throws Exception {
-        String xml = "<m><E-E/></m>";
+    public void typeWithHyphen() {
+        String xml = "<m><E-E/><E--E/></m>";
 
         assert I.xml(xml).find("E\\-E").size() == 1;
+        assert I.xml(xml).find("E\\-\\-E").size() == 1;
     }
 
     @Test
-    public void clazz() throws Exception {
+    public void clazz() {
         String xml = "<m><e class='C'/><e class='none'/></m>";
 
         assert I.xml(xml).find(".C").size() == 1;
     }
 
     @Test
-    public void clazzWithMultipleValue() throws Exception {
+    public void clazzWithHyphen() {
+        String xml = "<m><e class='a-b'/><e class='a--b'/><e class='none'/></m>";
+
+        assert I.xml(xml).find(".a\\-b").size() == 1;
+        assert I.xml(xml).find(".a\\-\\-b").size() == 1;
+    }
+
+    @Test
+    public void clazzWithEscapeDollar() {
+        String xml = "<m><e class='a\\b'/><e class='none'/></m>";
+
+        assert I.xml(xml).find(".a\\\\b").size() == 1;
+    }
+
+    @Test
+    public void clazzWithMultipleValue() {
         String xml = "<m><e class='A B C'/><e class='AA BB CC'/></m>";
 
         assert I.xml(xml).find(".A").size() == 1;
@@ -66,7 +79,7 @@ public class XMLFindTest {
     }
 
     @Test
-    public void clazzMultiple() throws Exception {
+    public void clazzMultiple() {
         String xml = "<m><e class='A B C'/><e class='AA BB CC'/></m>";
 
         assert I.xml(xml).find(".A.B").size() == 1;
@@ -75,7 +88,7 @@ public class XMLFindTest {
     }
 
     @Test
-    public void id() throws Exception {
+    public void id() {
         String xml = "<m><e id='A'/><e id='AA'/></m>";
 
         assert I.xml(xml).find("#A").size() == 1;
@@ -83,7 +96,7 @@ public class XMLFindTest {
     }
 
     @Test
-    public void attribute() throws Exception {
+    public void attribute() {
         String xml = "<m><e A='A' B='B'/><e A='B' B='A'/></m>";
 
         assert I.xml(xml).find("[A]").size() == 2;
@@ -91,7 +104,7 @@ public class XMLFindTest {
     }
 
     @Test
-    public void attributeValue() throws Exception {
+    public void attributeValue() {
         String xml = "<m><e A='A'/></m>";
 
         // variants for white space
@@ -102,7 +115,7 @@ public class XMLFindTest {
     }
 
     @Test
-    public void attributeConatainValue() throws Exception {
+    public void attributeConatainValue() {
         String xml = "<m><e A='A B C'/><e A='AA BB CC'/></m>";
 
         assert I.xml(xml).find("[A ~= \"A\"]").size() == 1;
@@ -111,7 +124,7 @@ public class XMLFindTest {
     }
 
     @Test
-    public void attributeConatainText() throws Exception {
+    public void attributeConatainText() {
         String xml = "<m><e A='A B C'/><e A='AB'/></m>";
 
         assert I.xml(xml).find("[A *= \"A\"]").size() == 2;
@@ -120,7 +133,7 @@ public class XMLFindTest {
     }
 
     @Test
-    public void attributeStartWith() throws Exception {
+    public void attributeStartWith() {
         String xml = "<m><e A='A B C'/><e A='AA BB CC'/><e A='D'/></m>";
 
         assert I.xml(xml).find("[A ^= \"A\"]").size() == 2;
@@ -132,7 +145,7 @@ public class XMLFindTest {
     }
 
     @Test
-    public void attributeEndWith() throws Exception {
+    public void attributeEndWith() {
         String xml = "<m><e A='A B C'/><e A='AA BB CC'/><e A='D'/></m>";
 
         assert I.xml(xml).find("[A $= \"A\"]").size() == 0;
@@ -144,7 +157,7 @@ public class XMLFindTest {
     }
 
     @Test
-    public void child() throws Exception {
+    public void child() {
         String xml = xml("<m><P><Q/><z><Q/></z><Q/></P><Q/></m>");
 
         assert I.xml(xml).find("P>Q").size() == 2;
@@ -153,7 +166,7 @@ public class XMLFindTest {
     }
 
     @Test
-    public void sibling() throws Exception {
+    public void sibling() {
         String xml = xml("<m><P><Q/><P/><Q/></P><Q/><Q/></m>");
 
         assert I.xml(xml).find("P+Q").size() == 2;
@@ -162,7 +175,7 @@ public class XMLFindTest {
     }
 
     @Test
-    public void siblings() throws Exception {
+    public void siblings() {
         String xml = xml("<m><P><Q/><P/><Q/></P><Q/><Q/></m>");
 
         assert I.xml(xml).find("P~Q").size() == 3;
@@ -171,7 +184,7 @@ public class XMLFindTest {
     }
 
     @Test
-    public void previous() throws Exception {
+    public void previous() {
         String xml = xml("<m><P><Q/><P/><Q/></P><Q/><Q/><P/></m>");
 
         assert I.xml(xml).find("P-Q").size() == 2;
@@ -180,7 +193,7 @@ public class XMLFindTest {
     }
 
     @Test
-    public void firstChild() throws Exception {
+    public void firstChild() {
         String xml = xml("<m><Q/><Q/><R/></m>");
 
         assert I.xml(xml).find("Q:first-child").size() == 1;
@@ -188,7 +201,7 @@ public class XMLFindTest {
     }
 
     @Test
-    public void firstOfType() throws Exception {
+    public void firstOfType() {
         String xml = xml("<m><Q/><Q/><R/></m>");
 
         assert I.xml(xml).find("Q:first-of-type").size() == 1;
@@ -196,7 +209,7 @@ public class XMLFindTest {
     }
 
     @Test
-    public void lastChild() throws Exception {
+    public void lastChild() {
         String xml = xml("<m><Q/><Q/><R/></m>");
 
         assert I.xml(xml).find("Q:last-child").size() == 0;
@@ -204,7 +217,7 @@ public class XMLFindTest {
     }
 
     @Test
-    public void lastOfType() throws Exception {
+    public void lastOfType() {
         String xml = xml("<m><Q/><Q/><R/></m>");
 
         assert I.xml(xml).find("Q:last-of-type").size() == 1;
@@ -212,7 +225,7 @@ public class XMLFindTest {
     }
 
     @Test
-    public void nthChild() throws Exception {
+    public void nthChild() {
         String xml = xml("<m><Q/><Q/><Q/><Q/><P/><Q/><Q/></m>");
 
         assert I.xml(xml).find("Q:nth-child(1)").size() == 1;
@@ -228,7 +241,7 @@ public class XMLFindTest {
     }
 
     @Test
-    public void nthOfType() throws Exception {
+    public void nthOfType() {
         String xml = xml("<m><Q/><P/><Q/><P/><P/><Q/><Q/></m>");
 
         assert I.xml(xml).find("Q:nth-of-type(1)").size() == 1;
@@ -243,7 +256,7 @@ public class XMLFindTest {
     }
 
     @Test
-    public void nthLastChild() throws Exception {
+    public void nthLastChild() {
         String xml = xml("<m><Q/><Q/><Q/><Q/><P/><Q/><Q/></m>");
 
         assert I.xml(xml).find("Q:nth-last-child(1)").size() == 1;
@@ -259,7 +272,7 @@ public class XMLFindTest {
     }
 
     @Test
-    public void nthLastOfType() throws Exception {
+    public void nthLastOfType() {
         String xml = xml("<m><Q/><P/><Q/><P/><P/><Q/><Q/></m>");
 
         assert I.xml(xml).find("Q:nth-last-of-type(1)").size() == 1;
@@ -274,42 +287,42 @@ public class XMLFindTest {
     }
 
     @Test
-    public void onlyChild() throws Exception {
+    public void onlyChild() {
         String xml = xml("<m><Q/><r><Q/></r><r><Q/></r></m>");
 
         assert I.xml(xml).find("Q:only-child").size() == 2;
     }
 
     @Test
-    public void onlyOfType() throws Exception {
+    public void onlyOfType() {
         String xml = xml("<m><Q/><r><Q/><P/></r><r><Q/></r><Q/></m>");
 
         assert I.xml(xml).find("Q:only-of-type").size() == 2;
     }
 
     @Test
-    public void empty() throws Exception {
+    public void empty() {
         String xml = xml("<m><Q/><Q>text</Q><Q><r/></Q></m>");
 
         assert I.xml(xml).find("Q:empty").size() == 1;
     }
 
     @Test
-    public void notElement() throws Exception {
+    public void notElement() {
         String xml = xml("<m><Q><S/></Q><Q><t/></Q></m>");
 
         assert I.xml(xml).find("Q:not(S)").size() == 1;
     }
 
     @Test
-    public void notAttribute() throws Exception {
+    public void notAttribute() {
         String xml = xml("<m><Q class='A'/><Q class='B'/><Q class='A B'/></m>");
 
         assert I.xml(xml).find("Q:not(.A)").size() == 1;
     }
 
     @Test
-    public void hasElement() throws Exception {
+    public void hasElement() {
         String xml = xml("<m><Q><S/></Q><Q><S/><T/></Q><Q><T/></Q></m>");
 
         assert I.xml(xml).find("Q:has(S)").size() == 2;
@@ -319,14 +332,14 @@ public class XMLFindTest {
     }
 
     @Test
-    public void hasElementNest() throws Exception {
+    public void hasElementNest() {
         String xml = xml("<m><Q><S/></Q><Q><S><T/></S></Q></m>");
 
         assert I.xml(xml).find("Q:has(S:has(T))").size() == 1;
     }
 
     @Test
-    public void hasAttribute() throws Exception {
+    public void hasAttribute() {
         String xml = xml("<m><Q class='A'/><Q class='B'/><Q class='A B'/></m>");
 
         assert I.xml(xml).find("Q:has(.A)").size() == 2;
@@ -335,28 +348,28 @@ public class XMLFindTest {
     }
 
     @Test
-    public void parent() throws Exception {
+    public void parent() {
         String xml = xml("<m><Q/><Q/><Q/></m>");
 
         assert I.xml(xml).find("Q:parent").size() == 1;
     }
 
     @Test
-    public void parent2() throws Exception {
+    public void parent2() {
         String xml = xml("<m><Q/><Q/><Q/></m>");
 
         assert I.xml(xml).find("Q").parent().size() == 1;
     }
 
     @Test
-    public void root() throws Exception {
+    public void root() {
         String xml = xml("<Q><Q/></Q>");
 
         assert I.xml(xml).find("Q:root").size() == 1;
     }
 
     @Test
-    public void contains() throws Exception {
+    public void contains() {
         String xml = xml("<m><Q>a</Q><Q>b</Q><Q>aa</Q></m>");
 
         assert I.xml(xml).find("Q:contains(a)").size() == 2;
@@ -365,28 +378,28 @@ public class XMLFindTest {
     }
 
     @Test
-    public void asterisk() throws Exception {
+    public void asterisk() {
         String xml = xml("<m><Q><a/><b/><c/></Q></m>");
 
         assert I.xml(xml).find("Q *").size() == 3;
     }
 
     @Test
-    public void namespaceElement() throws Exception {
+    public void namespaceElement() {
         String xml = xml("<m xmlns:p='p' xmlns:q='q' xmlns:r='r'><p:Q/><q:Q/><r:Q/></m>");
 
         assert I.xml(xml).find("p|Q").size() == 1;
     }
 
     @Test
-    public void namespaceAsterisk() throws Exception {
+    public void namespaceAsterisk() {
         String xml = xml("<m xmlns:p='p' xmlns:q='q' xmlns:r='r'><p:Q/><q:Q/><r:Q/></m>");
 
         assert I.xml(xml).find("p|Q").size() == 1;
     }
 
     @Test
-    public void contextual() throws Exception {
+    public void contextual() {
         XML e = I.xml("<Q><Q/><Q/></Q>");
 
         assert e.find("> Q").size() == 2;
