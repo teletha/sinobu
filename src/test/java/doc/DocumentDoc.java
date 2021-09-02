@@ -9,6 +9,9 @@
  */
 package doc;
 
+import java.io.InputStream;
+import java.io.Reader;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -320,7 +323,40 @@ public class DocumentDoc {
 
     public class JSON {
 
+        /**
+         * <p>
+         * JSONを解析する最も単純な方法は{@link I#json(String)}を呼び出すことです。
+         * </p>
+         * <pre>{@link #parseJSON()}</pre>
+         * <p>
+         * この例では入力にJSON文字列をそのまま使用していますが、ファイルシルテム上から読み込むには{@link Path}を、その他の入力から読み込むには{@link InputStream}や{@link Reader}を使用することも出来ます。
+         * </p>
+         * <p>
+         * 次に解析されたJSONからデータを読み出してみます。キーと値の型を指定することで自動的にその型へと変換することができます。
+         * </p>
+         * <pre>{@link #retrieveJSONValue()}</pre>
+         */
         public class Parsing {
+
+            void parseJSON() {
+                kiss.JSON json = I.json("""
+                        {
+                            'name'  : 'Jotaro Kujo',
+                            'stand' : 'Star Platinum'
+                        }
+                        """);
+            }
+
+            void retrieveJSONValue() {
+                kiss.JSON json = I.json("""
+                        {
+                            'name'  : 'Jotaro Kujo',
+                            'stand' : 'Star Platinum'
+                        }
+                        """);
+
+                assert json.get(String.class, "name").equals("Jotaro Kujo");
+            }
         }
 
         public class Writing {
