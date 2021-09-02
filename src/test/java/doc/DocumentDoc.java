@@ -9,9 +9,6 @@
  */
 package doc;
 
-import java.io.InputStream;
-import java.io.Reader;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,6 +23,7 @@ import kiss.I;
 import kiss.Lifestyle;
 import kiss.Managed;
 import kiss.Singleton;
+import kiss.json.ManipulateTest;
 import kiss.lifestyle.PrototypeTest;
 import kiss.lifestyle.SingletonTest;
 import kiss.sample.bean.Person;
@@ -325,16 +323,16 @@ public class DocumentDoc {
 
         /**
          * <p>
-         * JSONを解析する最も単純な方法は{@link I#json(String)}を呼び出すことです。
+         * You can parse JSON by calling {@link I#json(String)}. You can use a JSON string directly
+         * as input, or you can use a file or various generic inputs (e.g. InputStream or Reader).
          * </p>
          * <pre>{@link #parseJSON()}</pre>
          * <p>
-         * この例では入力にJSON文字列をそのまま使用していますが、ファイルシルテム上から読み込むには{@link Path}を、その他の入力から読み込むには{@link InputStream}や{@link Reader}を使用することも出来ます。
+         * All parsed JSON data will be retained in memory. Any value can be retrieved from this
+         * object by specifying the key name. If you specify an arbitrary type when retrieving, you
+         * can get the value converted to that type if possible.
          * </p>
-         * <p>
-         * 次に解析されたJSONからデータを読み出してみます。キーと値の型を指定することで自動的にその型へと変換することができます。
-         * </p>
-         * <pre>{@link #retrieveJSONValue()}</pre>
+         * <pre>{@link #retrieveJSONValue()}</pre> <pre>{@link ManipulateTest#get()}</pre>
          */
         public class Parsing {
 
@@ -351,11 +349,13 @@ public class DocumentDoc {
                 kiss.JSON json = I.json("""
                         {
                             'name'  : 'Jotaro Kujo',
-                            'stand' : 'Star Platinum'
+                            'stand' : 'Star Platinum',
+                            'age'   : 30
                         }
                         """);
 
                 assert json.get(String.class, "name").equals("Jotaro Kujo");
+                assert json.get(int.class, "age") == 30;
             }
         }
 

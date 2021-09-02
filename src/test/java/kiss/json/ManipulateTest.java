@@ -15,10 +15,10 @@ import org.junit.jupiter.api.Test;
 import kiss.I;
 import kiss.JSON;
 
-class ManipulateTest {
+public class ManipulateTest {
 
     @Test
-    void get() {
+    public void get() {
         JSON json = write("{ 'key':'value' }");
         assert json.get("key").as(String.class).equals("value");
     }
