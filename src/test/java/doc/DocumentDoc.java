@@ -332,17 +332,16 @@ public class DocumentDoc {
          * object by specifying the key name. If you specify an arbitrary type when retrieving, you
          * can get the value converted to that type if possible.
          * </p>
-         * <pre>{@link #retrieveJSONValue()}</pre> <pre>{@link ManipulateTest#get()}</pre>
+         * <pre>{@link ManipulateTest#get()}</pre> <pre>{@link ManipulateTest#getTyped()}</pre>
          */
         public class Parsing {
 
             void parseJSON() {
-                kiss.JSON json = I.json("""
+                String json = """
                         {
-                            'name'  : 'Jotaro Kujo',
-                            'stand' : 'Star Platinum'
+                            "key": "value"
                         }
-                        """);
+                        """;
             }
 
             void retrieveJSONValue() {

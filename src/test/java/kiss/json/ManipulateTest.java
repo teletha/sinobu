@@ -19,7 +19,9 @@ public class ManipulateTest {
 
     @Test
     public void get() {
-        JSON json = write("{ 'key':'value' }");
+        JSON json = I.json("""
+                { "key" : "value" }
+                """);
         assert json.get("key").as(String.class).equals("value");
     }
 
@@ -36,8 +38,10 @@ public class ManipulateTest {
     }
 
     @Test
-    void getTyped() {
-        JSON json = write("{ 'key':'value' }");
+    public void getTyped() {
+        JSON json = I.json("""
+                { "key" : "value" }
+                """);
         assert json.get(String.class, "key").equals("value");
     }
 
