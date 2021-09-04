@@ -9,6 +9,8 @@
  */
 package doc;
 
+import java.io.InputStream;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -323,42 +325,26 @@ public class DocumentDoc {
 
         /**
          * <p>
-         * You can parse JSON by calling {@link I#json(String)}. You can use a JSON string directly
-         * as input, or you can use a file or various generic inputs (e.g. InputStream or Reader).
+         * You can read JSON by calling the <a href="#aa">method</a> ({@link I#json(String)}). You
+         * can use a JSON string directly as input, or you can use a file or various generic inputs
+         * (e.g. {@link InputStream} or {@link Reader}).
          * </p>
-         * <pre>{@link #parseJSON()}</pre>
          * <p>
          * All parsed JSON data will be retained in memory. Any value can be retrieved from this
          * object by specifying the key name. If you specify an arbitrary type when retrieving, you
          * can get the value converted to that type if possible.
          * </p>
-         * <pre>{@link ManipulateTest#get()}</pre> <pre>{@link ManipulateTest#getTyped()}</pre>
+         * <pre>{@link ManipulateTest#get()}</pre> <pre>{@link ManipulateTest#getAsYourType()}</pre>
+         * <p>
+         * It is also possible to access nested properties by calling the
+         * {@link kiss.JSON#get(String)} method consecutively.
+         * </p>
+         * <pre>{@link ManipulateTest#readNestedValue()}</pre>
          */
-        public class Parsing {
-
-            void parseJSON() {
-                String json = """
-                        {
-                            "key": "value"
-                        }
-                        """;
-            }
-
-            void retrieveJSONValue() {
-                kiss.JSON json = I.json("""
-                        {
-                            'name'  : 'Jotaro Kujo',
-                            'stand' : 'Star Platinum',
-                            'age'   : 30
-                        }
-                        """);
-
-                assert json.get(String.class, "name").equals("Jotaro Kujo");
-                assert json.get(int.class, "age") == 30;
-            }
+        public class Reading_JSON {
         }
 
-        public class Writing {
+        public class Writing_JSON {
         }
 
         public class Mapping_to_Model {
