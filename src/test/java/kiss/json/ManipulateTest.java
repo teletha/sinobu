@@ -18,10 +18,10 @@ import kiss.JSON;
 public class ManipulateTest {
 
     @Test
-    void readValue() {
+    public void readValue() {
         JSON json = I.json("""
                 {
-                    "number"   : "10",
+                    "number" : 10,
                     "bool" : false
                 }
                 """);
@@ -34,7 +34,7 @@ public class ManipulateTest {
     public void readNestedValue() {
         JSON json = I.json("""
                 {
-                    "child1"   : {
+                    "child1" : {
                         "name" : "first"
                     },
                     "child2" : {

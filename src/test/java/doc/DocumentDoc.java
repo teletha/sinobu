@@ -9,8 +9,6 @@
  */
 package doc;
 
-import java.io.InputStream;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -101,17 +99,15 @@ public class DocumentDoc {
     public class Managing_object_lifestyle {
 
         /**
-         * <h2>What do you mean by lifestyle?</h2>
          * <p>
          * In Sinobu, lifestyle refers to the way an object is created and managed, corresponding to
          * the scope in terms of DI containers such as SpringFramework and Guice, but without the
          * process of registering with the container or destroying the object.
          * </p>
          */
-        public class What_do_you_mean_by_lifestyle {
+        public class What_do_you_mean_by_lifestyle_ {
 
             /**
-             * <h3>Creating an object</h3>
              * <p>
              * In Java, it is common to use the new operator on the constructor to create a new
              * object. In many cases, this is sufficient, but in the following situations, it is a
@@ -145,7 +141,6 @@ public class DocumentDoc {
         }
 
         /**
-         * <h2>Defining lifestyle</h2>
          * <p>
          * In order to define a lifestyle, we need to write a {@link Lifestyle} interface. This
          * interface is essentially equivalent to {@link Callable}, but it is called when a specific
@@ -182,7 +177,6 @@ public class DocumentDoc {
             }
 
             /**
-             * <h3>Pre-defined lifestyle</h3>
              * <p>
              * Sinobu comes with two pre-defined lifestyles. One is the prototype lifestyle
              * described earlier, which generates a new instant every time it is requested. This is
@@ -200,7 +194,6 @@ public class DocumentDoc {
             }
 
             /**
-             * <h3>Custom lifestyle</h3>
              * <p>
              * You can also define new lifestyles based on arbitrary contexts by implementing the
              * {@link Lifestyle} interface and defining a constructor to receive the requested type.
@@ -230,7 +223,6 @@ public class DocumentDoc {
             }
 
             /**
-             * <h3>Builtin Types</h3>
              * <p>
              * Sinobu comes with built-in lifestles for the following types.
              * </p>
@@ -250,7 +242,6 @@ public class DocumentDoc {
         }
 
         /**
-         * <h2>Registering lifestyle</h2>
          * <p>
          * To use a lifestyle other than the prototype lifestyle, you need to individually configure
          * the lifestyle to be used in the class. There are two ways to do this, one is to use
@@ -290,7 +281,6 @@ public class DocumentDoc {
 
     public class Dependency_Injection {
         /**
-         * <h2>The need for Dependency Injection</h2>
          * <p>
          * Dependency Injection (DI) is a mechanism that solves various problems related to
          * component dependencies in "a nice way". Component dependency refers to the relationship
@@ -325,23 +315,38 @@ public class DocumentDoc {
 
         /**
          * <p>
-         * You can read JSON by calling the <a href="#aa">method</a> ({@link I#json(String)}). You
-         * can use a JSON string directly as input, or you can use a file or various generic inputs
-         * (e.g. {@link InputStream} or {@link Reader}).
+         * You can read JSON from strings, files, and various inputs. All data will be expanded into
+         * memory in a tree format. It is not a streaming format, so please be careful when parsing
+         * very large JSON.
          * </p>
          * <p>
-         * All parsed JSON data will be retained in memory. Any value can be retrieved from this
-         * object by specifying the key name. If you specify an arbitrary type when retrieving, you
-         * can get the value converted to that type if possible.
+         * You can access the value by specifying the key.
          * </p>
-         * <pre>{@link ManipulateTest#get()}</pre> <pre>{@link ManipulateTest#getAsYourType()}</pre>
+         * <pre>{@link ManipulateTest#readValue()}</pre>
          * <p>
-         * It is also possible to access nested properties by calling the
-         * {@link kiss.JSON#get(String)} method consecutively.
+         * You can specify a key multiple times to access nested values.
          * </p>
          * <pre>{@link ManipulateTest#readNestedValue()}</pre>
          */
         public class Reading_JSON {
+
+            /**
+             * <p>
+             * You can access the value by specifying the key.
+             * </p>
+             * <pre>{@link ManipulateTest#readValue()}</pre>
+             */
+            public class Access_to_the_value {
+            }
+
+            /**
+             * <p>
+             * You can specify a key multiple times to access nested values.
+             * </p>
+             * <pre>{@link ManipulateTest#readNestedValue()}</pre>
+             */
+            public class Access_to_the_nested_value {
+            }
         }
 
         public class Writing_JSON {
