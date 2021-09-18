@@ -78,6 +78,11 @@ import java.util.function.Function;
 import java.util.function.LongSupplier;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.logging.FileHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
@@ -191,6 +196,9 @@ public class I {
     /** The xpath evaluator. */
     static final XPath xpath;
 
+    /** The configuration of root logger in Sinobu. */
+    static final Logger log = Logger.getLogger("");
+
     /** The cache for {@link Lifestyle}. */
     private static final Map<Class, Lifestyle> lifestyles = new ConcurrentHashMap<>();
 
@@ -234,6 +242,22 @@ public class I {
         lifestyles.put(Locale.class, Locale::getDefault);
 
         try {
+            // enhance java.util.logging
+            //
+            // The log is easier to read with a single line, the caller class is not listed because
+            // it is expensive and redundant, and the categories are not listed because most of the
+            // time we use Info and Debug only.
+            System.setProperty("java.util.logging.SimpleFormatter.format", "%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS.%1$tL %5$s%6$s%n");
+
+            // File output is also added in advance, however, daily rotation of files is not
+            // supported, so it is replaced by size.
+            Handler handler = new FileHandler("system-%g.log", 1024 * 1024 * 32, 6, true);
+            handler.setFormatter(new SimpleFormatter());
+
+            Logger log = Logger.getLogger("");
+            log.addHandler(handler);
+            log.setLevel(Level.FINEST);
+
             // configure dom builder
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setNamespaceAware(true);
@@ -565,6 +589,15 @@ public class I {
                 quiet(output);
             }
         }
+    }
+
+    /**
+     * Write {@link java.lang.System.Logger.Level#DEBUG} log.
+     * 
+     * @param message A message log.
+     */
+    public static void debug(String message) {
+        log.fine(message);
     }
 
     /**
@@ -1215,6 +1248,24 @@ public class I {
     private static <E extends Extensible> Disposable load(Class<E> extensionPoint, Class extensionKey, Lifestyle<E> extension) {
         findBy(extensionPoint).ⅱ.put(extensionKey, extension);
         return () -> findBy(extensionPoint).ⅱ.remove(extensionKey);
+    }
+
+    /**
+     * Write {@link java.lang.System.Logger.Level#INFO} log.
+     * 
+     * @param message A message log.
+     */
+    public static void log(String message) {
+        log.info(message);
+    }
+
+    /**
+     * Write {@link java.lang.System.Logger.Level#ERROR} log.
+     * 
+     * @param message A error log.
+     */
+    public static void log(Throwable message) {
+        log.log(Level.SEVERE, "", message);
     }
 
     /**
