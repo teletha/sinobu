@@ -16,8 +16,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringReader;
+import java.io.Writer;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
@@ -44,7 +46,10 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -78,11 +83,9 @@ import java.util.function.Function;
 import java.util.function.LongSupplier;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.logging.FileHandler;
-import java.util.logging.Handler;
 import java.util.logging.Level;
+import java.util.logging.LogRecord;
 import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
@@ -184,6 +187,48 @@ public class I {
     /** The default language in this vm environment. */
     public static final Variable<String> Lang = Variable.of(Locale.getDefault().getLanguage());
 
+    /** The maximum number of rotation files. (default: 90) */
+    public static int LogRotate = 90;
+
+    /** The flag for including caller location info. (default: true) */
+    public static boolean LogCaller = false;
+
+    /** The file name strategy. (default: systemYYYYMMdd.log) */
+    public static Function<LocalDate, String> LogName = date -> "system" + DateTimeFormatter.BASIC_ISO_DATE.format(date) + ".log";
+
+    /** The cache for date time format. */
+    private static final DateTimeFormatter FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+
+    /**
+     * The log formatter. (default: YYYY-MM-dd hh:mm:ss.SSS %level% %msg% (%location%) %EoL%
+     * %throwable%)
+     */
+    public static WiseBiConsumer<Writer, LogRecord> LogFormat = (writer, log) -> {
+        FORMAT.formatTo(log.getInstant().atOffset(ZoneOffset.UTC), writer);
+
+        writer.append(' ')
+                .append(log.getLevel() == Level.SEVERE ? "ERROR"
+                        : log.getLevel() == Level.WARNING ? "WARN"
+                                : log.getLevel() == Level.INFO ? "INFO" //
+                                        : log.getLevel() == Level.CONFIG ? "DEBUG" : "TRACE")
+                .append('\t')
+                .append(log.getMessage());
+
+        if (LogCaller) writer.append("\t(")
+                .append(log.getSourceClassName())
+                .append('#')
+                .append(log.getSourceMethodName())
+                .append(':')
+                .append(String.valueOf(log.getSequenceNumber()))
+                .append(')');
+        writer.append('\n');
+
+        Throwable e = log.getThrown();
+        if (e != null) {
+            e.printStackTrace(new PrintWriter(writer));
+        }
+    };
+
     /** The automatic saver references. */
     static final WeakHashMap<Object, Disposable> autosaver = new WeakHashMap();
 
@@ -196,8 +241,8 @@ public class I {
     /** The xpath evaluator. */
     static final XPath xpath;
 
-    /** The configuration of root logger in Sinobu. */
-    static final Logger log = Logger.getLogger("");
+    /** The main logger in Sinobu. */
+    static final Logger log = Logger.getLogger("I");
 
     /** The cache for {@link Lifestyle}. */
     private static final Map<Class, Lifestyle> lifestyles = new ConcurrentHashMap<>();
@@ -247,16 +292,9 @@ public class I {
             // The log is easier to read with a single line, the caller class is not listed because
             // it is expensive and redundant, and the categories are not listed because most of the
             // time we use Info and Debug only.
-            System.setProperty("java.util.logging.SimpleFormatter.format", "%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS.%1$tL %5$s%6$s%n");
-
-            // File output is also added in advance, however, daily rotation of files is not
-            // supported, so it is replaced by size.
-            Handler handler = new FileHandler("system-%g.log", 1024 * 1024 * 32, 6, true);
-            handler.setFormatter(new SimpleFormatter());
-
-            Logger log = Logger.getLogger("");
-            log.addHandler(handler);
-            log.setLevel(Level.FINEST);
+            Logger log = Logger.getLogger("I");
+            log.addHandler(new Log());
+            log.setUseParentHandlers(false);
 
             // configure dom builder
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -601,6 +639,15 @@ public class I {
     }
 
     /**
+     * Write {@link java.lang.System.Logger.Level#DEBUG} log.
+     * 
+     * @param message A message log.
+     */
+    public static void debug(Throwable message) {
+        log.log(Level.FINE, "", message);
+    }
+
+    /**
      * Read environment variables based on the following priorities (sources higher in the list take
      * precedence over those located lower).
      * <ol>
@@ -636,6 +683,24 @@ public class I {
         String value = env.getProperty(name);
         if (value == null) env.setProperty(name, value = defaults);
         return value;
+    }
+
+    /**
+     * Write {@link java.lang.System.Logger.Level#ERROR} log.
+     * 
+     * @param message A message log.
+     */
+    public static void error(String message) {
+        log.severe(message);
+    }
+
+    /**
+     * Write {@link java.lang.System.Logger.Level#ERROR} log.
+     * 
+     * @param message A message log.
+     */
+    public static void error(Throwable message) {
+        log.log(Level.SEVERE, "", message);
     }
 
     /**
@@ -979,6 +1044,24 @@ public class I {
     }
 
     /**
+     * Write {@link java.lang.System.Logger.Level#INFO} log.
+     * 
+     * @param message A message log.
+     */
+    public static void info(String message) {
+        log.info(message);
+    }
+
+    /**
+     * Write {@link java.lang.System.Logger.Level#ERROR} log.
+     * 
+     * @param message A message log.
+     */
+    public static void info(Throwable message) {
+        log.log(Level.INFO, "", message);
+    }
+
+    /**
      * Returns a string containing the string representation of each of items, using the specified
      * separator between each.
      *
@@ -1248,24 +1331,6 @@ public class I {
     private static <E extends Extensible> Disposable load(Class<E> extensionPoint, Class extensionKey, Lifestyle<E> extension) {
         findBy(extensionPoint).ⅱ.put(extensionKey, extension);
         return () -> findBy(extensionPoint).ⅱ.remove(extensionKey);
-    }
-
-    /**
-     * Write {@link java.lang.System.Logger.Level#INFO} log.
-     * 
-     * @param message A message log.
-     */
-    public static void log(String message) {
-        log.info(message);
-    }
-
-    /**
-     * Write {@link java.lang.System.Logger.Level#ERROR} log.
-     * 
-     * @param message A error log.
-     */
-    public static void log(Throwable message) {
-        log.log(Level.SEVERE, "", message);
     }
 
     /**

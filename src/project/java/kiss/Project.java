@@ -25,10 +25,16 @@ public class Project extends bee.api.Project {
         require("com.pgs-soft", "HttpClientMock").atTest();
         require("io.reactivex.rxjava3", "rxjava").atTest();
 
-        // For JSON Parser Benchmark
+        // For JSON benchmark
         require("com.fasterxml.jackson.core", "jackson-databind").atTest();
         require("com.google.code.gson", "gson").atTest();
         require("com.alibaba", "fastjson").atTest();
+
+        // For logging benchmark
+        require("org.apache.logging.log4j", "log4j-core").atTest();
+        require("org.tinylog", "tinylog-impl").atTest();
+        require("ch.qos.logback", "logback-classic").atTest();
+        require("org.slf4j", "slf4j-nop").atTest();
 
         versionControlSystem("https://github.com/teletha/sinobu");
     }

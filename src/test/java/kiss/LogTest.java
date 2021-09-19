@@ -47,7 +47,7 @@ class LogTest {
 
     @Test
     void log() {
-        I.log("message");
+        I.info("message");
         assert buffer.is("message");
     }
 
@@ -59,7 +59,7 @@ class LogTest {
 
     @Test
     void error() {
-        I.log(new Error("ERROR"));
+        I.info(new Error("ERROR"));
         assert buffer.contains("java.lang.Error: ERROR");
     }
 
