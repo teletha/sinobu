@@ -18,6 +18,8 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 
@@ -27,6 +29,12 @@ public class Log extends Handler {
     private Writer writer;
 
     private long next = Instant.now().truncatedTo(ChronoUnit.DAYS).toEpochMilli();
+
+    private ExecutorService exe = Executors.newSingleThreadExecutor(t -> {
+        Thread a = new Thread(t);
+        a.setDaemon(true);
+        return a;
+    });
 
     /**
      * {@inheritDoc}
@@ -65,7 +73,7 @@ public class Log extends Handler {
     @Override
     public final void flush() {
         try {
-            writer.flush();
+            // writer.flush();
         } catch (Exception e) {
             throw I.quiet(e);
         }
