@@ -48,7 +48,7 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -85,7 +85,6 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
@@ -187,45 +186,42 @@ public class I {
     /** The default language in this vm environment. */
     public static final Variable<String> Lang = Variable.of(Locale.getDefault().getLanguage());
 
+    public static java.lang.System.Logger.Level LogLevel = java.lang.System.Logger.Level.INFO;
+
     /** The maximum number of rotation files. (default: 90) */
     public static int LogRotate = 90;
-
-    /** The flag for including caller location info. (default: true) */
-    public static boolean LogCaller = false;
 
     /** The file name strategy. (default: systemYYYYMMdd.log) */
     public static Function<LocalDate, String> LogName = date -> "system" + DateTimeFormatter.BASIC_ISO_DATE.format(date) + ".log";
 
-    /** The cache for date time format. */
-    private static final DateTimeFormatter FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+    static final DateTimeFormatter F = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+
+    static final ZoneId Z = ZoneId.systemDefault();
 
     /**
      * The log formatter. (default: YYYY-MM-dd hh:mm:ss.SSS %level% %msg% (%location%) %EoL%
      * %throwable%)
      */
     public static WiseBiConsumer<Writer, LogRecord> LogFormat = (writer, log) -> {
-        FORMAT.formatTo(log.getInstant().atOffset(ZoneOffset.UTC), writer);
+        char c = log.getLevel().getName().charAt(0);
 
-        writer.append(' ')
-                .append(log.getLevel() == Level.SEVERE ? "ERROR"
-                        : log.getLevel() == Level.WARNING ? "WARN"
-                                : log.getLevel() == Level.INFO ? "INFO" //
-                                        : log.getLevel() == Level.CONFIG ? "DEBUG" : "TRACE")
+        writer.append(log.getInstant().atZone(Z).format(F))
+                .append(' ')
+                .append(c == 'E' ? "ERROR" : c == 'W' ? "WARN" : c == 'I' || c == 'C' ? "INFO" : "DEBUG")
                 .append('\t')
-                .append(log.getMessage());
-
-        if (LogCaller) writer.append("\t(")
+                .append(log.getMessage())
+                .append("\t(")
                 .append(log.getSourceClassName())
                 .append('#')
                 .append(log.getSourceMethodName())
                 .append(':')
                 .append(String.valueOf(log.getSequenceNumber()))
-                .append(')');
-        writer.append('\n');
+                .append(')')
+                .append('\n');
 
-        Throwable e = log.getThrown();
-        if (e != null) {
-            e.printStackTrace(new PrintWriter(writer));
+        Throwable x = log.getThrown();
+        if (x != null) {
+            x.printStackTrace(new PrintWriter(writer));
         }
     };
 
@@ -242,7 +238,7 @@ public class I {
     static final XPath xpath;
 
     /** The main logger in Sinobu. */
-    static final Logger log = Logger.getLogger("I");
+    private static final Log Log = new Log();
 
     /** The cache for {@link Lifestyle}. */
     private static final Map<Class, Lifestyle> lifestyles = new ConcurrentHashMap<>();
@@ -287,15 +283,6 @@ public class I {
         lifestyles.put(Locale.class, Locale::getDefault);
 
         try {
-            // enhance java.util.logging
-            //
-            // The log is easier to read with a single line, the caller class is not listed because
-            // it is expensive and redundant, and the categories are not listed because most of the
-            // time we use Info and Debug only.
-            Logger log = Logger.getLogger("I");
-            log.addHandler(new Log());
-            log.setUseParentHandlers(false);
-
             // configure dom builder
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setNamespaceAware(true);
@@ -1049,7 +1036,19 @@ public class I {
      * @param message A message log.
      */
     public static void info(String message) {
-        log.info(message);
+        log(Level.INFO, message, null);
+    }
+
+    private static void log(Level level, String msg, Throwable t) {
+        LogRecord r = new LogRecord(Level.INFO, msg);
+        r.setThrown(t);
+
+        StackTraceElement e = StackWalker.getInstance().walk(s -> s.skip(2).findFirst().get()).toStackTraceElement();
+        r.setSourceClassName(e.getClassName());
+        r.setSourceMethodName(e.getMethodName());
+        r.setSequenceNumber(e.getLineNumber());
+
+        Log.publish(r);
     }
 
     /**
@@ -1058,7 +1057,7 @@ public class I {
      * @param message A message log.
      */
     public static void info(Throwable message) {
-        log.log(Level.INFO, "", message);
+        log(Level.INFO, null, message);
     }
 
     /**

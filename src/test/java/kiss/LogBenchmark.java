@@ -77,22 +77,23 @@ public class LogBenchmark {
         // ================================
         // Async Logger
         // ================================
-        AppenderComponentBuilder asyncFile = builder.newAppender("asyncFile", "File");
-        asyncFile.addAttribute("fileName", "logging-lg4j2-async.log");
-        asyncFile.addAttribute("append", false);
-        asyncFile.add(builder.newLayout("PatternLayout")
-                .addAttribute("pattern", "%date{yyyy-MM-dd HH:mm:ss.SSS} %level %class %method %msg%n"));
-        builder.add(asyncFile);
-
-        AppenderComponentBuilder asyncWrapper = builder.newAppender("wrapper", "Async");
-        asyncWrapper.addComponent(builder.newAppenderRef("asyncFile"));
-        asyncWrapper.addAttribute("includeLocation", true);
-        builder.add(asyncWrapper);
-
-        LoggerComponentBuilder asyncLog = builder.newLogger("async", org.apache.logging.log4j.Level.ALL);
-        asyncLog.addAttribute("additivity", false);
-        asyncLog.add(builder.newAppenderRef("wrapper"));
-        builder.add(asyncLog);
+        // AppenderComponentBuilder asyncFile = builder.newAppender("asyncFile", "File");
+        // asyncFile.addAttribute("fileName", "logging-lg4j2-async.log");
+        // asyncFile.addAttribute("append", false);
+        // asyncFile.add(builder.newLayout("PatternLayout")
+        // .addAttribute("pattern", "%date{yyyy-MM-dd HH:mm:ss.SSS} %level %class %method %msg%n"));
+        // builder.add(asyncFile);
+        //
+        // AppenderComponentBuilder asyncWrapper = builder.newAppender("wrapper", "Async");
+        // asyncWrapper.addComponent(builder.newAppenderRef("asyncFile"));
+        // asyncWrapper.addAttribute("includeLocation", true);
+        // builder.add(asyncWrapper);
+        //
+        // LoggerComponentBuilder asyncLog = builder.newLogger("async",
+        // org.apache.logging.log4j.Level.ALL);
+        // asyncLog.addAttribute("additivity", false);
+        // asyncLog.add(builder.newAppenderRef("wrapper"));
+        // builder.add(asyncLog);
 
         // ================================
         // Initialize
@@ -108,11 +109,11 @@ public class LogBenchmark {
             return -1;
         });
 
-        org.apache.logging.log4j.Logger async = context.getLogger("async");
-        benchmark.measure("Log4j Async", () -> {
-            async.info("Message");
-            return -1;
-        });
+        // org.apache.logging.log4j.Logger async = context.getLogger("async");
+        // benchmark.measure("Log4j Async", () -> {
+        // async.info("Message");
+        // return -1;
+        // });
     }
 
     private static void performTinyLog(Benchmark benchmark) throws Exception {

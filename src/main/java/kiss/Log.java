@@ -53,14 +53,6 @@ public class Log extends Handler {
                 }
             }
 
-            // hold caller location info (replaced by high-speed stacktrace extractor)
-            if (I.LogCaller) {
-                StackTraceElement e = StackWalker.getInstance().walk(s -> s.skip(5).findFirst().get()).toStackTraceElement();
-                log.setSourceClassName(e.getClassName());
-                log.setSourceMethodName(e.getMethodName());
-                log.setSequenceNumber(e.getLineNumber());
-            }
-
             I.LogFormat.ACCEPT(writer, log);
         } catch (Throwable x) {
             throw I.quiet(x);
