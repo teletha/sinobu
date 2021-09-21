@@ -9,16 +9,19 @@
  */
 package kiss;
 
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringReader;
-import java.lang.StackWalker.StackFrame;
+import java.lang.System.Logger.Level;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
@@ -45,7 +48,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -80,13 +88,8 @@ import java.util.function.Function;
 import java.util.function.LongSupplier;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
 import java.util.zip.ZipFile;
@@ -186,9 +189,6 @@ public class I {
     /** The default language in this vm environment. */
     public static final Variable<String> Lang = Variable.of(Locale.getDefault().getLanguage());
 
-    /** Determines whether to include caller information in the log. */
-    public static boolean LogCaller = true;
-
     /** The automatic saver references. */
     static final WeakHashMap<Object, Disposable> autosaver = new WeakHashMap();
 
@@ -202,7 +202,7 @@ public class I {
     static final XPath xpath;
 
     /** The logger manager. */
-    private static final Map<Class, Logger> logs = new ConcurrentHashMap<>();
+    private static final Map<Class, Subscriber> logs = new ConcurrentHashMap<>();
 
     /** The cache for {@link Lifestyle}. */
     private static final Map<Class, Lifestyle> lifestyles = new ConcurrentHashMap<>();
@@ -586,7 +586,7 @@ public class I {
      * @param msg A message log.
      */
     public static void debug(Object msg) {
-        log(System.class, Level.FINE, msg, LogCaller ? StackWalker.getInstance().walk(extract) : null);
+        log(System.class, Level.DEBUG, msg);
     }
 
     /**
@@ -596,7 +596,7 @@ public class I {
      * @param msg A message log.
      */
     public static void debug(Class name, Object msg) {
-        log(name, Level.FINE, msg, LogCaller ? StackWalker.getInstance().walk(extract) : null);
+        log(name, Level.DEBUG, msg);
     }
 
     /**
@@ -638,12 +638,33 @@ public class I {
     }
 
     /**
+     * Read environment variables based on the following priorities (sources higher in the list take
+     * precedence over those located lower). If the environment variable with the specified name
+     * does not exist, the value specified as the default value will be set as the new environment
+     * variable and used.
+     * <ol>
+     * <li>{@link System#getenv(String)}</li>
+     * <li>.env property file in current working directory (optional)</li>
+     * <li>.env property file on the classpath (optional)</li>
+     * </ol>
+     * 
+     * @param name A environment variable name.
+     * @param defaults If the specified name is not found, set and return this default value.
+     * @return The value of the environment variable with the specified name.
+     */
+    public static <T> T env(String name, T defaults) {
+        T value = I.transform(env.getProperty(name), defaults.getClass());
+        if (value == null) env.setProperty(name, value = defaults);
+        return value;
+    }
+
+    /**
      * Write {@link java.lang.System.Logger.Level#ERROR} log.
      * 
      * @param msg A message log.
      */
     public static void error(Object msg) {
-        log(System.class, Level.SEVERE, msg, LogCaller ? StackWalker.getInstance().walk(extract) : null);
+        log(System.class, Level.ERROR, msg);
     }
 
     /**
@@ -653,7 +674,7 @@ public class I {
      * @param msg A message log.
      */
     public static void error(Class name, Object msg) {
-        log(name, Level.SEVERE, msg, LogCaller ? StackWalker.getInstance().walk(extract) : null);
+        log(name, Level.ERROR, msg);
     }
 
     /**
@@ -1002,7 +1023,7 @@ public class I {
      * @param msg A message log.
      */
     public static void info(Object msg) {
-        log(System.class, Level.INFO, msg, LogCaller ? StackWalker.getInstance().walk(extract) : null);
+        log(System.class, Level.INFO, msg);
     }
 
     /**
@@ -1012,7 +1033,7 @@ public class I {
      * @param msg A message log.
      */
     public static void info(Class name, Object msg) {
-        log(name, Level.INFO, msg, LogCaller ? StackWalker.getInstance().walk(extract) : null);
+        log(name, Level.INFO, msg);
     }
 
     /**
@@ -1293,7 +1314,20 @@ public class I {
         return a;
     });
 
-    private static final Function<Stream<StackFrame>, StackTraceElement> extract = s -> s.skip(1).findFirst().get().toStackTraceElement();
+    private static final DateTimeFormatter F = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+
+    private static Path locate(Class name, LocalDate day) throws Exception {
+        Path p = Path.of(".log");
+        Files.createDirectories(p);
+        return p.resolve(Objects.requireNonNullElse(name.getSimpleName(), "system") + day
+                .format(DateTimeFormatter.BASIC_ISO_DATE) + ".log");
+    }
+
+    /** The configuration for log level. */
+    private static Level LogLevel = Level.valueOf(I.env("LogLevel", ""))
+
+    /** Determines whether to include caller information in the log. */
+    private static boolean LogCaller = I.transform(I.env("LogCaller", "false"), boolean.class);
 
     /**
      * Generic logging helper.
@@ -1302,36 +1336,59 @@ public class I {
      * @param level
      * @param msg
      */
-    private static void log(Class name, Level level, Object msg, StackTraceElement e) {
-        // lookup logger by the simple class name
-        Logger log = logs.computeIfAbsent(name, key -> {
-            Logger v = Logger.getLogger(key.getSimpleName());
-            v.setUseParentHandlers(false);
-            v.addHandler(new Log());
-            return v;
-        });
+    private static void log(Class name, Level level, Object msg) {
 
-        if (log.isLoggable(level)) {
-            exe.execute(() -> {
-                LogRecord rec = new LogRecord(level, msg.toString());
-                rec.setLoggerName(log.getName());
+        long mills = System.currentTimeMillis();
+        StackTraceElement e = LogCaller ? StackWalker.getInstance().walk(s -> s.skip(2).findFirst().get().toStackTraceElement()) : null;
+
+        exe.execute(() -> {
+            try {
+                // lookup logger by the simple class name
+                Subscriber log = logs.computeIfAbsent(name, key -> {
+                    Subscriber v = new Subscriber();
+                    v.index = Instant.now().truncatedTo(ChronoUnit.DAYS).toEpochMilli();
+                    return v;
+                });
+
+                if (log.index <= mills) {
+                    // stop old
+                    I.quiet(log.writer);
+
+                    // start new
+                    LocalDate day = LocalDate.now();
+
+                    log.writer = new BufferedWriter(new FileWriter(locate(name, day).toFile(), StandardCharsets.UTF_8));
+                    log.index += 24 * 60 * 60 * 1000;
+
+                    // delete oldest
+                    day = day.minusDays(30);
+                    while (Files.deleteIfExists(locate(name, day))) {
+                        day = day.minusDays(1);
+                    }
+                }
+
+                log.writer.append(Instant.ofEpochMilli(mills).atZone(ZoneId.systemDefault()).format(F))
+                        .append(' ')
+                        .append(level.name())
+                        .append('\t')
+                        .append(String.valueOf(msg));
+                if (e != null) {
+                    log.writer.append("\t")
+                            .append(e.getClassName())
+                            .append('#')
+                            .append(e.getMethodName())
+                            .append(':')
+                            .append(String.valueOf(e.getLineNumber()));
+                }
+                log.writer.append('\n');
 
                 if (msg instanceof Throwable) {
-                    rec.setMessage("");
-                    rec.setThrown((Throwable) msg);
+                    ((Throwable) msg).printStackTrace(new PrintWriter(log.writer));
                 }
-
-                if (LogCaller) {
-                    rec.setSourceClassName(e.getClassName());
-                    rec.setSourceMethodName(e.getMethodName());
-                    rec.setSequenceNumber(e.getLineNumber());
-                }
-
-                for (Handler handler : log.getHandlers()) {
-                    handler.publish(rec);
-                }
-            });
-        }
+            } catch (Throwable x) {
+                throw I.quiet(x);
+            }
+        });
     }
 
     /**
