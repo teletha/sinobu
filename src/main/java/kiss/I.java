@@ -16,10 +16,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringReader;
-import java.io.Writer;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
@@ -46,10 +44,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -71,6 +66,7 @@ import java.util.WeakHashMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
@@ -188,40 +184,8 @@ public class I {
     /** The default language in this vm environment. */
     public static final Variable<String> Lang = Variable.of(Locale.getDefault().getLanguage());
 
-    /** The maximum number of rotation files. (default: 90) */
-    public static int LogRotate = 90;
-
-    /** The file name strategy. (default: systemYYYYMMdd.log) */
-    public static Function<LocalDate, String> LogName = date -> "system" + DateTimeFormatter.BASIC_ISO_DATE.format(date) + ".log";
-
-    static final DateTimeFormatter F = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
-
-    /**
-     * The log formatter. (default: YYYY-MM-dd hh:mm:ss.SSS %level% %msg% (%location%) %EoL%
-     * %throwable%)
-     */
-    public static WiseBiConsumer<Writer, LogRecord> LogFormat = (writer, log) -> {
-        char c = log.getLevel().getName().charAt(0);
-
-        writer.append(log.getInstant().atZone(ZoneId.systemDefault()).format(F))
-                .append(' ')
-                .append(c == 'E' ? "ERROR" : c == 'W' ? "WARN" : c == 'I' || c == 'C' ? "INFO" : "DEBUG")
-                .append('\t')
-                .append(log.getMessage())
-                .append("\t(")
-                .append(log.getSourceClassName())
-                .append('#')
-                .append(log.getSourceMethodName())
-                .append(':')
-                .append(String.valueOf(log.getSequenceNumber()))
-                .append(')')
-                .append('\n');
-
-        Throwable x = log.getThrown();
-        if (x != null) {
-            x.printStackTrace(new PrintWriter(writer));
-        }
-    };
+    /** Determines whether to include caller information in the log. */
+    public static boolean LogCaller = true;
 
     /** The automatic saver references. */
     static final WeakHashMap<Object, Disposable> autosaver = new WeakHashMap();
@@ -235,8 +199,8 @@ public class I {
     /** The xpath evaluator. */
     static final XPath xpath;
 
-    /** The main logger in Sinobu. */
-    static final Logger log = Logger.getLogger("");
+    /** The logger manager. */
+    private static final Map<Class, Logger> logs = new ConcurrentHashMap<>();
 
     /** The cache for {@link Lifestyle}. */
     private static final Map<Class, Lifestyle> lifestyles = new ConcurrentHashMap<>();
@@ -281,11 +245,6 @@ public class I {
         lifestyles.put(Locale.class, Locale::getDefault);
 
         try {
-            for (Handler h : log.getHandlers()) {
-                log.removeHandler(h);
-            }
-            log.addHandler(new Log());
-
             // configure dom builder
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setNamespaceAware(true);
@@ -625,7 +584,17 @@ public class I {
      * @param msg A message log.
      */
     public static void debug(Object msg) {
-        log(Level.CONFIG, msg);
+        log(System.class, Level.FINE, msg);
+    }
+
+    /**
+     * Write {@link java.lang.System.Logger.Level#DEBUG} log.
+     * 
+     * @param name A logger name by {@link Class#getSimpleName()}.
+     * @param msg A message log.
+     */
+    public static void debug(Class name, Object msg) {
+        log(name, Level.FINE, msg);
     }
 
     /**
@@ -672,7 +641,17 @@ public class I {
      * @param msg A message log.
      */
     public static void error(Object msg) {
-        log(Level.SEVERE, msg);
+        log(System.class, Level.SEVERE, msg);
+    }
+
+    /**
+     * Write {@link java.lang.System.Logger.Level#ERROR} log.
+     * 
+     * @param name A logger name by {@link Class#getSimpleName()}.
+     * @param msg A message log.
+     */
+    public static void error(Class name, Object msg) {
+        log(name, Level.SEVERE, msg);
     }
 
     /**
@@ -1018,10 +997,20 @@ public class I {
     /**
      * Write {@link java.lang.System.Logger.Level#INFO} log.
      * 
-     * @param message A message log.
+     * @param msg A message log.
      */
-    public static void info(Object message) {
-        log(Level.INFO, message);
+    public static void info(Object msg) {
+        log(System.class, Level.INFO, msg);
+    }
+
+    /**
+     * Write {@link java.lang.System.Logger.Level#INFO} log.
+     * 
+     * @param name A logger name by {@link Class#getSimpleName()}.
+     * @param msg A message log.
+     */
+    public static void info(Class name, Object msg) {
+        log(name, Level.INFO, msg);
     }
 
     /**
@@ -1296,25 +1285,51 @@ public class I {
         return () -> findBy(extensionPoint).ⅱ.remove(extensionKey);
     }
 
+    private static final ExecutorService exe = Executors.newSingleThreadExecutor(t -> {
+        Thread a = new Thread(t);
+        a.setDaemon(true);
+        return a;
+    });
+
     /**
-     * Generic logging.
+     * Generic logging helper.
      * 
+     * @param name
      * @param level
      * @param msg
      */
-    private static void log(Level level, Object msg) {
-        LogRecord record = new LogRecord(level, msg.toString());
-        if (msg instanceof Throwable) {
-            record.setMessage("");
-            record.setThrown((Throwable) msg);
+    private static void log(Class name, Level level, Object msg) {
+        // lookup logger by the simple class name
+        Logger log = logs.computeIfAbsent(name, key -> {
+            Logger v = Logger.getLogger(key.getSimpleName());
+            v.setUseParentHandlers(false);
+            v.addHandler(new Log());
+            return v;
+        });
+
+        if (log.isLoggable(level)) {
+            StackTraceElement e = LogCaller ? StackWalker.getInstance().walk(s -> s.skip(2).findFirst().get().toStackTraceElement()) : null;
+
+            exe.execute(() -> {
+                LogRecord rec = new LogRecord(level, msg.toString());
+                rec.setLoggerName(log.getName());
+
+                if (msg instanceof Throwable) {
+                    rec.setMessage("");
+                    rec.setThrown((Throwable) msg);
+                }
+
+                if (LogCaller) {
+                    rec.setSourceClassName(e.getClassName());
+                    rec.setSourceMethodName(e.getMethodName());
+                    rec.setSequenceNumber(e.getLineNumber());
+                }
+
+                for (Handler handler : log.getHandlers()) {
+                    handler.publish(rec);
+                }
+            });
         }
-
-        StackTraceElement e = StackWalker.getInstance().walk(s -> s.skip(2).findFirst().get()).toStackTraceElement();
-        record.setSourceClassName(e.getClassName());
-        record.setSourceMethodName(e.getMethodName());
-        record.setSequenceNumber(e.getLineNumber());
-
-        log.log(record);
     }
 
     /**

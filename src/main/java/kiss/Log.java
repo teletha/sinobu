@@ -11,30 +11,34 @@ package kiss;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.Objects;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 
-public class Log extends Handler {
+class Log extends Handler {
+
+    private static final DateTimeFormatter F = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 
     /** The actual log file. */
     private Writer writer;
 
     private long next = Instant.now().truncatedTo(ChronoUnit.DAYS).toEpochMilli();
 
-    private ExecutorService exe = Executors.newSingleThreadExecutor(t -> {
-        Thread a = new Thread(t);
-        a.setDaemon(true);
-        return a;
-    });
+    private Path locate(LogRecord log, LocalDate day) throws Exception {
+        Path p = Path.of(".log");
+        Files.createDirectories(p);
+        return p.resolve(Objects.requireNonNullElse(log.getLoggerName(), "system") + day.format(DateTimeFormatter.BASIC_ISO_DATE) + ".log");
+    }
 
     /**
      * {@inheritDoc}
@@ -49,19 +53,36 @@ public class Log extends Handler {
                 // start new
                 LocalDate day = LocalDate.now();
 
-                writer = new BufferedWriter(new FileWriter(I.LogName.apply(day), StandardCharsets.UTF_8));
+                writer = new BufferedWriter(new FileWriter(locate(log, day).toFile(), StandardCharsets.UTF_8));
                 next += 24 * 60 * 60 * 1000;
 
                 // delete oldest
-                day = day.minusDays(I.LogRotate <= 0 ? Integer.MAX_VALUE : I.LogRotate);
-                Path p = Path.of(I.LogName.apply(day));
-                while (Files.exists(p)) {
-                    Files.delete(p);
+                day = day.minusDays(30);
+                while (Files.deleteIfExists(locate(log, day))) {
                     day = day.minusDays(1);
                 }
             }
 
-            I.LogFormat.ACCEPT(writer, log);
+            char c = log.getLevel().getName().charAt(0);
+            writer.append(log.getInstant().atZone(ZoneId.systemDefault()).format(F))
+                    .append(' ')
+                    .append(c == 'E' ? "ERROR" : c == 'W' ? "WARN" : c == 'I' || c == 'C' ? "INFO" : "DEBUG")
+                    .append('\t')
+                    .append(log.getMessage());
+            if (I.LogCaller) {
+                writer.append("\t")
+                        .append(log.getSourceClassName())
+                        .append('#')
+                        .append(log.getSourceMethodName())
+                        .append(':')
+                        .append(String.valueOf(log.getSequenceNumber()));
+            }
+            writer.append('\n');
+
+            Throwable x = log.getThrown();
+            if (x != null) {
+                x.printStackTrace(new PrintWriter(writer));
+            }
         } catch (Throwable x) {
             throw I.quiet(x);
         }
@@ -73,7 +94,7 @@ public class Log extends Handler {
     @Override
     public final void flush() {
         try {
-            // writer.flush();
+            writer.flush();
         } catch (Exception e) {
             throw I.quiet(e);
         }
