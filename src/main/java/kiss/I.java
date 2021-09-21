@@ -18,6 +18,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringReader;
+import java.lang.StackWalker.StackFrame;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
@@ -85,6 +86,7 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
 import java.util.zip.ZipFile;
@@ -584,7 +586,7 @@ public class I {
      * @param msg A message log.
      */
     public static void debug(Object msg) {
-        log(System.class, Level.FINE, msg);
+        log(System.class, Level.FINE, msg, LogCaller ? StackWalker.getInstance().walk(extract) : null);
     }
 
     /**
@@ -594,7 +596,7 @@ public class I {
      * @param msg A message log.
      */
     public static void debug(Class name, Object msg) {
-        log(name, Level.FINE, msg);
+        log(name, Level.FINE, msg, LogCaller ? StackWalker.getInstance().walk(extract) : null);
     }
 
     /**
@@ -641,7 +643,7 @@ public class I {
      * @param msg A message log.
      */
     public static void error(Object msg) {
-        log(System.class, Level.SEVERE, msg);
+        log(System.class, Level.SEVERE, msg, LogCaller ? StackWalker.getInstance().walk(extract) : null);
     }
 
     /**
@@ -651,7 +653,7 @@ public class I {
      * @param msg A message log.
      */
     public static void error(Class name, Object msg) {
-        log(name, Level.SEVERE, msg);
+        log(name, Level.SEVERE, msg, LogCaller ? StackWalker.getInstance().walk(extract) : null);
     }
 
     /**
@@ -1000,7 +1002,7 @@ public class I {
      * @param msg A message log.
      */
     public static void info(Object msg) {
-        log(System.class, Level.INFO, msg);
+        log(System.class, Level.INFO, msg, LogCaller ? StackWalker.getInstance().walk(extract) : null);
     }
 
     /**
@@ -1010,7 +1012,7 @@ public class I {
      * @param msg A message log.
      */
     public static void info(Class name, Object msg) {
-        log(name, Level.INFO, msg);
+        log(name, Level.INFO, msg, LogCaller ? StackWalker.getInstance().walk(extract) : null);
     }
 
     /**
@@ -1291,6 +1293,8 @@ public class I {
         return a;
     });
 
+    private static final Function<Stream<StackFrame>, StackTraceElement> extract = s -> s.skip(1).findFirst().get().toStackTraceElement();
+
     /**
      * Generic logging helper.
      * 
@@ -1298,7 +1302,7 @@ public class I {
      * @param level
      * @param msg
      */
-    private static void log(Class name, Level level, Object msg) {
+    private static void log(Class name, Level level, Object msg, StackTraceElement e) {
         // lookup logger by the simple class name
         Logger log = logs.computeIfAbsent(name, key -> {
             Logger v = Logger.getLogger(key.getSimpleName());
@@ -1308,8 +1312,6 @@ public class I {
         });
 
         if (log.isLoggable(level)) {
-            StackTraceElement e = LogCaller ? StackWalker.getInstance().walk(s -> s.skip(2).findFirst().get().toStackTraceElement()) : null;
-
             exe.execute(() -> {
                 LogRecord rec = new LogRecord(level, msg.toString());
                 rec.setLoggerName(log.getName());
