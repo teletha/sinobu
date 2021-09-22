@@ -18,7 +18,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringReader;
 import java.lang.System.Logger.Level;
@@ -90,6 +89,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
 import java.util.zip.ZipFile;
@@ -1293,8 +1293,6 @@ public class I {
         return a;
     });
 
-    private static final DateTimeFormatter F = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
-
     private static Path locate(Class name, LocalDate day) throws Exception {
         Path p = Path.of(".log");
         Files.createDirectories(p);
@@ -1303,10 +1301,22 @@ public class I {
     }
 
     /** The configuration for log level. */
-    private static Level level = I.env("LogLevel", Level.INFO);
+    private static final DateTimeFormatter F = DateTimeFormatter.ofPattern(I.env("LogDateFormat", "yyyy-MM-dd HH:mm:ss.SSS"));
+
+    /** The configuration for log level. */
+    private static final boolean append = I.env("LogAppend", false);
+
+    /** The configuration for log level. */
+    private static final Level level = I.env("LogLevel", Level.INFO);
 
     /** Determines whether to include caller information in the log. */
-    private static boolean caller = I.env("LogCaller", false);
+    private static final boolean caller = I.env("LogCaller", true);
+
+    /** Determines whether to output the log additionally to the console as well. */
+    private static final boolean console = I.env("LogConsole", false);
+
+    /** Determines whether to output the log additionally to the console as well. */
+    private static final boolean file = I.env("LogFile", true);
 
     /**
      * Generic logging helper.
@@ -1316,58 +1326,65 @@ public class I {
      * @param msg
      */
     private static void log(Class name, Level level, Object msg) {
+        if (I.level.ordinal() <= level.ordinal()) {
+            long mills = System.currentTimeMillis();
+            StackTraceElement e = caller ? StackWalker.getInstance().walk(s -> s.skip(2).findFirst().get().toStackTraceElement()) : null;
+            String id = Thread.currentThread().getName();
 
-        long mills = System.currentTimeMillis();
-        StackTraceElement e = caller ? StackWalker.getInstance().walk(s -> s.skip(2).findFirst().get().toStackTraceElement()) : null;
+            exe.execute(() -> {
+                try {
+                    // lookup logger by the simple class name
+                    Subscriber log = logs.computeIfAbsent(name, key -> {
+                        Subscriber v = new Subscriber();
+                        v.index = Instant.now().truncatedTo(ChronoUnit.DAYS).toEpochMilli();
+                        return v;
+                    });
 
-        exe.execute(() -> {
-            try {
-                // lookup logger by the simple class name
-                Subscriber log = logs.computeIfAbsent(name, key -> {
-                    Subscriber v = new Subscriber();
-                    v.index = Instant.now().truncatedTo(ChronoUnit.DAYS).toEpochMilli();
-                    return v;
-                });
+                    if (file && log.index <= mills) {
+                        // stop old
+                        I.quiet(log.writer);
 
-                if (log.index <= mills) {
-                    // stop old
-                    I.quiet(log.writer);
+                        // start new
+                        LocalDate day = LocalDate.now();
 
-                    // start new
-                    LocalDate day = LocalDate.now();
+                        log.writer = new BufferedWriter(new FileWriter(locate(name, day).toFile(), StandardCharsets.UTF_8, append));
+                        log.index += 24 * 60 * 60 * 1000;
 
-                    log.writer = new BufferedWriter(new FileWriter(locate(name, day).toFile(), StandardCharsets.UTF_8));
-                    log.index += 24 * 60 * 60 * 1000;
-
-                    // delete oldest
-                    day = day.minusDays(30);
-                    while (Files.deleteIfExists(locate(name, day))) {
-                        day = day.minusDays(1);
+                        // delete oldest
+                        day = day.minusDays(30);
+                        while (Files.deleteIfExists(locate(name, day))) {
+                            day = day.minusDays(1);
+                        }
                     }
-                }
 
-                log.writer.append(Instant.ofEpochMilli(mills).atZone(ZoneId.systemDefault()).format(F))
-                        .append(' ')
-                        .append(level.name())
-                        .append('\t')
-                        .append(String.valueOf(msg));
-                if (e != null) {
-                    log.writer.append("\t")
-                            .append(e.getClassName())
-                            .append('#')
-                            .append(e.getMethodName())
-                            .append(':')
-                            .append(String.valueOf(e.getLineNumber()));
-                }
-                log.writer.append('\n');
+                    StringBuilder text = new StringBuilder(Instant.ofEpochMilli(mills).atZone(ZoneId.systemDefault()).format(F)).append(' ')
+                            .append(level)
+                            .append('\t')
+                            .append(msg);
+                    if (e != null) {
+                        text.append('\t')
+                                .append(e.getClassName())
+                                .append('#')
+                                .append(e.getMethodName())
+                                .append(':')
+                                .append(e.getLineNumber());
+                    }
+                    text.append('\n');
 
-                if (msg instanceof Throwable) {
-                    ((Throwable) msg).printStackTrace(new PrintWriter(log.writer));
+                    log.writer.append(text);
+
+                    if (msg instanceof Throwable) {
+                        Stream.of(((Throwable) msg).getStackTrace()).map(StackTraceElement::toString).forEach(text::append);
+                    }
+
+                    if (file) log.writer.append(text);
+                    if (console) System.out.append(text);
+
+                } catch (Throwable x) {
+                    throw I.quiet(x);
                 }
-            } catch (Throwable x) {
-                throw I.quiet(x);
-            }
-        });
+            });
+        }
     }
 
     /**
