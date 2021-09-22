@@ -87,6 +87,9 @@ import java.util.function.Function;
 import java.util.function.LongSupplier;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.logging.FileHandler;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -1002,7 +1005,7 @@ public class I {
      * @param msg A message log.
      */
     public static void info(Object msg) {
-        log(System.class, Level.INFO, msg);
+        log(System.class, java.util.logging.Level.INFO, msg);
     }
 
     /**
@@ -1384,6 +1387,40 @@ public class I {
                     throw I.quiet(x);
                 }
             });
+        }
+    }
+
+    private static final Map<Class, Logger> jul = new ConcurrentHashMap<>();
+
+    /**
+     * Generic logging helper.
+     * 
+     * @param name
+     * @param level
+     * @param msg
+     */
+    private static void log(Class name, java.util.logging.Level level, Object msg) {
+        Logger logger = jul.computeIfAbsent(name, key -> {
+            try {
+                Logger built = Logger.getLogger(key.getName());
+                built.addHandler(new FileHandler(".log/" + name.getSimpleName() + ".log"));
+                built.setUseParentHandlers(false);
+                return built;
+            } catch (Exception e) {
+                throw I.quiet(e);
+            }
+        });
+
+        if (logger.isLoggable(level)) {
+            LogRecord rec = new LogRecord(java.util.logging.Level.INFO, String.valueOf(msg));
+            if (caller) {
+                StackTraceElement e = StackWalker.getInstance().walk(s -> s.skip(2).findFirst().get().toStackTraceElement());
+                rec.setSourceClassName(e.getClassName());
+                rec.setSourceMethodName(e.getMethodName());
+                rec.setSequenceNumber(e.getLineNumber());
+            }
+
+            exe.execute(() -> logger.log(rec));
         }
     }
 
