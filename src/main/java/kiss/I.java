@@ -631,30 +631,9 @@ public class I {
      * @param defaults If the specified name is not found, set and return this default value.
      * @return The value of the environment variable with the specified name.
      */
-    public static String env(String name, String defaults) {
-        String value = env.getProperty(name);
-        if (value == null) env.setProperty(name, value = defaults);
-        return value;
-    }
-
-    /**
-     * Read environment variables based on the following priorities (sources higher in the list take
-     * precedence over those located lower). If the environment variable with the specified name
-     * does not exist, the value specified as the default value will be set as the new environment
-     * variable and used.
-     * <ol>
-     * <li>{@link System#getenv(String)}</li>
-     * <li>.env property file in current working directory (optional)</li>
-     * <li>.env property file on the classpath (optional)</li>
-     * </ol>
-     * 
-     * @param name A environment variable name.
-     * @param defaults If the specified name is not found, set and return this default value.
-     * @return The value of the environment variable with the specified name.
-     */
     public static <T> T env(String name, T defaults) {
-        T value = I.transform(env.getProperty(name), defaults.getClass());
-        if (value == null) env.setProperty(name, value = defaults);
+        T value = I.transform(env.getProperty(name), (Class<T>) defaults.getClass());
+        if (value == null) env.setProperty(name, I.transform(value = defaults, String.class));
         return value;
     }
 
@@ -1324,10 +1303,10 @@ public class I {
     }
 
     /** The configuration for log level. */
-    private static Level LogLevel = Level.valueOf(I.env("LogLevel", ""))
+    private static Level level = I.env("LogLevel", Level.INFO);
 
     /** Determines whether to include caller information in the log. */
-    private static boolean LogCaller = I.transform(I.env("LogCaller", "false"), boolean.class);
+    private static boolean caller = I.env("LogCaller", false);
 
     /**
      * Generic logging helper.
@@ -1339,7 +1318,7 @@ public class I {
     private static void log(Class name, Level level, Object msg) {
 
         long mills = System.currentTimeMillis();
-        StackTraceElement e = LogCaller ? StackWalker.getInstance().walk(s -> s.skip(2).findFirst().get().toStackTraceElement()) : null;
+        StackTraceElement e = caller ? StackWalker.getInstance().walk(s -> s.skip(2).findFirst().get().toStackTraceElement()) : null;
 
         exe.execute(() -> {
             try {
