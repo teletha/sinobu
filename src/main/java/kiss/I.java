@@ -88,6 +88,7 @@ import java.util.function.LongSupplier;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.logging.FileHandler;
+import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -1304,7 +1305,7 @@ public class I {
     }
 
     /** The configuration for log level. */
-    private static final DateTimeFormatter F = DateTimeFormatter.ofPattern(I.env("LogDateFormat", "yyyy-MM-dd HH:mm:ss.SSS"));
+    static final DateTimeFormatter F = DateTimeFormatter.ofPattern(I.env("LogDateFormat", "yyyy-MM-dd HH:mm:ss.SSS"));
 
     /** The configuration for log level. */
     private static final boolean append = I.env("LogAppend", false);
@@ -1313,7 +1314,7 @@ public class I {
     private static final Level level = I.env("LogLevel", Level.INFO);
 
     /** Determines whether to include caller information in the log. */
-    private static final boolean caller = I.env("LogCaller", true);
+    static final boolean caller = I.env("LogCaller", true);
 
     /** Determines whether to output the log additionally to the console as well. */
     private static final boolean console = I.env("LogConsole", false);
@@ -1392,6 +1393,10 @@ public class I {
 
     private static final Map<Class, Logger> jul = new ConcurrentHashMap<>();
 
+    static {
+        System.setProperty("java.util.logging.SimpleFormatter.format", "%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS.%1$tL %4$s %2$s %5$s%6$s%n");
+    }
+
     /**
      * Generic logging helper.
      * 
@@ -1402,8 +1407,11 @@ public class I {
     private static void log(Class name, java.util.logging.Level level, Object msg) {
         Logger logger = jul.computeIfAbsent(name, key -> {
             try {
+                Handler file = new FileHandler(".log/" + name.getSimpleName() + ".log");
+                file.setFormatter(new Subscriber());
+
                 Logger built = Logger.getLogger(key.getName());
-                built.addHandler(new FileHandler(".log/" + name.getSimpleName() + ".log"));
+                built.addHandler(file);
                 built.setUseParentHandlers(false);
                 return built;
             } catch (Exception e) {
