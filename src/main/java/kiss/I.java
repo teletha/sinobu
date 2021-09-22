@@ -20,7 +20,9 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringReader;
+import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
+import java.lang.System.LoggerFinder;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
@@ -87,10 +89,6 @@ import java.util.function.Function;
 import java.util.function.LongSupplier;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.logging.FileHandler;
-import java.util.logging.Handler;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -1006,7 +1004,7 @@ public class I {
      * @param msg A message log.
      */
     public static void info(Object msg) {
-        log(System.class, java.util.logging.Level.INFO, msg);
+        log(System.class, Level.INFO, msg);
     }
 
     /**
@@ -1305,22 +1303,66 @@ public class I {
     }
 
     /** The configuration for log level. */
-    static final DateTimeFormatter F = DateTimeFormatter.ofPattern(I.env("LogDateFormat", "yyyy-MM-dd HH:mm:ss.SSS"));
+    public static DateTimeFormatter LogFormat = DateTimeFormatter.ofPattern(I.env("LogFormat", "yyyy-MM-dd HH:mm:ss.SSS"));
 
-    /** The configuration for log level. */
-    private static final boolean append = I.env("LogAppend", false);
+    /**
+     * Configure whether to include logging caller infomation in the log (default:
+     * {@link Level#OFF}). It can also be set during application initialization through the .env
+     * file with 'LogCaller' key. Note that turning on this setting will increase the logging
+     * process time extremely.
+     * 
+     * @see I#env(String)
+     * @see I#env(String, Object)
+     */
+    public static Level LogCaller = I.env("LogCaller", Level.OFF);
 
-    /** The configuration for log level. */
-    private static final Level level = I.env("LogLevel", Level.INFO);
+    /**
+     * Configure whether to output the log to the system console (default: {@link Level#INFO}). It
+     * can also be set during application initialization through the .env file with 'LogConsole'
+     * key. If you turn off the both file and console output, all logs will be routed to the
+     * platform logger.
+     * 
+     * @see I#LogFile
+     * @see I#env(String)
+     * @see I#env(String, Object)
+     * @see Logger
+     * @see LoggerFinder
+     */
+    public static Level LogConsole = I.env("LogConsole", Level.INFO);
 
-    /** Determines whether to include caller information in the log. */
-    static final boolean caller = I.env("LogCaller", true);
+    /**
+     * Configure whether to output the log to the rotatable local file (default: {@link Level#ALL}).
+     * It can also be set during application initialization through the .env file with 'LogFile'
+     * key. If you turn off the both file and console output, all logs will be routed to the
+     * platform logger.
+     * 
+     * @see I#LogConsole
+     * @see I#env(String)
+     * @see I#env(String, Object)
+     * @see Logger
+     * @see LoggerFinder
+     */
+    public static Level LogFile = I.env("LogFile", Level.ALL);
 
-    /** Determines whether to output the log additionally to the console as well. */
-    private static final boolean console = I.env("LogConsole", false);
+    /**
+     * Configure whether to create a new file or append to an existing file when logging to a local
+     * file (default: true). It can also be set during application initialization through the .env
+     * file with 'LogAppend' key.
+     * 
+     * @see I#env(String)
+     * @see I#env(String, Object)
+     */
+    public static boolean LogAppend = I.env("LogAppend", true);
 
-    /** Determines whether to output the log additionally to the console as well. */
-    private static final boolean file = I.env("LogFile", true);
+    /**
+     * Configure whether to create a new file or append to an existing file when logging to a local
+     * file (default: true). It can also be set during application initialization through the .env
+     * file with 'LogAppend' key.
+     * 
+     * @see I#env(String)
+     * @see I#env(String, Object)
+     */
+    public static boolean LogAsync = I.env("LogAsync", true);
 
     /**
      * Generic logging helper.
@@ -1330,105 +1372,64 @@ public class I {
      * @param msg
      */
     private static void log(Class name, Level level, Object msg) {
-        if (I.level.ordinal() <= level.ordinal()) {
+        int o = level.ordinal();
+
+        if (LogFile.ordinal() <= o || LogConsole.ordinal() <= o) {
             long mills = System.currentTimeMillis();
-            StackTraceElement e = caller ? StackWalker.getInstance().walk(s -> s.skip(2).findFirst().get().toStackTraceElement()) : null;
-            String id = Thread.currentThread().getName();
+            StackTraceElement e = LogCaller.ordinal() <= o
+                    ? StackWalker.getInstance().walk(s -> s.skip(2).findFirst().get().toStackTraceElement())
+                    : null;
 
-            exe.execute(() -> {
-                try {
-                    // lookup logger by the simple class name
-                    Subscriber log = logs.computeIfAbsent(name, key -> {
-                        Subscriber v = new Subscriber();
-                        v.index = Instant.now().truncatedTo(ChronoUnit.DAYS).toEpochMilli();
-                        return v;
-                    });
+            WiseRunnable run = () -> {
+                // lookup logger by the simple class name
+                Subscriber log = logs.computeIfAbsent(name, key -> {
+                    Subscriber v = new Subscriber();
+                    v.index = Instant.now().truncatedTo(ChronoUnit.DAYS).toEpochMilli();
+                    return v;
+                });
 
-                    if (file && log.index <= mills) {
-                        // stop old
-                        I.quiet(log.writer);
+                if (LogFile.ordinal() <= o && log.index <= mills) {
+                    // stop old
+                    I.quiet(log.writer);
 
-                        // start new
-                        LocalDate day = LocalDate.now();
+                    // start new
+                    LocalDate day = LocalDate.now();
 
-                        log.writer = new BufferedWriter(new FileWriter(locate(name, day).toFile(), StandardCharsets.UTF_8, append));
-                        log.index += 24 * 60 * 60 * 1000;
+                    log.writer = new BufferedWriter(new FileWriter(locate(name, day).toFile(), LogAppend));
+                    log.index += 24 * 60 * 60 * 1000;
 
-                        // delete oldest
-                        day = day.minusDays(30);
-                        while (Files.deleteIfExists(locate(name, day))) {
-                            day = day.minusDays(1);
-                        }
+                    // delete oldest
+                    day = day.minusDays(30);
+                    while (Files.deleteIfExists(locate(name, day))) {
+                        day = day.minusDays(1);
                     }
-
-                    StringBuilder text = new StringBuilder(Instant.ofEpochMilli(mills).atZone(ZoneId.systemDefault()).format(F)).append(' ')
-                            .append(level)
-                            .append('\t')
-                            .append(msg);
-                    if (e != null) {
-                        text.append('\t')
-                                .append(e.getClassName())
-                                .append('#')
-                                .append(e.getMethodName())
-                                .append(':')
-                                .append(e.getLineNumber());
-                    }
-                    text.append('\n');
-
-                    log.writer.append(text);
-
-                    if (msg instanceof Throwable) {
-                        Stream.of(((Throwable) msg).getStackTrace()).map(StackTraceElement::toString).forEach(text::append);
-                    }
-
-                    if (file) log.writer.append(text);
-                    if (console) System.out.append(text);
-
-                } catch (Throwable x) {
-                    throw I.quiet(x);
                 }
-            });
-        }
-    }
 
-    private static final Map<Class, Logger> jul = new ConcurrentHashMap<>();
+                StringBuilder text = new StringBuilder(Instant.ofEpochMilli(mills).atZone(ZoneId.systemDefault()).format(LogFormat))
+                        .append(' ')
+                        .append(level)
+                        .append('\t')
+                        .append(msg);
+                if (e != null) {
+                    text.append('\t').append(e.getClassName()).append('#').append(e.getMethodName()).append(':').append(e.getLineNumber());
+                }
+                text.append('\n');
 
-    static {
-        System.setProperty("java.util.logging.SimpleFormatter.format", "%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS.%1$tL %4$s %2$s %5$s%6$s%n");
-    }
+                if (msg instanceof Throwable) {
+                    Stream.of(((Throwable) msg).getStackTrace()).map(StackTraceElement::toString).forEach(text::append);
+                }
 
-    /**
-     * Generic logging helper.
-     * 
-     * @param name
-     * @param level
-     * @param msg
-     */
-    private static void log(Class name, java.util.logging.Level level, Object msg) {
-        Logger logger = jul.computeIfAbsent(name, key -> {
-            try {
-                Handler file = new FileHandler(".log/" + name.getSimpleName() + ".log");
-                file.setFormatter(new Subscriber());
+                if (LogFile.ordinal() <= o) log.writer.append(text);
+                if (LogConsole.ordinal() <= o) System.out.append(text);
+            };
 
-                Logger built = Logger.getLogger(key.getName());
-                built.addHandler(file);
-                built.setUseParentHandlers(false);
-                return built;
-            } catch (Exception e) {
-                throw I.quiet(e);
+            if (LogAsync) {
+                exe.execute(run);
+            } else {
+                run.run();
             }
-        });
-
-        if (logger.isLoggable(level)) {
-            LogRecord rec = new LogRecord(java.util.logging.Level.INFO, String.valueOf(msg));
-            if (caller) {
-                StackTraceElement e = StackWalker.getInstance().walk(s -> s.skip(2).findFirst().get().toStackTraceElement());
-                rec.setSourceClassName(e.getClassName());
-                rec.setSourceMethodName(e.getMethodName());
-                rec.setSequenceNumber(e.getLineNumber());
-            }
-
-            exe.execute(() -> logger.log(rec));
+        } else {
+            System.getLogger(name.getName()).log(level, msg);
         }
     }
 

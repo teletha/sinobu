@@ -15,15 +15,12 @@ import java.io.Writer;
 import java.net.http.WebSocket;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.function.Consumer;
-import java.util.logging.Formatter;
-import java.util.logging.LogRecord;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
@@ -33,7 +30,7 @@ import java.util.zip.InflaterInputStream;
  * class. Fields should only be initialized if they are needed in the constructor. If you initialize
  * a field at the time of its declaration, even unnecessary fields will be initialized.
  */
-class Subscriber<T> extends Formatter implements Observer<T>, Disposable, WebSocket.Listener, Storable<Subscriber> {
+class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Storable<Subscriber> {
 
     /** Generic counter. */
     volatile long index;
@@ -267,33 +264,4 @@ class Subscriber<T> extends Formatter implements Observer<T>, Disposable, WebSoc
     // Logger
     // ======================================================================
     Writer writer;
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String format(LogRecord log) {
-        StringBuilder text = new StringBuilder(log.getInstant().atZone(ZoneId.systemDefault()).format(I.F)).append(' ')
-                .append(log.getLevel().getName())
-                .append('\t')
-                .append(log.getMessage());
-        if (I.caller) {
-            text.append('\t')
-                    .append(log.getSourceClassName())
-                    .append('#')
-                    .append(log.getSourceMethodName())
-                    .append(':')
-                    .append(log.getSequenceNumber());
-        }
-        text.append('\n');
-
-        Throwable e = log.getThrown();
-        if (e != null) {
-            for (StackTraceElement s : e.getStackTrace()) {
-                text.append('\t').append(s).append('\n');
-            }
-        }
-
-        return text.toString();
-    }
 }
