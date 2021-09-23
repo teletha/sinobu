@@ -73,10 +73,10 @@ import java.util.ServiceLoader;
 import java.util.ServiceLoader.Provider;
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
@@ -204,13 +204,16 @@ public class I {
     static final XPath xpath;
 
     /** The logger manager. */
-    private static final Map<Class, Subscriber> logs = new ConcurrentHashMap<>();
+    private static final Map<String, Subscriber> logs = new ConcurrentHashMap<>();
 
     /** The cache for {@link Lifestyle}. */
     private static final Map<Class, Lifestyle> lifestyles = new ConcurrentHashMap<>();
 
     /** The definitions of extensions. */
     private static final Map<Class, Ⅱ> extensions = new ConcurrentHashMap<>();
+
+    /** The sequential execution queue for IO-intensive processing. */
+    private static final ArrayBlockingQueue<WiseRunnable> tasks = new ArrayBlockingQueue(256);
 
     /** The parallel task scheduler. */
     static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(5, run -> {
@@ -368,6 +371,13 @@ public class I {
             // ignore
         }
         env.putAll(System.getenv());
+
+        // start sequential task executor
+        I.schedule((WiseRunnable) () -> {
+            while (true) {
+                tasks.take().RUN();
+            }
+        });
     }
 
     /**
@@ -588,7 +598,7 @@ public class I {
      * @param msg A message log.
      */
     public static void debug(Object msg) {
-        log(System.class, Level.DEBUG, msg);
+        log("system", Level.DEBUG, msg);
     }
 
     /**
@@ -597,7 +607,7 @@ public class I {
      * @param name A logger name by {@link Class#getSimpleName()}.
      * @param msg A message log.
      */
-    public static void debug(Class name, Object msg) {
+    public static void debug(String name, Object msg) {
         log(name, Level.DEBUG, msg);
     }
 
@@ -645,7 +655,7 @@ public class I {
      * @param msg A message log.
      */
     public static void error(Object msg) {
-        log(System.class, Level.ERROR, msg);
+        log("system", Level.ERROR, msg);
     }
 
     /**
@@ -654,7 +664,7 @@ public class I {
      * @param name A logger name by {@link Class#getSimpleName()}.
      * @param msg A message log.
      */
-    public static void error(Class name, Object msg) {
+    public static void error(String name, Object msg) {
         log(name, Level.ERROR, msg);
     }
 
@@ -1004,7 +1014,7 @@ public class I {
      * @param msg A message log.
      */
     public static void info(Object msg) {
-        log(System.class, Level.INFO, msg);
+        log("system", Level.INFO, msg);
     }
 
     /**
@@ -1013,7 +1023,7 @@ public class I {
      * @param name A logger name by {@link Class#getSimpleName()}.
      * @param msg A message log.
      */
-    public static void info(Class name, Object msg) {
+    public static void info(String name, Object msg) {
         log(name, Level.INFO, msg);
     }
 
@@ -1289,17 +1299,10 @@ public class I {
         return () -> findBy(extensionPoint).ⅱ.remove(extensionKey);
     }
 
-    private static final ExecutorService exe = Executors.newSingleThreadExecutor(t -> {
-        Thread a = new Thread(t);
-        a.setDaemon(true);
-        return a;
-    });
-
-    private static Path locate(Class name, LocalDate day) throws Exception {
+    private static Path locate(String name, LocalDate day) throws Exception {
         Path p = Path.of(".log");
         Files.createDirectories(p);
-        return p.resolve(Objects.requireNonNullElse(name.getSimpleName(), "system") + day
-                .format(DateTimeFormatter.BASIC_ISO_DATE) + ".log");
+        return p.resolve(Objects.requireNonNullElse(name, "system") + day.format(DateTimeFormatter.BASIC_ISO_DATE) + ".log");
     }
 
     /** The configuration for log level. */
@@ -1354,15 +1357,9 @@ public class I {
      */
     public static boolean LogAppend = I.env("LogAppend", true);
 
-    /**
-     * Configure whether to create a new file or append to an existing file when logging to a local
-     * file (default: true). It can also be set during application initialization through the .env
-     * file with 'LogAppend' key.
-     * 
-     * @see I#env(String)
-     * @see I#env(String, Object)
-     */
-    public static boolean LogAsync = I.env("LogAsync", true);
+    private static long lastTime;
+
+    private static String lastTimeFormat = "";
 
     /**
      * Generic logging helper.
@@ -1371,7 +1368,7 @@ public class I {
      * @param level
      * @param msg
      */
-    private static void log(Class name, Level level, Object msg) {
+    private static void log(String name, Level level, Object msg) {
         int o = level.ordinal();
 
         if (LogFile.ordinal() <= o || LogConsole.ordinal() <= o) {
@@ -1380,56 +1377,60 @@ public class I {
                     ? StackWalker.getInstance().walk(s -> s.skip(2).findFirst().get().toStackTraceElement())
                     : null;
 
-            WiseRunnable run = () -> {
-                // lookup logger by the simple class name
-                Subscriber log = logs.computeIfAbsent(name, key -> {
-                    Subscriber v = new Subscriber();
-                    v.index = Instant.now().truncatedTo(ChronoUnit.DAYS).toEpochMilli();
-                    return v;
-                });
+            try {
+                tasks.put(() -> {
+                    // lookup logger by the simple class name
+                    Subscriber log = logs.computeIfAbsent(name, key -> {
+                        Subscriber v = new Subscriber();
+                        v.index = Instant.now().truncatedTo(ChronoUnit.DAYS).toEpochMilli();
+                        return v;
+                    });
 
-                if (LogFile.ordinal() <= o && log.index <= mills) {
-                    // stop old
-                    I.quiet(log.writer);
+                    if (LogFile.ordinal() <= o && log.index <= mills) {
+                        // stop old
+                        I.quiet(log.writer);
 
-                    // start new
-                    LocalDate day = LocalDate.now();
+                        // start new
+                        LocalDate day = LocalDate.now();
 
-                    log.writer = new BufferedWriter(new FileWriter(locate(name, day).toFile(), LogAppend));
-                    log.index += 24 * 60 * 60 * 1000;
+                        log.writer = new BufferedWriter(new FileWriter(locate(name, day).toFile(), LogAppend));
+                        log.index += 24 * 60 * 60 * 1000;
 
-                    // delete oldest
-                    day = day.minusDays(30);
-                    while (Files.deleteIfExists(locate(name, day))) {
-                        day = day.minusDays(1);
+                        // delete oldest
+                        day = day.minusDays(30);
+                        while (Files.deleteIfExists(locate(name, day))) {
+                            day = day.minusDays(1);
+                        }
                     }
-                }
 
-                StringBuilder text = new StringBuilder(Instant.ofEpochMilli(mills).atZone(ZoneId.systemDefault()).format(LogFormat))
-                        .append(' ')
-                        .append(level)
-                        .append('\t')
-                        .append(msg);
-                if (e != null) {
-                    text.append('\t').append(e.getClassName()).append('#').append(e.getMethodName()).append(':').append(e.getLineNumber());
-                }
-                text.append('\n');
+                    if (mills != lastTime) {
+                        lastTime = mills;
+                        lastTimeFormat = Instant.ofEpochMilli(mills).atZone(ZoneId.systemDefault()).format(LogFormat);
+                    }
 
-                if (msg instanceof Throwable) {
-                    Stream.of(((Throwable) msg).getStackTrace()).map(StackTraceElement::toString).forEach(text::append);
-                }
+                    StringBuilder text = new StringBuilder(lastTimeFormat).append(' ').append(level).append('\t').append(msg);
+                    if (e != null) {
+                        text.append('\t')
+                                .append(e.getClassName())
+                                .append('#')
+                                .append(e.getMethodName())
+                                .append(':')
+                                .append(e.getLineNumber());
+                    }
+                    text.append('\n');
 
-                if (LogFile.ordinal() <= o) log.writer.append(text);
-                if (LogConsole.ordinal() <= o) System.out.append(text);
-            };
+                    if (msg instanceof Throwable) {
+                        Stream.of(((Throwable) msg).getStackTrace()).map(StackTraceElement::toString).forEach(text::append);
+                    }
 
-            if (LogAsync) {
-                exe.execute(run);
-            } else {
-                run.run();
+                    if (LogFile.ordinal() <= o) log.writer.append(text);
+                    if (LogConsole.ordinal() <= o) System.out.append(text);
+                });
+            } catch (Exception x) {
+                throw I.quiet(x);
             }
         } else {
-            System.getLogger(name.getName()).log(level, msg);
+            System.getLogger(name).log(level, msg);
         }
     }
 
