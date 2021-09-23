@@ -91,7 +91,6 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
 import java.util.zip.ZipFile;
@@ -1357,10 +1356,6 @@ public class I {
      */
     public static boolean LogAppend = I.env("LogAppend", true);
 
-    private static long lastTime;
-
-    private static String lastTimeFormat = "";
-
     /**
      * Generic logging helper.
      * 
@@ -1372,21 +1367,33 @@ public class I {
         int o = level.ordinal();
 
         if (LogFile.ordinal() <= o || LogConsole.ordinal() <= o) {
+            // If the queue usage exceeds 50%, TRACE, DEBUG and INFO level logs will be
+            // discarded. This is expected to provide a performance improvement that is worth the
+            // risk of losing logging events.
+            if (200 <= tasks.size() && o <= 3) {
+                return;
+            }
+
+            // snapshot the current time
             long mills = System.currentTimeMillis();
+
+            // snapshot the stack trace if needed
             StackTraceElement e = LogCaller.ordinal() <= o
                     ? StackWalker.getInstance().walk(s -> s.skip(2).findFirst().get().toStackTraceElement())
                     : null;
 
             try {
                 tasks.put(() -> {
-                    // lookup logger by the simple class name
+                    // lookup logger by name
                     Subscriber log = logs.computeIfAbsent(name, key -> {
                         Subscriber v = new Subscriber();
                         v.index = Instant.now().truncatedTo(ChronoUnit.DAYS).toEpochMilli();
+                        v.nums = new long[] {I.env(name + ".level", Level.ALL).ordinal(), 0};
+                        v.text = new StringBuilder();
                         return v;
                     });
 
-                    if (LogFile.ordinal() <= o && log.index <= mills) {
+                    if (log.nums[0] <= o && LogFile.ordinal() <= o && log.index <= mills) {
                         // stop old
                         I.quiet(log.writer);
 
@@ -1403,33 +1410,39 @@ public class I {
                         }
                     }
 
-                    if (mills != lastTime) {
-                        lastTime = mills;
-                        lastTimeFormat = Instant.ofEpochMilli(mills).atZone(ZoneId.systemDefault()).format(LogFormat);
+                    if (log.nums[1] == mills) {
+                        log.text.setLength(23);
+                    } else {
+                        log.text.setLength(0);
+                        log.nums[1] = mills;
+                        log.text.append(Instant.ofEpochMilli(mills).atZone(ZoneId.systemDefault()).format(LogFormat));
                     }
+                    log.text.append(' ').append(level).append('\t').append(msg);
 
-                    StringBuilder text = new StringBuilder(lastTimeFormat).append(' ').append(level).append('\t').append(msg);
                     if (e != null) {
-                        text.append('\t')
+                        log.text.append('\t')
                                 .append(e.getClassName())
                                 .append('#')
                                 .append(e.getMethodName())
                                 .append(':')
                                 .append(e.getLineNumber());
                     }
-                    text.append('\n');
+                    log.text.append('\n');
 
                     if (msg instanceof Throwable) {
-                        Stream.of(((Throwable) msg).getStackTrace()).map(StackTraceElement::toString).forEach(text::append);
+                        // Stream.of(((Throwable)
+                        // msg).getStackTrace()).map(StackTraceElement::toString).forEach(text::append);
                     }
 
-                    if (LogFile.ordinal() <= o) log.writer.append(text);
-                    if (LogConsole.ordinal() <= o) System.out.append(text);
+                    if (LogFile.ordinal() <= o) log.writer.append(log.text);
+                    if (LogConsole.ordinal() <= o) System.out.append(log.text);
                 });
             } catch (Exception x) {
                 throw I.quiet(x);
             }
-        } else {
+        } else
+
+        {
             System.getLogger(name).log(level, msg);
         }
     }
