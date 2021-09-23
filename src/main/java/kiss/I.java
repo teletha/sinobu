@@ -20,6 +20,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringReader;
+import java.io.Writer;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.lang.System.LoggerFinder;
@@ -1356,6 +1357,10 @@ public class I {
      */
     public static boolean LogAppend = I.env("LogAppend", true);
 
+    private static long lastTime;
+
+    private static String last;
+
     /**
      * Generic logging helper.
      * 
@@ -1374,9 +1379,6 @@ public class I {
                 return;
             }
 
-            // snapshot the current time
-            long mills = System.currentTimeMillis();
-
             // snapshot the stack trace if needed
             StackTraceElement e = LogCaller.ordinal() <= o
                     ? StackWalker.getInstance().walk(s -> s.skip(2).findFirst().get().toStackTraceElement())
@@ -1384,23 +1386,27 @@ public class I {
 
             try {
                 tasks.put(() -> {
+                    // snapshot the current time
+                    long mills = System.currentTimeMillis();
+
                     // lookup logger by name
-                    Subscriber log = logs.computeIfAbsent(name, key -> {
+                    Subscriber<Appendable> log = logs.computeIfAbsent(name, key -> {
                         Subscriber v = new Subscriber();
                         v.index = Instant.now().truncatedTo(ChronoUnit.DAYS).toEpochMilli();
-                        v.nums = new long[] {I.env(name + ".level", Level.ALL).ordinal(), 0};
-                        v.text = new StringBuilder();
                         return v;
                     });
 
-                    if (log.nums[0] <= o && LogFile.ordinal() <= o && log.index <= mills) {
+                    if (LogFile.ordinal() <= o && log.index <= mills) {
                         // stop old
-                        I.quiet(log.writer);
+                        if (log.list != null) {
+                            I.quiet(log.list.get(0));
+                        }
 
                         // start new
                         LocalDate day = LocalDate.now();
 
-                        log.writer = new BufferedWriter(new FileWriter(locate(name, day).toFile(), LogAppend));
+                        Writer w = new BufferedWriter(new FileWriter(locate(name, day).toFile(), LogAppend));
+                        log.list = List.of(w, I.bundle(Appendable.class, w, System.out));
                         log.index += 24 * 60 * 60 * 1000;
 
                         // delete oldest
@@ -1410,32 +1416,31 @@ public class I {
                         }
                     }
 
-                    if (log.nums[1] == mills) {
-                        log.text.setLength(23);
+                    Appendable a = LogConsole.ordinal() <= o ? log.list.get(1) : log.list.get(0);
+
+                    if (lastTime != mills) {
+                        last = Instant.ofEpochMilli(mills).atZone(ZoneId.systemDefault()).format(LogFormat);
+                        lastTime = mills;
                     } else {
-                        log.text.setLength(0);
-                        log.nums[1] = mills;
-                        log.text.append(Instant.ofEpochMilli(mills).atZone(ZoneId.systemDefault()).format(LogFormat));
+
                     }
-                    log.text.append(' ').append(level).append('\t').append(msg);
+
+                    a.append(last).append(' ').append(level.name()).append('\t').append(String.valueOf(msg));
 
                     if (e != null) {
-                        log.text.append('\t')
+                        a.append('\t')
                                 .append(e.getClassName())
                                 .append('#')
                                 .append(e.getMethodName())
                                 .append(':')
-                                .append(e.getLineNumber());
+                                .append(String.valueOf(e.getLineNumber()));
                     }
-                    log.text.append('\n');
+                    a.append('\n');
 
                     if (msg instanceof Throwable) {
                         // Stream.of(((Throwable)
                         // msg).getStackTrace()).map(StackTraceElement::toString).forEach(text::append);
                     }
-
-                    if (LogFile.ordinal() <= o) log.writer.append(log.text);
-                    if (LogConsole.ordinal() <= o) System.out.append(log.text);
                 });
             } catch (Exception x) {
                 throw I.quiet(x);

@@ -11,7 +11,6 @@ package kiss;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
-import java.io.Writer;
 import java.net.http.WebSocket;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -34,9 +33,6 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
 
     /** Generic counter. */
     volatile long index;
-
-    /** Generic counter. */
-    volatile long[] nums;
 
     /** Generic list. */
     List<T> list;
@@ -262,9 +258,4 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
     public String locate() {
         return I.env("LangDirectory", "lang") + "/" + text + ".json";
     }
-
-    // ======================================================================
-    // Logger
-    // ======================================================================
-    Writer writer;
 }
