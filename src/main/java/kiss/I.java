@@ -373,11 +373,28 @@ public class I {
         env.putAll(System.getenv());
 
         // start sequential task executor
-        I.schedule((WiseRunnable) () -> {
+        I.schedule(() -> {
+            // BlockingQueue#drainTo operation may be more efficient than repeatedly polling the
+            // queue like the belowing. Also, if you use take method frequently, it will create a
+            // lot of objects to synchronize, which will strain the memory and affect the
+            // performance due to GC execution.
+            //
+            // while (true) tasks.take().RUN();
+
+            List<WiseRunnable> list = new ArrayList();
             while (true) {
-                tasks.take().RUN();
+                tasks.drainTo(list);
+                for (WiseRunnable wise : list) {
+                    try {
+                        wise.RUN();
+                    } catch (Throwable e) {
+                        I.error(e);
+                    }
+                }
+                list.clear();
             }
         });
+
     }
 
     /**
@@ -1375,9 +1392,9 @@ public class I {
             // If the queue usage exceeds 50%, TRACE, DEBUG and INFO level logs will be
             // discarded. This is expected to provide a performance improvement that is worth the
             // risk of losing logging events.
-            if (200 <= tasks.size() && o <= 3) {
-                return;
-            }
+            // if (200 <= tasks.size() && o <= 3) {
+            // return;
+            // }
 
             // snapshot the stack trace if needed
             StackTraceElement e = LogCaller.ordinal() <= o
