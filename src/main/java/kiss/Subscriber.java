@@ -9,11 +9,20 @@
  */
 package kiss;
 
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
+import java.io.FileWriter;
 import java.io.InputStreamReader;
+import java.io.Writer;
+import java.lang.System.Logger.Level;
 import java.net.http.WebSocket;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -29,13 +38,15 @@ import java.util.zip.InflaterInputStream;
  * class. Fields should only be initialized if they are needed in the constructor. If you initialize
  * a field at the time of its declaration, even unnecessary fields will be initialized.
  */
-class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Storable<Subscriber> {
+class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Storable<Subscriber>, WiseRunnable {
 
     /** Generic counter. */
     volatile long index;
 
     /** Generic list. */
     List<T> list;
+
+    Object[] array;
 
     /**
      * {@link Subscriber} must have this constructor only. Dont use instance field initialization to
@@ -257,5 +268,75 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
     @Override
     public String locate() {
         return I.env("LangDirectory", "lang") + "/" + text + ".json";
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void RUN() throws Throwable {
+        // snapshot the current time
+        long mills = System.currentTimeMillis();
+        String name = (String) array[0];
+        Level level = (Level) array[1];
+        int o = level.ordinal();
+        Object msg = array[2];
+        StackTraceElement e = (StackTraceElement) array[3];
+        if (I.P.size() < 256) {
+            I.P.offer(this);
+        }
+
+        // lookup logger by name
+        Subscriber<Appendable> log = I.logs.computeIfAbsent(name, key -> {
+            Subscriber v = new Subscriber();
+            v.index = Instant.now().truncatedTo(ChronoUnit.DAYS).toEpochMilli();
+            return v;
+        });
+
+        if (I.LogFile.ordinal() <= o && log.index <= mills) {
+            // stop old
+            if (log.list != null) {
+                I.quiet(log.list.get(0));
+            }
+
+            // start new
+            LocalDate day = LocalDate.now();
+
+            Writer w = new BufferedWriter(new FileWriter(I.locate(name, day).toFile(), I.LogAppend));
+            log.list = List.of(w, I.bundle(Appendable.class, w, System.out));
+            log.index += 24 * 60 * 60 * 1000;
+
+            // delete oldest
+            day = day.minusDays(30);
+            while (Files.deleteIfExists(I.locate(name, day))) {
+                day = day.minusDays(1);
+            }
+        }
+
+        Appendable a = I.LogConsole.ordinal() <= o ? log.list.get(1) : log.list.get(0);
+
+        if (I.lastTime != mills) {
+            I.last = Instant.ofEpochMilli(mills).atZone(ZoneId.systemDefault()).format(I.LogFormat);
+            I.lastTime = mills;
+        } else {
+
+        }
+
+        a.append(I.last).append(' ').append(level.name()).append('\t').append(String.valueOf(msg));
+
+        if (e != null) {
+            a.append('\t')
+                    .append(e.getClassName())
+                    .append('#')
+                    .append(e.getMethodName())
+                    .append(':')
+                    .append(String.valueOf(e.getLineNumber()));
+        }
+        a.append('\n');
+
+        if (msg instanceof Throwable) {
+            // Stream.of(((Throwable)
+            // msg).getStackTrace()).map(StackTraceElement::toString).forEach(text::append);
+        }
     }
 }

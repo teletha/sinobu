@@ -9,10 +9,8 @@
  */
 package kiss;
 
-import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -20,7 +18,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringReader;
-import java.io.Writer;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.lang.System.LoggerFinder;
@@ -50,12 +47,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -70,6 +64,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.Queue;
 import java.util.ServiceLoader;
 import java.util.ServiceLoader.Provider;
 import java.util.Set;
@@ -204,7 +199,7 @@ public class I {
     static final XPath xpath;
 
     /** The logger manager. */
-    private static final Map<String, Subscriber> logs = new ConcurrentHashMap<>();
+    static final Map<String, Subscriber> logs = new ConcurrentHashMap<>();
 
     /** The cache for {@link Lifestyle}. */
     private static final Map<Class, Lifestyle> lifestyles = new ConcurrentHashMap<>();
@@ -1316,7 +1311,7 @@ public class I {
         return () -> findBy(extensionPoint).ⅱ.remove(extensionKey);
     }
 
-    private static Path locate(String name, LocalDate day) throws Exception {
+    static Path locate(String name, LocalDate day) throws Exception {
         Path p = Path.of(".log");
         Files.createDirectories(p);
         return p.resolve(Objects.requireNonNullElse(name, "system") + day.format(DateTimeFormatter.BASIC_ISO_DATE) + ".log");
@@ -1374,9 +1369,12 @@ public class I {
      */
     public static boolean LogAppend = I.env("LogAppend", true);
 
-    private static long lastTime;
+    static long lastTime;
 
-    private static String last;
+    static String last;
+
+    /** Reuse buffers. */
+    static final Queue<Subscriber> P = new ArrayDeque<>(256);
 
     /**
      * Generic logging helper.
@@ -1396,75 +1394,25 @@ public class I {
             // return;
             // }
 
-            // snapshot the stack trace if needed
-            StackTraceElement e = LogCaller.ordinal() <= o
-                    ? StackWalker.getInstance().walk(s -> s.skip(2).findFirst().get().toStackTraceElement())
-                    : null;
-
             try {
-                tasks.put(() -> {
-                    // snapshot the current time
-                    long mills = System.currentTimeMillis();
+                Subscriber sub = P.poll();
+                if (sub == null) {
+                    sub = new Subscriber();
+                    sub.array = new Object[4];
+                }
+                sub.index = System.currentTimeMillis();
+                sub.array[0] = name;
+                sub.array[1] = level;
+                sub.array[2] = msg;
+                sub.array[3] = LogCaller.ordinal() <= o
+                        ? StackWalker.getInstance().walk(s -> s.skip(2).findFirst().get().toStackTraceElement())
+                        : null;
 
-                    // lookup logger by name
-                    Subscriber<Appendable> log = logs.computeIfAbsent(name, key -> {
-                        Subscriber v = new Subscriber();
-                        v.index = Instant.now().truncatedTo(ChronoUnit.DAYS).toEpochMilli();
-                        return v;
-                    });
-
-                    if (LogFile.ordinal() <= o && log.index <= mills) {
-                        // stop old
-                        if (log.list != null) {
-                            I.quiet(log.list.get(0));
-                        }
-
-                        // start new
-                        LocalDate day = LocalDate.now();
-
-                        Writer w = new BufferedWriter(new FileWriter(locate(name, day).toFile(), LogAppend));
-                        log.list = List.of(w, I.bundle(Appendable.class, w, System.out));
-                        log.index += 24 * 60 * 60 * 1000;
-
-                        // delete oldest
-                        day = day.minusDays(30);
-                        while (Files.deleteIfExists(locate(name, day))) {
-                            day = day.minusDays(1);
-                        }
-                    }
-
-                    Appendable a = LogConsole.ordinal() <= o ? log.list.get(1) : log.list.get(0);
-
-                    if (lastTime != mills) {
-                        last = Instant.ofEpochMilli(mills).atZone(ZoneId.systemDefault()).format(LogFormat);
-                        lastTime = mills;
-                    } else {
-
-                    }
-
-                    a.append(last).append(' ').append(level.name()).append('\t').append(String.valueOf(msg));
-
-                    if (e != null) {
-                        a.append('\t')
-                                .append(e.getClassName())
-                                .append('#')
-                                .append(e.getMethodName())
-                                .append(':')
-                                .append(String.valueOf(e.getLineNumber()));
-                    }
-                    a.append('\n');
-
-                    if (msg instanceof Throwable) {
-                        // Stream.of(((Throwable)
-                        // msg).getStackTrace()).map(StackTraceElement::toString).forEach(text::append);
-                    }
-                });
+                tasks.put(sub);
             } catch (Exception x) {
                 throw I.quiet(x);
             }
-        } else
-
-        {
+        } else {
             System.getLogger(name).log(level, msg);
         }
     }
