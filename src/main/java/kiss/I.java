@@ -1383,7 +1383,7 @@ public class I {
             } catch (Exception x) {
                 throw I.quiet(x);
             }
-        } else {
+        } else if (LogFile == Level.OFF && LogConsole == Level.OFF) {
             System.getLogger(name).log(level, msg);
         }
     }

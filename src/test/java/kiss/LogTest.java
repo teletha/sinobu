@@ -9,112 +9,282 @@
  */
 package kiss;
 
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
-import java.util.logging.SimpleFormatter;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.lang.System.Logger.Level;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.function.Supplier;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
+@Execution(ExecutionMode.SAME_THREAD)
 class LogTest {
 
-    static Handler[] handlers;
+    private PrintStream original;
 
-    static Buffer buffer = new Buffer();
+    private Log log;
 
-    @BeforeAll
-    static void store() {
-        handlers = I.log.getHandlers();
+    private static class Log extends PrintStream {
 
-        for (int i = 0; i < handlers.length; i++) {
-            I.log.removeHandler(handlers[i]);
+        private final Deque<Entry> entries = new ArrayDeque();
+
+        private StringBuilder line = new StringBuilder();
+
+        private Log() {
+            super(OutputStream.nullOutputStream(), true, StandardCharsets.UTF_8);
         }
-        buffer.setFormatter(new SimpleFormatter());
-        I.log.addHandler(buffer);
-        I.log.setLevel(Level.ALL);
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public PrintStream append(CharSequence csq) {
+            for (int i = 0; i < csq.length(); i++) {
+                handle(csq.charAt(i));
+            }
+            return this;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public PrintStream append(char c) {
+            handle(c);
+            return this;
+        }
+
+        private void handle(char c) {
+            if (c == '\n') {
+                String text = line.toString();
+                if (!text.isBlank()) {
+                    entries.add(new Entry(text));
+                }
+                line.setLength(0);
+            } else {
+                line.append(c);
+            }
+        }
     }
 
-    @AfterAll
-    static void restore() {
-        I.log.removeHandler(buffer);
+    private static class Entry {
 
-        for (int i = 0; i < handlers.length; i++) {
-            I.log.addHandler(handlers[i]);
+        private Level level;
+
+        private String message;
+
+        private Entry(String log) {
+            if (log.startsWith("\tat ")) {
+                message = log.trim();
+            } else {
+                int start = log.indexOf(' ', log.indexOf(' ') + 1) + 1;
+                int end = log.indexOf('\t', start + 1);
+
+                level = Level.valueOf(log.substring(start, end));
+                message = log.substring(end + 1);
+            }
         }
+    }
+
+    @BeforeEach
+    void store() {
+        original = System.out;
+        System.setOut(log = new Log());
+
+        I.LogFile = Level.OFF;
+        I.LogConsole = Level.ALL;
+    }
+
+    @AfterEach
+    void restore() {
+        System.setOut(original);
+
+        I.LogFile = Level.ALL;
+        I.LogConsole = Level.INFO;
+        I.LogCaller = Level.OFF;
     }
 
     @Test
-    void log() {
-        I.info("message");
-        assert buffer.is("message");
+    void logString() {
+        I.info("TEXT");
+
+        assert assumeLog(Level.INFO, "TEXT");
+    }
+
+    @Test
+    void logObject() {
+        I.info(new Object() {
+            @Override
+            public String toString() {
+                return "From ToString";
+            }
+        });
+
+        assert assumeLog(Level.INFO, "From ToString");
+    }
+
+    @Test
+    void logSupplier() {
+        I.info((Supplier) () -> "From Supplier");
+
+        assert assumeLog(Level.INFO, "From Supplier");
+    }
+
+    @Test
+    void logThrowable() {
+        I.info(new Error("From Error"));
+
+        assert assumeLog(Level.INFO, "java.lang.Error: From Error");
+        assert assumeStackTrace("at kiss.LogTest.logThrowable(LogTest.java:1)");
+    }
+
+    @Test
+    void trace() {
+        I.trace("Message");
+
+        assert assumeLog(Level.TRACE, "Message");
     }
 
     @Test
     void debug() {
-        I.debug("message");
-        assert buffer.is("message");
+        I.debug("Message");
+
+        assert assumeLog(Level.DEBUG, "Message");
+    }
+
+    @Test
+    void info() {
+        I.info("Message");
+
+        assert assumeLog(Level.INFO, "Message");
+    }
+
+    @Test
+    void warn() {
+        I.warn("Message");
+
+        assert assumeLog(Level.WARNING, "Message");
     }
 
     @Test
     void error() {
-        I.info(new Error("ERROR"));
-        assert buffer.contains("java.lang.Error: ERROR");
+        I.error("Message");
+
+        assert assumeLog(Level.ERROR, "Message");
     }
 
-    private static class Buffer extends Handler {
+    @Test
+    void callerInfomation() {
+        I.LogCaller = Level.ALL;
+        I.error("Message");
 
-        private String buffer;
+        assert assumeLog(Level.ERROR, "Message at kiss.LogTest.callerInfomation(LogTest.java:0)");
+    }
 
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void publish(LogRecord record) {
-            buffer = getFormatter().format(record);
+    @Test
+    void loggerName() {
+        I.info("name", "Message");
+
+        assert assumeLog(Level.INFO, "Message");
+    }
+
+    @Test
+    void file() {
+        I.LogFile = Level.ALL;
+    }
+
+    @Test
+    void filterByLoggerLevel() {
+        I.env("filtered-logger.level", "ERROR");
+
+        I.info("filtered-logger", "NoOP");
+        assert assumeNoLog();
+
+        I.error("filtered-logger", "Message");
+        assert assumeLog(Level.ERROR, "Message");
+    }
+
+    @Test
+    void filterByGlobalConsoleLevel() {
+        I.LogConsole = Level.ERROR;
+
+        I.warn("NoOP");
+        I.info("NoOP");
+        I.debug("NoOP");
+        I.trace("NoOP");
+        assert assumeNoLog();
+
+        I.error("Message");
+        assert assumeLog(Level.ERROR, "Message");
+
+        // change level dynamically
+        I.LogConsole = Level.DEBUG;
+
+        I.trace("NoOP");
+        assert assumeNoLog();
+
+        I.error("Message");
+        I.warn("Message");
+        I.info("Message");
+        I.debug("Message");
+        assert assumeLog(Level.ERROR, "Message");
+        assert assumeLog(Level.WARNING, "Message");
+        assert assumeLog(Level.INFO, "Message");
+        assert assumeLog(Level.DEBUG, "Message");
+    }
+
+    @Test
+    void filterByGlobalFileLevel() {
+
+    }
+
+    private boolean assumeLog(Level level, String message) {
+        awaitLogProcess();
+
+        Entry entry = log.entries.pop();
+        assert entry.level == level;
+        assert normalize(entry.message).equals(normalize(message));
+
+        return true;
+    }
+
+    private boolean assumeNoLog() {
+        try {
+            Thread.sleep(50);
+        } catch (InterruptedException e) {
+            throw I.quiet(e);
         }
+        assert log.entries.isEmpty();
 
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void flush() {
-        }
+        return true;
+    }
 
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public void close() throws SecurityException {
-        }
+    private boolean assumeStackTrace(String message) {
+        awaitLogProcess();
 
-        /**
-         * Matching.
-         * 
-         * @param expected
-         * @return
-         */
-        private boolean contains(String expected) {
-            return buffer.trim().contains(expected);
-        }
+        Entry entry = log.entries.pop();
+        assert normalize(entry.message).equals(normalize(message));
 
-        /**
-         * Matching.
-         * 
-         * @param expected
-         * @return
-         */
-        private boolean is(String expected) {
-            return buffer.trim().endsWith(expected);
-        }
+        return true;
+    }
 
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public String toString() {
-            return buffer;
+    private String normalize(String message) {
+        return message.replaceAll(":\\d+", ":0").replaceAll("\t", " ");
+    }
+
+    private void awaitLogProcess() {
+        while (log.entries.size() == 0) {
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                throw I.quiet(e);
+            }
         }
     }
 }

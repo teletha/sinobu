@@ -9,7 +9,7 @@
  */
 package kiss;
 
-import static java.time.format.DateTimeFormatter.*;
+import static java.time.format.DateTimeFormatter.BASIC_ISO_DATE;
 
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
@@ -355,7 +355,9 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
                     .append(String.valueOf(array[2] instanceof Supplier ? ((Supplier) array[2]).get() : array[2]));
 
             // write %Location
-            if (array[3] != null) append(a, (StackTraceElement) array[3]);
+            if (array[3] != null) {
+                a.append("\tat ").append(array[3].toString()).append('\n');
+            }
 
             // write line feed
             a.append('\n');
@@ -363,7 +365,7 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
             // write %Cause
             if (array[2] instanceof Throwable) {
                 for (StackTraceElement e : ((Throwable) array[2]).getStackTrace()) {
-                    append(a, e);
+                    a.append("\tat ").append(e.toString()).append('\n');
                 }
             }
         }
@@ -372,24 +374,5 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
         // Refund log event object
         // ================================================
         if (I.logs.size() <= 256) I.logs.offer(this);
-    }
-
-    /**
-     * Write stack trace infomation.
-     * 
-     * @param a
-     * @param e
-     * @throws Exception
-     */
-    private static void append(Appendable a, StackTraceElement e) throws Exception {
-        a.append("\tat ")
-                .append(e.getClassName())
-                .append('#')
-                .append(e.getMethodName())
-                .append('(')
-                .append(e.getFileName())
-                .append(':')
-                .append(String.valueOf(e.getLineNumber()))
-                .append(')');
     }
 }
