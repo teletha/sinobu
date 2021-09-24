@@ -47,7 +47,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayDeque;
@@ -199,7 +198,7 @@ public class I {
     static final XPath xpath;
 
     /** The logger manager. */
-    static final Map<String, Subscriber> logs = new ConcurrentHashMap<>();
+    static final Map<Object, Subscriber> loggers = new ConcurrentHashMap<>();
 
     /** The cache for {@link Lifestyle}. */
     private static final Map<Class, Lifestyle> lifestyles = new ConcurrentHashMap<>();
@@ -208,7 +207,7 @@ public class I {
     private static final Map<Class, Ⅱ> extensions = new ConcurrentHashMap<>();
 
     /** The sequential execution queue for IO-intensive processing. */
-    private static final ArrayBlockingQueue<WiseRunnable> tasks = new ArrayBlockingQueue(256);
+    private static final ArrayBlockingQueue<WiseRunnable> tasks = new ArrayBlockingQueue(128);
 
     /** The parallel task scheduler. */
     static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(5, run -> {
@@ -389,7 +388,6 @@ public class I {
                 list.clear();
             }
         });
-
     }
 
     /**
@@ -616,7 +614,7 @@ public class I {
     /**
      * Write {@link java.lang.System.Logger.Level#DEBUG} log.
      * 
-     * @param name A logger name by {@link Class#getSimpleName()}.
+     * @param name A logger name.
      * @param msg A message log.
      */
     public static void debug(String name, Object msg) {
@@ -673,7 +671,7 @@ public class I {
     /**
      * Write {@link java.lang.System.Logger.Level#ERROR} log.
      * 
-     * @param name A logger name by {@link Class#getSimpleName()}.
+     * @param name A logger name.
      * @param msg A message log.
      */
     public static void error(String name, Object msg) {
@@ -1032,7 +1030,7 @@ public class I {
     /**
      * Write {@link java.lang.System.Logger.Level#INFO} log.
      * 
-     * @param name A logger name by {@link Class#getSimpleName()}.
+     * @param name A logger name.
      * @param msg A message log.
      */
     public static void info(String name, Object msg) {
@@ -1311,14 +1309,8 @@ public class I {
         return () -> findBy(extensionPoint).ⅱ.remove(extensionKey);
     }
 
-    static Path locate(String name, LocalDate day) throws Exception {
-        Path p = Path.of(".log");
-        Files.createDirectories(p);
-        return p.resolve(Objects.requireNonNullElse(name, "system") + day.format(DateTimeFormatter.BASIC_ISO_DATE) + ".log");
-    }
-
-    /** The configuration for log level. */
-    public static DateTimeFormatter LogFormat = DateTimeFormatter.ofPattern(I.env("LogFormat", "yyyy-MM-dd HH:mm:ss.SSS"));
+    /** The date-time format for logging. */
+    static final DateTimeFormatter LogDate = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 
     /**
      * Configure whether to include logging caller infomation in the log (default:
@@ -1359,22 +1351,8 @@ public class I {
      */
     public static Level LogFile = I.env("LogFile", Level.ALL);
 
-    /**
-     * Configure whether to create a new file or append to an existing file when logging to a local
-     * file (default: true). It can also be set during application initialization through the .env
-     * file with 'LogAppend' key.
-     * 
-     * @see I#env(String)
-     * @see I#env(String, Object)
-     */
-    public static boolean LogAppend = I.env("LogAppend", true);
-
-    static long lastTime;
-
-    static String last;
-
-    /** Reuse buffers. */
-    static final Queue<Subscriber> P = new ArrayDeque<>(256);
+    /** The pool of reusable log events. */
+    static final Queue<Subscriber> logs = new ArrayDeque<>();
 
     /**
      * Generic logging helper.
@@ -1387,28 +1365,21 @@ public class I {
         int o = level.ordinal();
 
         if (LogFile.ordinal() <= o || LogConsole.ordinal() <= o) {
-            // If the queue usage exceeds 50%, TRACE, DEBUG and INFO level logs will be
-            // discarded. This is expected to provide a performance improvement that is worth the
-            // risk of losing logging events.
-            // if (200 <= tasks.size() && o <= 3) {
-            // return;
-            // }
-
             try {
-                Subscriber sub = P.poll();
-                if (sub == null) {
-                    sub = new Subscriber();
-                    sub.array = new Object[4];
+                Subscriber log = logs.poll();
+                if (log == null) {
+                    log = new Subscriber();
+                    log.array = new Object[4];
                 }
-                sub.index = System.currentTimeMillis();
-                sub.array[0] = name;
-                sub.array[1] = level;
-                sub.array[2] = msg;
-                sub.array[3] = LogCaller.ordinal() <= o
+                log.index = System.currentTimeMillis();
+                log.array[0] = name;
+                log.array[1] = level;
+                log.array[2] = msg;
+                log.array[3] = LogCaller.ordinal() <= o
                         ? StackWalker.getInstance().walk(s -> s.skip(2).findFirst().get().toStackTraceElement())
                         : null;
 
-                tasks.put(sub);
+                tasks.put(log);
             } catch (Exception x) {
                 throw I.quiet(x);
             }
@@ -2056,6 +2027,25 @@ public class I {
     }
 
     /**
+     * Write {@link java.lang.System.Logger.Level#TRACE} log.
+     * 
+     * @param msg A message log.
+     */
+    public static void trace(Object msg) {
+        log("system", Level.TRACE, msg);
+    }
+
+    /**
+     * Write {@link java.lang.System.Logger.Level#TRACE} log.
+     * 
+     * @param name A logger name.
+     * @param msg A message log.
+     */
+    public static void trace(String name, Object msg) {
+        log(name, Level.TRACE, msg);
+    }
+
+    /**
      * Transform any type object into the specified type if possible.
      *
      * @param <In> A input type you want to transform from.
@@ -2152,6 +2142,25 @@ public class I {
         } catch (ClassNotFoundException e) {
             throw quiet(e);
         }
+    }
+
+    /**
+     * Write {@link java.lang.System.Logger.Level#WARNING} log.
+     * 
+     * @param msg A message log.
+     */
+    public static void warn(Object msg) {
+        log("system", Level.WARNING, msg);
+    }
+
+    /**
+     * Write {@link java.lang.System.Logger.Level#WARNING} log.
+     * 
+     * @param name A logger name.
+     * @param msg A message log.
+     */
+    public static void warn(String name, Object msg) {
+        log(name, Level.WARNING, msg);
     }
 
     /**

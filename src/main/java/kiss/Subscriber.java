@@ -9,6 +9,8 @@
  */
 package kiss;
 
+import static java.time.format.DateTimeFormatter.*;
+
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.FileWriter;
@@ -19,6 +21,7 @@ import java.net.http.WebSocket;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -29,6 +32,7 @@ import java.util.WeakHashMap;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
@@ -46,6 +50,7 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
     /** Generic list. */
     List<T> list;
 
+    /** Generic array. */
     Object[] array;
 
     /**
@@ -270,73 +275,121 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
         return I.env("LangDirectory", "lang") + "/" + text + ".json";
     }
 
+    // ======================================================================
+    // Log Event
+    // ======================================================================
+    /** The last format time. */
+    private static long last;
+
+    /** The last fromatted datetime text. */
+    private static String time;
+
     /**
      * {@inheritDoc}
      */
     @Override
     public void RUN() throws Throwable {
-        // snapshot the current time
-        long mills = System.currentTimeMillis();
-        String name = (String) array[0];
         Level level = (Level) array[1];
         int o = level.ordinal();
-        Object msg = array[2];
-        StackTraceElement e = (StackTraceElement) array[3];
-        if (I.P.size() < 256) {
-            I.P.offer(this);
-        }
 
-        // lookup logger by name
-        Subscriber<Appendable> log = I.logs.computeIfAbsent(name, key -> {
+        // ================================================
+        // Look up logger by name
+        // ================================================
+        Subscriber logger = I.loggers.computeIfAbsent(array[0], key -> {
             Subscriber v = new Subscriber();
             v.index = Instant.now().truncatedTo(ChronoUnit.DAYS).toEpochMilli();
+            v.a = new byte[] {(byte) I.env(key + ".level", Level.ALL).ordinal()};
             return v;
         });
 
-        if (I.LogFile.ordinal() <= o && log.index <= mills) {
-            // stop old
-            if (log.list != null) {
-                I.quiet(log.list.get(0));
+        // discard by logger's level
+        if (logger.a[0] <= o) {
+            // ================================================
+            // Detect the log appender (single or bundled)
+            // ================================================
+            Appendable a;
+
+            if (I.LogFile.ordinal() <= o) {
+                // need file appender
+                if (logger.index <= index) {
+                    // stop old file
+                    if (logger.array != null) {
+                        I.quiet(logger.array[0]);
+                    }
+
+                    Path p = Path.of(".log");
+                    Files.createDirectories(p);
+
+                    // start new
+                    LocalDate day = LocalDate.now();
+
+                    Writer w = new BufferedWriter(new FileWriter(p.resolve(array[0] + day.format(BASIC_ISO_DATE) + ".log").toFile(), true));
+                    logger.array = new Object[] {w, I.bundle(Appendable.class, w, System.out)};
+                    logger.index += 24 * 60 * 60 * 1000;
+
+                    // delete oldest
+                    day = day.minusDays(30);
+                    while (Files.deleteIfExists(p.resolve(array[0] + day.format(BASIC_ISO_DATE) + ".log"))) {
+                        day = day.minusDays(1);
+                    }
+                }
+                a = (Appendable) logger.array[I.LogConsole.ordinal() <= o ? 1 : 0];
+            } else {
+                a = System.out; // console only
             }
 
-            // start new
-            LocalDate day = LocalDate.now();
+            // ================================================
+            // Format log message
+            // ================================================
+            // reuse formatted date-time text
+            if (last != index) {
+                time = Instant.ofEpochMilli(index).atZone(ZoneId.systemDefault()).format(I.LogDate);
+                last = index;
+            }
 
-            Writer w = new BufferedWriter(new FileWriter(I.locate(name, day).toFile(), I.LogAppend));
-            log.list = List.of(w, I.bundle(Appendable.class, w, System.out));
-            log.index += 24 * 60 * 60 * 1000;
+            // write %DateTime %Level %Message
+            a.append(time)
+                    .append(' ')
+                    .append(level.name())
+                    .append('\t')
+                    .append(String.valueOf(array[2] instanceof Supplier ? ((Supplier) array[2]).get() : array[2]));
 
-            // delete oldest
-            day = day.minusDays(30);
-            while (Files.deleteIfExists(I.locate(name, day))) {
-                day = day.minusDays(1);
+            // write %Location
+            if (array[3] != null) append(a, (StackTraceElement) array[3]);
+
+            // write line feed
+            a.append('\n');
+
+            // write %Cause
+            if (array[2] instanceof Throwable) {
+                for (StackTraceElement e : ((Throwable) array[2]).getStackTrace()) {
+                    append(a, e);
+                }
             }
         }
 
-        Appendable a = I.LogConsole.ordinal() <= o ? log.list.get(1) : log.list.get(0);
+        // ================================================
+        // Refund log event object
+        // ================================================
+        if (I.logs.size() <= 256) I.logs.offer(this);
+    }
 
-        if (I.lastTime != mills) {
-            I.last = Instant.ofEpochMilli(mills).atZone(ZoneId.systemDefault()).format(I.LogFormat);
-            I.lastTime = mills;
-        } else {
-
-        }
-
-        a.append(I.last).append(' ').append(level.name()).append('\t').append(String.valueOf(msg));
-
-        if (e != null) {
-            a.append('\t')
-                    .append(e.getClassName())
-                    .append('#')
-                    .append(e.getMethodName())
-                    .append(':')
-                    .append(String.valueOf(e.getLineNumber()));
-        }
-        a.append('\n');
-
-        if (msg instanceof Throwable) {
-            // Stream.of(((Throwable)
-            // msg).getStackTrace()).map(StackTraceElement::toString).forEach(text::append);
-        }
+    /**
+     * Write stack trace infomation.
+     * 
+     * @param a
+     * @param e
+     * @throws Exception
+     */
+    private static void append(Appendable a, StackTraceElement e) throws Exception {
+        a.append("\tat ")
+                .append(e.getClassName())
+                .append('#')
+                .append(e.getMethodName())
+                .append('(')
+                .append(e.getFileName())
+                .append(':')
+                .append(String.valueOf(e.getLineNumber()))
+                .append(')');
     }
 }

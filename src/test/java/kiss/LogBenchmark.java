@@ -12,6 +12,8 @@ package kiss;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.System.Logger.Level;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.EnumSet;
@@ -252,9 +254,11 @@ public class LogBenchmark {
     }
 
     private static void performSinobu(Benchmark benchmark) throws Exception {
-        I.LogAppend = false;
         I.LogConsole = Level.OFF;
         I.LogFile = Level.ALL;
+
+        // delete all log files
+        Files.walk(Path.of(".log")).filter(Files::isRegularFile).forEach((WiseConsumer<Path>) Files::delete);
 
         perform((execution, caller) -> {
             if (execution == ExecutionType.Sync) {
