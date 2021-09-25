@@ -57,7 +57,7 @@ public class LogBenchmark {
 
         // performJUL(benchmark);
         // performLog4j(benchmark);
-        performTinyLog(benchmark);
+        // performTinyLog(benchmark);
         // performLogback(benchmark);
         performSinobu(benchmark);
 
@@ -258,7 +258,9 @@ public class LogBenchmark {
         I.LogFile = Level.ALL;
 
         // delete all log files
-        Files.walk(Path.of(".log")).filter(Files::isRegularFile).forEach((WiseConsumer<Path>) Files::delete);
+        Path log = Path.of(".log");
+        Files.createDirectories(log);
+        Files.walk(log).filter(Files::isRegularFile).forEach((WiseConsumer<Path>) Files::delete);
 
         perform((execution, caller) -> {
             if (execution == ExecutionType.Sync) {

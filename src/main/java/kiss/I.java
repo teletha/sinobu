@@ -367,7 +367,7 @@ public class I {
         env.putAll(System.getenv());
 
         // start sequential task executor
-        I.schedule(() -> {
+        I.schedule((WiseRunnable) () -> {
             // BlockingQueue#drainTo operation may be more efficient than repeatedly polling the
             // queue like the belowing. Also, if you use take method frequently, it will create a
             // lot of objects to synchronize, which will strain the memory and affect the
@@ -377,6 +377,7 @@ public class I {
 
             List<WiseRunnable> list = new ArrayList();
             while (true) {
+                list.add(tasks.take());
                 tasks.drainTo(list);
                 for (WiseRunnable wise : list) {
                     try {
