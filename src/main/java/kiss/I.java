@@ -63,7 +63,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
-import java.util.Queue;
 import java.util.ServiceLoader;
 import java.util.ServiceLoader.Provider;
 import java.util.Set;
@@ -1353,7 +1352,9 @@ public class I {
     public static Level LogFile = I.env("LogFile", Level.ALL);
 
     /** The pool of reusable log events. */
-    static final Queue<Subscriber> logs = new ArrayDeque<>();
+    // In order to avoid IndexOutOfBoundsException, which can occur at unexpected timing, the number
+    // of elements (256) should be specified from the beginning.
+    static final ArrayDeque<Subscriber> logs = new ArrayDeque<>(256);
 
     /**
      * Generic logging helper.
@@ -1367,7 +1368,10 @@ public class I {
 
         if (LogFile.ordinal() <= o || LogConsole.ordinal() <= o) {
             try {
-                Subscriber log = logs.poll();
+                // In the ArrayDeque implementation, the 'poll' method only calls the 'pollFirst'
+                // method in the end, so it calls 'pollFirst' method directly. We prioritize
+                // execution speed over footprint.
+                Subscriber log = logs.pollFirst();
                 if (log == null) {
                     log = new Subscriber();
                     log.array = new Object[4];

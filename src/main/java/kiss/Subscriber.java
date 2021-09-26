@@ -373,6 +373,6 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
         // ================================================
         // Refund log event object
         // ================================================
-        if (I.logs.size() <= 256) I.logs.offer(this);
+        if (I.logs.size() <= 256) I.logs.addLast(this);
     }
 }
