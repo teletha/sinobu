@@ -356,7 +356,7 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
 
             // write %Location
             if (array[3] != null) {
-                a.append("\tat ").append(array[3].toString()).append('\n');
+                a.append("\tat ").append(array[3].toString());
             }
 
             // write line feed
