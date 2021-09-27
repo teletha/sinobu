@@ -56,9 +56,9 @@ public class LogBenchmark {
         Benchmark benchmark = new Benchmark();
 
         // performJUL(benchmark);
-        // performLog4j(benchmark);
-        // performTinyLog(benchmark);
-        // performLogback(benchmark);
+        performLog4j(benchmark);
+        performTinyLog(benchmark);
+        performLogback(benchmark);
         performSinobu(benchmark);
 
         benchmark.perform();
@@ -145,6 +145,7 @@ public class LogBenchmark {
             AppenderComponentBuilder appender = builder.newAppender(name, "File");
             appender.addAttribute("fileName", "logging-log4j2-" + name + ".log");
             appender.addAttribute("append", false);
+            appender.addAttribute("immediateFlush", false);
             appender.add(builder.newLayout("PatternLayout")
                     .addAttribute("pattern", caller == CallerType.Caller ? "%date{yyyy-MM-dd HH:mm:ss.SSS} %level %class %method %msg%n"
                             : "%date{yyyy-MM-dd HH:mm:ss.SSS} %level %msg%n"));
@@ -227,6 +228,7 @@ public class LogBenchmark {
             file.setEncoder(layout);
             file.setAppend(false);
             file.setFile("logging-logback-" + name + ".log");
+            file.setImmediateFlush(false);
             file.start();
 
             Appender appender = file;
