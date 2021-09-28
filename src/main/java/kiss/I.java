@@ -48,7 +48,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1308,9 +1307,6 @@ public class I {
         findBy(extensionPoint).ⅱ.put(extensionKey, extension);
         return () -> findBy(extensionPoint).ⅱ.remove(extensionKey);
     }
-
-    /** The date-time format for logging. */
-    static final DateTimeFormatter LogDate = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 
     /**
      * Configure whether to include logging caller infomation in the log (default:

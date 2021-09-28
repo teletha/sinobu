@@ -9,7 +9,7 @@
  */
 package kiss;
 
-import static java.time.format.DateTimeFormatter.BASIC_ISO_DATE;
+import static java.time.format.DateTimeFormatter.*;
 
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
@@ -25,6 +25,7 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
@@ -278,6 +279,9 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
     // ======================================================================
     // Log Event
     // ======================================================================
+    /** The date-time format for logging. */
+    private static final DateTimeFormatter F = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+
     /** The last format time. */
     private static long last;
 
@@ -341,10 +345,13 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
             // ================================================
             // Format log message
             // ================================================
+            boolean flush = false;
+
             // reuse formatted date-time text
             if (last != index) {
-                time = Instant.ofEpochMilli(index).atZone(ZoneId.systemDefault()).format(I.LogDate);
                 last = index;
+                time = Instant.ofEpochMilli(index).atZone(ZoneId.systemDefault()).format(F);
+                flush = I.LogFile.ordinal() <= o;
             }
 
             // write %DateTime %Level %Message
@@ -367,6 +374,11 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
                 for (StackTraceElement e : ((Throwable) array[2]).getStackTrace()) {
                     a.append("\tat ").append(e.toString()).append('\n');
                 }
+            }
+
+            // flush buffered log if needed
+            if (flush) {
+                ((Writer) logger.array[0]).flush();
             }
         }
 
