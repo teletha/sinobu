@@ -375,11 +375,11 @@ public class I {
 
             List<WiseRunnable> list = new ArrayList();
             while (true) {
-                list.add(tasks.take());
+                tasks.take().RUN();
                 tasks.drainTo(list);
-                for (WiseRunnable wise : list) {
+                for (int i = 0, size = list.size(); i < size; i++) {
                     try {
-                        wise.RUN();
+                        list.get(i).RUN();
                     } catch (Throwable e) {
                         I.error(e);
                     }
