@@ -345,13 +345,10 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
             // ================================================
             // Format log message
             // ================================================
-            boolean flush = false;
-
             // reuse formatted date-time text
             if (last != index) {
                 last = index;
                 time = Instant.ofEpochMilli(index).atZone(ZoneId.systemDefault()).format(F);
-                flush = I.LogFile.ordinal() <= o;
             }
 
             // write %DateTime %Level %Message
@@ -374,11 +371,6 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
                 for (StackTraceElement e : ((Throwable) array[2]).getStackTrace()) {
                     a.append("\tat ").append(e.toString()).append('\n');
                 }
-            }
-
-            // flush buffered log if needed
-            if (flush) {
-                ((Writer) logger.array[0]).flush();
             }
         }
 

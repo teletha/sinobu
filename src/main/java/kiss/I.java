@@ -1352,6 +1352,17 @@ public class I {
     // of elements (256) should be specified from the beginning.
     static final ArrayDeque<Subscriber> logs = new ArrayDeque<>(256);
 
+    static {
+        // Clean up all buffered log
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            for (Subscriber s : I.loggers.values()) {
+                if (s.array != null) {
+                    I.quiet(s.array[0]);
+                }
+            }
+        }));
+    }
+
     /**
      * Generic logging helper.
      * 

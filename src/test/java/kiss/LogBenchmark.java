@@ -145,6 +145,7 @@ public class LogBenchmark {
             AppenderComponentBuilder appender = builder.newAppender(name, "File");
             appender.addAttribute("fileName", "logging-log4j2-" + name + ".log");
             appender.addAttribute("append", false);
+            appender.addAttribute("immediateFlush", false);
             appender.add(builder.newLayout("PatternLayout")
                     .addAttribute("pattern", caller == CallerType.Caller ? "%date{yyyy-MM-dd HH:mm:ss.SSS} %level %class %method %msg%n"
                             : "%date{yyyy-MM-dd HH:mm:ss.SSS} %level %msg%n"));
@@ -226,6 +227,7 @@ public class LogBenchmark {
             file.setContext(context);
             file.setEncoder(layout);
             file.setAppend(false);
+            file.setImmediateFlush(false);
             file.setFile("logging-logback-" + name + ".log");
             file.start();
 
