@@ -9,8 +9,12 @@
  */
 package kiss;
 
+import static java.time.format.DateTimeFormatter.*;
+
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -18,6 +22,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringReader;
+import java.io.Writer;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.lang.System.LoggerFinder;
@@ -47,7 +52,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,7 +76,6 @@ import java.util.ServiceLoader;
 import java.util.ServiceLoader.Provider;
 import java.util.Set;
 import java.util.WeakHashMap;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -203,9 +212,6 @@ public class I {
 
     /** The definitions of extensions. */
     private static final Map<Class, Ⅱ> extensions = new ConcurrentHashMap<>();
-
-    /** The sequential execution queue for IO-intensive processing. */
-    private static final ArrayBlockingQueue<WiseRunnable> tasks = new ArrayBlockingQueue(128);
 
     /** The parallel task scheduler. */
     static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(5, run -> {
@@ -363,30 +369,6 @@ public class I {
             // ignore
         }
         env.putAll(System.getenv());
-
-        // start sequential task executor
-        I.schedule((WiseRunnable) () -> {
-            // BlockingQueue#drainTo operation may be more efficient than repeatedly polling the
-            // queue like the belowing. Also, if you use take method frequently, it will create a
-            // lot of objects to synchronize, which will strain the memory and affect the
-            // performance due to GC execution.
-            //
-            // while (true) tasks.take().RUN();
-
-            List<WiseRunnable> list = new ArrayList();
-            while (true) {
-                tasks.take().RUN();
-                tasks.drainTo(list);
-                for (int i = 0, size = list.size(); i < size; i++) {
-                    try {
-                        list.get(i).RUN();
-                    } catch (Throwable e) {
-                        I.error(e);
-                    }
-                }
-                list.clear();
-            }
-        });
     }
 
     /**
@@ -1347,21 +1329,25 @@ public class I {
      */
     public static Level LogFile = I.env("LogFile", Level.ALL);
 
-    /** The pool of reusable log events. */
-    // In order to avoid IndexOutOfBoundsException, which can occur at unexpected timing, the number
-    // of elements (256) should be specified from the beginning.
-    static final ArrayDeque<Subscriber> logs = new ArrayDeque<>(256);
-
     static {
         // Clean up all buffered log
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             for (Subscriber s : I.loggers.values()) {
-                if (s.array != null) {
-                    I.quiet(s.array[0]);
+                if (s.list != null) {
+                    I.quiet(s.list.get(0));
                 }
             }
         }));
     }
+
+    /** The date-time format for logging. */
+    private static final DateTimeFormatter F = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+
+    /** The last format time. */
+    private static long last;
+
+    /** The last fromatted datetime text. */
+    private static String time;
 
     /**
      * Generic logging helper.
@@ -1370,29 +1356,95 @@ public class I {
      * @param level
      * @param msg
      */
-    private static void log(String name, Level level, Object msg) {
+    private static synchronized void log(String name, Level level, Object msg) {
         int o = level.ordinal();
 
         if (LogFile.ordinal() <= o || LogConsole.ordinal() <= o) {
             try {
-                // In the ArrayDeque implementation, the 'poll' method only calls the 'pollFirst'
-                // method in the end, so it calls 'pollFirst' method directly. We prioritize
-                // execution speed over footprint.
-                Subscriber log = logs.pollFirst();
-                if (log == null) {
-                    log = new Subscriber();
-                    log.array = new Object[4];
-                }
-                log.index = System.currentTimeMillis();
-                log.array[0] = name;
-                log.array[1] = level;
-                log.array[2] = msg;
-                log.array[3] = LogCaller.ordinal() <= o
+                long ms = System.currentTimeMillis();
+                StackTraceElement e = LogCaller.ordinal() <= o
                         ? StackWalker.getInstance().walk(s -> s.skip(2).findFirst().get().toStackTraceElement())
                         : null;
 
-                tasks.put(log);
-            } catch (Exception x) {
+                // ================================================
+                // Look up logger by name
+                // ================================================
+                Subscriber<Appendable> logger = loggers.computeIfAbsent(name, key -> {
+                    Subscriber v = new Subscriber();
+                    v.index = Instant.now().truncatedTo(ChronoUnit.DAYS).toEpochMilli();
+                    v.a = new byte[] {(byte) I.env(key + ".level", Level.ALL).ordinal()};
+                    return v;
+                });
+
+                // discard by logger's level
+                if (logger.a[0] <= o) {
+                    // ================================================
+                    // Detect the log appender (single or bundled)
+                    // ================================================
+                    Appendable a;
+
+                    if (LogFile.ordinal() <= o) {
+                        // need file appender
+                        if (logger.index <= ms) {
+                            // stop old file
+                            if (logger.list != null) {
+                                I.quiet(logger.list.get(0));
+                            }
+
+                            Path p = Path.of(".log");
+                            Files.createDirectories(p);
+
+                            // start new
+                            LocalDate day = LocalDate.now();
+
+                            Writer w = new BufferedWriter(new FileWriter(p.resolve(name + day.format(BASIC_ISO_DATE) + ".log")
+                                    .toFile(), true));
+                            logger.list = List.of(w, I.bundle(Appendable.class, w, System.out));
+                            logger.index += 24 * 60 * 60 * 1000;
+
+                            // delete oldest
+                            day = day.minusDays(30);
+                            while (Files.deleteIfExists(p.resolve(name + day.format(BASIC_ISO_DATE) + ".log"))) {
+                                day = day.minusDays(1);
+                            }
+                        }
+                        a = logger.list.get(LogConsole.ordinal() <= o ? 1 : 0);
+                    } else {
+                        a = System.out; // console only
+                    }
+
+                    // ================================================
+                    // Format log message
+                    // ================================================
+                    // reuse formatted date-time text
+                    if (last != ms) {
+                        last = ms;
+                        time = Instant.ofEpochMilli(ms).atZone(ZoneId.systemDefault()).format(F);
+                    }
+
+                    // write %DateTime %Level %Message
+                    a.append(time)
+                            .append(' ')
+                            .append(level.name())
+                            .append('\t')
+                            .append(String.valueOf(msg instanceof Supplier ? ((Supplier) msg).get() : msg));
+
+                    // write %Location
+                    if (e != null) {
+                        a.append("\tat ").append(e.toString());
+                    }
+
+                    // write line feed
+                    a.append('\n');
+
+                    // write %Cause
+                    if (msg instanceof Throwable) {
+                        for (StackTraceElement s : ((Throwable) msg).getStackTrace()) {
+                            a.append("\tat ").append(s.toString()).append('\n');
+                        }
+                    }
+                }
+            } catch (Throwable x) {
                 throw I.quiet(x);
             }
         } else if (LogFile == Level.OFF && LogConsole == Level.OFF) {
