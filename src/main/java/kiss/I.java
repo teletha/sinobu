@@ -53,7 +53,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayDeque;
@@ -1338,9 +1337,6 @@ public class I {
         }));
     }
 
-    /** The date-time format for logging. */
-    private static final DateTimeFormatter F = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS ");
-
     /**
      * Generic logging helper.
      * 
@@ -1360,7 +1356,6 @@ public class I {
                 Subscriber s = new Subscriber();
                 s.index = Instant.now().truncatedTo(ChronoUnit.DAYS).toEpochMilli();
                 s.a = new byte[] {(byte) I.env(key + ".level", Level.ALL).ordinal()};
-                s.list = List.of(key, CharBuffer.allocate(1024 * 32));
                 return s;
             });
 
@@ -1373,41 +1368,63 @@ public class I {
                         // ================================================
                         // Detect the log appender (single or bundled)
                         // ================================================
-                        if (LogFile.ordinal() <= o) {
-                            // need file appender
-                            if (logger.index <= ms) {
-                                // stop old file
-                                if (logger.list != null) {
-                                    I.quiet(logger.list.get(0));
-                                }
+                        // need file appender
+                        if (logger.index <= ms) {
+                            // stop old file
+                            if (logger.list != null) {
+                                I.quiet(logger.list.get(0));
+                            }
 
-                                Path p = Path.of(".log");
-                                Files.createDirectories(p);
+                            Path p = Path.of(".log");
+                            Files.createDirectories(p);
 
-                                // start new
-                                LocalDate day = LocalDate.now();
+                            // start new
+                            LocalDate day = LocalDate.now();
 
-                                logger.index += 24 * 60 * 60 * 1000;
-                                logger.list = List.of(new FileWriter(p.resolve(name + day.format(BASIC_ISO_DATE) + ".log").toFile(), I
-                                        .env("LogAppend", true)), logger.list.get(1));
+                            logger.index += 24 * 60 * 60 * 1000;
+                            logger.list = List.of(new FileWriter(p.resolve(name + day.format(BASIC_ISO_DATE) + ".log").toFile(), I
+                                    .env("LogAppend", true)), CharBuffer.allocate(1024 * 32)
+                                            .put(day.format(DateTimeFormatter.ISO_LOCAL_DATE))
+                                            .put(' '));
 
-                                // delete oldest
-                                day = day.minusDays(30);
-                                while (Files.deleteIfExists(p.resolve(name + day.format(BASIC_ISO_DATE) + ".log"))) {
-                                    day = day.minusDays(1);
-                                }
+                            // delete oldest
+                            day = day.minusDays(30);
+                            while (Files.deleteIfExists(p.resolve(name + day.format(BASIC_ISO_DATE) + ".log"))) {
+                                day = day.minusDays(1);
                             }
                         }
 
                         // ================================================
                         // Format log message
                         // ================================================
-                        CharBuffer c = (CharBuffer) logger.list.get(1);
+                        CharBuffer c = ((CharBuffer) logger.list.get(1));
 
-                        // reuse formatted date-time text
+                        // write %DateTime %Level %Message
                         if (logger.time != ms) {
                             logger.time = ms;
-                            F.formatTo(Instant.ofEpochMilli(ms).atZone(ZoneId.systemDefault()), c);
+
+                            // reuse formatted date-time text
+                            int time = (int) (ms - (logger.index - 24 * 60 * 60 * 1000));
+                            int H = time / (3600 * 1000);
+                            time -= H * 3600 * 1000;
+                            int m = time / (60 * 1000);
+                            time -= m * 60 * 1000;
+                            int s = time / 1000;
+                            time -= s * 1000;
+
+                            c.put((char) ('0' + H / 10))
+                                    .put((char) ('0' + H % 10))
+                                    .put(':')
+                                    .put((char) ('0' + m / 10))
+                                    .put((char) ('0' + m % 10))
+                                    .put(':')
+                                    .put((char) ('0' + s / 10))
+                                    .put((char) ('0' + s % 10))
+                                    .put('.')
+                                    .put((char) ('0' + time / 100))
+                                    .put((char) ('0' + time % 100 / 10))
+                                    .put((char) ('0' + time % 10))
+                                    .put('\t');
                         } else {
                             c.position(24);
                         }
@@ -1439,7 +1456,7 @@ public class I {
                             c.flip();
                             System.out.append(c);
                         }
-                        c.clear();
+                        c.position(11);
                     } catch (Throwable x) {
                         throw I.quiet(x);
                     }
