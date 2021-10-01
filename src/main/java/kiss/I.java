@@ -9,7 +9,7 @@
  */
 package kiss;
 
-import static java.time.format.DateTimeFormatter.*;
+import static java.time.format.DateTimeFormatter.BASIC_ISO_DATE;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -1327,9 +1327,6 @@ public class I {
      */
     public static Level LogFile = I.env("LogFile", Level.ALL);
 
-    /** The cached names for logging priority. */
-    private static final String[] P = {null, "TRACE\t", "DEBUG\t", "INFO\t", "WARN\t", "ERROR\t"};
-
     static {
         // Clean up all buffered log
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
@@ -1343,12 +1340,6 @@ public class I {
 
     /** The date-time format for logging. */
     private static final DateTimeFormatter F = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS ");
-
-    /** The last format time. */
-    private static long last;
-
-    /** The last fromatted datetime text. */
-    private static String time;
 
     /**
      * Generic logging helper.
@@ -1369,7 +1360,7 @@ public class I {
                 Subscriber s = new Subscriber();
                 s.index = Instant.now().truncatedTo(ChronoUnit.DAYS).toEpochMilli();
                 s.a = new byte[] {(byte) I.env(key + ".level", Level.ALL).ordinal()};
-                s.chars = CharBuffer.allocate(1024 * 32);
+                s.list = List.of(key, CharBuffer.allocate(1024 * 32));
                 return s;
             });
 
@@ -1396,9 +1387,9 @@ public class I {
                                 // start new
                                 LocalDate day = LocalDate.now();
 
-                                logger.list = List.of(new FileWriter(p.resolve(name + day.format(BASIC_ISO_DATE) + ".log").toFile(), I
-                                        .env("LogAppend", true)));
                                 logger.index += 24 * 60 * 60 * 1000;
+                                logger.list = List.of(new FileWriter(p.resolve(name + day.format(BASIC_ISO_DATE) + ".log").toFile(), I
+                                        .env("LogAppend", true)), logger.list.get(1));
 
                                 // delete oldest
                                 day = day.minusDays(30);
@@ -1411,40 +1402,44 @@ public class I {
                         // ================================================
                         // Format log message
                         // ================================================
+                        CharBuffer c = (CharBuffer) logger.list.get(1);
+
                         // reuse formatted date-time text
-                        if (last != ms) {
-                            last = ms;
-                            time = Instant.ofEpochMilli(ms).atZone(ZoneId.systemDefault()).format(F);
+                        if (logger.time != ms) {
+                            logger.time = ms;
+                            F.formatTo(Instant.ofEpochMilli(ms).atZone(ZoneId.systemDefault()), c);
+                        } else {
+                            c.position(24);
                         }
 
                         // write %DateTime %Level %Message
-                        logger.chars.put(time).put(P[o]).put(String.valueOf(msg instanceof Supplier ? ((Supplier) msg).get() : msg));
+                        c.put(level.name()).put('\t').put(String.valueOf(msg instanceof Supplier ? ((Supplier) msg).get() : msg));
 
                         // write %Location
                         if (LogCaller.ordinal() <= o) {
-                            logger.chars.put("\tat ")
+                            c.put("\tat ")
                                     .put(StackWalker.getInstance().walk(s -> s.skip(2).findFirst().get().toStackTraceElement().toString()));
                         }
 
                         // write line feed
-                        logger.chars.put('\n');
+                        c.put('\n');
 
                         // write %Cause
                         if (msg instanceof Throwable) {
                             for (StackTraceElement s : ((Throwable) msg).getStackTrace()) {
-                                logger.chars.put("\tat ").put(s.toString()).put('\n');
+                                c.put("\tat ").put(s.toString()).put('\n');
                             }
                         }
 
                         if (LogFile.ordinal() <= o) {
-                            logger.chars.flip();
-                            logger.list.get(0).append(logger.chars);
+                            c.flip();
+                            logger.list.get(0).append(c);
                         }
                         if (LogConsole.ordinal() <= o) {
-                            logger.chars.flip();
-                            System.out.append(logger.chars);
+                            c.flip();
+                            System.out.append(c);
                         }
-                        logger.chars.clear();
+                        c.clear();
                     } catch (Throwable x) {
                         throw I.quiet(x);
                     }
