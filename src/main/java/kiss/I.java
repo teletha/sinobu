@@ -1356,96 +1356,98 @@ public class I {
      * @param level
      * @param msg
      */
-    private static synchronized void log(String name, Level level, Object msg) {
+    private static void log(String name, Level level, Object msg) {
         int o = level.ordinal();
 
+        // discard by global level
         if (LogFile.ordinal() <= o || LogConsole.ordinal() <= o) {
-            try {
+            // ================================================
+            // Look up logger by name
+            // ================================================
+            Subscriber<Appendable> logger = loggers.computeIfAbsent(name, key -> {
+                Subscriber s = new Subscriber();
+                s.index = Instant.now().truncatedTo(ChronoUnit.DAYS).toEpochMilli();
+                s.a = new byte[] {(byte) I.env(key + ".level", Level.ALL).ordinal()};
+                return s;
+            });
+
+            // discard by logger's level
+            if (logger.a[0] <= o) {
                 long ms = System.currentTimeMillis();
-                StackTraceElement e = LogCaller.ordinal() <= o
-                        ? StackWalker.getInstance().walk(s -> s.skip(2).findFirst().get().toStackTraceElement())
-                        : null;
 
-                // ================================================
-                // Look up logger by name
-                // ================================================
-                Subscriber<Appendable> logger = loggers.computeIfAbsent(name, key -> {
-                    Subscriber v = new Subscriber();
-                    v.index = Instant.now().truncatedTo(ChronoUnit.DAYS).toEpochMilli();
-                    v.a = new byte[] {(byte) I.env(key + ".level", Level.ALL).ordinal()};
-                    return v;
-                });
+                synchronized (logger) {
+                    try {
+                        // ================================================
+                        // Detect the log appender (single or bundled)
+                        // ================================================
+                        Appendable a;
 
-                // discard by logger's level
-                if (logger.a[0] <= o) {
-                    // ================================================
-                    // Detect the log appender (single or bundled)
-                    // ================================================
-                    Appendable a;
+                        if (LogFile.ordinal() <= o) {
+                            // need file appender
+                            if (logger.index <= ms) {
+                                // stop old file
+                                if (logger.list != null) {
+                                    I.quiet(logger.list.get(0));
+                                }
 
-                    if (LogFile.ordinal() <= o) {
-                        // need file appender
-                        if (logger.index <= ms) {
-                            // stop old file
-                            if (logger.list != null) {
-                                I.quiet(logger.list.get(0));
+                                Path p = Path.of(".log");
+                                Files.createDirectories(p);
+
+                                // start new
+                                LocalDate day = LocalDate.now();
+
+                                Writer w = new BufferedWriter(new FileWriter(p.resolve(name + day.format(BASIC_ISO_DATE) + ".log")
+                                        .toFile(), true));
+                                logger.list = List.of(w, I.bundle(Appendable.class, w, System.out));
+                                logger.index += 24 * 60 * 60 * 1000;
+
+                                // delete oldest
+                                day = day.minusDays(30);
+                                while (Files.deleteIfExists(p.resolve(name + day.format(BASIC_ISO_DATE) + ".log"))) {
+                                    day = day.minusDays(1);
+                                }
                             }
+                            a = logger.list.get(LogConsole.ordinal() <= o ? 1 : 0);
+                        } else {
+                            a = System.out; // console only
+                        }
 
-                            Path p = Path.of(".log");
-                            Files.createDirectories(p);
+                        // ================================================
+                        // Format log message
+                        // ================================================
+                        // reuse formatted date-time text
+                        if (last != ms) {
+                            last = ms;
+                            time = Instant.ofEpochMilli(ms).atZone(ZoneId.systemDefault()).format(F);
+                        }
 
-                            // start new
-                            LocalDate day = LocalDate.now();
+                        // write %DateTime %Level %Message
+                        a.append(time)
+                                .append(' ')
+                                .append(level.name())
+                                .append('\t')
+                                .append(String.valueOf(msg instanceof Supplier ? ((Supplier) msg).get() : msg));
 
-                            Writer w = new BufferedWriter(new FileWriter(p.resolve(name + day.format(BASIC_ISO_DATE) + ".log")
-                                    .toFile(), true));
-                            logger.list = List.of(w, I.bundle(Appendable.class, w, System.out));
-                            logger.index += 24 * 60 * 60 * 1000;
+                        // write %Location
+                        if (LogCaller.ordinal() <= o) {
+                            a.append("\tat ")
+                                    .append(StackWalker.getInstance()
+                                            .walk(s -> s.skip(2).findFirst().get().toStackTraceElement().toString()));
+                        }
 
-                            // delete oldest
-                            day = day.minusDays(30);
-                            while (Files.deleteIfExists(p.resolve(name + day.format(BASIC_ISO_DATE) + ".log"))) {
-                                day = day.minusDays(1);
+                        // write line feed
+                        a.append('\n');
+
+                        // write %Cause
+                        if (msg instanceof Throwable) {
+                            for (StackTraceElement s : ((Throwable) msg).getStackTrace()) {
+                                a.append("\tat ").append(s.toString()).append('\n');
                             }
                         }
-                        a = logger.list.get(LogConsole.ordinal() <= o ? 1 : 0);
-                    } else {
-                        a = System.out; // console only
-                    }
-
-                    // ================================================
-                    // Format log message
-                    // ================================================
-                    // reuse formatted date-time text
-                    if (last != ms) {
-                        last = ms;
-                        time = Instant.ofEpochMilli(ms).atZone(ZoneId.systemDefault()).format(F);
-                    }
-
-                    // write %DateTime %Level %Message
-                    a.append(time)
-                            .append(' ')
-                            .append(level.name())
-                            .append('\t')
-                            .append(String.valueOf(msg instanceof Supplier ? ((Supplier) msg).get() : msg));
-
-                    // write %Location
-                    if (e != null) {
-                        a.append("\tat ").append(e.toString());
-                    }
-
-                    // write line feed
-                    a.append('\n');
-
-                    // write %Cause
-                    if (msg instanceof Throwable) {
-                        for (StackTraceElement s : ((Throwable) msg).getStackTrace()) {
-                            a.append("\tat ").append(s.toString()).append('\n');
-                        }
+                    } catch (Throwable x) {
+                        throw I.quiet(x);
                     }
                 }
-            } catch (Throwable x) {
-                throw I.quiet(x);
             }
         } else if (LogFile == Level.OFF && LogConsole == Level.OFF) {
             System.getLogger(name).log(level, msg);
