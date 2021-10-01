@@ -13,6 +13,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.net.http.WebSocket;
 import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,8 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
 
     /** Generic list. */
     List<T> list;
+
+    CharBuffer chars;
 
     /**
      * {@link Subscriber} must have this constructor only. Dont use instance field initialization to

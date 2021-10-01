@@ -52,13 +52,15 @@ public class LogBenchmark {
 
     private static final CallerType caller = CallerType.Both;
 
+    private static final String message = "Message";
+
     public static void main(String[] args) throws Exception {
         Benchmark benchmark = new Benchmark();
 
         // performJUL(benchmark);
-        // performLog4j(benchmark);
-        // performTinyLog(benchmark);
-        // performLogback(benchmark);
+        performLog4j(benchmark);
+        performTinyLog(benchmark);
+        performLogback(benchmark);
         performSinobu(benchmark);
 
         benchmark.perform();
@@ -90,7 +92,7 @@ public class LogBenchmark {
             logger.addHandler(handler);
 
             benchmark.measure("JUL " + logger.getName(), () -> {
-                logger.info("Message");
+                logger.info(message);
                 return -1;
             });
         });
@@ -166,7 +168,7 @@ public class LogBenchmark {
 
             org.apache.logging.log4j.Logger logger = context.getLogger(name);
             benchmark.measure("Log4j " + name, () -> {
-                logger.info("Message");
+                logger.info(message);
                 return -1;
             });
         });
@@ -204,7 +206,7 @@ public class LogBenchmark {
 
                 TaggedLogger logger = org.tinylog.Logger.tag(name);
                 benchmark.measure("TinyLog " + name, () -> {
-                    logger.info("Message");
+                    logger.info(message);
                     return -1;
                 });
             }
@@ -249,7 +251,7 @@ public class LogBenchmark {
             logger.setLevel(ch.qos.logback.classic.Level.ALL);
 
             benchmark.measure("Logback " + name, () -> {
-                logger.info("Message");
+                logger.info(message);
                 return -1;
             });
         });
@@ -265,8 +267,8 @@ public class LogBenchmark {
         Files.walk(log).filter(Files::isRegularFile).forEach((WiseConsumer<Path>) Files::delete);
 
         perform((execution, caller) -> {
-            if (execution == ExecutionType.Sync) {
-                return; // sync logging is not supported
+            if (execution == ExecutionType.Async) {
+                return; // async logging is not supported
             }
 
             String name = execution + "-" + caller;
@@ -274,7 +276,7 @@ public class LogBenchmark {
             benchmark.measure("Sinobu " + name, () -> {
                 I.LogCaller = caller == CallerType.Caller ? Level.ALL : Level.OFF;
             }, () -> {
-                I.info(name, "Message");
+                I.info(name, message);
                 return -1;
             });
         });

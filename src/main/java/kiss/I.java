@@ -11,7 +11,6 @@ package kiss;
 
 import static java.time.format.DateTimeFormatter.*;
 
-import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
@@ -22,7 +21,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringReader;
-import java.io.Writer;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.lang.System.LoggerFinder;
@@ -1329,6 +1327,9 @@ public class I {
      */
     public static Level LogFile = I.env("LogFile", Level.ALL);
 
+    /** The cached names for logging priority. */
+    private static final String[] P = {null, "TRACE\t", "DEBUG\t", "INFO\t", "WARN\t", "ERROR\t"};
+
     static {
         // Clean up all buffered log
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
@@ -1341,7 +1342,7 @@ public class I {
     }
 
     /** The date-time format for logging. */
-    private static final DateTimeFormatter F = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+    private static final DateTimeFormatter F = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS ");
 
     /** The last format time. */
     private static long last;
@@ -1368,20 +1369,19 @@ public class I {
                 Subscriber s = new Subscriber();
                 s.index = Instant.now().truncatedTo(ChronoUnit.DAYS).toEpochMilli();
                 s.a = new byte[] {(byte) I.env(key + ".level", Level.ALL).ordinal()};
+                s.chars = CharBuffer.allocate(1024 * 32);
                 return s;
             });
 
             // discard by logger's level
             if (logger.a[0] <= o) {
-                long ms = System.currentTimeMillis();
-
                 synchronized (logger) {
+                    long ms = System.currentTimeMillis();
+
                     try {
                         // ================================================
                         // Detect the log appender (single or bundled)
                         // ================================================
-                        Appendable a;
-
                         if (LogFile.ordinal() <= o) {
                             // need file appender
                             if (logger.index <= ms) {
@@ -1396,9 +1396,8 @@ public class I {
                                 // start new
                                 LocalDate day = LocalDate.now();
 
-                                Writer w = new BufferedWriter(new FileWriter(p.resolve(name + day.format(BASIC_ISO_DATE) + ".log")
-                                        .toFile(), true));
-                                logger.list = List.of(w, I.bundle(Appendable.class, w, System.out));
+                                logger.list = List.of(new FileWriter(p.resolve(name + day.format(BASIC_ISO_DATE) + ".log").toFile(), I
+                                        .env("LogAppend", true)));
                                 logger.index += 24 * 60 * 60 * 1000;
 
                                 // delete oldest
@@ -1407,9 +1406,6 @@ public class I {
                                     day = day.minusDays(1);
                                 }
                             }
-                            a = logger.list.get(LogConsole.ordinal() <= o ? 1 : 0);
-                        } else {
-                            a = System.out; // console only
                         }
 
                         // ================================================
@@ -1422,28 +1418,33 @@ public class I {
                         }
 
                         // write %DateTime %Level %Message
-                        a.append(time)
-                                .append(' ')
-                                .append(level.name())
-                                .append('\t')
-                                .append(String.valueOf(msg instanceof Supplier ? ((Supplier) msg).get() : msg));
+                        logger.chars.put(time).put(P[o]).put(String.valueOf(msg instanceof Supplier ? ((Supplier) msg).get() : msg));
 
                         // write %Location
                         if (LogCaller.ordinal() <= o) {
-                            a.append("\tat ")
-                                    .append(StackWalker.getInstance()
-                                            .walk(s -> s.skip(2).findFirst().get().toStackTraceElement().toString()));
+                            logger.chars.put("\tat ")
+                                    .put(StackWalker.getInstance().walk(s -> s.skip(2).findFirst().get().toStackTraceElement().toString()));
                         }
 
                         // write line feed
-                        a.append('\n');
+                        logger.chars.put('\n');
 
                         // write %Cause
                         if (msg instanceof Throwable) {
                             for (StackTraceElement s : ((Throwable) msg).getStackTrace()) {
-                                a.append("\tat ").append(s.toString()).append('\n');
+                                logger.chars.put("\tat ").put(s.toString()).put('\n');
                             }
                         }
+
+                        if (LogFile.ordinal() <= o) {
+                            logger.chars.flip();
+                            logger.list.get(0).append(logger.chars);
+                        }
+                        if (LogConsole.ordinal() <= o) {
+                            logger.chars.flip();
+                            System.out.append(logger.chars);
+                        }
+                        logger.chars.clear();
                     } catch (Throwable x) {
                         throw I.quiet(x);
                     }
