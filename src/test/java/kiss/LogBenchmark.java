@@ -12,13 +12,13 @@ package kiss;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.System.Logger.Level;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.EnumSet;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
+import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 import java.util.logging.SimpleFormatter;
 
@@ -36,9 +36,14 @@ import antibug.profiler.Benchmark;
 import ch.qos.logback.classic.AsyncAppender;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.core.Appender;
+import ch.qos.logback.core.ConsoleAppender;
 import ch.qos.logback.core.FileAppender;
 
 public class LogBenchmark {
+
+    private enum OutputType {
+        File, Console;
+    }
 
     private enum ExecutionType {
         Sync, Async, Both;
@@ -48,6 +53,8 @@ public class LogBenchmark {
         Caller, NoCaller, Both;
     }
 
+    private static final OutputType output = OutputType.File;
+
     private static final ExecutionType execution = ExecutionType.Both;
 
     private static final CallerType caller = CallerType.Both;
@@ -56,6 +63,10 @@ public class LogBenchmark {
 
     public static void main(String[] args) throws Exception {
         Benchmark benchmark = new Benchmark();
+
+        if (output == OutputType.Console) {
+            benchmark.discardSystemOutput();
+        }
 
         // performJUL(benchmark);
         // performLog4j(benchmark);
@@ -84,7 +95,7 @@ public class LogBenchmark {
                 return; // JUL has no async-implementation, ignore it!
             }
 
-            FileHandler handler = new FileHandler("logging-jul-" + caller + ".log");
+            Handler handler = output == OutputType.File ? new FileHandler("logging-jul-" + caller + ".log") : new ConsoleHandler();
             handler.setFormatter(new ModifiableFormatter(caller));
 
             java.util.logging.Logger logger = java.util.logging.Logger.getLogger(execution + "-" + caller);
@@ -144,7 +155,7 @@ public class LogBenchmark {
         perform((execution, caller) -> {
             String name = execution + "-" + caller;
 
-            AppenderComponentBuilder appender = builder.newAppender(name, "File");
+            AppenderComponentBuilder appender = builder.newAppender(name, output == OutputType.File ? "File" : "Console");
             appender.addAttribute("fileName", "logging-log4j2-" + name + ".log");
             appender.addAttribute("append", false);
             appender.addAttribute("immediateFlush", false);
@@ -184,7 +195,7 @@ public class LogBenchmark {
                 String name = execution + "-" + caller;
                 String writer = "writer" + id.getAndIncrement();
 
-                Configuration.set(writer, "file");
+                Configuration.set(writer, output == OutputType.File ? "file" : "console");
                 Configuration.set(writer + ".file", "logging-tinylog" + name + ".log");
                 Configuration.set(writer + ".tag", name);
                 Configuration.set(writer + ".format", caller == CallerType.Caller
@@ -225,19 +236,30 @@ public class LogBenchmark {
                     : "%date{YYYY-MM-dd HH:mm:ss.SSS} %level %msg%n");
             layout.start();
 
-            FileAppender file = new FileAppender();
-            file.setContext(context);
-            file.setEncoder(layout);
-            file.setAppend(false);
-            file.setImmediateFlush(false);
-            file.setFile("logging-logback-" + name + ".log");
-            file.start();
+            Appender appender;
 
-            Appender appender = file;
+            if (output == OutputType.Console) {
+                ConsoleAppender console = new ConsoleAppender();
+                console.setContext(context);
+                console.setEncoder(layout);
+                console.setImmediateFlush(false);
+                console.start();
+                appender = console;
+            } else {
+                FileAppender file = new FileAppender();
+                file.setContext(context);
+                file.setEncoder(layout);
+                file.setAppend(false);
+                file.setImmediateFlush(false);
+                file.setFile("logging-logback-" + name + ".log");
+                file.start();
+                appender = file;
+            }
+
             if (execution == ExecutionType.Async) {
                 AsyncAppender async = new AsyncAppender();
                 async.setContext(context);
-                async.addAppender(file);
+                async.addAppender(appender);
                 async.setIncludeCallerData(caller == CallerType.Caller);
                 async.setDiscardingThreshold(0);
                 async.start();
@@ -258,13 +280,9 @@ public class LogBenchmark {
     }
 
     private static void performSinobu(Benchmark benchmark) throws Exception {
-        I.LogConsole = Level.OFF;
-        I.LogFile = Level.ALL;
-
-        // delete all log files
-        Path log = Path.of(".log");
-        Files.createDirectories(log);
-        Files.walk(log).filter(Files::isRegularFile).forEach((WiseConsumer<Path>) Files::delete);
+        I.LogConsole = output == OutputType.Console ? Level.ALL : Level.OFF;
+        I.LogFile = output == OutputType.File ? Level.ALL : Level.OFF;
+        I.env("LogAppend", false);
 
         perform((execution, caller) -> {
             if (execution == ExecutionType.Async) {
