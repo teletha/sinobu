@@ -83,7 +83,7 @@ class LogTest {
             if (log.startsWith("\tat ")) {
                 message = log.trim();
             } else {
-                int start = log.indexOf(' ', log.indexOf(' ') + 1) + 1;
+                int start = log.indexOf(' ', log.indexOf('T') + 1) + 1;
                 int end = log.indexOf('\t', start + 1);
 
                 level = Level.valueOf(log.substring(start, end));

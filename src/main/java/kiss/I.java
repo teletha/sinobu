@@ -1460,10 +1460,10 @@ public class I {
                         // ================================================
                         // Clean up & Reuse
                         // ================================================
-                        // The date and time part (YYYY-MM-ddTHH:mm:ss.SSS ) is reusable, so we
-                        // will reset buffer by #position instead of #clear.
-                        c.position(24);
+                        // The date and time part (YYYY-MM-ddTHH:mm:ss.SSS ) is reusable
+                        c.clear().position(24);
                     } catch (Throwable x) {
+                        x.printStackTrace(System.err);
                         throw I.quiet(x);
                     }
                 }
