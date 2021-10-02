@@ -1437,8 +1437,7 @@ public class I {
 
                         // Caller Location
                         if (LogCaller.ordinal() <= o) {
-                            c.put("\tat ")
-                                    .put(StackWalker.getInstance().walk(s -> s.skip(2).findAny().get().toStackTraceElement().toString()));
+                            c.put("\tat ").put(StackWalker.getInstance().walk(s -> s.skip(2).findAny().get().toString()));
                         }
 
                         // Line Feed
