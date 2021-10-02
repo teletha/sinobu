@@ -34,7 +34,6 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
     /** Generic counter. */
     volatile long index;
 
-    /** The last format time. */
     volatile long time;
 
     /** Generic list. */

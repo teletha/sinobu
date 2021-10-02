@@ -50,9 +50,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayDeque;
@@ -1354,7 +1353,6 @@ public class I {
             // ================================================
             Subscriber<Appendable> logger = loggers.computeIfAbsent(name, key -> {
                 Subscriber s = new Subscriber();
-                s.index = Instant.now().truncatedTo(ChronoUnit.DAYS).toEpochMilli();
                 s.a = new byte[] {(byte) I.env(key + ".level", Level.ALL).ordinal()};
                 return s;
             });
@@ -1379,13 +1377,15 @@ public class I {
                             Files.createDirectories(p);
 
                             // start new
-                            LocalDate day = LocalDate.now();
+                            ZonedDateTime day = ZonedDateTime.now().truncatedTo(ChronoUnit.DAYS);
 
-                            logger.index += 24 * 60 * 60 * 1000;
+                            logger.index = (day.toEpochSecond() + 24 * 60 * 60) * 1000;
                             logger.list = List.of(new FileWriter(p.resolve(name + day.format(BASIC_ISO_DATE) + ".log").toFile(), I
-                                    .env("LogAppend", true)), CharBuffer.allocate(1024 * 32)
-                                            .put(day.format(DateTimeFormatter.ISO_LOCAL_DATE))
-                                            .put(' '));
+                                    .env("LogAppend", true)), CharBuffer.allocate(1024 * 24)
+                                            .put(day.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+                                            .put(19, '.')
+                                            .put(23, ' ')
+                                            .position(24));
 
                             // delete oldest
                             day = day.minusDays(30);
@@ -1399,40 +1399,31 @@ public class I {
                         // ================================================
                         CharBuffer c = ((CharBuffer) logger.list.get(1));
 
-                        // write %DateTime %Level %Message
+                        // write time
                         if (logger.time != ms) {
                             logger.time = ms;
 
                             // reuse formatted date-time text
                             int time = (int) (ms - (logger.index - 24 * 60 * 60 * 1000));
-                            int H = time / (3600 * 1000);
-                            time -= H * 3600 * 1000;
-                            int m = time / (60 * 1000);
-                            time -= m * 60 * 1000;
-                            int s = time / 1000;
-                            time -= s * 1000;
 
-                            c.put((char) ('0' + H / 10))
-                                    .put((char) ('0' + H % 10))
-                                    .put(':')
-                                    .put((char) ('0' + m / 10))
-                                    .put((char) ('0' + m % 10))
-                                    .put(':')
-                                    .put((char) ('0' + s / 10))
-                                    .put((char) ('0' + s % 10))
-                                    .put('.')
-                                    .put((char) ('0' + time / 100))
-                                    .put((char) ('0' + time % 100 / 10))
-                                    .put((char) ('0' + time % 10))
-                                    .put(' ');
-                        } else {
-                            c.position(24);
+                            c.put(11, (char) ('0' + time / (3600 * 1000) / 10))
+                                    .put(12, (char) ('0' + time / (3600 * 1000) % 10))
+
+                                    .put(14, (char) ('0' + time / (60 * 1000) % 60 / 10))
+                                    .put(15, (char) ('0' + time / (60 * 1000) % 60 % 10))
+
+                                    .put(17, (char) ('0' + time / 1000 % 60 / 10))
+                                    .put(18, (char) ('0' + time / 1000 % 60 % 10))
+
+                                    .put(20, (char) ('0' + time % 1000 / 100))
+                                    .put(21, (char) ('0' + time % 100 / 10))
+                                    .put(22, (char) ('0' + time % 10));
                         }
 
-                        // write %DateTime %Level %Message
+                        // write level and message
                         c.put(level.name()).put('\t').put(String.valueOf(msg instanceof Supplier ? ((Supplier) msg).get() : msg));
 
-                        // write %Location
+                        // write caller location
                         if (LogCaller.ordinal() <= o) {
                             c.put("\tat ")
                                     .put(StackWalker.getInstance().walk(s -> s.skip(2).findFirst().get().toStackTraceElement().toString()));
@@ -1441,7 +1432,7 @@ public class I {
                         // write line feed
                         c.put('\n');
 
-                        // write %Cause
+                        // write cause
                         if (msg instanceof Throwable) {
                             for (StackTraceElement s : ((Throwable) msg).getStackTrace()) {
                                 c.put("\tat ").put(s.toString()).put('\n');
@@ -1456,7 +1447,7 @@ public class I {
                             c.flip();
                             System.out.append(c);
                         }
-                        c.position(11);
+                        c.position(24);
                     } catch (Throwable x) {
                         throw I.quiet(x);
                     }
