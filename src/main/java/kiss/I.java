@@ -1437,7 +1437,10 @@ public class I {
 
                         // Caller Location
                         if (LogCaller.ordinal() <= o) {
-                            c.put("\tat ").put(StackWalker.getInstance().walk(s -> s.skip(2).findAny().get().toString()));
+                            // Since javac (JDK16) doesn't infer it correctly, we'll put the
+                            // toString method out there to make the type explicit, although it
+                            // increases the footprint slightly.
+                            c.put("\tat ").put(StackWalker.getInstance().walk(s -> s.skip(2).findAny().get()).toString());
                         }
 
                         // Line Feed
