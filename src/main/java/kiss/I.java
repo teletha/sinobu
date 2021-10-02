@@ -50,10 +50,10 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
+import java.time.ZoneId;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1353,7 +1353,7 @@ public class I {
             // ================================================
             Subscriber<Appendable> logger = loggers.computeIfAbsent(name, key -> {
                 Subscriber s = new Subscriber();
-                s.a = new byte[] {(byte) I.env(key + ".level", Level.ALL).ordinal()};
+                s.a = new byte[] {(byte) I.env(key + ".level", Level.ALL).ordinal(), 0, 0, 0};
                 return s;
             });
 
@@ -1377,12 +1377,12 @@ public class I {
                             Files.createDirectories(p);
 
                             // start new
-                            ZonedDateTime day = ZonedDateTime.now().truncatedTo(ChronoUnit.DAYS);
+                            LocalDateTime day = LocalDate.now().atStartOfDay();
 
-                            logger.index = (day.toEpochSecond() + 24 * 60 * 60) * 1000;
+                            logger.index = day.atZone(ZoneId.systemDefault()).plusDays(1).toEpochSecond() * 1000;
                             logger.list = List.of(new FileWriter(p.resolve(name + day.format(BASIC_ISO_DATE) + ".log").toFile(), I
                                     .env("LogAppend", true)), CharBuffer.allocate(1024 * 24)
-                                            .put(day.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+                                            .put(day.format(ISO_LOCAL_DATE_TIME))
                                             .put(19, '.')
                                             .put(23, ' ')
                                             .position(24));
@@ -1406,16 +1406,25 @@ public class I {
                             // reuse formatted date-time text
                             int time = (int) (ms - (logger.index - 24 * 60 * 60 * 1000));
 
-                            c.put(11, (char) ('0' + time / (3600 * 1000) / 10))
-                                    .put(12, (char) ('0' + time / (3600 * 1000) % 10))
+                            int w = time / (3600 * 1000);
+                            if (logger.a[1] != w) {
+                                logger.a[1] = (byte) w;
+                                c.put(11, (char) ('0' + w / 10)).put(12, (char) ('0' + w % 10));
+                            }
 
-                                    .put(14, (char) ('0' + time / (60 * 1000) % 60 / 10))
-                                    .put(15, (char) ('0' + time / (60 * 1000) % 60 % 10))
+                            w = time / (60 * 1000) % 60;
+                            if (logger.a[2] != w) {
+                                logger.a[2] = (byte) w;
+                                c.put(14, (char) ('0' + w / 10)).put(15, (char) ('0' + w % 10));
+                            }
 
-                                    .put(17, (char) ('0' + time / 1000 % 60 / 10))
-                                    .put(18, (char) ('0' + time / 1000 % 60 % 10))
+                            w = time / 1000 % 60;
+                            if (logger.a[3] != w) {
+                                logger.a[3] = (byte) w;
+                                c.put(17, (char) ('0' + w / 10)).put(18, (char) ('0' + w % 10));
+                            }
 
-                                    .put(20, (char) ('0' + time % 1000 / 100))
+                            c.put(20, (char) ('0' + time % 1000 / 100))
                                     .put(21, (char) ('0' + time % 100 / 10))
                                     .put(22, (char) ('0' + time % 10));
                         }
