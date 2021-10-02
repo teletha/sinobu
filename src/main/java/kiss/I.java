@@ -9,7 +9,7 @@
  */
 package kiss;
 
-import static java.time.format.DateTimeFormatter.BASIC_ISO_DATE;
+import static java.time.format.DateTimeFormatter.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -1424,7 +1424,7 @@ public class I {
                                     .put((char) ('0' + time / 100))
                                     .put((char) ('0' + time % 100 / 10))
                                     .put((char) ('0' + time % 10))
-                                    .put('\t');
+                                    .put(' ');
                         } else {
                             c.position(24);
                         }
