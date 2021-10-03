@@ -201,7 +201,7 @@ public class I {
     static final XPath xpath;
 
     /** The logger manager. */
-    static final Map<Object, Subscriber> loggers = new ConcurrentHashMap<>();
+    static final Map<String, Subscriber> loggers = new ConcurrentHashMap<>();
 
     /** The cache for {@link Lifestyle}. */
     private static final Map<Class, Lifestyle> lifestyles = new ConcurrentHashMap<>();
@@ -1356,7 +1356,7 @@ public class I {
             // ================================================
             Subscriber<Appendable> logger = loggers.computeIfAbsent(name, key -> {
                 Subscriber s = new Subscriber();
-                s.a = new byte[] {(byte) I.env(key + ".level", Level.ALL).ordinal()};
+                s.a = new byte[] {(byte) I.env(key.concat(".level"), Level.ALL).ordinal()};
                 return s;
             });
 
@@ -1402,7 +1402,8 @@ public class I {
                         // ================================================
                         // Format log message
                         // ================================================
-                        CharBuffer c = (CharBuffer) logger.list.get(1);
+                        // The date and time part (YYYY-MM-ddTHH:mm:ss.SSS ) is reusable
+                        CharBuffer c = ((CharBuffer) logger.list.get(1)).clear().position(24);
 
                         // Time - If the time is the same as the last time, the previous data will
                         // be used as is to speed up the process.
@@ -1458,12 +1459,6 @@ public class I {
                         // ================================================
                         if (LogFile.ordinal() <= o) logger.list.get(0).append(c.flip());
                         if (LogConsole.ordinal() <= o) System.out.append(c.flip());
-
-                        // ================================================
-                        // Clean up & Reuse
-                        // ================================================
-                        // The date and time part (YYYY-MM-ddTHH:mm:ss.SSS ) is reusable
-                        c.clear().position(24);
                     } catch (Throwable x) {
                         x.printStackTrace(System.err);
                         throw I.quiet(x);
