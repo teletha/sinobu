@@ -199,7 +199,7 @@ public class I {
     static final XPath xpath;
 
     /** The logger manager. */
-    static final Map<String, Subscriber> loggers = new ConcurrentHashMap<>();
+    static final Map<String, Subscriber> logs = new ConcurrentHashMap<>();
 
     /** The cache for {@link Lifestyle}. */
     private static final Map<Class, Lifestyle> lifestyles = new ConcurrentHashMap<>();
@@ -1287,7 +1287,7 @@ public class I {
     static {
         // Clean up all buffered log
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            for (Subscriber s : loggers.values()) {
+            for (Subscriber s : logs.values()) {
                 if (s.list != null) {
                     I.quiet(s.list.get(0));
                 }
@@ -1306,7 +1306,7 @@ public class I {
         // ================================================
         // Look up logger by name
         // ================================================
-        Subscriber<Appendable> logger = loggers.computeIfAbsent(name, key -> {
+        Subscriber<Appendable> log = logs.computeIfAbsent(name, key -> {
             Subscriber s = new Subscriber();
             s.a = new byte[] {
                     // =================================================
@@ -1334,8 +1334,8 @@ public class I {
         // ================================================
         int o = level.ordinal();
 
-        if (logger.a[1] <= o || logger.a[2] <= o) {
-            synchronized (logger) {
+        if (log.a[1] <= o || log.a[2] <= o) {
+            synchronized (log) {
                 long ms = System.currentTimeMillis();
 
                 try {
@@ -1343,9 +1343,9 @@ public class I {
                     // Detect the log appender (single or bundled)
                     // ================================================
                     // need file appender
-                    if (logger.index <= ms) {
+                    if (log.index <= ms) {
                         // stop old file
-                        if (logger.list != null) I.quiet(logger.list.get(0));
+                        if (log.list != null) I.quiet(log.list.get(0));
 
                         // create log directory
                         File dir = new File(I.env("LogDirectory", ".log"));
@@ -1354,8 +1354,8 @@ public class I {
                         // start new
                         LocalDateTime day = LocalDate.now().atStartOfDay();
 
-                        logger.index = (day.atZone(ZoneId.systemDefault()).toEpochSecond() + 3600 * 24) * 1000;
-                        logger.list = List.of(
+                        log.index = (day.atZone(ZoneId.systemDefault()).toEpochSecond() + 3600 * 24) * 1000;
+                        log.list = List.of(
                                 // The file output destination will be rotated daily. It will
                                 // always be cached in an open state.
                                 new FileWriter(new File(dir, name.concat(day.format(ISO_DATE)).concat(".log")), env(name
@@ -1375,17 +1375,17 @@ public class I {
                     // Format log message
                     // ================================================
                     // The date and time part (YYYY-MM-ddTHH:mm:ss.SSS ) is reusable
-                    CharBuffer c = ((CharBuffer) logger.list.get(1)).clear().position(24);
+                    CharBuffer c = ((CharBuffer) log.list.get(1)).clear().position(24);
 
                     // Time - If the time is the same as the last time, the previous data will
                     // be used as is to speed up the process.
-                    if (logger.time != ms) {
-                        logger.time = ms;
+                    if (log.time != ms) {
+                        log.time = ms;
 
                         // If you use DateTimeFormatter or SimpleDateFormatter, it creates an
                         // extra instances, so we parse and format the time ourselves to keep it
                         // garbage-free.
-                        int time = (int) (ms - (logger.index - 24 * 60 * 60 * 1000));
+                        int time = (int) (ms - (log.index - 24 * 60 * 60 * 1000));
 
                         // Hour
                         c.put(11, (char) ('0' + time / (3600 * 1000) / 10))
@@ -1409,7 +1409,7 @@ public class I {
                     c.put(level.name()).put('\t').put(String.valueOf(msg instanceof Supplier ? ((Supplier) msg).get() : msg));
 
                     // Caller Location
-                    if (logger.a[0] <= o) {
+                    if (log.a[0] <= o) {
                         // Since javac (JDK16) doesn't infer it correctly, we'll put the
                         // toString method out there to make the type explicit, although it
                         // increases the footprint slightly.
@@ -1429,13 +1429,13 @@ public class I {
                     // ================================================
                     // Output log
                     // ================================================
-                    if (logger.a[1] <= o) logger.list.get(0).append(c.flip());
-                    if (logger.a[2] <= o) System.out.append(c.flip());
+                    if (log.a[1] <= o) log.list.get(0).append(c.flip());
+                    if (log.a[2] <= o) System.out.append(c.flip());
                 } catch (Throwable x) {
                     throw I.quiet(x);
                 }
             }
-        } else if (logger.a[1] == 6 && logger.a[2] == 6) {
+        } else if (log.a[1] == 6 && log.a[2] == 6) {
             System.getLogger(name).log(level, msg);
         }
     }

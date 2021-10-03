@@ -57,7 +57,7 @@ public class LogBenchmark {
 
     private static final ExecutionType execution = ExecutionType.Both;
 
-    private static final CallerType caller = CallerType.Both;
+    private static final CallerType caller = CallerType.NoCaller;
 
     private static final String message = "Message";
 
@@ -69,10 +69,10 @@ public class LogBenchmark {
         }
 
         // performJUL(benchmark);
-        // performLog4j(benchmark);
-        // performTinyLog(benchmark);
-        // performLogback(benchmark);
         performSinobu(benchmark);
+        performLog4j(benchmark);
+        performTinyLog(benchmark);
+        performLogback(benchmark);
 
         benchmark.perform();
     }
