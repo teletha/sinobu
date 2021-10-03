@@ -1460,7 +1460,6 @@ public class I {
                         if (LogFile.ordinal() <= o) logger.list.get(0).append(c.flip());
                         if (LogConsole.ordinal() <= o) System.out.append(c.flip());
                     } catch (Throwable x) {
-                        x.printStackTrace(System.err);
                         throw I.quiet(x);
                     }
                 }
