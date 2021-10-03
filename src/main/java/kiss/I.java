@@ -1339,10 +1339,7 @@ public class I {
                 long ms = System.currentTimeMillis();
 
                 try {
-                    // ================================================
-                    // Detect the log appender (single or bundled)
-                    // ================================================
-                    // need file appender
+                    // Replace the output destination file at the timing of the date change.
                     if (log.index <= ms) {
                         // stop old file
                         if (log.list != null) I.quiet(log.list.get(0));
