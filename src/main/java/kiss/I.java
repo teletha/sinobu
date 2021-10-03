@@ -21,9 +21,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringReader;
-import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
-import java.lang.System.LoggerFinder;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
@@ -1286,49 +1284,10 @@ public class I {
         return () -> findBy(extensionPoint).ⅱ.remove(extensionKey);
     }
 
-    /**
-     * Configure whether to include logging caller infomation in the log (default:
-     * {@link Level#OFF}). It can also be set during application initialization through the .env
-     * file with 'LogCaller' key. Note that turning on this setting will increase the logging
-     * process time extremely.
-     * 
-     * @see I#env(String)
-     * @see I#env(String, Object)
-     */
-    public static Level LogCaller = I.env("LogCaller", Level.OFF);
-
-    /**
-     * Configure whether to output the log to the system console (default: {@link Level#INFO}). It
-     * can also be set during application initialization through the .env file with 'LogConsole'
-     * key. If you turn off the both file and console output, all logs will be routed to the
-     * platform logger.
-     * 
-     * @see I#LogFile
-     * @see I#env(String)
-     * @see I#env(String, Object)
-     * @see Logger
-     * @see LoggerFinder
-     */
-    public static Level LogConsole = I.env("LogConsole", Level.INFO);
-
-    /**
-     * Configure whether to output the log to the rotatable local file (default: {@link Level#ALL}).
-     * It can also be set during application initialization through the .env file with 'LogFile'
-     * key. If you turn off the both file and console output, all logs will be routed to the
-     * platform logger.
-     * 
-     * @see I#LogConsole
-     * @see I#env(String)
-     * @see I#env(String, Object)
-     * @see Logger
-     * @see LoggerFinder
-     */
-    public static Level LogFile = I.env("LogFile", Level.ALL);
-
     static {
         // Clean up all buffered log
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            for (Subscriber s : I.loggers.values()) {
+            for (Subscriber s : loggers.values()) {
                 if (s.list != null) {
                     I.quiet(s.list.get(0));
                 }
@@ -1344,127 +1303,139 @@ public class I {
      * @param msg
      */
     private static void log(String name, Level level, Object msg) {
+        // ================================================
+        // Look up logger by name
+        // ================================================
+        Subscriber<Appendable> logger = loggers.computeIfAbsent(name, key -> {
+            Subscriber s = new Subscriber();
+            s.a = new byte[] {
+                    // =================================================
+                    // Logger Specific Configuration
+                    // =================================================
+                    // It is possible to reflect user settings by delaying the reading of settings
+                    // until the stage of actual logger use.
+
+                    // Determines the level at which the caller information is used.
+                    (byte) I.env(key.concat(".caller"), I.env("*.caller", Level.OFF)).ordinal(),
+
+                    // Determines the level at which the file output is used.
+                    (byte) I.env(key.concat(".file"), I.env("*.file", Level.ALL)).ordinal(),
+
+                    // Determines the level at which the console output is used.
+                    (byte) I.env(key.concat(".console"), I.env("*.console", Level.OFF)).ordinal()
+
+                    // =================================================
+            };
+            return s;
+        });
+
+        // ================================================
+        // Discard by logger's level
+        // ================================================
         int o = level.ordinal();
 
-        // ================================================
-        // Discard by global level
-        // ================================================
-        if (LogFile.ordinal() <= o || LogConsole.ordinal() <= o) {
+        if (logger.a[1] <= o || logger.a[2] <= o) {
+            synchronized (logger) {
+                long ms = System.currentTimeMillis();
 
-            // ================================================
-            // Look up logger by name
-            // ================================================
-            Subscriber<Appendable> logger = loggers.computeIfAbsent(name, key -> {
-                Subscriber s = new Subscriber();
-                s.a = new byte[] {(byte) I.env(key.concat(".level"), Level.ALL).ordinal()};
-                return s;
-            });
+                try {
+                    // ================================================
+                    // Detect the log appender (single or bundled)
+                    // ================================================
+                    // need file appender
+                    if (logger.index <= ms) {
+                        // stop old file
+                        if (logger.list != null) I.quiet(logger.list.get(0));
 
-            // ================================================
-            // Discard by logger's level
-            // ================================================
-            if (logger.a[0] <= o) {
-                synchronized (logger) {
-                    long ms = System.currentTimeMillis();
+                        // create log directory
+                        File dir = new File(I.env("LogDirectory", ".log"));
+                        dir.mkdirs();
 
-                    try {
-                        // ================================================
-                        // Detect the log appender (single or bundled)
-                        // ================================================
-                        // need file appender
-                        if (logger.index <= ms) {
-                            // stop old file
-                            if (logger.list != null) I.quiet(logger.list.get(0));
+                        // start new
+                        LocalDateTime day = LocalDate.now().atStartOfDay();
 
-                            // create log directory
-                            File dir = new File(I.env("LogDirectory", ".log"));
-                            dir.mkdirs();
+                        logger.index = (day.atZone(ZoneId.systemDefault()).toEpochSecond() + 3600 * 24) * 1000;
+                        logger.list = List.of(
+                                // The file output destination will be rotated daily. It will
+                                // always be cached in an open state.
+                                new FileWriter(new File(dir, name.concat(day.format(ISO_DATE)).concat(".log")), env(name
+                                        .concat(".append"), env("*.append", true))),
 
-                            // start new
-                            LocalDateTime day = LocalDate.now().atStartOfDay();
+                                // The buffer for writing messages is reused. The date can be
+                                // used permanently, so write it beforehand.
+                                CharBuffer.allocate(1024 * 24).put(day.format(ISO_LOCAL_DATE_TIME)).put(".000 "));
 
-                            logger.index = (day.atZone(ZoneId.systemDefault()).toEpochSecond() + 3600 * 24) * 1000;
-                            logger.list = List.of(
-                                    // The file output destination will be rotated daily. It will
-                                    // always be cached in an open state.
-                                    new FileWriter(new File(dir, name.concat(day.format(ISO_DATE)).concat(".log")), env("LogAppend", true)),
-
-                                    // The buffer for writing messages is reused. The date can be
-                                    // used permanently, so write it beforehand.
-                                    CharBuffer.allocate(1024 * 24).put(day.format(ISO_LOCAL_DATE_TIME)).put(".000 "));
-
-                            // Very old files should be deleted.
-                            int i = 30;
-                            while (new File(dir, name.concat(day.minusDays(i++).format(ISO_DATE)).concat(".log")).delete()) {
-                            }
+                        // Very old files should be deleted.
+                        int i = 30;
+                        while (new File(dir, name.concat(day.minusDays(i++).format(ISO_DATE)).concat(".log")).delete()) {
                         }
-
-                        // ================================================
-                        // Format log message
-                        // ================================================
-                        // The date and time part (YYYY-MM-ddTHH:mm:ss.SSS ) is reusable
-                        CharBuffer c = ((CharBuffer) logger.list.get(1)).clear().position(24);
-
-                        // Time - If the time is the same as the last time, the previous data will
-                        // be used as is to speed up the process.
-                        if (logger.time != ms) {
-                            logger.time = ms;
-
-                            // If you use DateTimeFormatter or SimpleDateFormatter, it creates an
-                            // extra instances, so we parse and format the time ourselves to keep it
-                            // garbage-free.
-                            int time = (int) (ms - (logger.index - 24 * 60 * 60 * 1000));
-
-                            // Hour
-                            c.put(11, (char) ('0' + time / (3600 * 1000) / 10))
-                                    .put(12, (char) ('0' + time / (3600 * 1000) % 10))
-
-                                    // Minute
-                                    .put(14, (char) ('0' + time / (60 * 1000) % 60 / 10))
-                                    .put(15, (char) ('0' + time / (60 * 1000) % 60 % 10))
-
-                                    // Second
-                                    .put(17, (char) ('0' + time / 1000 % 60 / 10))
-                                    .put(18, (char) ('0' + time / 1000 % 60 % 10))
-
-                                    // Millisecond
-                                    .put(20, (char) ('0' + time % 1000 / 100))
-                                    .put(21, (char) ('0' + time % 100 / 10))
-                                    .put(22, (char) ('0' + time % 10));
-                        }
-
-                        // Level & Message
-                        c.put(level.name()).put('\t').put(String.valueOf(msg instanceof Supplier ? ((Supplier) msg).get() : msg));
-
-                        // Caller Location
-                        if (LogCaller.ordinal() <= o) {
-                            // Since javac (JDK16) doesn't infer it correctly, we'll put the
-                            // toString method out there to make the type explicit, although it
-                            // increases the footprint slightly.
-                            c.put("\tat ").put(StackWalker.getInstance().walk(s -> s.skip(2).findAny().get()).toString());
-                        }
-
-                        // Line Feed
-                        c.put('\n');
-
-                        // Cause
-                        if (msg instanceof Throwable) {
-                            for (StackTraceElement s : ((Throwable) msg).getStackTrace()) {
-                                c.put("\tat ").put(s.toString()).put('\n');
-                            }
-                        }
-
-                        // ================================================
-                        // Output log
-                        // ================================================
-                        if (LogFile.ordinal() <= o) logger.list.get(0).append(c.flip());
-                        if (LogConsole.ordinal() <= o) System.out.append(c.flip());
-                    } catch (Throwable x) {
-                        throw I.quiet(x);
                     }
+
+                    // ================================================
+                    // Format log message
+                    // ================================================
+                    // The date and time part (YYYY-MM-ddTHH:mm:ss.SSS ) is reusable
+                    CharBuffer c = ((CharBuffer) logger.list.get(1)).clear().position(24);
+
+                    // Time - If the time is the same as the last time, the previous data will
+                    // be used as is to speed up the process.
+                    if (logger.time != ms) {
+                        logger.time = ms;
+
+                        // If you use DateTimeFormatter or SimpleDateFormatter, it creates an
+                        // extra instances, so we parse and format the time ourselves to keep it
+                        // garbage-free.
+                        int time = (int) (ms - (logger.index - 24 * 60 * 60 * 1000));
+
+                        // Hour
+                        c.put(11, (char) ('0' + time / (3600 * 1000) / 10))
+                                .put(12, (char) ('0' + time / (3600 * 1000) % 10))
+
+                                // Minute
+                                .put(14, (char) ('0' + time / (60 * 1000) % 60 / 10))
+                                .put(15, (char) ('0' + time / (60 * 1000) % 60 % 10))
+
+                                // Second
+                                .put(17, (char) ('0' + time / 1000 % 60 / 10))
+                                .put(18, (char) ('0' + time / 1000 % 60 % 10))
+
+                                // Millisecond
+                                .put(20, (char) ('0' + time % 1000 / 100))
+                                .put(21, (char) ('0' + time % 100 / 10))
+                                .put(22, (char) ('0' + time % 10));
+                    }
+
+                    // Level & Message
+                    c.put(level.name()).put('\t').put(String.valueOf(msg instanceof Supplier ? ((Supplier) msg).get() : msg));
+
+                    // Caller Location
+                    if (logger.a[0] <= o) {
+                        // Since javac (JDK16) doesn't infer it correctly, we'll put the
+                        // toString method out there to make the type explicit, although it
+                        // increases the footprint slightly.
+                        c.put("\tat ").put(StackWalker.getInstance().walk(s -> s.skip(2).findAny().get()).toString());
+                    }
+
+                    // Line Feed
+                    c.put('\n');
+
+                    // Cause
+                    if (msg instanceof Throwable) {
+                        for (StackTraceElement s : ((Throwable) msg).getStackTrace()) {
+                            c.put("\tat ").put(s.toString()).put('\n');
+                        }
+                    }
+
+                    // ================================================
+                    // Output log
+                    // ================================================
+                    if (logger.a[1] <= o) logger.list.get(0).append(c.flip());
+                    if (logger.a[2] <= o) System.out.append(c.flip());
+                } catch (Throwable x) {
+                    throw I.quiet(x);
                 }
             }
-        } else if (LogFile == Level.OFF && LogConsole == Level.OFF) {
+        } else if (logger.a[1] == 6 && logger.a[2] == 6) {
             System.getLogger(name).log(level, msg);
         }
     }

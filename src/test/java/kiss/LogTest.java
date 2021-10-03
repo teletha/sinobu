@@ -97,17 +97,13 @@ class LogTest {
         original = System.out;
         System.setOut(log = new Log());
 
-        I.LogFile = Level.OFF;
-        I.LogConsole = Level.ALL;
+        I.env("*.file", Level.OFF);
+        I.env("*.console", Level.ALL);
     }
 
     @AfterEach
     void restore() {
         System.setOut(original);
-
-        I.LogFile = Level.ALL;
-        I.LogConsole = Level.INFO;
-        I.LogCaller = Level.OFF;
     }
 
     @Test
@@ -181,8 +177,8 @@ class LogTest {
 
     @Test
     void callerInfomation() {
-        I.LogCaller = Level.ALL;
-        I.error("Message");
+        I.env("ci.caller", Level.ALL);
+        I.error("ci", "Message");
 
         assert assumeLog(Level.ERROR, "Message at kiss.LogTest.callerInfomation(LogTest.java:0)");
     }
@@ -195,53 +191,14 @@ class LogTest {
     }
 
     @Test
-    void file() {
-        I.LogFile = Level.ALL;
-    }
-
-    @Test
     void filterByLoggerLevel() {
-        I.env("filtered-logger.level", "ERROR");
+        I.env("filterByLoggerLevel.console", Level.ERROR);
 
-        I.info("filtered-logger", "NoOP");
+        I.info("filterByLoggerLevel", "NoOP");
         assert assumeNoLog();
 
-        I.error("filtered-logger", "Message");
+        I.error("filterByLoggerLevel", "Message");
         assert assumeLog(Level.ERROR, "Message");
-    }
-
-    @Test
-    void filterByGlobalConsoleLevel() {
-        I.LogConsole = Level.ERROR;
-
-        I.warn("NoOP");
-        I.info("NoOP");
-        I.debug("NoOP");
-        I.trace("NoOP");
-        assert assumeNoLog();
-
-        I.error("Message");
-        assert assumeLog(Level.ERROR, "Message");
-
-        // change level dynamically
-        I.LogConsole = Level.DEBUG;
-
-        I.trace("NoOP");
-        assert assumeNoLog();
-
-        I.error("Message");
-        I.warn("Message");
-        I.info("Message");
-        I.debug("Message");
-        assert assumeLog(Level.ERROR, "Message");
-        assert assumeLog(Level.WARNING, "Message");
-        assert assumeLog(Level.INFO, "Message");
-        assert assumeLog(Level.DEBUG, "Message");
-    }
-
-    @Test
-    void filterByGlobalFileLevel() {
-
     }
 
     private boolean assumeLog(Level level, String message) {
