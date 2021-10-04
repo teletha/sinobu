@@ -1367,7 +1367,7 @@ public class I {
 
                                 // The buffer for writing messages is reused. The date can be
                                 // used permanently, so write it beforehand.
-                                CharBuffer.allocate(1024 * 24).put(day.format(ISO_LOCAL_DATE_TIME)).put(".000      \t"));
+                                CharBuffer.allocate(1024 * 24).put(day.format(ISO_LOCAL_DATE_TIME)).put(".000 DEBUG\t"));
 
                         // Very old files should be deleted.
                         int i = 30;
@@ -1389,19 +1389,19 @@ public class I {
                         // If you use DateTimeFormatter or SimpleDateFormatter, it creates an
                         // extra instances, so we parse and format the time ourselves to keep it
                         // garbage-free.
-                        int time = (int) (ms - (log.index - 24 * 60 * 60 * 1000));
+                        int m, time = (int) (ms - (log.index - 24 * 60 * 60 * 1000));
 
                         // Hour
-                        c.put(11, (char) ('0' + time / (3600 * 1000) / 10))
-                                .put(12, (char) ('0' + time / (3600 * 1000) % 10))
+                        c.put(11, (char) ('0' + (m = time / (3600 * 1000)) / 10))
+                                .put(12, (char) ('0' + m % 10))
 
                                 // Minute
-                                .put(14, (char) ('0' + time / (60 * 1000) % 60 / 10))
-                                .put(15, (char) ('0' + time / (60 * 1000) % 60 % 10))
+                                .put(14, (char) ('0' + (m = time / (60 * 1000) % 60) / 10))
+                                .put(15, (char) ('0' + m % 10))
 
                                 // Second
-                                .put(17, (char) ('0' + time / 1000 % 60 / 10))
-                                .put(18, (char) ('0' + time / 1000 % 60 % 10))
+                                .put(17, (char) ('0' + (m = time / 1000 % 60) / 10))
+                                .put(18, (char) ('0' + m % 10))
 
                                 // Millisecond
                                 .put(20, (char) ('0' + time % 1000 / 100))
