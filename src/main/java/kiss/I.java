@@ -21,6 +21,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringReader;
+import java.io.Writer;
 import java.lang.System.Logger.Level;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
@@ -1312,7 +1313,7 @@ public class I {
         // ================================================
         // Look up logger by name
         // ================================================
-        Subscriber<Appendable> log = logs.computeIfAbsent(name, key -> {
+        Subscriber<Writer> log = logs.computeIfAbsent(name, key -> {
             Subscriber s = new Subscriber();
             s.a = new byte[] {
                     // =================================================
@@ -1346,32 +1347,37 @@ public class I {
                 long ms = System.currentTimeMillis();
 
                 try {
-                    // Replace the output destination file at the timing of the date change.
                     if (log.index <= ms) {
-                        // stop old file
-                        if (log.list != null) I.quiet(log.list.get(0));
-
-                        // create log directory
-                        File dir = new File(I.env("LogDirectory", ".log"));
-                        dir.mkdirs();
-
-                        // start new
+                        // As a new day begins, we will refresh the data for each day that can be
+                        // reused.
                         LocalDateTime day = LocalDate.now().atStartOfDay();
 
+                        // Set the next update time.
                         log.index = (day.atZone(ZoneId.systemDefault()).toEpochSecond() + 3600 * 24) * 1000;
-                        log.list = List.of(
-                                // The file output destination will be rotated daily. It will
-                                // always be cached in an open state.
-                                new FileWriter(new File(dir, name.concat(day.format(ISO_DATE)).concat(".log")), env(name
-                                        .concat(".append"), env("*.append", true))),
 
-                                // The buffer for writing messages is reused. The date can be
-                                // used permanently, so write it beforehand.
-                                CharBuffer.allocate(1024 * 24).put(day.format(ISO_LOCAL_DATE_TIME)).put(".000 DEBUG\t"));
+                        // Reuse all parts that use the same characters each time. Dates and
+                        // separators are the same throughout the day, so generate them first and
+                        // reuse them thereafter.
+                        log.chars = CharBuffer.allocate(1024 * 24).put(day.format(ISO_LOCAL_DATE_TIME)).put(".000 DEBUG\t");
 
-                        // Very old files should be deleted.
-                        int i = 30;
-                        while (new File(dir, name.concat(day.minusDays(i++).format(ISO_DATE)).concat(".log")).delete()) {
+                        // Replace the output destination file at the timing of the date change.
+                        if (log.a[1] <= o) {
+                            // stop old file
+                            if (log.list != null) I.quiet(log.list.get(0));
+
+                            // create log directory
+                            File dir = new File(I.env("LogDirectory", ".log"));
+                            dir.mkdirs();
+
+                            // The file output destination will be rotated daily. It will
+                            // always be cached in an open state.
+                            log.list = List.of(new FileWriter(new File(dir, name.concat(day.format(ISO_DATE)).concat(".log")), env(name
+                                    .concat(".append"), env("*.append", true))));
+
+                            // Very old files should be deleted.
+                            int i = 30;
+                            while (new File(dir, name.concat(day.minusDays(i++).format(ISO_DATE)).concat(".log")).delete()) {
+                            }
                         }
                     }
 
@@ -1379,7 +1385,7 @@ public class I {
                     // Format log message
                     // ================================================
                     // The date and time part (YYYY-MM-ddTHH:mm:ss.SSS ) is reusable
-                    CharBuffer c = ((CharBuffer) log.list.get(1)).clear().position(30);
+                    log.chars.clear().position(30);
 
                     // Time - If the time is the same as the last time, the previous data will
                     // be used as is to speed up the process.
@@ -1392,7 +1398,7 @@ public class I {
                         int m, time = (int) (ms - (log.index - 24 * 60 * 60 * 1000));
 
                         // Hour
-                        c.put(11, (char) ('0' + (m = time / (3600 * 1000)) / 10))
+                        log.chars.put(11, (char) ('0' + (m = time / (3600 * 1000)) / 10))
                                 .put(12, (char) ('0' + m % 10))
 
                                 // Minute
@@ -1410,32 +1416,32 @@ public class I {
                     }
 
                     // Level & Message
-                    c.put(24, L, (o - 1) * 5, 5).put(String.valueOf(msg instanceof Supplier ? ((Supplier) msg).get() : msg));
+                    log.chars.put(24, L, (o - 1) * 5, 5).put(String.valueOf(msg instanceof Supplier ? ((Supplier) msg).get() : msg));
 
                     // Caller Location
                     if (log.a[0] <= o) {
                         // Since javac (JDK16) doesn't infer it correctly, we'll put the
                         // toString method out there to make the type explicit, although it
                         // increases the footprint slightly.
-                        c.put("\tat ").put(StackWalker.getInstance().walk(s -> s.skip(2).findAny().get()).toString());
+                        log.chars.put("\tat ").put(StackWalker.getInstance().walk(s -> s.skip(2).findAny().get()).toString());
                     }
 
                     // Line Feed
-                    c.put('\n');
+                    log.chars.put('\n');
 
                     // Cause
                     if (msg instanceof Throwable) {
                         for (StackTraceElement s : ((Throwable) msg).getStackTrace()) {
-                            c.put("\tat ").put(s.toString()).put('\n');
+                            log.chars.put("\tat ").put(s.toString()).put('\n');
                         }
                     }
 
                     // ================================================
                     // Output log
                     // ================================================
-                    if (log.a[1] <= o) log.list.get(0).append(c.flip());
-                    if (log.a[2] <= o) System.out.append(c.flip());
-                    if (log.a[3] <= o && Logger != null) Logger.ACCEPT(name, Level.values()[o], c.flip());
+                    if (log.a[1] <= o) log.list.get(0).append(log.chars.flip());
+                    if (log.a[2] <= o) System.out.append(log.chars.flip());
+                    if (log.a[3] <= o && Logger != null) Logger.ACCEPT(name, Level.values()[o], log.chars.flip());
                 } catch (Throwable x) {
                     // ignore
                 }
