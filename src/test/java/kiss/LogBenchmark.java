@@ -286,6 +286,7 @@ public class LogBenchmark {
             }
 
             String name = execution + "-" + caller;
+            I.env(name + ".flush", true);
             I.env(name + ".append", false);
             I.env(name + ".caller", caller == CallerType.Caller ? Level.ALL : Level.OFF);
             I.env(name + ".file", output == OutputType.File ? Level.ALL : Level.OFF);

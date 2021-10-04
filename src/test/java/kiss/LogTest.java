@@ -86,7 +86,8 @@ class LogTest {
                 int start = log.indexOf(' ', log.indexOf('T') + 1) + 1;
                 int end = log.indexOf('\t', start + 1);
 
-                level = Level.valueOf(log.substring(start, end));
+                String priority = log.substring(start, end).trim();
+                level = priority.equals("WARN") ? Level.WARNING : Level.valueOf(priority);
                 message = log.substring(end + 1);
             }
         }

@@ -186,6 +186,9 @@ public class I {
     /** The default language in this vm environment. */
     public static final Variable<String> Lang = Variable.of(Locale.getDefault().getLanguage());
 
+    /** The user-defined extra log appender. */
+    public static WiseTriConsumer<String, Level, CharBuffer> Logger;
+
     /** The automatic saver references. */
     static final WeakHashMap<Object, Disposable> autosaver = new WeakHashMap();
 
@@ -583,7 +586,7 @@ public class I {
      * @param msg A message log.
      */
     public static void debug(Object msg) {
-        log("system", Level.DEBUG, msg);
+        log("system", msg, 2);
     }
 
     /**
@@ -593,7 +596,7 @@ public class I {
      * @param msg A message log.
      */
     public static void debug(String name, Object msg) {
-        log(name, Level.DEBUG, msg);
+        log(name, msg, 2);
     }
 
     /**
@@ -640,7 +643,7 @@ public class I {
      * @param msg A message log.
      */
     public static void error(Object msg) {
-        log("system", Level.ERROR, msg);
+        log("system", msg, 5);
     }
 
     /**
@@ -650,7 +653,7 @@ public class I {
      * @param msg A message log.
      */
     public static void error(String name, Object msg) {
-        log(name, Level.ERROR, msg);
+        log(name, msg, 5);
     }
 
     /**
@@ -999,7 +1002,7 @@ public class I {
      * @param msg A message log.
      */
     public static void info(Object msg) {
-        log("system", Level.INFO, msg);
+        log("system", msg, 3);
     }
 
     /**
@@ -1009,7 +1012,7 @@ public class I {
      * @param msg A message log.
      */
     public static void info(String name, Object msg) {
-        log(name, Level.INFO, msg);
+        log(name, msg, 3);
     }
 
     /**
@@ -1284,6 +1287,8 @@ public class I {
         return () -> findBy(extensionPoint).ⅱ.remove(extensionKey);
     }
 
+    private static final char[] P = "TRACEDEBUGINFO WARN ERROR".toCharArray();
+
     static {
         // Clean up all buffered log
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
@@ -1298,11 +1303,11 @@ public class I {
     /**
      * Generic logging helper.
      * 
-     * @param name
-     * @param level
-     * @param msg
+     * @param name The logger name.
+     * @param msg The actual log message.
+     * @param o The log level. {@link Level#ordinal()}
      */
-    private static void log(String name, Level level, Object msg) {
+    private static void log(String name, Object msg, int o) {
         // ================================================
         // Look up logger by name
         // ================================================
@@ -1322,7 +1327,10 @@ public class I {
                     (byte) I.env(key.concat(".file"), I.env("*.file", Level.ALL)).ordinal(),
 
                     // Determines the level at which the console output is used.
-                    (byte) I.env(key.concat(".console"), I.env("*.console", Level.OFF)).ordinal()
+                    (byte) I.env(key.concat(".console"), I.env("*.console", Level.INFO)).ordinal(),
+
+                    // Determines the level at which the user-defined extra output is used.
+                    (byte) I.env(key.concat(".extra"), I.env("*.extra", Level.OFF)).ordinal()
 
                     // =================================================
             };
@@ -1332,9 +1340,7 @@ public class I {
         // ================================================
         // Discard by logger's level
         // ================================================
-        int o = level.ordinal();
-
-        if (log.a[1] <= o || log.a[2] <= o) {
+        if (log.a[1] <= o || log.a[2] <= o || (log.a[3] <= o && Logger != null)) {
             synchronized (log) {
                 long ms = System.currentTimeMillis();
 
@@ -1360,7 +1366,7 @@ public class I {
 
                                 // The buffer for writing messages is reused. The date can be
                                 // used permanently, so write it beforehand.
-                                CharBuffer.allocate(1024 * 24).put(day.format(ISO_LOCAL_DATE_TIME)).put(".000 "));
+                                CharBuffer.allocate(1024 * 24).put(day.format(ISO_LOCAL_DATE_TIME)).put(".000      \t"));
 
                         // Very old files should be deleted.
                         int i = 30;
@@ -1372,7 +1378,7 @@ public class I {
                     // Format log message
                     // ================================================
                     // The date and time part (YYYY-MM-ddTHH:mm:ss.SSS ) is reusable
-                    CharBuffer c = ((CharBuffer) log.list.get(1)).clear().position(24);
+                    CharBuffer c = ((CharBuffer) log.list.get(1)).clear().position(30);
 
                     // Time - If the time is the same as the last time, the previous data will
                     // be used as is to speed up the process.
@@ -1403,7 +1409,7 @@ public class I {
                     }
 
                     // Level & Message
-                    c.put(level.name()).put('\t').put(String.valueOf(msg instanceof Supplier ? ((Supplier) msg).get() : msg));
+                    c.put(24, P, (o - 1) * 5, 5).put(String.valueOf(msg instanceof Supplier ? ((Supplier) msg).get() : msg));
 
                     // Caller Location
                     if (log.a[0] <= o) {
@@ -1428,12 +1434,11 @@ public class I {
                     // ================================================
                     if (log.a[1] <= o) log.list.get(0).append(c.flip());
                     if (log.a[2] <= o) System.out.append(c.flip());
+                    if (log.a[3] <= o && Logger != null) Logger.ACCEPT(name, Level.values()[o], c.flip());
                 } catch (Throwable x) {
-                    throw I.quiet(x);
+                    // ignore
                 }
             }
-        } else if (log.a[1] == 6 && log.a[2] == 6) {
-            System.getLogger(name).log(level, msg);
         }
     }
 
@@ -2081,7 +2086,7 @@ public class I {
      * @param msg A message log.
      */
     public static void trace(Object msg) {
-        log("system", Level.TRACE, msg);
+        log("system", msg, 1);
     }
 
     /**
@@ -2091,7 +2096,7 @@ public class I {
      * @param msg A message log.
      */
     public static void trace(String name, Object msg) {
-        log(name, Level.TRACE, msg);
+        log(name, msg, 1);
     }
 
     /**
@@ -2199,7 +2204,7 @@ public class I {
      * @param msg A message log.
      */
     public static void warn(Object msg) {
-        log("system", Level.WARNING, msg);
+        log("system", msg, 4);
     }
 
     /**
@@ -2209,7 +2214,7 @@ public class I {
      * @param msg A message log.
      */
     public static void warn(String name, Object msg) {
-        log(name, Level.WARNING, msg);
+        log(name, msg, 4);
     }
 
     /**
