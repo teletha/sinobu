@@ -1287,7 +1287,8 @@ public class I {
         return () -> findBy(extensionPoint).ⅱ.remove(extensionKey);
     }
 
-    private static final char[] P = "TRACEDEBUGINFO WARN ERROR".toCharArray();
+    /** The display name for logging level. */
+    private static final char[] L = "TRACEDEBUGINFO WARN ERROR".toCharArray();
 
     static {
         // Clean up all buffered log
@@ -1409,7 +1410,7 @@ public class I {
                     }
 
                     // Level & Message
-                    c.put(24, P, (o - 1) * 5, 5).put(String.valueOf(msg instanceof Supplier ? ((Supplier) msg).get() : msg));
+                    c.put(24, L, (o - 1) * 5, 5).put(String.valueOf(msg instanceof Supplier ? ((Supplier) msg).get() : msg));
 
                     // Caller Location
                     if (log.a[0] <= o) {
