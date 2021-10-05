@@ -1295,8 +1295,8 @@ public class I {
         // Clean up all buffered log
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             for (Subscriber s : logs.values()) {
-                if (s.list != null) {
-                    I.quiet(s.list.get(0));
+                if (s.obj != null) {
+                    I.quiet(s.obj);
                 }
             }
         }));
@@ -1363,7 +1363,7 @@ public class I {
                         // Replace the output destination file at the timing of the date change.
                         if (log.a[1] <= o) {
                             // stop old file
-                            if (log.list != null) I.quiet(log.list.get(0));
+                            if (log.obj != null) I.quiet(log.obj);
 
                             // create log directory
                             File dir = new File(I.env("LogDirectory", ".log"));
@@ -1371,8 +1371,8 @@ public class I {
 
                             // The file output destination will be rotated daily. It will
                             // always be cached in an open state.
-                            log.list = List.of(new FileWriter(new File(dir, name.concat(day.format(ISO_DATE)).concat(".log")), env(name
-                                    .concat(".append"), env("*.append", true))));
+                            log.obj = new FileWriter(new File(dir, name.concat(day.format(ISO_DATE)).concat(".log")), env(name
+                                    .concat(".append"), env("*.append", true)));
 
                             // Very old files should be deleted.
                             int i = 30;
@@ -1439,7 +1439,7 @@ public class I {
                     // ================================================
                     // Output log
                     // ================================================
-                    if (log.a[1] <= o) log.list.get(0).append(log.chars.flip());
+                    if (log.a[1] <= o) log.obj.append(log.chars.flip());
                     if (log.a[2] <= o) System.out.append(log.chars.flip());
                     if (log.a[3] <= o && Logger != null) Logger.ACCEPT(name, Level.values()[o], log.chars.flip());
                 } catch (Throwable x) {

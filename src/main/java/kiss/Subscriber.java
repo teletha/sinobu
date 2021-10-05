@@ -38,6 +38,9 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
     /** Generic num value. */
     volatile long time;
 
+    /** Generic object. */
+    T obj;
+
     /** Generic list. */
     List<T> list;
 
@@ -243,6 +246,7 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
     // ======================================================================
     // Resource Bundle
     // ======================================================================
+    // By setting the modifier to public, it is treated as a property to be saved.
     public Map<String, String> messages;
 
     /**
