@@ -191,29 +191,39 @@ class LogTest {
     }
 
     @Test
-    void callerInfomation() {
-        I.env("ci.caller", Level.ALL);
-        I.error("ci", "Message");
+    void useLoggerName() {
+        String loggerName = "your-logger";
 
-        assert assumeLog(Level.ERROR, "Message at kiss.LogTest.callerInfomation(LogTest.java:0)");
-    }
-
-    @Test
-    void loggerName() {
-        I.info("name", "Message");
+        I.info(loggerName, "Message");
 
         assert assumeLog(Level.INFO, "Message");
     }
 
     @Test
-    void filterByLoggerLevel() {
-        I.env("filterByLoggerLevel.console", Level.ERROR);
+    void useMessageWithCallerInfomation() {
+        String loggerName = "enable-caller-infomation";
 
-        I.info("filterByLoggerLevel", "NoOP");
+        // enable caller infomation
+        I.env(loggerName + ".caller", Level.ALL);
+
+        // write log
+        I.error(loggerName, "Message");
+
+        assert assumeLog(Level.ERROR, "Message at kiss.LogTest.useMessageWithCallerInfomation(LogTest.java:0)");
+    }
+
+    @Test
+    void checkAnyLoggerFilterByItsLevel() {
+        String loggerName = "change-logger-level";
+
+        // change logger's level
+        I.env(loggerName + ".console", Level.ERROR);
+
+        I.info(loggerName, "Ignore this message");
         assert assumeNoLog();
 
-        I.error("filterByLoggerLevel", "Message");
-        assert assumeLog(Level.ERROR, "Message");
+        I.error(loggerName, "Accept this message");
+        assert assumeLog(Level.ERROR, "Accept this message");
     }
 
     @Test
