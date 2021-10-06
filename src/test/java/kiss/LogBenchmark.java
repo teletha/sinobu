@@ -71,9 +71,9 @@ public class LogBenchmark {
         }
 
         // performJUL(benchmark);
-        performLog4j(benchmark);
-        performTinyLog(benchmark);
-        performLogback(benchmark);
+        // performLog4j(benchmark);
+        // performTinyLog(benchmark);
+        // performLogback(benchmark);
         performSinobu(benchmark);
 
         benchmark.perform();

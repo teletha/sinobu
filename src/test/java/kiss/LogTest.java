@@ -315,6 +315,40 @@ class LogTest {
     }
 
     @Test
+    void checkFileLoggerRotateSparseLogFiles() throws IOException {
+        String loggerName = "rotate-sparse-log";
+
+        // generate old log files
+        List<Path> olds = IntStream.range(1, 40)
+                .mapToObj(i -> room.locateFile(loggerName + LocalDate.now().minusDays(i).format(DateTimeFormatter.ISO_DATE) + ".log"))
+                .collect(Collectors.toList());
+
+        for (Path old : olds) {
+            assert Files.exists(old);
+        }
+
+        // decimate log files
+        Files.delete(olds.get(33));
+        Files.delete(olds.get(36));
+        Files.delete(olds.get(37));
+
+        // use file logger
+        I.env(loggerName + ".file", Level.ALL);
+        I.env(loggerName + ".dir", room.root);
+
+        // write log
+        I.info(loggerName, "Create new log file and delete old files.");
+
+        // check old log files
+        for (Path old : olds.subList(0, 29)) {
+            assert Files.exists(old);
+        }
+        for (Path old : olds.subList(30, 39)) {
+            assert Files.notExists(old);
+        }
+    }
+
+    @Test
     void checkFileLoggerRotationSize() {
         String loggerName = "change-rotation-size";
 

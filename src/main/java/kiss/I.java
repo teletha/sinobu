@@ -1376,7 +1376,8 @@ public class I {
 
                             // Old files should be deleted.
                             int i = I.env(name.concat(".rotate"), I.env("*.rotate", 30));
-                            while (0 < i && new File(dir, name.concat(day.minusDays(i++).format(ISO_DATE)).concat(".log")).delete()) {
+                            while (0 < i && (new File(dir, name.concat(day.minusDays(i++).format(ISO_DATE)).concat(".log"))
+                                    .delete() || i < 60)) {
                             }
                         }
                     }
