@@ -53,6 +53,8 @@ public class LogBenchmark {
         Caller, NoCaller, Both;
     }
 
+    private static final boolean flush = false;
+
     private static final OutputType output = OutputType.File;
 
     private static final ExecutionType execution = ExecutionType.Both;
@@ -69,9 +71,9 @@ public class LogBenchmark {
         }
 
         // performJUL(benchmark);
-        // performLog4j(benchmark);
-        // performTinyLog(benchmark);
-        // performLogback(benchmark);
+        performLog4j(benchmark);
+        performTinyLog(benchmark);
+        performLogback(benchmark);
         performSinobu(benchmark);
 
         benchmark.perform();
@@ -158,7 +160,7 @@ public class LogBenchmark {
             AppenderComponentBuilder appender = builder.newAppender(name, output == OutputType.File ? "File" : "Console");
             appender.addAttribute("fileName", ".log/logging-log4j2-" + name + ".log");
             appender.addAttribute("append", false);
-            appender.addAttribute("immediateFlush", true);
+            appender.addAttribute("immediateFlush", flush);
             appender.add(builder.newLayout("PatternLayout")
                     .addAttribute("pattern", caller == CallerType.Caller ? "%date{yyyy-MM-dd HH:mm:ss.SSS} %level %class %method %msg%n"
                             : "%date{yyyy-MM-dd HH:mm:ss.SSS} %level %msg%n"));
@@ -242,7 +244,7 @@ public class LogBenchmark {
                 ConsoleAppender console = new ConsoleAppender();
                 console.setContext(context);
                 console.setEncoder(layout);
-                console.setImmediateFlush(true);
+                console.setImmediateFlush(flush);
                 console.start();
                 appender = console;
             } else {
@@ -250,7 +252,7 @@ public class LogBenchmark {
                 file.setContext(context);
                 file.setEncoder(layout);
                 file.setAppend(false);
-                file.setImmediateFlush(true);
+                file.setImmediateFlush(flush);
                 file.setFile(".log/logging-logback-" + name + ".log");
                 file.start();
                 appender = file;

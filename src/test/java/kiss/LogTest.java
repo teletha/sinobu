@@ -20,7 +20,10 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -214,60 +217,162 @@ class LogTest {
     }
 
     @Test
-    void configureLogFileDirectory() {
+    void checkFileLoggerChangeLogDirectory() {
         String loggerName = "change-directory";
         String date = LocalDate.now().format(DateTimeFormatter.ISO_DATE);
 
-        Path logDirectory = room.locate("xyz");
-        Path logFile = logDirectory.resolve(loggerName + date + ".log");
+        Path yourDirectory = room.locate("xyz");
+        Path logFile = yourDirectory.resolve(loggerName + date + ".log");
+
+        // check no log file
         assert Files.notExists(logFile);
 
+        // use file logger
         I.env(loggerName + ".file", Level.ALL);
-        I.env(loggerName + ".dir", logDirectory.toString());
 
+        // change log file directory
+        I.env(loggerName + ".dir", yourDirectory);
+
+        // write log
         I.info(loggerName, "Create log file in the specified directory.");
+
+        // check generated log file
         assert Files.exists(logFile);
     }
 
     @Test
-    void configureLogFileAppendMode() throws IOException {
+    void checkFileLoggerAppendMode() throws IOException {
         String loggerName = "append-log";
         String date = LocalDate.now().format(DateTimeFormatter.ISO_DATE);
-
-        I.env(loggerName + ".file", Level.ALL);
-        I.env(loggerName + ".dir", room.root.toString());
 
         Path logFile = room.locateFile(loggerName + date + ".log", "Pre-written string\n");
         assert Files.readAllLines(logFile).get(0).equals("Pre-written string");
 
-        // set to append mode
+        // use file logger
+        I.env(loggerName + ".file", Level.ALL);
+        I.env(loggerName + ".dir", room.root);
+
+        // use append mode
         I.env(loggerName + ".append", true);
 
         // write log
         I.info(loggerName, "This logger will append the log to an existing file.");
 
+        // check exsited log file
         assert Files.readAllLines(logFile).get(0).equals("Pre-written string");
         assert Files.readAllLines(logFile).get(1).endsWith("This logger will append the log to an existing file.");
     }
 
     @Test
-    void configureLogFileOverwriteMode() throws IOException {
+    void checkFileLoggerOverwriteMode() throws IOException {
         String loggerName = "overwrite-log";
         String date = LocalDate.now().format(DateTimeFormatter.ISO_DATE);
-
-        I.env(loggerName + ".file", Level.ALL);
-        I.env(loggerName + ".dir", room.root.toString());
 
         Path logFile = room.locateFile(loggerName + date + ".log", "Pre-written string\n");
         assert Files.readAllLines(logFile).get(0).equals("Pre-written string");
 
-        // set to overwrite mode
+        // use file logger
+        I.env(loggerName + ".file", Level.ALL);
+        I.env(loggerName + ".dir", room.root);
+
+        // use overwrite mode
         I.env(loggerName + ".append", false);
 
         // write log
         I.info(loggerName, "This logger will overwrite log on an existing file.");
 
+        // check regenerated log file
         assert Files.readAllLines(logFile).get(0).endsWith("This logger will overwrite log on an existing file.");
+    }
+
+    @Test
+    void checkFileLoggerRotateLogFiles() {
+        String loggerName = "rotate-log";
+
+        // generate old log files
+        List<Path> olds = IntStream.range(1, 40)
+                .mapToObj(i -> room.locateFile(loggerName + LocalDate.now().minusDays(i).format(DateTimeFormatter.ISO_DATE) + ".log"))
+                .collect(Collectors.toList());
+
+        for (Path old : olds) {
+            assert Files.exists(old);
+        }
+
+        // use file logger
+        I.env(loggerName + ".file", Level.ALL);
+        I.env(loggerName + ".dir", room.root);
+
+        // write log
+        I.info(loggerName, "Create new log file and delete old files.");
+
+        // check old log files
+        for (Path old : olds.subList(0, 29)) {
+            assert Files.exists(old);
+        }
+        for (Path old : olds.subList(30, 39)) {
+            assert Files.notExists(old);
+        }
+    }
+
+    @Test
+    void checkFileLoggerRotationSize() {
+        String loggerName = "change-rotation-size";
+
+        // generate old log files
+        List<Path> olds = IntStream.range(1, 40)
+                .mapToObj(i -> room.locateFile(loggerName + LocalDate.now().minusDays(i).format(DateTimeFormatter.ISO_DATE) + ".log"))
+                .collect(Collectors.toList());
+
+        for (Path old : olds) {
+            assert Files.exists(old);
+        }
+
+        // use file logger
+        I.env(loggerName + ".file", Level.ALL);
+        I.env(loggerName + ".dir", room.root);
+
+        // change rotation size
+        I.env(loggerName + ".rotate", 7);
+
+        // write log
+        I.info(loggerName, "Create new log file and delete old files.");
+
+        // check old log files
+        for (Path old : olds.subList(0, 6)) {
+            assert Files.exists(old);
+        }
+        for (Path old : olds.subList(7, 39)) {
+            assert Files.notExists(old);
+        }
+    }
+
+    @Test
+    void checkFileLoggerDisableRotation() {
+        String loggerName = "no-rotation";
+
+        // generate old log files
+        List<Path> olds = IntStream.range(1, 40)
+                .mapToObj(i -> room.locateFile(loggerName + LocalDate.now().minusDays(i).format(DateTimeFormatter.ISO_DATE) + ".log"))
+                .collect(Collectors.toList());
+
+        for (Path old : olds) {
+            assert Files.exists(old);
+        }
+
+        // use file logger
+        I.env(loggerName + ".file", Level.ALL);
+        I.env(loggerName + ".dir", room.root);
+
+        // disable rotation
+        I.env(loggerName + ".rotate", 0);
+
+        // write log
+        I.info(loggerName, "Create new log file and delete old files.");
+
+        // check old log files
+        for (Path old : olds) {
+            assert Files.exists(old);
+        }
     }
 
     private boolean assumeLog(Level level, String message) {

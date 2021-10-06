@@ -1374,9 +1374,9 @@ public class I {
                             log.obj = new FileWriter(new File(dir, name.concat(day.format(ISO_DATE)).concat(".log")), env(name
                                     .concat(".append"), env("*.append", true)));
 
-                            // Very old files should be deleted.
-                            int i = 30;
-                            while (new File(dir, name.concat(day.minusDays(i++).format(ISO_DATE)).concat(".log")).delete()) {
+                            // Old files should be deleted.
+                            int i = I.env(name.concat(".rotate"), I.env("*.rotate", 30));
+                            while (0 < i && new File(dir, name.concat(day.minusDays(i++).format(ISO_DATE)).concat(".log")).delete()) {
                             }
                         }
                     }
