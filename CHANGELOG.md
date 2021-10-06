@@ -1,5 +1,41 @@
 # Changelog
 
+## [2.4.0](https://www.github.com/Teletha/sinobu/compare/v2.3.1...v2.4.0) (2021-10-06)
+
+
+### Features
+
+* (Re)Provide logging methods. ([0861c16](https://www.github.com/Teletha/sinobu/commit/0861c16b663168f51c581fa0dddd659e36cfe4a5))
+* Add 'LogAppend' configuration. ([52d2bb5](https://www.github.com/Teletha/sinobu/commit/52d2bb588a5b4aac461fd194794533ec5676aaf4))
+* Add logging utilities (I#trace #debug #info #warn #error) ([b4edb16](https://www.github.com/Teletha/sinobu/commit/b4edb1658457d453a791efad2a55ead6619f1b70))
+* Add various configurable logging parameters. ([a8dd676](https://www.github.com/Teletha/sinobu/commit/a8dd67635a10f0671c1363a148f5f9bc4e2feb78))
+* File logger can configure the file rotation size using ([67778c1](https://www.github.com/Teletha/sinobu/commit/67778c109d9d637aa4116698896a259b6cbb7de6))
+* High speed logging utility. ([360bf55](https://www.github.com/Teletha/sinobu/commit/360bf55d67939742eebb059fc89ac371f6e6c430))
+* I#env is strongly typed by the default value. ([e4dc29c](https://www.github.com/Teletha/sinobu/commit/e4dc29cafa84cc9d5a141238c3606675e0b76c80))
+* Log can flash smartly now. ([75daa68](https://www.github.com/Teletha/sinobu/commit/75daa6844b42ab7c6fb76a2230e686a9b46cbdc8))
+* Provide garbage-free logging. ([6fb326e](https://www.github.com/Teletha/sinobu/commit/6fb326e5a9bf55ea50e110ab7399646ea1d603b4))
+* User can configure the log directory for each loggers. ([214ea60](https://www.github.com/Teletha/sinobu/commit/214ea60ed6880ec054c5aa7fa2c32c059de56d75))
+* User can define the extra log handler. ([836fb7d](https://www.github.com/Teletha/sinobu/commit/836fb7dbc9afe32fd97b43aedbcfaabbfae18c92))
+
+
+### Bug Fixes
+
+* Clear logger buffer. ([118a773](https://www.github.com/Teletha/sinobu/commit/118a7739cb26776f0216e2dde063f324a4854d20))
+* Enhance logging utility. ([8171859](https://www.github.com/Teletha/sinobu/commit/817185967604803f03fc4dd50ad2f5a92cd0437d))
+* Failed to inter type. ([6e341f3](https://www.github.com/Teletha/sinobu/commit/6e341f340e6fcc50559bbfc289f3eb87b3803665))
+* File logger can delete old sparse files. ([2af4e86](https://www.github.com/Teletha/sinobu/commit/2af4e864e8da1e05c9d74dc10742d35afb639193))
+* File logger can flush automatically. ([0ff6ea3](https://www.github.com/Teletha/sinobu/commit/0ff6ea33b3614c5a6ca90775a7abb3845add2bfd))
+* Log files are generated only when they are needed. ([3b9fa10](https://www.github.com/Teletha/sinobu/commit/3b9fa105845eebb112ce5738ed7ffdec96005385))
+* Logging is not flushed immediately. ([c864092](https://www.github.com/Teletha/sinobu/commit/c864092d5131526c2c93f2c14d885e7e2418c9a9))
+* Make async logging more fast. ([100c34c](https://www.github.com/Teletha/sinobu/commit/100c34c8172077827ef59e736b5d9633f3221102))
+* Make logging more faster. ([c22d762](https://www.github.com/Teletha/sinobu/commit/c22d76215ccf4a6969750f4cf7b61a8f076d4a98))
+* Make logging more faster. ([92adae8](https://www.github.com/Teletha/sinobu/commit/92adae852e0932c5488d8c0bdb5c4dd5198fe46a))
+* Make logging more faster. ([882073f](https://www.github.com/Teletha/sinobu/commit/882073fa22da7f772d37f8fa912bab67e71d6982))
+* Reduce creating instance on logging. ([56263f0](https://www.github.com/Teletha/sinobu/commit/56263f059c0a9b75ebee8a99a5a8f17a213ecf7b))
+* Reduce memory usage on IO task. ([d284915](https://www.github.com/Teletha/sinobu/commit/d28491519bf31de57fee87b438fe3d05004ebe8f))
+* Sets the length of the log level display name to a fixed width (5). ([96403d1](https://www.github.com/Teletha/sinobu/commit/96403d1d507c68e048efde01ba29c23feed1e6bc))
+* Update pom. ([eaeb35d](https://www.github.com/Teletha/sinobu/commit/eaeb35ddcc0ac8493f9912803d4e1d3fa27320f9))
+
 ### [2.3.1](https://www.github.com/Teletha/sinobu/compare/v2.3.0...v2.3.1) (2021-09-07)
 
 
