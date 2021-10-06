@@ -9,6 +9,7 @@
  */
 package kiss;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.lang.System.Logger.Level;
@@ -213,7 +214,7 @@ class LogTest {
     }
 
     @Test
-    void configureLogDirectory() {
+    void configureLogFileDirectory() {
         String loggerName = "change-directory";
         String date = LocalDate.now().format(DateTimeFormatter.ISO_DATE);
 
@@ -229,8 +230,44 @@ class LogTest {
     }
 
     @Test
-    void configureLogFileIsAppendable() {
+    void configureLogFileAppendMode() throws IOException {
+        String loggerName = "append-log";
+        String date = LocalDate.now().format(DateTimeFormatter.ISO_DATE);
 
+        I.env(loggerName + ".file", Level.ALL);
+        I.env(loggerName + ".dir", room.root.toString());
+
+        Path logFile = room.locateFile(loggerName + date + ".log", "Pre-written string\n");
+        assert Files.readAllLines(logFile).get(0).equals("Pre-written string");
+
+        // set to append mode
+        I.env(loggerName + ".append", true);
+
+        // write log
+        I.info(loggerName, "This logger will append the log to an existing file.");
+
+        assert Files.readAllLines(logFile).get(0).equals("Pre-written string");
+        assert Files.readAllLines(logFile).get(1).endsWith("This logger will append the log to an existing file.");
+    }
+
+    @Test
+    void configureLogFileOverwriteMode() throws IOException {
+        String loggerName = "overwrite-log";
+        String date = LocalDate.now().format(DateTimeFormatter.ISO_DATE);
+
+        I.env(loggerName + ".file", Level.ALL);
+        I.env(loggerName + ".dir", room.root.toString());
+
+        Path logFile = room.locateFile(loggerName + date + ".log", "Pre-written string\n");
+        assert Files.readAllLines(logFile).get(0).equals("Pre-written string");
+
+        // set to overwrite mode
+        I.env(loggerName + ".append", false);
+
+        // write log
+        I.info(loggerName, "This logger will overwrite log on an existing file.");
+
+        assert Files.readAllLines(logFile).get(0).endsWith("This logger will overwrite log on an existing file.");
     }
 
     private boolean assumeLog(Level level, String message) {

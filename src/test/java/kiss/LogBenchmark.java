@@ -158,7 +158,7 @@ public class LogBenchmark {
             AppenderComponentBuilder appender = builder.newAppender(name, output == OutputType.File ? "File" : "Console");
             appender.addAttribute("fileName", ".log/logging-log4j2-" + name + ".log");
             appender.addAttribute("append", false);
-            appender.addAttribute("immediateFlush", false);
+            appender.addAttribute("immediateFlush", true);
             appender.add(builder.newLayout("PatternLayout")
                     .addAttribute("pattern", caller == CallerType.Caller ? "%date{yyyy-MM-dd HH:mm:ss.SSS} %level %class %method %msg%n"
                             : "%date{yyyy-MM-dd HH:mm:ss.SSS} %level %msg%n"));
@@ -242,7 +242,7 @@ public class LogBenchmark {
                 ConsoleAppender console = new ConsoleAppender();
                 console.setContext(context);
                 console.setEncoder(layout);
-                console.setImmediateFlush(false);
+                console.setImmediateFlush(true);
                 console.start();
                 appender = console;
             } else {
@@ -250,7 +250,7 @@ public class LogBenchmark {
                 file.setContext(context);
                 file.setEncoder(layout);
                 file.setAppend(false);
-                file.setImmediateFlush(false);
+                file.setImmediateFlush(true);
                 file.setFile(".log/logging-logback-" + name + ".log");
                 file.start();
                 appender = file;
@@ -286,7 +286,6 @@ public class LogBenchmark {
             }
 
             String name = execution + "-" + caller;
-            I.env(name + ".flush", true);
             I.env(name + ".append", false);
             I.env(name + ".caller", caller == CallerType.Caller ? Level.ALL : Level.OFF);
             I.env(name + ".file", output == OutputType.File ? Level.ALL : Level.OFF);

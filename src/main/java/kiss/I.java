@@ -1288,7 +1288,7 @@ public class I {
         return () -> findBy(extensionPoint).ⅱ.remove(extensionKey);
     }
 
-    /** The display name for logging level. */
+    /** The display name for log level. */
     private static final char[] L = "TRACEDEBUGINFO WARN ERROR".toCharArray();
 
     static {
@@ -1413,6 +1413,13 @@ public class I {
                                 .put(20, (char) ('0' + time % 1000 / 100))
                                 .put(21, (char) ('0' + time % 100 / 10))
                                 .put(22, (char) ('0' + time % 10));
+
+                        // Since flushing the log to disk every time would overload IO, we decided
+                        // to write the log only when the time changes.
+                        //
+                        // In order to reduce the footprint, we are reusing a variable to determine
+                        // if we need to flush to disk.
+                        ms = 0;
                     }
 
                     // Level & Message
@@ -1439,7 +1446,10 @@ public class I {
                     // ================================================
                     // Output log
                     // ================================================
-                    if (log.a[1] <= o) log.obj.append(log.chars.flip());
+                    if (log.a[1] <= o) {
+                        log.obj.append(log.chars.flip());
+                        if (ms == 0) log.obj.flush();
+                    }
                     if (log.a[2] <= o) System.out.append(log.chars.flip());
                     if (log.a[3] <= o && Logger != null) Logger.ACCEPT(name, Level.values()[o], log.chars.flip());
                 } catch (Throwable x) {
