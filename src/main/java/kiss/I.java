@@ -1366,7 +1366,7 @@ public class I {
                             if (log.obj != null) I.quiet(log.obj);
 
                             // create log directory
-                            File dir = new File(I.env("LogDirectory", ".log"));
+                            File dir = new File(I.env(name.concat(".dir"), I.env("*.dir", ".log")));
                             dir.mkdirs();
 
                             // The file output destination will be rotated daily. It will

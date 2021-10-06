@@ -13,6 +13,10 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.lang.System.Logger.Level;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.function.Supplier;
@@ -20,8 +24,11 @@ import java.util.function.Supplier;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
+
+import antibug.CleanRoom;
 
 @Execution(ExecutionMode.SAME_THREAD)
 class LogTest {
@@ -29,6 +36,9 @@ class LogTest {
     private PrintStream original;
 
     private Log log;
+
+    @RegisterExtension
+    CleanRoom room = new CleanRoom();
 
     private static class Log extends PrintStream {
 
@@ -200,6 +210,27 @@ class LogTest {
 
         I.error("filterByLoggerLevel", "Message");
         assert assumeLog(Level.ERROR, "Message");
+    }
+
+    @Test
+    void configureLogDirectory() {
+        String loggerName = "change-directory";
+        String date = LocalDate.now().format(DateTimeFormatter.ISO_DATE);
+
+        Path logDirectory = room.locate("xyz");
+        Path logFile = logDirectory.resolve(loggerName + date + ".log");
+        assert Files.notExists(logFile);
+
+        I.env(loggerName + ".file", Level.ALL);
+        I.env(loggerName + ".dir", logDirectory.toString());
+
+        I.info(loggerName, "Create log file in the specified directory.");
+        assert Files.exists(logFile);
+    }
+
+    @Test
+    void configureLogFileIsAppendable() {
+
     }
 
     private boolean assumeLog(Level level, String message) {
