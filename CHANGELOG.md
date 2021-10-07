@@ -1,5 +1,12 @@
 # Changelog
 
+### [2.4.1](https://www.github.com/Teletha/sinobu/compare/v2.4.0...v2.4.1) (2021-10-07)
+
+
+### Bug Fixes
+
+* Multiple loggers lost the message to console. ([5cb0163](https://www.github.com/Teletha/sinobu/commit/5cb01630e0effcbd350e8cf59e70888f54911847))
+
 ## [2.4.0](https://www.github.com/Teletha/sinobu/compare/v2.3.1...v2.4.0) (2021-10-06)
 
 
