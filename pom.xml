@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.teletha</groupId>
 	<artifactId>sinobu</artifactId>
-	<version>2.4.0</version>
+	<version>2.4.1</version>
 	<packaging>jar</packaging>
 	<name>sinobu</name>
 	<description>Sinobu is not obsolete framework but utility, which can manipulate objects as a extremely-condensed facade.</description>
