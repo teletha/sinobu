@@ -58,20 +58,12 @@ class LogTest {
          * {@inheritDoc}
          */
         @Override
-        public PrintStream append(CharSequence csq) {
+        public void print(Object obj) {
+            String csq = obj.toString();
+
             for (int i = 0; i < csq.length(); i++) {
                 handle(csq.charAt(i));
             }
-            return this;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public PrintStream append(char c) {
-            handle(c);
-            return this;
         }
 
         private void handle(char c) {
