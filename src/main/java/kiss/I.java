@@ -1452,9 +1452,7 @@ public class I {
                         log.obj.append(log.chars);
                         if (ms == 0) log.obj.flush();
                     }
-                    if (log.a[2] <= o) {
-                        System.out.append(log.chars);
-                    }
+                    if (log.a[2] <= o) System.out.print(log.chars);
                     if (log.a[3] <= o && Logger != null) Logger.ACCEPT(name, Level.values()[o], log.chars);
                 } catch (Throwable x) {
                     // ignore
