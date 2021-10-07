@@ -213,6 +213,28 @@ class LogTest {
     }
 
     @Test
+    void useMultiLoggers() throws IOException {
+        String loggerName = "multi-loggers";
+        String date = LocalDate.now().format(DateTimeFormatter.ISO_DATE);
+
+        Path logFile = room.locate(loggerName + date + ".log");
+
+        // use file and console logger
+        I.env(loggerName + ".console", Level.ALL);
+        I.env(loggerName + ".file", Level.ALL);
+        I.env(loggerName + ".dir", logFile.getParent());
+
+        // write log
+        I.info(loggerName, "Write log on file and console.");
+
+        // check log on file
+        assert Files.readAllLines(logFile).get(0).endsWith("Write log on file and console.");
+
+        // check log on cosole
+        assert assumeLog(Level.INFO, "Write log on file and console.");
+    }
+
+    @Test
     void checkAnyLoggerFilterByItsLevel() {
         String loggerName = "change-logger-level";
 

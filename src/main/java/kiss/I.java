@@ -1434,25 +1434,28 @@ public class I {
                         log.chars.put("\tat ").put(StackWalker.getInstance().walk(s -> s.skip(2).findAny().get()).toString());
                     }
 
-                    // Line Feed
-                    log.chars.put('\n');
-
                     // Cause
                     if (msg instanceof Throwable) {
                         for (StackTraceElement s : ((Throwable) msg).getStackTrace()) {
-                            log.chars.put("\tat ").put(s.toString()).put('\n');
+                            log.chars.put("\n\tat ").put(s.toString());
                         }
                     }
+
+                    // Line Feed
+                    log.chars.put('\n').flip();
 
                     // ================================================
                     // Output log
                     // ================================================
+
                     if (log.a[1] <= o) {
-                        log.obj.append(log.chars.flip());
+                        log.obj.append(log.chars);
                         if (ms == 0) log.obj.flush();
                     }
-                    if (log.a[2] <= o) System.out.append(log.chars.flip());
-                    if (log.a[3] <= o && Logger != null) Logger.ACCEPT(name, Level.values()[o], log.chars.flip());
+                    if (log.a[2] <= o) {
+                        System.out.append(log.chars);
+                    }
+                    if (log.a[3] <= o && Logger != null) Logger.ACCEPT(name, Level.values()[o], log.chars);
                 } catch (Throwable x) {
                     // ignore
                 }
