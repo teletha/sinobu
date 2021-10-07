@@ -11,8 +11,6 @@ package kiss;
 
 import javax.lang.model.SourceVersion;
 
-import bee.task.Test;
-
 public class Project extends bee.api.Project {
 
     {
@@ -38,9 +36,5 @@ public class Project extends bee.api.Project {
         require("org.slf4j", "slf4j-nop").atTest();
 
         versionControlSystem("https://github.com/teletha/sinobu");
-    }
-
-    {
-        Test.showProlongedTest = 300;
     }
 }
