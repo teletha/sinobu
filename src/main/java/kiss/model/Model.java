@@ -569,20 +569,27 @@ public class Model<M> {
     }
 
     /**
-     * > Collect all constructors which are defined in the specified {@link Class}. If the given
-     * class is interface, primitive types, array class or <code>void</code>,
-     * <code>empty array</code> will be return.
+     * Collect all constructors which are defined in the specified {@link Class}. If the given class
+     * is interface, primitive types, array class or <code>void</code>, <code>empty array</code>
+     * will be return.
      * 
      * @param <T> A class type.
      * @param clazz A target class.
      * @return A collected constructors.
      */
     public static <T> Constructor<T>[] collectConstructors(Class<T> clazz) {
-        Constructor[] constructors = clazz.getDeclaredConstructors();
+        Constructor[] cc = clazz.getDeclaredConstructors();
         // Constructor#getParameters is not supported in lower version than Android O.
         // So we must use Class#getParameterType#length instead.
-        Arrays.sort(constructors, Comparator.<Constructor> comparingInt(v -> v.getParameterTypes().length));
-        return constructors;
+        Arrays.sort(cc, Comparator.<Constructor> comparingInt(c -> {
+            for (Annotation a : c.getAnnotations()) {
+                if (a.annotationType().getSimpleName().equals("Inject")) {
+                    return -1;
+                }
+            }
+            return c.getParameterTypes().length;
+        }));
+        return cc;
     }
 
     // public static Signal<Class> findTypes(Class... clazz) {

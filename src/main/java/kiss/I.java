@@ -417,6 +417,17 @@ public class I {
     }
 
     /**
+     * Define the {@link Lifestyle} dynamically.
+     * 
+     * @param <M>
+     * @param model
+     * @param lifestyle
+     */
+    public static <M> void associate(Class<M> model, Lifestyle<? extends M> lifestyle) {
+        lifestyles.put(model, lifestyle);
+    }
+
+    /**
      * Create a new bundled implementation of the interface common to the given objects. Calling a
      * method of the retrieved implementation object will transparently call the same method on all
      * the given objects. In the case of a method with a return value, the result of the last
@@ -1583,9 +1594,9 @@ public class I {
                     lifestyle = I.make(managed.value());
             }
 
-            if (lifestyles.containsKey(modelClass))
+            if (lifestyles.containsKey(modelClass)) {
                 return lifestyles.get(modelClass);
-            else {
+            } else {
                 lifestyles.put(modelClass, lifestyle);
                 return lifestyle;
             }
@@ -1657,16 +1668,18 @@ public class I {
             if (types.length != 0) {
                 params = new Object[types.length];
 
-                for (int i = 0; i < params.length; i++)
-                    if (types[i] == Lifestyle.class)
+                for (int i = 0; i < params.length; i++) {
+                    if (types[i] == Lifestyle.class) {
                         params[i] = I.makeLifestyle((Class) Model
                                 .collectParameters(constructor.getGenericParameterTypes()[i], Lifestyle.class)[0]);
-                    else if (types[i] == Class.class)
+                    } else if (types[i] == Class.class) {
                         params[i] = I.dependencies.get().peekLast();
-                    else if (types[i].isPrimitive())
+                    } else if (types[i].isPrimitive()) {
                         params[i] = Array.get(Array.newInstance(types[i], 1), 0);
-                    else
+                    } else {
                         params[i] = I.make(types[i]);
+                    }
+                }
             }
             // create new instance
             return (M) constructor.newInstance(params);
