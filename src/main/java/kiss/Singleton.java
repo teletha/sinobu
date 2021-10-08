@@ -25,7 +25,7 @@ public class Singleton<M> implements Lifestyle<M> {
      * 
      * @param modelClass A target class.
      */
-    protected Singleton(Class<M> modelClass) {
+    protected Singleton(Class<? extends M> modelClass) {
         instance = I.prototype(modelClass).get();
     }
 
