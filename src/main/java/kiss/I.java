@@ -416,16 +416,16 @@ public class I {
         return all;
     }
 
-    /**
-     * Define the {@link Lifestyle} dynamically.
-     * 
-     * @param <M>
-     * @param model
-     * @param lifestyle
-     */
-    public static <M> void associate(Class<M> model, Lifestyle<? extends M> lifestyle) {
-        lifestyles.put(model, lifestyle);
-    }
+    // /**
+    // * Define the {@link Lifestyle} dynamically.
+    // *
+    // * @param <M>
+    // * @param model
+    // * @param lifestyle
+    // */
+    // public static <M> void associate(Class<M> model, Lifestyle<? extends M> lifestyle) {
+    // lifestyles.put(model, lifestyle);
+    // }
 
     /**
      * Create a new bundled implementation of the interface common to the given objects. Calling a
@@ -1651,10 +1651,6 @@ public class I {
     public static <M> Lifestyle<M> prototype(Class<M> model) {
         // find default constructor as instantiator
         Constructor constructor = Model.collectConstructors(model)[0];
-
-        // We can safely call the method 'newInstance()' because the generated class has
-        // only one public constructor without arguments. But we should make this
-        // instantiator accessible because it makes the creation speed faster.
         constructor.setAccessible(true);
 
         return () -> {
