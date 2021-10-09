@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.5.0](https://www.github.com/Teletha/sinobu/compare/v2.4.1...v2.5.0) (2021-10-09)
+
+
+### Features
+
+* Constructor to be used preferentially during DI can be specified ([eddec34](https://www.github.com/Teletha/sinobu/commit/eddec34d8ef85ab104251eda4811bb5804bd21ae))
+* Support partial constructor injection by Inject annotation. ([ac6f609](https://www.github.com/Teletha/sinobu/commit/ac6f6092a8422666cc035fe36c4a36493522c78d))
+
+
+### Bug Fixes
+
+* Make console logging more faster. ([bddd3d9](https://www.github.com/Teletha/sinobu/commit/bddd3d967a34d5a2d13544b3d6b40d3a5c2dea90))
+* Singleton accepts the upper-bounded implementation class. ([a66b1f3](https://www.github.com/Teletha/sinobu/commit/a66b1f332d501d43543371c120958ffc2257f2c7))
+
 ### [2.4.1](https://www.github.com/Teletha/sinobu/compare/v2.4.0...v2.4.1) (2021-10-07)
 
 
