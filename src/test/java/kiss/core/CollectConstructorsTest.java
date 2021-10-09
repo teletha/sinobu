@@ -18,6 +18,7 @@ import java.util.HashMap;
 
 import org.junit.jupiter.api.Test;
 
+import kiss.Managed;
 import kiss.model.Model;
 
 class CollectConstructorsTest {
@@ -95,8 +96,27 @@ class CollectConstructorsTest {
     }
 
     @Test
-    void injectableAnnotation() {
-        Constructor[] constructors = Model.collectConstructors(Annotated.class);
+    void highPriorityWithManagedAnnotation() {
+        Constructor[] constructors = Model.collectConstructors(WithManaged.class);
+        assert constructors != null;
+        assert constructors.length == 2;
+        assert constructors[0].getParameterCount() == 2;
+        assert constructors[1].getParameterCount() == 0;
+    }
+
+    private static class WithManaged {
+
+        private WithManaged() {
+        }
+
+        @Managed
+        private WithManaged(String name, int priority) {
+        }
+    }
+
+    @Test
+    void highPriorityWithInjectAnnotation() {
+        Constructor[] constructors = Model.collectConstructors(WithInject.class);
         assert constructors != null;
         assert constructors.length == 2;
         assert constructors[0].getParameterCount() == 2;
@@ -108,13 +128,13 @@ class CollectConstructorsTest {
     private @interface Inject {
     }
 
-    private static class Annotated {
+    private static class WithInject {
 
-        private Annotated() {
+        private WithInject() {
         }
 
         @Inject
-        private Annotated(String name, int priority) {
+        private WithInject(String name, int priority) {
         }
     }
 }

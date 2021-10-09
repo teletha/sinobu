@@ -34,7 +34,7 @@ import kiss.model.Property;
  */
 @Inherited
 @Documented
-@Target({ElementType.TYPE, ElementType.FIELD})
+@Target({ElementType.TYPE, ElementType.FIELD, ElementType.CONSTRUCTOR})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Managed {
 

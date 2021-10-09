@@ -579,14 +579,15 @@ public class Model<M> {
      */
     public static <T> Constructor<T>[] collectConstructors(Class<T> clazz) {
         Constructor[] cc = clazz.getDeclaredConstructors();
-        // Constructor#getParameters is not supported in lower version than Android O.
-        // So we must use Class#getParameterType#length instead.
         Arrays.sort(cc, Comparator.<Constructor> comparingInt(c -> {
             for (Annotation a : c.getAnnotations()) {
-                if (a.annotationType().getSimpleName().equals("Inject")) {
+                if (a.annotationType() == Managed.class || a.annotationType().getSimpleName().equals("Inject")) {
                     return -1;
                 }
             }
+
+            // Constructor#getParameters is not supported in lower version than Android O.
+            // So we must use Class#getParameterType#length instead.
             return c.getParameterTypes().length;
         }));
         return cc;
