@@ -21,7 +21,6 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Deque;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -53,6 +52,7 @@ import java.util.function.LongSupplier;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -291,18 +291,16 @@ public final class Signal<V> {
      * @return A {@link Variable} as value receiver.
      */
     public final Variable<V> to() {
-        Variable<V> variable = Variable.empty();
-        to(variable::set);
-        return variable;
+        return to(Variable.empty(), Variable::set);
     }
 
     /**
-     * Receive values as {@link Collection} type from this {@link Signal}.
+     * Receive values as {@link Variable} from this {@link Signal}.
      *
-     * @return A {@link Collection} as value receiver.
+     * @return A {@link Variable} as value receiver.
      */
-    public final <C extends Collection<V>> C to(Class<C> type) {
-        return to(I.make(type), Collection::add);
+    public final <A, R> A to(Collector<? super V, A, R> receiver) {
+        return to(receiver.supplier().get(), receiver.accumulator()::accept);
     }
 
     /**
@@ -312,9 +310,9 @@ public final class Signal<V> {
      * @param assigner A value assigner.
      * @return A value receiver.
      */
-    public final <R> R to(R receiver, BiConsumer<R, V> assigner) {
+    public final <R> R to(R receiver, WiseBiConsumer<R, V> assigner) {
         // start receiving values
-        to(v -> assigner.accept(receiver, v));
+        to(assigner.bind(receiver));
 
         // API definition
         return receiver;
@@ -340,8 +338,7 @@ public final class Signal<V> {
      * @return A {@link Collection} as value receiver.
      */
     public final <C extends Collection<? super V>> C toCollection(C collection) {
-        to(collection::add);
-        return collection;
+        return to(collection, Collection::add);
     }
 
     /**
@@ -360,7 +357,7 @@ public final class Signal<V> {
      * @return A grouping {@link Map} by your lassification.
      */
     public final <K> Map<K, List<V>> toGroup(Function<V, K> keyGenerator) {
-        return to(new HashMap<>(), (map, v) -> map.computeIfAbsent(keyGenerator.apply(v), k -> new ArrayList()).add(v));
+        return to(Collectors.groupingBy(keyGenerator));
     }
 
     /**
@@ -369,7 +366,7 @@ public final class Signal<V> {
      * @return A {@link List} as value receiver.
      */
     public final List<V> toList() {
-        return to(List.class);
+        return toCollection(new ArrayList());
     }
 
     /**
@@ -390,7 +387,7 @@ public final class Signal<V> {
      * @return A {@link Map} as value receiver.
      */
     public final <Key, Value> Map<Key, Value> toMap(Function<V, Key> keyGenerator, Function<V, Value> valueGenerator) {
-        return to(new HashMap(), (map, v) -> map.put(keyGenerator.apply(v), valueGenerator.apply(v)));
+        return to(Collectors.toMap(keyGenerator, valueGenerator, (a, b) -> b));
     }
 
     /**
@@ -399,7 +396,7 @@ public final class Signal<V> {
      * @return A {@link Set} as value receiver.
      */
     public final Set<V> toSet() {
-        return to(Set.class);
+        return toCollection(new HashSet());
     }
 
     /**

@@ -11,7 +11,6 @@ package kiss.signal;
 
 import java.util.ArrayDeque;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -34,15 +33,6 @@ class ReceiverTest extends SignalTester {
     @Test
     void toCollection() {
         ArrayDeque<Integer> set = I.signal(30, 20, 10).toCollection(new ArrayDeque<Integer>(100));
-        Iterator<Integer> iterator = set.iterator();
-        assert iterator.next() == 30;
-        assert iterator.next() == 20;
-        assert iterator.next() == 10;
-    }
-
-    @Test
-    void toCollectionType() {
-        LinkedHashSet<Integer> set = I.signal(30, 20, 10).to(LinkedHashSet.class);
         Iterator<Integer> iterator = set.iterator();
         assert iterator.next() == 30;
         assert iterator.next() == 20;
