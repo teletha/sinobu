@@ -19,7 +19,6 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
-import kiss.Variable;
 
 class ReceiverTest extends SignalTester {
 
@@ -65,21 +64,6 @@ class ReceiverTest extends SignalTester {
         set = I.signal(30, 20, 20, 30, 10, 20).toAlternate();
         assert set.contains(10);
         assert set.contains(20);
-    }
-
-    @Test
-    void toBinary() {
-        Variable<Boolean> binary = I.signal().toBinary();
-        assert binary.is(false);
-
-        binary = I.signal("on").toBinary();
-        assert binary.is(true);
-
-        binary = I.signal("on", "off").toBinary();
-        assert binary.is(false);
-
-        binary = I.signal("on", "off", "on again").toBinary();
-        assert binary.is(true);
     }
 
     @Test

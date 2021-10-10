@@ -10,7 +10,7 @@
 package kiss;
 
 import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.*;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -332,23 +332,6 @@ public final class Signal<V> {
                 set.remove(value);
             }
         });
-    }
-
-    /**
-     * Receive values as boolean {@link Variable} from this {@link Signal}. Each value alternates
-     * between true and false.
-     *
-     * @return A boolean {@link Variable} as value receiver.
-     */
-    public final Variable<Boolean> toBinary() {
-        // value receiver
-        Variable<Boolean> receiver = Variable.of(false);
-
-        // start receiving values
-        to(v -> receiver.set(!receiver.get()));
-
-        // API definition
-        return receiver;
     }
 
     /**
