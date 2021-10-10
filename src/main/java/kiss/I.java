@@ -659,9 +659,7 @@ public class I {
                         // evaluate expression by user defined resolvers
                         for (int k = 0; k < resolvers.length; k++) {
                             o = resolvers[k].apply(m, c, e[j]);
-                            if (o != null) {
-                                break;
-                            }
+                            if (o != null) break;
                         }
 
                         // any resolver can't find suitable value, try to next context
@@ -691,9 +689,11 @@ public class I {
 
                     matcher.appendReplacement(str, "");
                     if ((c == Boolean.TRUE && type == '#') || (type == '^' && (c == Boolean.FALSE || (c instanceof List && ((List) c)
-                            .isEmpty()) || (c instanceof Map && ((Map) c).isEmpty()))))
+                            .isEmpty()) || (c instanceof Map && ((Map) c).isEmpty())))) {
                         str.append(spaces).append(I.express(sec, c, resolvers));
-                    else if (type == '#') m.walk(c, (x, p, o) -> str.append(spaces).append(I.express(sec, new Object[] {o}, resolvers)));
+                    } else if (type == '#') {
+                        m.walk(c, (x, p, o) -> str.append(spaces).append(I.express(sec, new Object[] {o}, resolvers)));
+                    }
                     matcher.reset(text = text.substring(end + 3 + path.length()));
                 } else {
                     // full expression was evaluated correctly, convert it to string
