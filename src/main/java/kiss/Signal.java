@@ -2818,45 +2818,6 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns {@link Signal} that emits the single element only. If this {@link Signal} has no
-     * element or too many elements, signal will complete immediately.
-     * 
-     * @return A {@link Signal} that emits <code>true</code> when the source {@link Signal} is
-     *         emitted, errored or completed.
-     */
-    public final Signal<V> single() {
-        return size(1).map(v -> v.get(0));
-    }
-
-    /**
-     * Returns a {@link Signal} that counts the total number of items emitted by the source
-     * {@link Signal} and emits this count as a 32-bit Integer.
-     * 
-     * @return {@link Signal} that emits a single item: the number of items emitted by the source
-     *         {@link Signal} as a 32-bit Integer item
-     */
-    public final Signal<List<V>> size(int size) {
-        if (size < 0) {
-            return I.signal();
-        }
-
-        return new Signal<>((observer, disposer) -> {
-            ArrayList<V> list = new ArrayList(size);
-
-            return to(v -> {
-                if (list.size() < size) {
-                    list.add(v);
-                } else {
-                    observer.complete();
-                }
-            }, observer::error, () -> {
-                if (list.size() == size) observer.accept(list);
-                observer.complete();
-            }, disposer);
-        });
-    }
-
-    /**
      * <p>
      * Bypasses a specified number of values in an {@link Signal} sequence and then returns the
      * remaining values.
@@ -3748,26 +3709,6 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns an {@link Signal} that applies the given two constants alternately to each item
-     * emitted by an {@link Signal} and emits the result.
-     *
-     * @param values A list of constants to apply to each value emitted by this {@link Signal}.
-     * @return {ChainableAPI}
-     */
-    public final <E> Signal<E> toggle(E... values) {
-        if (values.length == 0) {
-            return never();
-        }
-
-        return new Signal<>((observer, disposer) -> {
-            AtomicInteger count = new AtomicInteger();
-
-            return to(value -> observer
-                    .accept(values[count.getAndIncrement() % values.length]), observer::error, observer::complete, disposer);
-        });
-    }
-
-    /**
      * <p>
      * Throttles by skipping values until "skipDuration" passes and then emits the next received
      * value.
@@ -3819,6 +3760,26 @@ public final class Signal<V> {
                 return true;
             }
             return false;
+        });
+    }
+
+    /**
+     * Returns an {@link Signal} that applies the given two constants alternately to each item
+     * emitted by an {@link Signal} and emits the result.
+     *
+     * @param values A list of constants to apply to each value emitted by this {@link Signal}.
+     * @return {ChainableAPI}
+     */
+    public final <E> Signal<E> toggle(E... values) {
+        if (values.length == 0) {
+            return never();
+        }
+
+        return new Signal<>((observer, disposer) -> {
+            AtomicInteger count = new AtomicInteger();
+
+            return to(value -> observer
+                    .accept(values[count.getAndIncrement() % values.length]), observer::error, observer::complete, disposer);
         });
     }
 
