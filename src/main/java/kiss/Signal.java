@@ -3748,23 +3748,8 @@ public final class Signal<V> {
     }
 
     /**
-     * <p>
-     * Returns an {@link Signal} that applies the boolean values alternately to each item emitted by
-     * an {@link Signal} and emits the result.
-     * </p>
-     *
-     * @param initial A initial boolean value to apply to each value emitted by this {@link Signal}.
-     * @return {ChainableAPI}
-     */
-    public final Signal<Boolean> toggle(boolean initial) {
-        return toggle(initial, !initial);
-    }
-
-    /**
-     * <p>
      * Returns an {@link Signal} that applies the given two constants alternately to each item
      * emitted by an {@link Signal} and emits the result.
-     * </p>
      *
      * @param values A list of constants to apply to each value emitted by this {@link Signal}.
      * @return {ChainableAPI}
