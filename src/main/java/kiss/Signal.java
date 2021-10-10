@@ -2913,7 +2913,7 @@ public final class Signal<V> {
      * @return {ChainableAPI}
      */
     public final Signal<V> skip(Signal<Boolean> condition) {
-        return take(condition.map(v -> !v), true);
+        return take(condition, true, false);
     }
 
     /**
@@ -3465,7 +3465,7 @@ public final class Signal<V> {
      * @return {ChainableAPI}
      */
     public final Signal<V> take(Signal<Boolean> condition) {
-        return take(condition, false);
+        return take(condition, false, true);
     }
 
     /**
@@ -3496,7 +3496,7 @@ public final class Signal<V> {
      *            instruction.
      * @return {ChainableAPI}
      */
-    private final Signal<V> take(Signal<Boolean> condition, boolean init) {
+    private final Signal<V> take(Signal<Boolean> condition, boolean init, boolean expect) {
         // ignore invalid parameter
         if (condition == null) {
             return this;
@@ -3506,7 +3506,7 @@ public final class Signal<V> {
             AtomicBoolean flag = new AtomicBoolean(init);
 
             return to(v -> {
-                if (flag.get()) {
+                if (flag.get() == expect) {
                     observer.accept(v);
                 }
             }, observer::error, observer::complete, disposer).add(condition.to(flag::set));
