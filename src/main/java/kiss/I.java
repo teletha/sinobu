@@ -900,9 +900,10 @@ public class I {
                                 observer.accept(v);
                                 observer.complete();
                                 return;
-                            } else
+                            } else {
                                 e = new HttpRetryException(new String(res.body().readAllBytes(), StandardCharsets.UTF_8), res
                                         .statusCode(), res.uri().toString());
+                            }
                         } catch (Exception x) {
                             e = x; // fall-through to error handling
                         }
@@ -957,32 +958,6 @@ public class I {
      */
     public static void info(String name, Object msg) {
         log(name, msg, 3);
-    }
-
-    /**
-     * Returns a string containing the string representation of each of items, using the specified
-     * separator between each.
-     *
-     * @param delimiter A sequence of characters that is used to separate each of the elements in
-     *            the resulting String.
-     * @param items A list of items.
-     * @return A concat expression.
-     */
-    public static String join(CharSequence delimiter, Object... items) {
-        return join(delimiter, list(items));
-    }
-
-    /**
-     * Returns a string containing the string representation of each of items, using the specified
-     * separator between each.
-     *
-     * @param delimiter A sequence of characters that is used to separate each of the elements in
-     *            the resulting String.
-     * @param items A {@link Iterable} items.
-     * @return A concat expression.
-     */
-    public static String join(CharSequence delimiter, Iterable items) {
-        return String.join(delimiter == null ? "" : delimiter, I.signal(items).map(String::valueOf).toList());
     }
 
     /**
@@ -1128,10 +1103,10 @@ public class I {
             // Scan at runtime
             File file = new File(source.toURI());
 
-            if (file.isFile())
+            if (file.isFile()) {
                 // from jar file
                 names = I.signal(new ZipFile(file).entries()).map(entry -> entry.getName().replace('/', '.'));
-            else {
+            } else {
                 // from class directory
                 int prefix = file.getPath().length() + 1;
                 names = I.signal(file)
@@ -1151,13 +1126,14 @@ public class I {
         // =======================================
         Disposable disposer = Disposable.empty();
 
-        for (String name : names.toSet())
+        for (String name : names.toSet()) {
             // exclude out of the specified package
             if (name.startsWith(pattern)) try {
                 disposer.add(loadE((Class) loader.loadClass(name)));
             } catch (Throwable e) {
                 // ignore
             }
+        }
         return disposer;
     }
 
@@ -1524,10 +1500,11 @@ public class I {
                 Managed managed = modelClass.getAnnotation(Managed.class);
 
                 // Create new lifestyle for the actual model class
-                if (managed == null || managed.value() == Lifestyle.class)
+                if (managed == null || managed.value() == Lifestyle.class) {
                     lifestyle = I.prototype(modelClass);
-                else
+                } else {
                     lifestyle = I.make(managed.value());
+                }
             }
 
             if (lifestyles.containsKey(modelClass)) {
@@ -1918,14 +1895,16 @@ public class I {
             ScheduledExecutorService exe = scheduler == null || scheduler.length == 0 || scheduler[0] == null ? I.scheduler : scheduler[0];
 
             if (intervalTime <= 0) {
-                if (delay <= 0)
+                if (delay <= 0) {
                     future = CompletableFuture.runAsync(task, Runnable::run);
-                else
+                } else {
                     future = exe.schedule(task, delay, unit);
-            } else if (fixedRate)
+                }
+            } else if (fixedRate) {
                 future = exe.scheduleAtFixedRate(task, delay, intervalTime, unit);
-            else
+            } else {
                 future = exe.scheduleWithFixedDelay(task, delay, intervalTime, unit);
+            }
             return disposer.add(future);
         }).count();
     }
@@ -2079,9 +2058,7 @@ public class I {
                         translate.accept(bundle);
                         return v;
                     });
-        }).startWith(text).to(v -> {
-            t.set(I.express(v, I.list(context)));
-        });
+        }).startWith(text).to(v -> t.set(I.express(v, I.list(context))));
         return t;
     }
 
@@ -2105,8 +2082,9 @@ public class I {
      * @return The specified class.
      */
     public static Class type(String fqcn) {
-        if (fqcn.indexOf('.') == -1) for (int i = 0; i < 9; i++)
+        if (fqcn.indexOf('.') == -1) for (int i = 0; i < 9; i++) {
             if (types[i].getName().equals(fqcn)) return types[i];
+        }
 
         try {
             return Class.forName(fqcn, false, ClassLoader.getSystemClassLoader());
@@ -2465,24 +2443,28 @@ public class I {
     static synchronized XML xml(Document doc, Object xml) {
         try {
             // XML related types
-            if (xml instanceof XML)
+            if (xml instanceof XML) {
                 return (XML) xml;
-            else if (xml instanceof Node) return new XML(((Node) xml).getOwnerDocument(), list(xml));
+            } else if (xml instanceof Node) {
+                return new XML(((Node) xml).getOwnerDocument(), list(xml));
+            }
 
             // byte data types
             byte[] bytes = xml instanceof String ? ((String) xml).getBytes(StandardCharsets.UTF_8) : (byte[]) xml;
-            if (6 < bytes.length && bytes[0] == '<') // doctype declaration (starts with <! )
-                // root element is html (starts with <html> )
-                if (bytes[1] == '!' || (bytes[1] == 'h' && bytes[2] == 't' && bytes[3] == 'm' && bytes[4] == 'l' && bytes[5] == '>'))
+            if (6 < bytes.length && bytes[0] == '<') { // root element is html (starts with <html> )
+                if (bytes[1] == '!' || (bytes[1] == 'h' && bytes[2] == 't' && bytes[3] == 'm' && bytes[4] == 'l' && bytes[5] == '>')) {
                     return new XML(null, null).parse(bytes, StandardCharsets.UTF_8);
+                }
+            }
 
             String value = new String(bytes, StandardCharsets.UTF_8);
 
             if (xmlLiteral.matcher(value).matches()) {
                 doc = dom.parse(new InputSource(new StringReader("<m>".concat(value.replaceAll("<\\?.+\\?>", "")).concat("</m>"))));
                 return new XML(doc, XML.convert(doc.getFirstChild().getChildNodes()));
-            } else
+            } else {
                 return xml(doc != null ? doc.createTextNode(value) : dom.newDocument().createElement(value));
+            }
         } catch (Exception e) {
             throw I.quiet(e);
         }
