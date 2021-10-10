@@ -1454,11 +1454,14 @@ public class I {
      * @param type A model type.
      * @param handler A proxy handler.
      * @return
+     * @throws NullPointerException Any parameter is null.
      */
     public static <T> T make(Class<T> type, InvocationHandler handler) {
-        Objects.requireNonNull(type);
-        Objects.requireNonNull(handler);
+        // no need to check null explicitly
+        // Objects.requireNonNull(type);
+        // Objects.requireNonNull(handler);
 
+        // check null (type : implicitly) (handler : in Proxy#newProxyInstance)
         if (type.isInterface() == false) throw new IllegalArgumentException("Type must be interface.");
         return (T) Proxy.newProxyInstance(I.class.getClassLoader(), new Class[] {type}, handler);
     }
@@ -1476,22 +1479,23 @@ public class I {
 
         if (type instanceof ParameterizedType) type = ((ParameterizedType) type).getRawType();
 
-        if (type == WiseRunnable.class)
+        if (type == WiseRunnable.class) {
             return (F) (WiseRunnable) handler::invoke;
-        else if (type == WiseSupplier.class)
+        } else if (type == WiseSupplier.class) {
             return (F) (WiseSupplier) handler::invoke;
-        else if (type == WiseConsumer.class)
+        } else if (type == WiseConsumer.class) {
             return (F) (WiseConsumer) handler::invoke;
-        else if (type == WiseFunction.class)
+        } else if (type == WiseFunction.class) {
             return (F) (WiseFunction) handler::invoke;
-        else if (type == WiseBiConsumer.class)
+        } else if (type == WiseBiConsumer.class) {
             return (F) (WiseBiConsumer) handler::invoke;
-        else if (type == WiseBiFunction.class)
+        } else if (type == WiseBiFunction.class) {
             return (F) (WiseBiFunction) handler::invoke;
-        else if (type == WiseTriConsumer.class)
+        } else if (type == WiseTriConsumer.class) {
             return (F) (WiseTriConsumer) handler::invoke;
-        else
+        } else {
             return (F) (WiseTriFunction) handler::invoke;
+        }
     }
 
     /**
