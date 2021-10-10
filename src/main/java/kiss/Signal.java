@@ -2913,7 +2913,7 @@ public final class Signal<V> {
      * @return {ChainableAPI}
      */
     public final Signal<V> skip(Signal<Boolean> condition) {
-        return take(condition, true, false);
+        return take(condition, false, false);
     }
 
     /**
