@@ -1076,7 +1076,7 @@ public class I {
      * @return The new created {@link ArrayList}.
      */
     public static <V> List<V> list(V... items) {
-        return collect(ArrayList.class, items);
+        return collect(List.class, items);
     }
 
     /**
@@ -1964,7 +1964,7 @@ public class I {
      * @return The new created {@link HashSet}.
      */
     public static <V> Set<V> set(V... items) {
-        return collect(HashSet.class, items);
+        return collect(Set.class, items);
     }
 
     /**
