@@ -9,6 +9,7 @@
  */
 package kiss.core;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
@@ -44,6 +45,6 @@ class WrapTest {
 
     @Test
     void wrapNull() {
-        assert Object.class == I.wrap(null);
+        Assertions.assertThrows(NullPointerException.class, () -> I.wrap(null));
     }
 }

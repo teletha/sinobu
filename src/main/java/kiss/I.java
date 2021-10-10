@@ -2334,15 +2334,14 @@ public class I {
      *
      * @param type A {@link Class} object to convert to non-primitive class.
      * @return A non-primitive {@link Class} object.
+     * @throws NullPointerException Parameter type is null.
      */
     public static Class wrap(Class type) {
-        if (type == null) return Object.class;
-
-        if (type.isPrimitive()) // check primitive classes
-            for (int i = 0; i < 9; i++)
-            if (types[i] == type) return types[i + 9];
-
-        // the specified class is not primitive
+        if (type.isPrimitive()) { // the specified class is not primitive
+            for (int i = 0; i < 9; i++) {
+                if (types[i] == type) return types[i + 9];
+            }
+        }
         return type;
     }
 
