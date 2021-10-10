@@ -1675,15 +1675,6 @@ public final class Signal<V> {
     }
 
     /**
-     * Append index (starting from 0).
-     * 
-     * @return {ChainableAPI}
-     */
-    public final Signal<Ⅱ<V, Long>> index() {
-        return index(0);
-    }
-
-    /**
      * Append index (starting from the specified value).
      * 
      * @param start A starting index number.
@@ -2774,7 +2765,7 @@ public final class Signal<V> {
 
             Subscriber end = countable(observer, 1);
 
-            return index().to(indexed -> {
+            return index(0).to(indexed -> {
                 AtomicBoolean completed = new AtomicBoolean();
                 LinkedList<R> items = new LinkedList();
                 buffer.put(indexed.ⅱ, I.pair(completed, items));
