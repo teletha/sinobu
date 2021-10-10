@@ -521,23 +521,10 @@ public final class Signal<V> {
      * @param time Time to collect values. Zero or negative number will ignore this instruction.
      * @param unit A unit of time for the specified timeout. <code>null</code> will ignore this
      *            instruction.
-     * @return {ChainableAPI}
-     */
-    public final Signal<List<V>> buffer(long time, TimeUnit unit) {
-        return buffer(time, unit, null);
-    }
-
-    /**
-     * Indicates each values of an {@link Signal} sequence into zero or more buffers which are
-     * produced based on time count information.
-     *
-     * @param time Time to collect values. Zero or negative number will ignore this instruction.
-     * @param unit A unit of time for the specified timeout. <code>null</code> will ignore this
-     *            instruction.
      * @param scheduler An event scheduler.
      * @return {ChainableAPI}
      */
-    public final Signal<List<V>> buffer(long time, TimeUnit unit, ScheduledExecutorService scheduler) {
+    public final Signal<List<V>> buffer(long time, TimeUnit unit, ScheduledExecutorService... scheduler) {
         return buffer(I.schedule(time, time, unit, true, scheduler));
     }
 
@@ -921,22 +908,10 @@ public final class Signal<V> {
      *
      * @param time A time value. Zero or negative number will ignore this instruction.
      * @param unit A time unit. <code>null</code> will ignore this instruction.
-     * @return {ChainableAPI}
-     */
-    public final Signal<V> debounce(long time, TimeUnit unit) {
-        return debounce(time, unit, null);
-    }
-
-    /**
-     * Drops values that are followed by newer values before a timeout. The timer resets on each
-     * value emission.
-     *
-     * @param time A time value. Zero or negative number will ignore this instruction.
-     * @param unit A time unit. <code>null</code> will ignore this instruction.
      * @param scheduler
      * @return {ChainableAPI}
      */
-    public final Signal<V> debounce(long time, TimeUnit unit, ScheduledExecutorService scheduler) {
+    public final Signal<V> debounce(long time, TimeUnit unit, ScheduledExecutorService... scheduler) {
         return debounceAll(time, unit, scheduler).flatMap(list -> I.signal(list).last());
     }
 
@@ -946,22 +921,10 @@ public final class Signal<V> {
      *
      * @param time A time value. Zero or negative number will ignore this instruction.
      * @param unit A time unit. <code>null</code> will ignore this instruction.
-     * @return {ChainableAPI}
-     */
-    public final Signal<List<V>> debounceAll(long time, TimeUnit unit) {
-        return debounceAll(time, unit, null);
-    }
-
-    /**
-     * Collect values that are followed by newer values before a timeout. The timer resets on each
-     * value emission.
-     *
-     * @param time A time value. Zero or negative number will ignore this instruction.
-     * @param unit A time unit. <code>null</code> will ignore this instruction.
      * @param scheduler
      * @return {ChainableAPI}
      */
-    public final Signal<List<V>> debounceAll(long time, TimeUnit unit, ScheduledExecutorService scheduler) {
+    public final Signal<List<V>> debounceAll(long time, TimeUnit unit, ScheduledExecutorService... scheduler) {
         // ignore invalid parameters
         if (time <= 0 || unit == null) {
             return map(List::of);
@@ -1018,25 +981,11 @@ public final class Signal<V> {
      *
      * @param time The delay to shift the source by.
      * @param unit The {@link TimeUnit} in which {@code period} is defined.
-     * @return The source {@link Signal} shifted in time by the specified delay.
-     * @see #wait(long, TimeUnit)
-     */
-    public final Signal<V> delay(long time, TimeUnit unit) {
-        return delay(time, unit, null);
-    }
-
-    /**
-     * Returns {@link Signal} that emits the items emitted by the source {@link Signal} shifted
-     * forward in time by a specified delay at parallel thread. Error notifications from the source
-     * {@link Signal} are not delayed.
-     *
-     * @param time The delay to shift the source by.
-     * @param unit The {@link TimeUnit} in which {@code period} is defined.
      * @param scheduler An event scheduler.
      * @return The source {@link Signal} shifted in time by the specified delay.
      * @see #wait(long, TimeUnit)
      */
-    public final Signal<V> delay(long time, TimeUnit unit, ScheduledExecutorService scheduler) {
+    public final Signal<V> delay(long time, TimeUnit unit, ScheduledExecutorService... scheduler) {
         if (unit == null) {
             return this;
         }
@@ -1051,19 +1000,7 @@ public final class Signal<V> {
      * @param time The delay to shift the source by.
      * @return The source {@link Signal} shifted in time by the specified delay.
      */
-    public final Signal<V> delay(Duration time) {
-        return delay(time, null);
-    }
-
-    /**
-     * Returns {@link Signal} that emits the items emitted by the source {@link Signal} shifted
-     * forward in time by a specified delay at parallel thread. Error notifications from the source
-     * {@link Signal} are not delayed.
-     *
-     * @param time The delay to shift the source by.
-     * @return The source {@link Signal} shifted in time by the specified delay.
-     */
-    public final Signal<V> delay(Duration time, ScheduledExecutorService scheduler) {
+    public final Signal<V> delay(Duration time, ScheduledExecutorService... scheduler) {
         // ignore invalid parameters
         if (time == null || time.isNegative() || time.isZero()) {
             return this;
@@ -1079,19 +1016,7 @@ public final class Signal<V> {
      * @param time The delay to shift the source by.
      * @return The source {@link Signal} shifted in time by the specified delay.
      */
-    public final Signal<V> delay(Supplier<Duration> time) {
-        return delay(time, null);
-    }
-
-    /**
-     * Returns {@link Signal} that emits the items emitted by the source {@link Signal} shifted
-     * forward in time by a specified delay at parallel thread. Error notifications from the source
-     * {@link Signal} are not delayed.
-     *
-     * @param time The delay to shift the source by.
-     * @return The source {@link Signal} shifted in time by the specified delay.
-     */
-    public final Signal<V> delay(Supplier<Duration> time, ScheduledExecutorService scheduler) {
+    public final Signal<V> delay(Supplier<Duration> time, ScheduledExecutorService... scheduler) {
         // ignore invalid parameters
         if (time == null) {
             return this;
@@ -1107,7 +1032,7 @@ public final class Signal<V> {
      * @param time The delay to shift the source by.
      * @return The source {@link Signal} shifted in time by the specified delay.
      */
-    public final Signal<V> delay(Function<V, Duration> time, ScheduledExecutorService scheduler) {
+    public final Signal<V> delay(Function<V, Duration> time, ScheduledExecutorService... scheduler) {
         // ignore invalid parameters
         if (time == null) {
             return this;
@@ -1776,19 +1701,7 @@ public final class Signal<V> {
      *            instruction.
      * @return {ChainableAPI}
      */
-    public final Signal<V> interval(long interval, TimeUnit unit) {
-        return interval(interval, unit, null);
-    }
-
-    /**
-     * Ensure the interval time for each values in {@link Signal} sequence.
-     *
-     * @param interval Time to emit values. Zero or negative number will ignore this instruction.
-     * @param unit A unit of time for the specified interval. <code>null</code> will ignore this
-     *            instruction.
-     * @return {ChainableAPI}
-     */
-    public final Signal<V> interval(long interval, TimeUnit unit, ScheduledExecutorService scheduler) {
+    public final Signal<V> interval(long interval, TimeUnit unit, ScheduledExecutorService... scheduler) {
         // ignore invalid parameters
         if (interval <= 0 || unit == null) {
             return this;
@@ -3819,25 +3732,10 @@ public final class Signal<V> {
      * @param time Time to take values. Zero or negative number will ignore this instruction.
      * @param unit A unit of time for the specified timeout. <code>null</code> will ignore this
      *            instruction.
-     * @return {ChainableAPI}
-     */
-    public final Signal<V> timeout(long time, TimeUnit unit) {
-        return timeout(time, unit, null);
-    }
-
-    /**
-     * Returns an Signal that mirrors the source Signal but applies a timeout policy for each
-     * emitted item. If the next item isn't emitted preassignin the specified timeout duration
-     * starting from its predecessor, the resulting Signal terminates and notifies observers of a
-     * {@link TimeoutException}.
-     * 
-     * @param time Time to take values. Zero or negative number will ignore this instruction.
-     * @param unit A unit of time for the specified timeout. <code>null</code> will ignore this
-     *            instruction.
      * @param scheduler An event scheduler.
      * @return {ChainableAPI}
      */
-    public final Signal<V> timeout(long time, TimeUnit unit, ScheduledExecutorService scheduler) {
+    public final Signal<V> timeout(long time, TimeUnit unit, ScheduledExecutorService... scheduler) {
         // ignore invalid parameters
         if (time <= 0 || unit == null) {
             return this;
@@ -3968,7 +3866,7 @@ public final class Signal<V> {
      * @param time The delay to shift the source by.
      * @param unit The {@link TimeUnit} in which {@code period} is defined.
      * @return The source {@link Signal} shifted in time by the specified delay.
-     * @see #delay(long, TimeUnit)
+     * @see #delay(long, TimeUnit, ScheduledExecutorService...)
      */
     public final Signal<V> wait(long time, TimeUnit unit) {
         // ignore invalid parameters
