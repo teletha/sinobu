@@ -388,9 +388,8 @@ public class I {
      * @return Newly created array with concatenated elements.
      */
     public static <T> T[] array(T[] one, T... other) {
-        if (one == null)
-            return other == null ? null : other;
-        else if (other == null) return one;
+        if (one == null) return other;
+        if (other == null) return one;
 
         T[] all = Arrays.copyOf(one, one.length + other.length);
         System.arraycopy(other, 0, all, one.length, other.length);
