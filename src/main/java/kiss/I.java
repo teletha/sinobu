@@ -79,7 +79,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
-import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.LongSupplier;
@@ -179,6 +178,12 @@ public class I {
     // xml
     // yield
     // zip zoom zone
+
+    /** Accept any value. */
+    public static final Predicate Accept = x -> true;
+
+    /** Reject any value. */
+    public static final Predicate Reject = Accept.negate();
 
     /** No Operation */
     public static final WiseRunnable NoOP = new Subscriber()::vandalize;
@@ -372,29 +377,6 @@ public class I {
      * Initialize environment.
      */
     private I() {
-    }
-
-    /**
-     * Create a new {@link Predicate} which accepts any item. It will conform to any type except
-     * primitive types depending on the context of the caller.
-     * 
-     * @param <A> Don't worry about this type as it is automatically determined.
-     * @return A new created {@link Predicate} function that always returns <code>true</code>.
-     */
-    public static <A> Predicate<A> accept() {
-        return p -> true;
-    }
-
-    /**
-     * Create a new {@link BiPredicate} which accepts any item. It will conform to any type except
-     * primitive types depending on the context of the caller.
-     * 
-     * @param <A> Don't worry about this type as it is automatically determined.
-     * @param <B> Don't worry about this type as it is automatically determined.
-     * @return A new created {@link BiPredicate} function that always returns <code>true</code>.
-     */
-    public static <A, B> BiPredicate<A, B> accepţ() {
-        return (p, q) -> true;
     }
 
     /**
@@ -1843,29 +1825,6 @@ public class I {
     }
 
     /**
-     * Create a new {@link Predicate} which rejects any item. It will conform to any type except
-     * primitive types depending on the context of the caller.
-     * 
-     * @param <A> Don't worry about this type as it is automatically determined.
-     * @return A new created {@link Predicate} function that always returns <code>false</code>.
-     */
-    public static <A> Predicate<A> reject() {
-        return p -> false;
-    }
-
-    /**
-     * Create a new {@link BiPredicate} which rejects any item. It will conform to any type except
-     * primitive types depending on the context of the caller.
-     * 
-     * @param <A> Don't worry about this type as it is automatically determined.
-     * @param <B> Don't worry about this type as it is automatically determined.
-     * @return A new created {@link BiPredicate} function that always returns <code>false</code>.
-     */
-    public static <A, B> BiPredicate<A, B> rejecţ() {
-        return (p, q) -> false;
-    }
-
-    /**
      * Execute the specified task in the sinobu managed background thread pool.
      *
      * @param task A task to execute.
@@ -1942,7 +1901,7 @@ public class I {
             long delay = delayTime.getAsLong();
             Runnable task = I.wiseC(observer).bindLast(null);
             Future future;
-            ScheduledExecutorService exe = scheduler == null || scheduler.length == 0 ? I.scheduler : scheduler[0];
+            ScheduledExecutorService exe = scheduler == null || scheduler.length == 0 || scheduler[0] == null ? I.scheduler : scheduler[0];
 
             if (intervalTime <= 0) {
                 if (delay <= 0)
