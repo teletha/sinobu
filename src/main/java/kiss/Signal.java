@@ -1700,8 +1700,7 @@ public final class Signal<V> {
 
         Signaling<Duration> next = new Signaling();
 
-        return combine(next.expose.startWith(Duration.ZERO).delay(Function.identity(), scheduler)) //
-                .map(Ⅱ::ⅰ)
+        return combine(next.expose.startWith(Duration.ZERO).delay(Function.identity(), scheduler)).map(Ⅱ::ⅰ)
                 .effectAfter(I.wiseC(next).bind(Duration.of(interval, unit.toChronoUnit())));
     }
 
@@ -1852,7 +1851,7 @@ public final class Signal<V> {
      * @return {ChainableAPI}
      */
     public final Signal<V> last() {
-        return buffer(never(), () -> new AtomicReference<V>(), AtomicReference::set).map(AtomicReference::get).skipNull();
+        return buffer(never(), AtomicReference<V>::new, AtomicReference::set).map(AtomicReference::get).skipNull();
     }
 
     /**
@@ -2724,7 +2723,7 @@ public final class Signal<V> {
      *         the accumulator function.
      */
     public final <R> Signal<R> scanWith(R init, WiseBiFunction<R, V, R> function) {
-        return scanBy(() -> init, function);
+        return scanBy(Variable.of(init), function);
     }
 
     /**
