@@ -310,9 +310,9 @@ public final class Signal<V> {
      * @param assigner A value assigner.
      * @return A value receiver.
      */
-    public final <R> R to(R receiver, WiseBiConsumer<R, V> assigner) {
+    public final <R> R to(R receiver, BiConsumer<R, V> assigner) {
         // start receiving values
-        to(assigner.bind(receiver));
+        to(I.wiseBC(assigner).bind(receiver));
 
         // API definition
         return receiver;
