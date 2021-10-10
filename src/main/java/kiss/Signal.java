@@ -299,8 +299,8 @@ public final class Signal<V> {
      *
      * @return A {@link Variable} as value receiver.
      */
-    public final <A, R> A to(Collector<? super V, A, R> receiver) {
-        return to(receiver.supplier().get(), receiver.accumulator()::accept);
+    public final <A, R> R to(Collector<? super V, A, R> receiver) {
+        return receiver.finisher().apply(to(receiver.supplier().get(), receiver.accumulator()::accept));
     }
 
     /**

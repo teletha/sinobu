@@ -10,10 +10,12 @@
 package kiss.signal;
 
 import java.util.ArrayDeque;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
@@ -28,6 +30,13 @@ class ReceiverTest extends SignalTester {
         assert main.emit(1).value(1);
         assert main.emit(2).value(2);
         assert main.isNotDisposed();
+    }
+
+    @Test
+    void toCollector() {
+        assert I.signal(30, 20, 10).to(Collectors.minBy(Comparator.naturalOrder())).get() == 10;
+        assert I.signal(10, 20, 30).to(Collectors.minBy(Comparator.naturalOrder())).get() == 10;
+        assert I.signal("a", "b", "c").to(Collectors.joining()).equals("abc");
     }
 
     @Test
@@ -62,16 +71,16 @@ class ReceiverTest extends SignalTester {
         assert list.isEmpty();
 
         list = I.signal("A").toList();
-        assert list.get(0) == "A";
+        assert list.get(0).equals("A");
 
         list = I.signal("A", "B").toList();
-        assert list.get(0) == "A";
-        assert list.get(1) == "B";
+        assert list.get(0).equals("A");
+        assert list.get(1).equals("B");
 
         list = I.signal("A", "B", "C").toList();
-        assert list.get(0) == "A";
-        assert list.get(1) == "B";
-        assert list.get(2) == "C";
+        assert list.get(0).equals("A");
+        assert list.get(1).equals("B");
+        assert list.get(2).equals("C");
     }
 
     @Test
@@ -80,13 +89,29 @@ class ReceiverTest extends SignalTester {
         assert map.isEmpty();
 
         map = I.signal("A").toMap(v -> "KEY-" + v);
-        assert map.get("KEY-A") == "A";
+        assert map.get("KEY-A").equals("A");
 
         map = I.signal("A", "B").toMap(v -> "KEY-" + v);
-        assert map.get("KEY-B") == "B";
+        assert map.get("KEY-B").equals("B");
         assert map.size() == 2;
 
         map = I.signal("A", "B", "A").toMap(v -> "KEY-" + v);
+        assert map.size() == 2;
+    }
+
+    @Test
+    void toMapWithValueTransformation() {
+        Map<String, String> map = I.<String> signal().toMap(v -> "KEY-" + v, String::toLowerCase);
+        assert map.isEmpty();
+
+        map = I.signal("A").toMap(v -> "KEY-" + v, String::toLowerCase);
+        assert map.get("KEY-A").equals("a");
+
+        map = I.signal("A", "B").toMap(v -> "KEY-" + v, String::toLowerCase);
+        assert map.get("KEY-B").equals("b");
+        assert map.size() == 2;
+
+        map = I.signal("A", "B", "A").toMap(v -> "KEY-" + v, String::toLowerCase);
         assert map.size() == 2;
     }
 
