@@ -2945,18 +2945,6 @@ public final class Signal<V> {
     }
 
     /**
-     * Skip all items emitted by the source {@link Signal} and only calls
-     * {@link Observer#complete()} or {@link Observer#error(Throwable)}.
-     * 
-     * @return An empty {@link Signal} that only calls {@link Observer#complete()} or
-     *         {@link Observer#error(Throwable)}, based on which one is called by the
-     *         {@link Signal}. Observable
-     */
-    public final Signal<V> skipAll() {
-        return skip(I::accept);
-    }
-
-    /**
      * <p>
      * Returns a specified index values from the start of an {@link Signal} sequence.
      * </p>
