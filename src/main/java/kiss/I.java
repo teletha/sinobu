@@ -1870,24 +1870,11 @@ public class I {
      *
      * @param task A task to execute.
      * @return A result of the executing task.
-     * @see #schedule(long, TimeUnit)
-     * @see #schedule(long, TimeUnit, ScheduledExecutorService)
-     * @see #schedule(long, long, TimeUnit, boolean)
-     * @see #schedule(long, long, TimeUnit, boolean, ScheduledExecutorService)
+     * @see #schedule(long, TimeUnit, ScheduledExecutorService...)
+     * @see #schedule(long, long, TimeUnit, boolean, ScheduledExecutorService...)
      */
     public static CompletableFuture<?> schedule(Runnable task) {
         return CompletableFuture.runAsync(task, scheduler);
-    }
-
-    /**
-     * Returns an {@link Signal} that emits a {@code 1L} after the {@code delayTime}.
-     *
-     * @param delayTime The delay time to wait before emitting the first value of 1L
-     * @param unit the time unit for {@code delayTime}
-     * @return {@link Signal} that emits a {@code 1L} after the {@code delayTime}
-     */
-    public static Signal<Long> schedule(long delayTime, TimeUnit unit) {
-        return schedule(delayTime, unit, (ScheduledExecutorService) null);
     }
 
     /**
@@ -1898,7 +1885,7 @@ public class I {
      * @param scheduler The task scheduler.
      * @return {@link Signal} that emits a {@code 1L} after the {@code delayTime}
      */
-    public static Signal<Long> schedule(long delayTime, TimeUnit unit, ScheduledExecutorService scheduler) {
+    public static Signal<Long> schedule(long delayTime, TimeUnit unit, ScheduledExecutorService... scheduler) {
         return schedule(delayTime, -1, unit, false, scheduler).take(1);
     }
 
@@ -1912,69 +1899,8 @@ public class I {
      * @return {@link Signal} that emits a 1L after the {@code delayTime} and ever increasing
      *         numbers after each {@code intervalTime} of time thereafter
      */
-    public static Signal<Long> schedule(long delayTime, long intervalTime, TimeUnit unit, boolean fixedRate) {
-        return schedule(delayTime, intervalTime, unit, fixedRate, null);
-    }
-
-    /**
-     * Returns an {@link Signal} that emits a {@code 1L} after the {@code delayTime} and ever
-     * increasing numbers after each {@code intervalTime} of time thereafter.
-     * 
-     * @param delayTime The initial delay time to wait before emitting the first value of 1L
-     * @param intervalTime The period of time between emissions of the subsequent numbers
-     * @param unit the time unit for both {@code delayTime} and {@code intervalTime}
-     * @return {@link Signal} that emits a 1L after the {@code delayTime} and ever increasing
-     *         numbers after each {@code intervalTime} of time thereafter
-     */
-    public static Signal<Long> schedule(long delayTime, long intervalTime, TimeUnit unit, boolean fixedRate, ScheduledExecutorService scheduler) {
+    public static Signal<Long> schedule(long delayTime, long intervalTime, TimeUnit unit, boolean fixedRate, ScheduledExecutorService... scheduler) {
         return schedule(() -> delayTime, intervalTime, unit, fixedRate, scheduler);
-    }
-
-    /**
-     * Returns an {@link Signal} that emits a {@code 1L} after the {@code delayTime} and ever
-     * increasing numbers after each {@code intervalTime} of time thereafter.
-     * 
-     * @param delayTime The initial delay time to wait before emitting the first value of 1L
-     * @param intervalTime The period of time between emissions of the subsequent numbers
-     * @param unit the time unit for both {@code delayTime} and {@code intervalTime}
-     * @return {@link Signal} that emits a 1L after the {@code delayTime} and ever increasing
-     *         numbers after each {@code intervalTime} of time thereafter
-     */
-    private static Signal<Long> schedule(LongSupplier delayTime, long intervalTime, TimeUnit unit, boolean fixedRate, ScheduledExecutorService scheduler) {
-        Objects.requireNonNull(unit);
-
-        return new Signal<>((observer, disposer) -> {
-            long delay = delayTime.getAsLong();
-            Runnable task = I.wiseC(observer).bindLast(null);
-            Future future;
-            ScheduledExecutorService exe = scheduler == null ? I.scheduler : scheduler;
-
-            if (intervalTime <= 0) {
-                if (delay <= 0)
-                    future = CompletableFuture.runAsync(task, Runnable::run);
-                else
-                    future = exe.schedule(task, delay, unit);
-            } else if (fixedRate)
-                future = exe.scheduleAtFixedRate(task, delay, intervalTime, unit);
-            else
-                future = exe.scheduleWithFixedDelay(task, delay, intervalTime, unit);
-            return disposer.add(future);
-        }).count();
-    }
-
-    /**
-     * Create a time-based periodic executable scheduler. It will be executed at regular intervals
-     * starting from a specified base time. (For example, if the base time is 00:05 and the interval
-     * is 30 minutes, the actual execution time will be 00:05, 00:30, 01:05, 01:35, and so on.
-     * 
-     * @param time The base time.
-     * @param interval The period of time between emissions of the subsequent numbers
-     * @param unit The interval time unit.
-     * @return {@link Signal} that emits a 1L at the {@code time} and ever increasing numbers after
-     *         each {@code interval} of time thereafter
-     */
-    public static Signal<Long> schedule(LocalTime time, long interval, TimeUnit unit) {
-        return schedule(time, interval, unit, null);
     }
 
     /**
@@ -1989,7 +1915,7 @@ public class I {
      * @return {@link Signal} that emits a 1L at the {@code time} and ever increasing numbers after
      *         each {@code interval} of time thereafter
      */
-    public static Signal<Long> schedule(LocalTime time, long interval, TimeUnit unit, ScheduledExecutorService scheduler) {
+    public static Signal<Long> schedule(LocalTime time, long interval, TimeUnit unit, ScheduledExecutorService... scheduler) {
         return schedule(() -> {
             long now = System.currentTimeMillis();
             long start = now / 86400000 * 86400000 + time.toNanoOfDay() / 1000000;
@@ -1997,6 +1923,38 @@ public class I {
                 start += unit.toMillis(interval);
             return start - now;
         }, unit.toMillis(interval), TimeUnit.MILLISECONDS, true, scheduler);
+    }
+
+    /**
+     * Returns an {@link Signal} that emits a {@code 1L} after the {@code delayTime} and ever
+     * increasing numbers after each {@code intervalTime} of time thereafter.
+     * 
+     * @param delayTime The initial delay time to wait before emitting the first value of 1L
+     * @param intervalTime The period of time between emissions of the subsequent numbers
+     * @param unit the time unit for both {@code delayTime} and {@code intervalTime}
+     * @return {@link Signal} that emits a 1L after the {@code delayTime} and ever increasing
+     *         numbers after each {@code intervalTime} of time thereafter
+     */
+    private static Signal<Long> schedule(LongSupplier delayTime, long intervalTime, TimeUnit unit, boolean fixedRate, ScheduledExecutorService... scheduler) {
+        Objects.requireNonNull(unit);
+
+        return new Signal<>((observer, disposer) -> {
+            long delay = delayTime.getAsLong();
+            Runnable task = I.wiseC(observer).bindLast(null);
+            Future future;
+            ScheduledExecutorService exe = scheduler == null || scheduler.length == 0 ? I.scheduler : scheduler[0];
+
+            if (intervalTime <= 0) {
+                if (delay <= 0)
+                    future = CompletableFuture.runAsync(task, Runnable::run);
+                else
+                    future = exe.schedule(task, delay, unit);
+            } else if (fixedRate)
+                future = exe.scheduleAtFixedRate(task, delay, intervalTime, unit);
+            else
+                future = exe.scheduleWithFixedDelay(task, delay, intervalTime, unit);
+            return disposer.add(future);
+        }).count();
     }
 
     /**

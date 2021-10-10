@@ -9,7 +9,7 @@
  */
 package kiss.signal;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -244,7 +245,8 @@ public class SignalTester {
     }
 
     /**
-     * Shorthand method of {@link I#schedule(long, long, TimeUnit, boolean)}
+     * Shorthand method of
+     * {@link I#schedule(long, long, TimeUnit, boolean, ScheduledExecutorService...)}
      * 
      * @param initial
      * @param interval
