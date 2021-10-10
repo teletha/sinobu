@@ -15,7 +15,7 @@ class ToggleTest extends SignalTester {
 
     @Test
     void trueOrFalse() {
-        monitor(String.class, boolean.class, signal -> signal.toggle());
+        monitor(String.class, boolean.class, signal -> signal.toggle(true));
 
         assert main.emit("first value is true").value(true);
         assert main.emit("second value is false").value(false);
@@ -78,7 +78,7 @@ class ToggleTest extends SignalTester {
 
     @Test
     void error() {
-        monitor(boolean.class, signal -> signal.toggle());
+        monitor(boolean.class, signal -> signal.toggle(true));
 
         assert main.emit(Error).value();
         assert main.isNotCompleted();
@@ -88,7 +88,7 @@ class ToggleTest extends SignalTester {
 
     @Test
     void complete() {
-        monitor(boolean.class, signal -> signal.toggle());
+        monitor(boolean.class, signal -> signal.toggle(true));
 
         assert main.emit(Complete).value();
         assert main.isCompleted();

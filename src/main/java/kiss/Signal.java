@@ -3750,18 +3750,6 @@ public final class Signal<V> {
     /**
      * <p>
      * Returns an {@link Signal} that applies the boolean values alternately to each item emitted by
-     * an {@link Signal} and emits the result. Initial value is true.
-     * </p>
-     *
-     * @return {ChainableAPI}
-     */
-    public final Signal<Boolean> toggle() {
-        return toggle(true);
-    }
-
-    /**
-     * <p>
-     * Returns an {@link Signal} that applies the boolean values alternately to each item emitted by
      * an {@link Signal} and emits the result.
      * </p>
      *
