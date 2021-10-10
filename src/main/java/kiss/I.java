@@ -654,7 +654,7 @@ public class I {
                     if (e[j].equals("this")) continue;
 
                     // evaluate expression by property named resolver
-                    Object o = m.get(c, e[j]);
+                    Object o = m.get(c, m.property(e[j]));
                     if (o == null) {
                         // evaluate expression by user defined resolvers
                         for (int k = 0; k < resolvers.length; k++) {

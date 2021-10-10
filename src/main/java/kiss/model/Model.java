@@ -222,7 +222,7 @@ public class Model<M> {
                                         Object[] values = new Object[params.length];
                                         for (int i = 0; i < params.length; i++) {
                                             String name = params[i].getName();
-                                            values[i] = name.equals(property.name) ? v : get((M) m, name);
+                                            values[i] = name.equals(property.name) ? v : get((M) m, property(name));
                                         }
                                         return c.newInstance(values);
                                     };
@@ -252,13 +252,13 @@ public class Model<M> {
      * Find the property which has the specified name in this object model. If the suitable property
      * is not found, <code>null</code> is returned.
      * 
-     * @param propertyName A name of property.
+     * @param name A name of property.
      * @return A suitable property or <code>null</code>.
      */
-    public Property property(String propertyName) {
+    public Property property(String name) {
         // check whether this model is attribute or not.
         for (Property property : properties) {
-            if (property.name.equals(propertyName)) {
+            if (property.name.equals(name)) {
                 return property;
             }
         }
@@ -274,18 +274,6 @@ public class Model<M> {
      */
     public List<Property> properties() {
         return this.properties;
-    }
-
-    /**
-     * Returns the value of the given property in the given object.
-     * 
-     * @param object A object as source. This value must not be <code>null</code>.
-     * @param property A property. This value must not be <code>null</code>.
-     * @return A resolved property value. This value may be <code>null</code>.
-     * @throws IllegalArgumentException If the given object can't resolve the given property.
-     */
-    public Object get(M object, String property) {
-        return get(object, property(property));
     }
 
     /**
