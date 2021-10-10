@@ -14,7 +14,6 @@ import static java.time.format.DateTimeFormatter.*;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -82,7 +81,6 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.LongSupplier;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -178,12 +176,6 @@ public class I {
     // xml
     // yield
     // zip zoom zone
-
-    /** Accept any value. */
-    public static final Predicate Accept = x -> true;
-
-    /** Reject any value. */
-    public static final Predicate Reject = Accept.negate();
 
     /** No Operation */
     public static final WiseRunnable NoOP = new Subscriber()::vandalize;
@@ -380,6 +372,24 @@ public class I {
     }
 
     /**
+     * Accept any value. Use with method reference.
+     * 
+     * @return
+     */
+    public static <A> boolean accept(A a) {
+        return true;
+    }
+
+    /**
+     * Accept any value. Use with method reference.
+     * 
+     * @return
+     */
+    public static <A, B> boolean accept(A a, B b) {
+        return true;
+    }
+
+    /**
      * Creates a new array whose elements are the concatenated elements of the two given arrays.
      * 
      * @param <T> Array element types.
@@ -477,7 +487,7 @@ public class I {
     public static void copy(InputStream input, OutputStream output, boolean close) {
         try {
             input.transferTo(output);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw I.quiet(e);
         } finally {
             if (close) {
@@ -1808,6 +1818,24 @@ public class I {
         Variable<WiseSupplier<R>> ref = Variable.empty();
         ref.set(function.bindLazily(ref));
         return ref.v;
+    }
+
+    /**
+     * Reject any value. Use with method reference.
+     * 
+     * @return
+     */
+    public static <A> boolean reject(A a) {
+        return false;
+    }
+
+    /**
+     * Reject any value. Use with method reference.
+     * 
+     * @return
+     */
+    public static <A, B> boolean reject(A a, B b) {
+        return false;
     }
 
     /**

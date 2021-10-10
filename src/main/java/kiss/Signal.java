@@ -1646,7 +1646,7 @@ public final class Signal<V> {
      * @return {ChainableAPI}
      */
     public final Signal<V> first() {
-        return signal(I.Accept, null, FALSE, null, TRUE, null);
+        return signal(I::accept, null, FALSE, null, TRUE, null);
     }
 
     /**
@@ -1872,7 +1872,7 @@ public final class Signal<V> {
      *         any value.
      */
     public final Signal<Boolean> isEmitted() {
-        return signal(I.Accept, TRUE, true, FALSE, true, FALSE);
+        return signal(I::accept, TRUE, true, FALSE, true, FALSE);
     }
 
     /**
@@ -1883,7 +1883,7 @@ public final class Signal<V> {
      *         completed preassignout any value emitted.
      */
     public final Signal<Boolean> isEmpty() {
-        return signal(I.Accept, FALSE, true, FALSE, true, TRUE);
+        return signal(I::accept, FALSE, true, FALSE, true, TRUE);
     }
 
     /**
@@ -1905,7 +1905,7 @@ public final class Signal<V> {
      *         emitted, errored or completed.
      */
     public final Signal<Boolean> isSignaled() {
-        return signal(I.Accept, TRUE, true, TRUE, true, TRUE);
+        return signal(I::accept, TRUE, true, TRUE, true, TRUE);
     }
 
     /**
@@ -3109,7 +3109,7 @@ public final class Signal<V> {
      *         {@link Signal}. Observable
      */
     public final Signal<V> skipAll() {
-        return skip(I.Accept);
+        return skip(I::accept);
     }
 
     /**
