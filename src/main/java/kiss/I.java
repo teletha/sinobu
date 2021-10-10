@@ -397,17 +397,6 @@ public class I {
         return all;
     }
 
-    // /**
-    // * Define the {@link Lifestyle} dynamically.
-    // *
-    // * @param <M>
-    // * @param model
-    // * @param lifestyle
-    // */
-    // public static <M> void associate(Class<M> model, Lifestyle<? extends M> lifestyle) {
-    // lifestyles.put(model, lifestyle);
-    // }
-
     /**
      * Create a new bundled implementation of the interface common to the given objects. Calling a
      * method of the retrieved implementation object will transparently call the same method on all
@@ -509,16 +498,14 @@ public class I {
      * @throws NullPointerException If the input or output is null.
      */
     public static void copy(Readable input, Appendable output, boolean close) {
-        int size;
         CharBuffer buffer = CharBuffer.allocate(8192);
 
         try {
-            while ((size = input.read(buffer)) != -1) {
-                buffer.flip();
-                output.append(buffer, 0, size);
+            while (input.read(buffer) != -1) {
+                output.append(buffer.flip());
                 buffer.clear();
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw quiet(e);
         } finally {
             if (close) {

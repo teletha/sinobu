@@ -28,36 +28,14 @@ class PredicateTest {
         assert accept.test(null) == true;
     }
 
-    // /**
-    // * @see I#accepţ()
-    // */
-    // @Test
-    // void accepţ() {
-    // BiPredicate<String, Integer> accept = I.accepţ();
-    // assert accept.test("accept", 1) == true;
-    // assert accept.test("all", -1) == true;
-    // assert accept.test(null, 0) == true;
-    // }
-    //
-    // /**
-    // * @see I#reject()
-    // */
-    // @Test
-    // void reject() {
-    // Predicate<String> reject = I.reject();
-    // assert reject.test("reject") == false;
-    // assert reject.test("all") == false;
-    // assert reject.test(null) == false;
-    // }
-    //
-    // /**
-    // * @see I#rejecţ()
-    // */
-    // @Test
-    // void rejecţ() {
-    // BiPredicate<String, Integer> accept = I.rejecţ();
-    // assert accept.test("reject", 1) == false;
-    // assert accept.test("all", -1) == false;
-    // assert accept.test(null, 0) == false;
-    // }
+    /**
+     * @see I#Reject
+     */
+    @Test
+    void reject() {
+        Predicate<String> reject = I.Reject;
+        assert reject.test("reject") == false;
+        assert reject.test("all") == false;
+        assert reject.test(null) == false;
+    }
 }
