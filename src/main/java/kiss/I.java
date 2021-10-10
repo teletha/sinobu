@@ -61,7 +61,6 @@ import java.util.Deque;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -452,36 +451,6 @@ public class I {
      * method of the retrieved implementation object will transparently call the same method on all
      * the given objects. In the case of a method with a return value, the result of the last
      * object's call will be used.
-     * <p>
-     * In situations where the compiler cannot estimate the type of the common interface, use
-     * {@link I#bundle(Class, Iterable)} instead, which can specify the type.
-     * </p>
-     * 
-     * @param <T> Interface type.
-     * @param items A set of objects that implement a common interface.
-     * @return A bundled interface.
-     * @throws IllegalArgumentException When the compiler cannot estimate the type of the common
-     *             interface.
-     */
-    public static <T> T bundle(Iterable<? extends T> items) {
-        Set<Class> types = null;
-        Iterator<? extends T> iterator = items.iterator();
-
-        if (iterator.hasNext()) {
-            types = Model.collectTypes(iterator.next().getClass());
-            types.removeIf(v -> !v.isInterface());
-
-            while (iterator.hasNext())
-                types.retainAll(Model.collectTypes(iterator.next().getClass()));
-        }
-        return bundle((Class<T>) (types == null || types.isEmpty() ? null : types.iterator().next()), items);
-    }
-
-    /**
-     * Create a new bundled implementation of the interface common to the given objects. Calling a
-     * method of the retrieved implementation object will transparently call the same method on all
-     * the given objects. In the case of a method with a return value, the result of the last
-     * object's call will be used.
      * 
      * @param <T> Interface type.
      * @param type Specify the common interfaces.
@@ -489,21 +458,6 @@ public class I {
      * @return A bundled interface.
      */
     public static <T> T bundle(Class<T> type, T... items) {
-        return bundle(type, Arrays.asList(items));
-    }
-
-    /**
-     * Create a new bundled implementation of the interface common to the given objects. Calling a
-     * method of the retrieved implementation object will transparently call the same method on all
-     * the given objects. In the case of a method with a return value, the result of the last
-     * object's call will be used.
-     * 
-     * @param <T> Interface type.
-     * @param type Specify the common interfaces.
-     * @param items A set of objects that implement a common interface.
-     * @return A bundled interface.
-     */
-    public static <T> T bundle(Class<T> type, Iterable<? extends T> items) {
         return make(type, (proxy, method, args) -> {
             Object result = null;
 

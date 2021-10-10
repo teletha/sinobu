@@ -9,7 +9,7 @@
  */
 package kiss.signal;
 
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -319,9 +319,9 @@ public class SignalTester {
             sets[i].disposer = base.map(v -> v).to(sets[i].result);
         }
 
-        log1 = I.bundle(stream(sets).map(e -> e.log1).collect(toList()));
-        log2 = I.bundle(stream(sets).map(e -> e.log2).collect(toList()));
-        main.result = I.bundle(stream(sets).map(e -> e.result).collect(toList()));
+        log1 = I.bundle(stream(sets).map(e -> e.log1).toArray(Log[]::new));
+        log2 = I.bundle(stream(sets).map(e -> e.log2).toArray(Log[]::new));
+        main.result = I.bundle(stream(sets).map(e -> e.result).toArray(Log[]::new));
         main.disposers = stream(sets).map(e -> e.disposer).collect(toList());
         this.multiplicity = multiplicity;
     }
@@ -404,9 +404,9 @@ public class SignalTester {
             sets[i].disposer = base.to(sets[i].result);
         }
 
-        log1 = I.bundle(stream(sets).map(e -> e.log1).collect(toList()));
-        log2 = I.bundle(stream(sets).map(e -> e.log2).collect(toList()));
-        main.result = I.bundle(stream(sets).map(e -> e.result).collect(toList()));
+        log1 = I.bundle(stream(sets).map(e -> e.log1).toArray(Log[]::new));
+        log2 = I.bundle(stream(sets).map(e -> e.log2).toArray(Log[]::new));
+        main.result = I.bundle(stream(sets).map(e -> e.result).toArray(Log[]::new));
         main.disposers = stream(sets).map(e -> e.disposer).collect(toList());
         this.multiplicity = multiplicity;
     }

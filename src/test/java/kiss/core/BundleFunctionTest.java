@@ -12,8 +12,6 @@ package kiss.core;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -50,38 +48,12 @@ class BundleFunctionTest {
         assert bundled.apply(10) == 12;
     }
 
-    /**
-     * @see I#bundle(Iterable)
-     */
-    @Test
-    void bundleRunnableList() {
-        int[] value = {0};
-
-        Runnable bundled = I.bundle(List.of(() -> value[0] += 1, () -> value[0] += 2));
-        bundled.run();
-        assert value[0] == 3;
-
-        bundled.run();
-        assert value[0] == 6;
-    }
-
     @Test
     void generic() {
         AtomicInteger value = new AtomicInteger();
         assert value.get() == 0;
 
         Consumer<Integer> bundled = I.bundle(v -> value.addAndGet(v), v -> value.addAndGet(v * 2));
-        bundled.accept(10);
-        assert value.get() == 30;
-    }
-
-    @Test
-    void genericList() {
-        AtomicInteger value = new AtomicInteger();
-        assert value.get() == 0;
-
-        List<Consumer<Integer>> list = I.list(v -> value.addAndGet(v), v -> value.addAndGet(v * 2));
-        Consumer<Integer> bundled = I.bundle(list);
         bundled.accept(10);
         assert value.get() == 30;
     }
@@ -109,21 +81,6 @@ class BundleFunctionTest {
         bundled.add(10);
 
         assert array.size() == 1;
-        assert linked.size() == 1;
-    }
-
-    /**
-     * @see I#bundle(Class, Iterable)
-     */
-    @Test
-    void bundleCollectionList() {
-        HashSet<Integer> set = new HashSet();
-        LinkedList<Integer> linked = new LinkedList();
-
-        Collection<Integer> bundled = I.bundle(Collection.class, set, linked);
-        bundled.add(10);
-
-        assert set.size() == 1;
         assert linked.size() == 1;
     }
 
