@@ -102,13 +102,33 @@ class ScanTest extends SignalTester {
     }
 
     @Test
-    void scanBy() {
-        monitor(int.class, signal -> signal.scanBy(() -> 10, (accumulated, value) -> accumulated + value));
+    void scanInitialSupplier() {
+        monitor(int.class, signal -> signal.scan(() -> 10, (accumulated, value) -> accumulated + value));
 
         assert main.emit(1).value(11); // 10 + 1
         assert main.emit(2).value(13); // 11 + 2
         assert main.emit(3).value(16); // 13 + 3
         assert main.isNotCompleted();
         assert main.isNotDisposed();
+    }
+
+    @Test
+    void scanInitialSupplierError() {
+        monitor(int.class, signal -> signal.scan(() -> 10, (accumulated, value) -> accumulated + value));
+
+        assert main.emit(1, Error).value(11);
+        assert main.isError();
+        assert main.isNotCompleted();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void scanInitialSupplierComplete() {
+        monitor(int.class, signal -> signal.scan(() -> 10, (accumulated, value) -> accumulated + value));
+
+        assert main.emit(1, Complete).value(11);
+        assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
     }
 }
