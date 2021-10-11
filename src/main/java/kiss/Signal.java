@@ -1179,7 +1179,10 @@ public final class Signal<V> {
         }
 
         return new Signal<>((observer, disposer) -> {
-            return to((Consumer<? super V>) I.bundle(effect, observer), observer::error, observer::complete, disposer, false);
+            Subscriber o = new Subscriber();
+            o.observer = observer;
+            o.next = I.bundle(effect, observer);
+            return to(o, disposer);
         });
     }
 
@@ -1226,31 +1229,10 @@ public final class Signal<V> {
         }
 
         return new Signal<>((observer, disposer) -> {
-            return to((Consumer<? super V>) I.bundle(observer, effect), observer::error, observer::complete, disposer, false);
-        });
-    }
-
-    /**
-     * Modifies the source {@link Signal} so that it invokes an effect when it calls
-     * {@link Observer#accept(Object)}.
-     *
-     * @param effect The action to invoke when the source {@link Signal} calls
-     *            {@link Observer#accept(Object)}
-     * @return The source {@link Signal} preassign the side-effecting behavior applied.
-     * @see #effect(WiseConsumer)
-     * @see #effectOnError(WiseConsumer)
-     * @see #effectOnComplete(WiseRunnable)
-     * @see #effectOnTerminate(WiseRunnable)
-     * @see #effectOnDispose(WiseRunnable)
-     * @see #effectOnObserve(WiseConsumer)
-     */
-    public final Signal<V> effectOnLifecycle(WiseFunction<Disposable, WiseConsumer<V>> effect) {
-        if (effect == null) {
-            return this;
-        }
-
-        return new Signal<>((observer, disposer) -> {
-            return effect(effect.apply(disposer)).to(observer, disposer);
+            Subscriber o = new Subscriber();
+            o.observer = observer;
+            o.next = I.bundle(observer, effect);
+            return to(o, disposer);
         });
     }
 
@@ -1297,14 +1279,14 @@ public final class Signal<V> {
         }
 
         return new Signal<>((observer, disposer) -> {
-            Subscriber<V> subscriber = new Subscriber();
-            subscriber.observer = observer;
-            subscriber.next = v -> {
+            Subscriber<V> o = new Subscriber();
+            o.observer = observer;
+            o.next = v -> {
                 effect.accept(v);
                 observer.accept(v);
-                subscriber.next = null;
+                o.next = null;
             };
-            return to(subscriber, disposer);
+            return to(o, disposer);
         });
     }
 
@@ -1328,8 +1310,12 @@ public final class Signal<V> {
             return this;
         }
 
-        return new Signal<>((observer, disposer) -> to(observer::accept, observer::error, I
-                .bundle(effect, observer::complete), disposer, false));
+        return new Signal<>((observer, disposer) -> {
+            Subscriber o = new Subscriber();
+            o.observer = observer;
+            o.complete = I.bundle(effect, observer::complete);
+            return to(o, disposer);
+        });
     }
 
     /**
@@ -1400,7 +1386,34 @@ public final class Signal<V> {
         }
 
         return new Signal<>((observer, disposer) -> {
-            return to(observer::accept, I.bundle(effect, observer::error), observer::complete, disposer, false);
+            Subscriber o = new Subscriber();
+            o.observer = observer;
+            o.error = I.bundle(effect, observer::error);
+            return to(o, disposer);
+        });
+    }
+
+    /**
+     * Modifies the source {@link Signal} so that it invokes an effect when it calls
+     * {@link Observer#accept(Object)}.
+     *
+     * @param effect The action to invoke when the source {@link Signal} calls
+     *            {@link Observer#accept(Object)}
+     * @return The source {@link Signal} preassign the side-effecting behavior applied.
+     * @see #effect(WiseConsumer)
+     * @see #effectOnError(WiseConsumer)
+     * @see #effectOnComplete(WiseRunnable)
+     * @see #effectOnTerminate(WiseRunnable)
+     * @see #effectOnDispose(WiseRunnable)
+     * @see #effectOnObserve(WiseConsumer)
+     */
+    public final Signal<V> effectOnLifecycle(WiseFunction<Disposable, WiseConsumer<V>> effect) {
+        if (effect == null) {
+            return this;
+        }
+
+        return new Signal<>((observer, disposer) -> {
+            return effect(effect.apply(disposer)).to(observer, disposer);
         });
     }
 
