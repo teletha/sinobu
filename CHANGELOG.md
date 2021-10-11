@@ -1,5 +1,33 @@
 # Changelog
 
+## [2.6.0](https://www.github.com/Teletha/sinobu/compare/v2.5.0...v2.6.0) (2021-10-11)
+
+
+### Features
+
+* Drop I#accept and #reject. Use I.Accept and I.Reject instead. ([aead9a5](https://www.github.com/Teletha/sinobu/commit/aead9a5cccab5c3bf03ecfbf0f122424aa93030f))
+* Drop I#join, use String#join instead. ([c14895f](https://www.github.com/Teletha/sinobu/commit/c14895fa4228767dbba0e7b794bdaa694c1efa8f))
+* Drop Model#get(Object, String). ([7e42cb5](https://www.github.com/Teletha/sinobu/commit/7e42cb54e8d2ee413b5e1b2643b0222c9eb38472))
+* Drop Signal#delay(Supplier<Duration>). ([483d746](https://www.github.com/Teletha/sinobu/commit/483d746fb625543fb03ccc8f38e85dbfe5343d93))
+* Drop Signal#effectOnComplete(List), use #buffer() instead. ([ece3703](https://www.github.com/Teletha/sinobu/commit/ece37036d5b2c1281856a4ecc939f756023a537a))
+* Drop Signal#index without starting index number. ([391d47f](https://www.github.com/Teletha/sinobu/commit/391d47fa190bc2ddd61479d30ce88374ac04b851))
+* Drop Signal#scanWith, use #scan(Supplier, WiseBiFunction). ([7d7b16b](https://www.github.com/Teletha/sinobu/commit/7d7b16b3f21150ff8ae5d7b32552fbc11b5c08d2))
+* Drop Signal#single and #size(int). ([ba57f4e](https://www.github.com/Teletha/sinobu/commit/ba57f4ecfc43e4a6820303f034ed52e219c31b77))
+* Drop Signal#skipAll. ([0317e32](https://www.github.com/Teletha/sinobu/commit/0317e327d8c0a4895be430f7e42031d1dad7a600))
+* Drop Signal#to(Class<? extend Collection>). ([94a934b](https://www.github.com/Teletha/sinobu/commit/94a934be12fbb08575daab6cb84c63b46786cefb))
+* Drop Signal#toBinary, use Signal#toggle instead. ([5f9ec96](https://www.github.com/Teletha/sinobu/commit/5f9ec96123360f7c0763dc936b3e035018bc9021))
+* Drop Signale#toggle without initial boolean value. ([c5700e3](https://www.github.com/Teletha/sinobu/commit/c5700e388a00ebef972c536fcfa1f2d17f8c596a))
+* Drop Signale#toggle(boolean). ([07e1666](https://www.github.com/Teletha/sinobu/commit/07e1666d6c079537307a30c70cc95e304c1c8fc5))
+* Drop support I#bundle for Iterable. ([0a48b8c](https://www.github.com/Teletha/sinobu/commit/0a48b8c810b7eff0f395283b66ddf09b12b17c44))
+* Drop support I#schedule without ScheduledExecutorService. ([a8c7729](https://www.github.com/Teletha/sinobu/commit/a8c77292dc3e639c513a0927d2e3a9548e7b4d26))
+* Drop time related Signal methods without ScheduledExecutorService. ([211f421](https://www.github.com/Teletha/sinobu/commit/211f42154f5c57aaa255088f94649355edc3b633))
+* Provide generic aware I#accept and #reject. ([5521932](https://www.github.com/Teletha/sinobu/commit/5521932be797412c2ca28e1afcadcb53fa944447))
+
+
+### Bug Fixes
+
+* Signal#skip(Signal) is broken. ([d8bc6af](https://www.github.com/Teletha/sinobu/commit/d8bc6afcb3b730309da93f043c35e8730e696a7e))
+
 ## [2.5.0](https://www.github.com/Teletha/sinobu/compare/v2.4.1...v2.5.0) (2021-10-09)
 
 
