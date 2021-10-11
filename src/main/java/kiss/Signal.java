@@ -2581,14 +2581,10 @@ public final class Signal<V> {
      *         the accumulator function.
      */
     public final <A, R> Signal<R> scan(Collector<? super V, A, R> collector) {
-        return new Signal<>((observer, disposer) -> {
-            A ref = collector.supplier().get();
-
-            return to(value -> {
-                collector.accumulator().accept(ref, value);
-                observer.accept(collector.finisher().apply(ref));
-            }, observer::error, observer::complete, disposer, false);
-        });
+        return scan(I.wiseS(collector.supplier()), (context, value) -> {
+            collector.accumulator().accept(context, value);
+            return context;
+        }).map(I.wiseF(collector.finisher()));
     }
 
     /**
@@ -2608,7 +2604,7 @@ public final class Signal<V> {
      *         the accumulator function.
      */
     public final <R> Signal<R> scan(Supplier<R> init, WiseBiFunction<R, V, R> function) {
-        return scan(v -> function.apply(init.get(), v), function);
+        return scan(function.bindLazily(init), function);
     }
 
     /**

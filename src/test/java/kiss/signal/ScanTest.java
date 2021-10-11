@@ -72,31 +72,21 @@ class ScanTest extends SignalTester {
     }
 
     @Test
-    void scanWith() {
-        monitor(int.class, signal -> signal.scan(() -> 10, (accumulated, value) -> accumulated + value));
+    void collectorError() {
+        monitor(String.class, signal -> signal.scan(Collectors.joining("-")));
 
-        assert main.emit(1).value(11); // 10 + 1
-        assert main.emit(2).value(13); // 11 + 2
-        assert main.emit(3).value(16); // 13 + 3
-        assert main.isNotCompleted();
-        assert main.isNotDisposed();
-    }
-
-    @Test
-    void scanWithError() {
-        monitor(signal -> signal.scan(() -> 10, errorBiFunction()));
-
-        assert main.emit(1).value();
-        assert main.isNotCompleted();
+        assert main.emit(Error).value();
         assert main.isError();
+        assert main.isNotCompleted();
         assert main.isDisposed();
     }
 
     @Test
-    void scanWithComplete() {
-        monitor(int.class, signal -> signal.scan(() -> 10, (accumulated, value) -> accumulated + value));
+    void collectorComplete() {
+        monitor(String.class, signal -> signal.scan(Collectors.joining("-")));
 
-        assert main.emit(1, Complete).value(11);
+        assert main.emit(Complete).value();
+        assert main.isNotError();
         assert main.isCompleted();
         assert main.isDisposed();
     }

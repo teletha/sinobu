@@ -45,4 +45,36 @@ class CombineLatestMapTest extends SignalTester {
         another.emit("B");
         assert main.value("{1=b, 2=B}");
     }
+
+    @Test
+    void error() {
+        monitor(Integer.class, signal -> signal.combineLatestMap(v -> {
+            if (v == 1) {
+                return other.signal();
+            } else {
+                return another.signal();
+            }
+        }).map(String::valueOf));
+
+        assert main.emit(Error).value();
+        assert main.isNotCompleted();
+        assert main.isError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void complete() {
+        monitor(Integer.class, signal -> signal.combineLatestMap(v -> {
+            if (v == 1) {
+                return other.signal();
+            } else {
+                return another.signal();
+            }
+        }).map(String::valueOf));
+
+        assert main.emit(Complete).value();
+        assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+    }
 }
