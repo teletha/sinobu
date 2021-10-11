@@ -973,23 +973,7 @@ public final class Signal<V> {
         if (time == null || time.isNegative() || time.isZero()) {
             return this;
         }
-        return delay(Variable.of(time), scheduler);
-    }
-
-    /**
-     * Returns {@link Signal} that emits the items emitted by the source {@link Signal} shifted
-     * forward in time by a specified delay at parallel thread. Error notifications from the source
-     * {@link Signal} are not delayed.
-     *
-     * @param time The delay to shift the source by.
-     * @return The source {@link Signal} shifted in time by the specified delay.
-     */
-    public final Signal<V> delay(Supplier<Duration> time, ScheduledExecutorService... scheduler) {
-        // ignore invalid parameters
-        if (time == null) {
-            return this;
-        }
-        return delay(I.wiseF(time), scheduler);
+        return delay(I.wiseF(Variable.of(time)), scheduler);
     }
 
     /**

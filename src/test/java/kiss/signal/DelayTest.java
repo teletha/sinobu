@@ -10,7 +10,6 @@
 package kiss.signal;
 
 import java.time.Duration;
-import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Test;
 
@@ -101,52 +100,6 @@ class DelayTest extends SignalTester {
     @Test
     void delayNullDuration() {
         monitor(signal -> signal.delay((Duration) null));
-
-        assert main.emit("no delay").value("no delay");
-        assert main.isNotCompleted();
-        assert main.isNotError();
-        assert main.isNotDisposed();
-    }
-
-    @Test
-    void delaySupplier() {
-        monitor(signal -> signal.delay(() -> Duration.ofMillis(delay), scheduler));
-
-        assert main.emit("delay").value();
-        scheduler.await();
-        assert main.value("delay");
-
-        assert main.emit("one", "more").value();
-        scheduler.await();
-        assert main.value("one", "more");
-        assert main.isNotCompleted();
-        assert main.isNotError();
-        assert main.isNotDisposed();
-    }
-
-    @Test
-    void delayNegativeSupplier() {
-        monitor(signal -> signal.delay(() -> Duration.ofMillis(-30)));
-
-        assert main.emit("no delay").value("no delay");
-        assert main.isNotCompleted();
-        assert main.isNotError();
-        assert main.isNotDisposed();
-    }
-
-    @Test
-    void delayZeroSupplier() {
-        monitor(signal -> signal.delay(() -> Duration.ofMillis(0)));
-
-        assert main.emit("no delay").value("no delay");
-        assert main.isNotCompleted();
-        assert main.isNotError();
-        assert main.isNotDisposed();
-    }
-
-    @Test
-    void delayNullSupplier() {
-        monitor(signal -> signal.delay((Supplier<Duration>) null));
 
         assert main.emit("no delay").value("no delay");
         assert main.isNotCompleted();
