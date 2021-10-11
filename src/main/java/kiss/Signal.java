@@ -2654,13 +2654,7 @@ public final class Signal<V> {
      *         the accumulator function.
      */
     public final <R> Signal<R> scanBy(Supplier<R> init, WiseBiFunction<R, V, R> function) {
-        return new Signal<>((observer, disposer) -> {
-            AtomicReference<R> ref = new AtomicReference(init.get());
-
-            return to(v -> {
-                observer.accept(ref.updateAndGet(x -> function.apply(x, v)));
-            }, observer::error, observer::complete, disposer, false);
-        });
+        return scan(v -> function.apply(init.get(), v), function);
     }
 
     /**
