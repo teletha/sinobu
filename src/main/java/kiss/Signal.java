@@ -755,7 +755,7 @@ public final class Signal<V> {
     }
 
     public final <R> Signal<Map<V, R>> combineLatestMap(WiseFunction<V, Signal<R>> mapper) {
-        return flatMap(v -> mapper.apply(v).map(x -> I.pair(v, x))).scanWith(new ConcurrentHashMap(), (map, v) -> {
+        return flatMap(v -> mapper.apply(v).map(x -> I.pair(v, x))).scan((WiseSupplier<Map<V, R>>) ConcurrentHashMap::new, (map, v) -> {
             map.put(v.ⅰ, v.ⅱ);
             return map;
         });
@@ -2635,26 +2635,6 @@ public final class Signal<V> {
                 observer.accept(ref.updateAndGet(prev -> prev == UNDEFINED ? first.apply(v) : others.apply(prev, v)));
             }, observer::error, observer::complete, disposer, false);
         });
-    }
-
-    /**
-     * <p>
-     * Returns an {@link Signal} that applies a function of your choosing to the first item emitted
-     * by a source {@link Signal} and a seed value, then feeds the result of that function along
-     * preassign the second item emitted by the source {@link Signal} into the same function, and so
-     * on until all items have been emitted by the source {@link Signal}, emitting the result of
-     * each of these iterations.
-     * </p>
-     *
-     * @param init An initial (seed) accumulator item.
-     * @param function An accumulator function to be invoked on each item emitted by the source
-     *            {@link Signal}, whose result will be emitted to {@link Signal} via
-     *            {@link Observer#accept(Object)} and used in the next accumulator call.
-     * @return An {@link Signal} that emits initial value followed by the results of each call to
-     *         the accumulator function.
-     */
-    public final <R> Signal<R> scanWith(R init, WiseBiFunction<R, V, R> function) {
-        return scan(Variable.of(init), function);
     }
 
     /**

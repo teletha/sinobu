@@ -37,7 +37,7 @@ class IntervalTest extends SignalTester {
     void checkIntervalTime() {
         List<Duration> durations = I.signal(1, 2, 3, 4, 5)
                 .interval(50, ms, scheduler)
-                .scanWith(Duration.ZERO, (duration, value) -> Duration.ofNanos(System.nanoTime()).minus(duration))
+                .scan(() -> Duration.ZERO, (duration, value) -> Duration.ofNanos(System.nanoTime()).minus(duration))
                 .toList();
 
         assert durations.stream().allMatch(d -> 50 <= d.toMillis());
