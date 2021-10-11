@@ -68,21 +68,6 @@ class EffectTest extends SignalTester {
     }
 
     @Test
-    void effectOnCompleteForAllValue() {
-        ArrayList<String> list = new ArrayList();
-
-        monitor(1, String.class, signal -> signal.effectOnComplete(list::addAll));
-
-        assert main.emit("A", "B").value("A", "B");
-        assert list.size() == 0;
-        assert main.emit(Complete).value();
-        assert list.size() == 2;
-        assert main.isCompleted();
-        assert main.isNotError();
-        assert main.isDisposed();
-    }
-
-    @Test
     void effectOnTerminate() {
         // by complete
         monitor(signal -> signal.effectOnTerminate(log1::complete));

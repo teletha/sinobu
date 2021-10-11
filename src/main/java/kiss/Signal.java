@@ -1334,39 +1334,6 @@ public final class Signal<V> {
 
     /**
      * Modifies the source {@link Signal} so that it invokes an effect when it calls
-     * {@link Observer#complete()}.
-     *
-     * @param effect The action to invoke when the source {@link Signal} calls
-     *            {@link Observer#complete()}
-     * @return The source {@link Signal} preassign the side-effecting behavior applied.
-     * @see #effect(WiseConsumer)
-     * @see #effectOnError(WiseConsumer)
-     * @see #effectOnComplete(WiseRunnable)
-     * @see #effectOnTerminate(WiseRunnable)
-     * @see #effectOnDispose(WiseRunnable)
-     * @see #effectOnObserve(WiseConsumer)
-     */
-    public final Signal<V> effectOnComplete(WiseConsumer<List<V>> effect) {
-        // ignore invalid parameter
-        if (effect == null) {
-            return this;
-        }
-
-        return new Signal<>((observer, disposer) -> {
-            ArrayList<V> list = new ArrayList();
-
-            return to(v -> {
-                list.add(v);
-                observer.accept(v);
-            }, observer::error, () -> {
-                effect.accept(list);
-                observer.complete();
-            }, disposer, false);
-        });
-    }
-
-    /**
-     * Modifies the source {@link Signal} so that it invokes an effect when it calls
      * {@link Disposable#dispose()}.
      *
      * @param effect The action to invoke when the source {@link Signal} calls
