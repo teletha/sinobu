@@ -2633,10 +2633,8 @@ public final class Signal<V> {
      * @return An {@link Signal} that emits initial value followed by the results of each call to
      *         the accumulator function.
      */
-    public final <R> Signal<R> scanBy(Supplier<R> init, WiseBiFunction<R, V, R> function) {
-        return scan(Collector.of(() -> new AtomicReference<R>(init.get()), (ref, value) -> {
-            ref.set(function.apply(ref.get(), value));
-        }, (a, b) -> a, AtomicReference<R>::get));
+    public final <R> Signal<R> scanWith(R init, WiseBiFunction<R, V, R> function) {
+        return scanBy(Variable.of(init), function);
     }
 
     /**
@@ -2655,8 +2653,10 @@ public final class Signal<V> {
      * @return An {@link Signal} that emits initial value followed by the results of each call to
      *         the accumulator function.
      */
-    public final <R> Signal<R> scanWith(R init, WiseBiFunction<R, V, R> function) {
-        return scanBy(Variable.of(init), function);
+    public final <R> Signal<R> scanBy(Supplier<R> init, WiseBiFunction<R, V, R> function) {
+        return scan(Collector.of(() -> new AtomicReference<R>(init.get()), (ref, value) -> {
+            ref.set(function.apply(ref.get(), value));
+        }, (a, b) -> a, AtomicReference<R>::get));
     }
 
     /**
