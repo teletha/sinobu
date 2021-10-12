@@ -1418,7 +1418,11 @@ public final class Signal<V> {
      * @see #effectOnObserve(WiseConsumer)
      */
     public final Signal<V> effectOnObserve(WiseRunnable effect) {
-        return effectOnObserve(effect == null ? null : I.wiseC(effect));
+        // ignore invalid parameter
+        if (effect == null) {
+            return this;
+        }
+        return effectOnObserve(I.wiseC(effect));
     }
 
     /**
@@ -1866,8 +1870,6 @@ public final class Signal<V> {
      * @return {ChainableAPI}
      */
     public final <R> Signal<R> maps(V init, WiseBiFunction<? super V, ? super V, R> converter) {
-        Objects.requireNonNull(converter);
-
         return startWith(init).maps(converter);
     }
 
