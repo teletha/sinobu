@@ -10,7 +10,7 @@
 package kiss;
 
 import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.NANOSECONDS;
+import static java.util.concurrent.TimeUnit.*;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -1946,9 +1946,7 @@ public final class Signal<V> {
      *         satisfy the predicate; otherwise, true.
      */
     public final Signal<Boolean> none(Predicate<? super V> condition) {
-        Objects.requireNonNull(condition);
-
-        return signal(condition, FALSE, false, FALSE, true, TRUE);
+        return signal(Objects.requireNonNull(condition), FALSE, false, FALSE, true, TRUE);
     }
 
     /**
@@ -2031,7 +2029,7 @@ public final class Signal<V> {
      * @return A chained {@link Signal}.
      */
     public final <O> Signal<O> plug(Function<Signal<V>, Signal<O>> plug) {
-        return Objects.requireNonNull(plug).apply(this);
+        return plug.apply(this);
     }
 
     /**
