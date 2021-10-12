@@ -1293,6 +1293,14 @@ public class I {
                             log.obj = new FileWriter(new File(dir, name.concat(day.format(ISO_DATE)).concat(".log")), env(name
                                     .concat(".append"), env("*.append", true)));
 
+                            // We also tried the following code to see if it would make a difference
+                            // in writing speed, but no significant difference was observed, so no
+                            // buffering is performed in writing. In the implementation of
+                            // OutputStreamWriter, buffering is performed upon character encoding
+                            // conversion, so it is not expected to make a big difference.
+                            //
+                            // new_OutputStreamWriter(new_BufferedOutputStream(new_FileOutputStream(new_File(name))));
+
                             // Old files should be deleted.
                             int i = I.env(name.concat(".rotate"), I.env("*.rotate", 30));
                             while (0 < i && (new File(dir, name.concat(day.minusDays(i++).format(ISO_DATE)).concat(".log"))
