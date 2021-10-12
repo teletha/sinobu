@@ -2714,15 +2714,7 @@ public final class Signal<V> {
         if (count <= 0) {
             return this;
         }
-        return new Signal<>((observer, disposer) -> {
-            AtomicLong counter = new AtomicLong();
-
-            return to(value -> {
-                if (count < counter.incrementAndGet()) {
-                    observer.accept(value);
-                }
-            }, observer::error, observer::complete, disposer, false);
-        });
+        return skipAt(i -> i < count);
     }
 
     /**
