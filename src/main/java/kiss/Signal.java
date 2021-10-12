@@ -10,7 +10,7 @@
 package kiss;
 
 import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.*;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -915,30 +915,6 @@ public final class Signal<V> {
                     observer.accept(list.getAndSet(new ArrayList<>()));
                 }));
             }, observer::error, observer::complete, disposer, false);
-        });
-    }
-
-    /**
-     * Indicates the {@link Signal} sequence by item count preassign the specified source and time.
-     *
-     * @param count The positive time used to shift the {@link Signal} sequence. Zero or negative
-     *            number will ignore this instruction.
-     * @return {ChainableAPI}
-     */
-    public final Signal<V> delay(long count) {
-        // ignore invalid parameters
-        if (count <= 0) {
-            return this;
-        }
-        return new Signal<>((observer, disposer) -> {
-            Deque<V> queue = new ArrayDeque<>();
-
-            return disposer.add(to(value -> {
-                if (count <= queue.size()) {
-                    observer.accept(queue.pollFirst());
-                }
-                queue.addLast(value);
-            }));
         });
     }
 

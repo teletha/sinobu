@@ -108,31 +108,6 @@ class DelayTest extends SignalTester {
     }
 
     @Test
-    void delayByCount1() {
-        monitor(signal -> signal.delay(1));
-
-        assert main.emit("1").value();
-        assert main.emit("2").value("1");
-        assert main.emit("3").value("2");
-        assert main.isNotCompleted();
-        assert main.isNotError();
-        assert main.isNotDisposed();
-    }
-
-    @Test
-    void delayByCount2() {
-        monitor(signal -> signal.delay(2));
-
-        assert main.emit("1").value();
-        assert main.emit("2").value();
-        assert main.emit("3").value("1");
-        assert main.emit("4").value("2");
-        assert main.isNotCompleted();
-        assert main.isNotError();
-        assert main.isNotDisposed();
-    }
-
-    @Test
     void delayComplete() {
         monitor(signal -> signal.delay(delay, ms, scheduler));
 
