@@ -2108,43 +2108,12 @@ public final class Signal<V> {
     }
 
     /**
-     * <p>
      * Generates an {@link Signal} sequence that repeats the given value infinitely.
-     * </p>
      *
      * @return {ChainableAPI}
      */
     public final Signal<V> repeat() {
-        return repeatUntil(never());
-    }
-
-    /**
-     * <p>
-     * Generates an {@link Signal} sequence that repeats the given value finitely.
-     * </p>
-     *
-     * @param count A number of repeat. Zero or negative number will ignore this instruction.
-     * @return {ChainableAPI}
-     */
-    public final Signal<V> repeat(int count) {
-        // ignore invalid parameter
-        if (count < 1) {
-            return this;
-        }
-        return repeatWhen(complete -> complete.take(count - 1));
-    }
-
-    /**
-     * <p>
-     * Returns an {@link Signal} that repeats the sequence of items emitted by the source
-     * {@link Signal} until a stopper {@link Signal} emits an item.
-     * </p>
-     * 
-     * @param stopper A {@link Signal} whose first emitted item will stop repeating.
-     * @return {ChainableAPI}
-     */
-    public final Signal<V> repeatUntil(Signal stopper) {
-        return repeatWhen(complete -> complete.takeUntil(stopper));
+        return repeat(Signal::skipNull);
     }
 
     /**
@@ -2160,24 +2129,7 @@ public final class Signal<V> {
      *            complete or error, aborting the retry.
      * @return Chainable API
      */
-    public final Signal<V> repeatWhen(WiseFunction<Signal<?>, Signal<?>> notifier) {
-        return repeatWhen(notifier, false);
-    }
-
-    /**
-     * Returns an {@link Signal} that emits the same values as the source signal preassign the
-     * exception of an {@link Observer#error(Throwable)}. An error notification from the source will
-     * result in the emission of a Throwable item to the {@link Signal} provided as an argument to
-     * the notificationHandler function. If that {@link Signal} calls {@link Observer#complete()} or
-     * {@link Observer#error(Throwable)} then retry will call {@link Observer#complete()} or
-     * {@link Observer#error(Throwable) } on the child subscription. Otherwise, this {@link Signal}
-     * will resubscribe to the source {@link Signal}.
-     * 
-     * @param notifier A receives an {@link Signal} of notifications preassign which a user can
-     *            complete or error, aborting the retry.
-     * @return Chainable API
-     */
-    private Signal<V> repeatWhen(Function<Signal<?>, Signal<?>> notifier, boolean immediate) {
+    public final Signal<V> repeat(WiseFunction<Signal<?>, Signal<?>> notifier) {
         // ignore invalid parameter
         if (notifier == null) {
             return this;
@@ -2213,15 +2165,11 @@ public final class Signal<V> {
             }, observer::error, () -> {
                 // Since this complete flow has ended,
                 // all subsequent complete are passed to the source signal.
-                if (immediate) {
-                    observer.complete();
-                } else {
-                    subscriber.next = I.wiseC(observer::complete);
+                subscriber.next = I.wiseC(observer::complete);
 
-                    // Since there is a complete in processing, but this complete flow has ended,
-                    // the processing complete is passed to the source signal.
-                    if (processing[0] != null) observer.complete();
-                }
+                // Since there is a complete in processing, but this complete flow has ended,
+                // the processing complete is passed to the source signal.
+                if (processing[0] != null) observer.complete();
             });
 
             // connect preassign complete handling flow
@@ -2233,10 +2181,8 @@ public final class Signal<V> {
     }
 
     /**
-     * <p>
      * Recover the source {@link Signal} on the specified error by the specified value. Unspecified
      * error types will pass through the source {@link Signal}.
-     * </p>
      * 
      * @param value A value to replace error.
      * @return Chainable API

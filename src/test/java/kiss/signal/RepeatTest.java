@@ -18,22 +18,24 @@ class RepeatTest extends SignalTester {
 
     @Test
     void repeatLimit() {
-        monitor(signal -> signal.repeat(3));
+        monitor(signal -> signal.repeat(e -> e.take(3)));
 
         assert main.emit("success to repeat 1", Complete).value("success to repeat 1");
         assert main.isNotCompleted();
         assert main.emit("success to repeat 2", Complete).value("success to repeat 2");
         assert main.isNotCompleted();
         assert main.emit("success to repeat 3", Complete).value("success to repeat 3");
+        assert main.isNotCompleted();
+        assert main.emit("fail to repeat 4", Complete).value("fail to repeat 4");
         assert main.isCompleted();
         assert main.isNotError();
         assert main.isDisposed();
-        assert main.emit("fail to repeat").value();
+        assert main.emit("fail to repeat 5").value();
     }
 
     @Test
     void repeatLimitZero() {
-        monitor(signal -> signal.repeat(0));
+        monitor(signal -> signal.repeat(e -> e.take(0)));
 
         assert main.emit(Complete).value();
         assert main.isCompleted();
@@ -43,7 +45,7 @@ class RepeatTest extends SignalTester {
 
     @Test
     void repeatLimitNegative() {
-        monitor(signal -> signal.repeat(-1));
+        monitor(signal -> signal.repeat(e -> e.take(-1)));
 
         assert main.emit(Complete).value();
         assert main.isCompleted();
@@ -53,7 +55,7 @@ class RepeatTest extends SignalTester {
 
     @Test
     void repeatError() {
-        monitor(signal -> signal.repeat(3));
+        monitor(signal -> signal.repeat(e -> e.take(3)));
 
         assert main.emit("success to repeat 1", Error).value("success to repeat 1");
         assert main.isNotCompleted();
@@ -87,7 +89,7 @@ class RepeatTest extends SignalTester {
 
     @Test
     void disposeRepeat() {
-        monitor(signal -> signal.repeat(3));
+        monitor(signal -> signal.repeat(e -> e.take(3)));
 
         assert main.emit("success to repeat", Complete).value("success to repeat");
         assert main.isNotCompleted();
@@ -127,7 +129,7 @@ class RepeatTest extends SignalTester {
 
     @Test
     void repeatUntil() {
-        monitor(signal -> signal.repeatUntil(other.signal()));
+        monitor(signal -> signal.repeat(e -> e.takeUntil(other.signal())));
 
         assert main.emit("success to repeat", Complete).value("success to repeat");
         assert main.emit("success to repeat", Complete).value("success to repeat");
@@ -139,7 +141,7 @@ class RepeatTest extends SignalTester {
 
     @Test
     void repeatWhen() {
-        monitor(signal -> signal.startWith("first").repeatWhen(repeat -> repeat.sample(other.signal())));
+        monitor(signal -> signal.startWith("first").repeat(repeat -> repeat.sample(other.signal())));
 
         assert main.value("first");
         assert main.countObservers() == 1;
@@ -157,7 +159,7 @@ class RepeatTest extends SignalTester {
 
     @Test
     void repeatWhenWithDelayAndLimit() {
-        monitor(signal -> signal.startWith("first").repeatWhen(repeat -> repeat.delay(10, ms).sample(other.signal()).take(2)));
+        monitor(signal -> signal.startWith("first").repeat(repeat -> repeat.delay(10, ms).sample(other.signal()).take(2)));
 
         assert main.value("first");
         assert main.emit(Complete).value();
@@ -176,7 +178,7 @@ class RepeatTest extends SignalTester {
 
     @Test
     void repeatWhenWithError() {
-        monitor(signal -> signal.startWith("repeat").repeatWhen(repeat -> repeat.takeAt(index -> {
+        monitor(signal -> signal.startWith("repeat").repeat(repeat -> repeat.takeAt(index -> {
             if (index == 2) {
                 throw new Error();
             }
@@ -196,7 +198,7 @@ class RepeatTest extends SignalTester {
 
     @Test
     void repeatWhenWithComplete() {
-        monitor(signal -> signal.repeatWhen(repeat -> repeat.take(2)));
+        monitor(signal -> signal.repeat(repeat -> repeat.take(2)));
 
         assert main.emit("first will repeat", Complete).value("first will repeat");
         assert main.isNotCompleted();
@@ -210,7 +212,7 @@ class RepeatTest extends SignalTester {
 
     @Test
     void repeatWhenImmediately() {
-        monitor(() -> I.signal("start").effect(log("Begin")).repeatWhen(repeat -> repeat.take(3).effect(log("Repeat"))).effect(log("End")));
+        monitor(() -> I.signal("start").effect(log("Begin")).repeat(repeat -> repeat.take(3).effect(log("Repeat"))).effect(log("End")));
 
         assert main.isCompleted();
         assert main.isNotError();
@@ -224,7 +226,7 @@ class RepeatTest extends SignalTester {
     void repeatWhenWithDelayImmediately() {
         monitor(1, () -> I.signal("start")
                 .effect(log("Begin"))
-                .repeatWhen(repeat -> repeat.delay(10, ms, scheduler).take(3).effect(log("Repeat")))
+                .repeat(repeat -> repeat.delay(10, ms, scheduler).take(3).effect(log("Repeat")))
                 .effect(log("End")));
 
         scheduler.await();
@@ -239,7 +241,7 @@ class RepeatTest extends SignalTester {
     @Test
     void repeatWhenNullNotifier() {
         Signal<Object> signal = I.signal();
-        Signal<Object> repeat = signal.repeatWhen(null);
+        Signal<Object> repeat = signal.repeat(null);
         assert signal == repeat;
     }
 }
