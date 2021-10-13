@@ -418,8 +418,22 @@ public final class Signal<V> {
      * @return {ChainableAPI}
      * @throws NullPointerException If the type is <code>null</code>.
      */
-    public final <R> Signal<R> as(Class<R> type) {
-        return (Signal<R>) (type == null ? this : take(I.wrap(type)::isInstance));
+    public final <R> Signal<R> as(Class<? extends R>... type) {
+        if (type == null || type.length == 0) {
+            return (Signal<R>) this;
+        }
+
+        return (Signal<R>) take(v -> {
+            for (Class c : type) {
+                if (I.wrap(c).isInstance(v)) return true;
+            }
+
+            if (v instanceof Throwable) {
+                throw I.quiet(v);
+            } else {
+                return false;
+            }
+        });
     }
 
     /**
@@ -2220,30 +2234,6 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Recover the source {@link Signal} infinitly on any error by the specified value.
-     * </p>
-     * 
-     * @param value A value to replace error.
-     * @return Chainable API
-     */
-    public final Signal<V> recover(V value) {
-        return recover(null, value);
-    }
-
-    /**
-     * <p>
-     * Recover the source {@link Signal} infinitly on any error by the specified value.
-     * </p>
-     * 
-     * @param value A value to replace error.
-     * @return Chainable API
-     */
-    public final Signal<V> recover(Signal<V> value) {
-        return recover(null, value);
-    }
-
-    /**
-     * <p>
      * Recover the source {@link Signal} finitly on any error by the specified value.
      * </p>
      *
@@ -2256,7 +2246,7 @@ public final class Signal<V> {
         if (count < 1) {
             return this;
         }
-        return recoverWhen(null, fail -> fail.take(count).mapTo(value));
+        return recoverWhen(fail -> fail.take(count).mapTo(value));
     }
 
     /**
@@ -2265,12 +2255,11 @@ public final class Signal<V> {
      * error types will pass through the source {@link Signal}.
      * </p>
      * 
-     * @param type An error type that you want to recover.
      * @param value A value to replace error.
      * @return Chainable API
      */
-    public final Signal<V> recover(Class<? extends Throwable> type, V value) {
-        return recover(type, I.signal(value));
+    public final Signal<V> recover(V value) {
+        return recover(I.signal(value));
     }
 
     /**
@@ -2279,31 +2268,11 @@ public final class Signal<V> {
      * error types will pass through the source {@link Signal}.
      * </p>
      * 
-     * @param type An error type that you want to recover.
      * @param value A value to replace error.
      * @return Chainable API
      */
-    public final Signal<V> recover(Class<? extends Throwable> type, Signal<V> value) {
-        return recoverWhen(type, fail -> fail.flatMap(e -> value == null ? I.signal() : value));
-    }
-
-    /**
-     * <link rel="stylesheet" href= "javadoc.css"/>
-     * <p>
-     * Recover the source {@link Signal} on any error by the notifier emitting values.
-     * </p>
-     * <h>When the notifier signal emits event</h>
-     * <ul>
-     * <li>Next - Replace source error and propagate values to source signal.</li>
-     * <li>Error - Propagate to source error and dispose them.</li>
-     * <li>Complete - Terminate notifier signal. Souce signal will never recover errors.</li>
-     * </ul>
-     * 
-     * @param notifier An error notifier to define recovering flow.
-     * @return Chainable API
-     */
-    public final <E extends Throwable> Signal<V> recoverWhen(WiseFunction<Signal<E>, Signal<V>> notifier) {
-        return recoverWhen(null, notifier);
+    public final Signal<V> recover(Signal<V> value) {
+        return recoverWhen(fail -> fail.flatMap(e -> value == null ? I.signal() : value));
     }
 
     /**
@@ -2318,11 +2287,10 @@ public final class Signal<V> {
      * <li>Complete - Terminate notifier signal. Souce signal will never recover errors.</li>
      * </ul>
      * 
-     * @param type An error type that you want to recover.
      * @param notifier An error notifier to define recovering flow.
      * @return Chainable API
      */
-    public final <E extends Throwable> Signal<V> recoverWhen(Class<E> type, WiseFunction<Signal<E>, Signal<V>> notifier) {
+    public final <E extends Throwable> Signal<V> recoverWhen(WiseFunction<Signal<E>, Signal<V>> notifier) {
         // ignore invalid parameter
         if (notifier == null) {
             return this;
@@ -2332,15 +2300,7 @@ public final class Signal<V> {
             // error notifier
             Subscriber<E> error = new Subscriber();
             error.next = e -> {
-                if (e instanceof UndeclaredThrowableException) {
-                    e = (E) e.getCause();
-                }
-
-                if (type == null || type.isInstance(e)) {
-                    error.observer.accept(e);
-                } else {
-                    observer.error(e);
-                }
+                error.observer.accept(e);
             };
 
             // define error recovering flow
@@ -2380,60 +2340,17 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Retry the source {@link Signal} whenever the specified error type is occured.
-     * </p>
-     * 
-     * @param type An error type that you want to retry. The null value accepts any types.
-     * @return {ChainableAPI}
-     */
-    public final Signal<V> retry(Class<? extends Throwable> type) {
-        return retryUntil(type, never());
-    }
-
-    /**
-     * <p>
-     * Retry the source {@link Signal} whenever any error is occured until the stopper is signaled.
-     * </p>
-     * 
-     * @param stopper A {@link Signal} whose first emitted item will stop retrying.
-     * @return {ChainableAPI}
-     */
-    public final Signal<V> retryUntil(Signal stopper) {
-        return retryUntil(null, stopper);
-    }
-
-    /**
-     * <p>
      * Retry the source {@link Signal} whenever the specified error is occured until the stopper is
      * signaled.
      * </p>
      * 
-     * @param type An error type that you want to retry. The null value accepts any types.
      * @param stopper A {@link Signal} whose first emitted item will stop retrying.
      * @return {ChainableAPI}
      */
-    public final <E extends Throwable> Signal<V> retryUntil(Class<E> type, Signal stopper) {
+    public final <E extends Throwable> Signal<V> retryUntil(Signal stopper) {
         // Use partial applied function to reduce code size.
         // return retryWhen(type, fail -> fail.takeUntil(stopper));
-        return retryWhen(type, ((WiseBiFunction<Signal<E>, Signal, Signal<?>>) Signal::takeUntil).bindLast(stopper));
-    }
-
-    /**
-     * <p>
-     * Retry the source {@link Signal} whenever any error is occured.
-     * </p>
-     * <h>When the notifier signal emits event</h>
-     * <ul>
-     * <li>Next - Retry source {@link Signal}.</li>
-     * <li>Error - Propagate to source error and dispose them.</li>
-     * <li>Complete - Terminate notifier signal. Souce signal will never retry errors.</li>
-     * </ul>
-     * 
-     * @param notifier An error notifier to define retrying flow.
-     * @return Chainable API
-     */
-    public final <E extends Throwable> Signal<V> retryWhen(WiseFunction<Signal<E>, Signal<?>> notifier) {
-        return retryWhen(null, notifier);
+        return retryWhen(((WiseBiFunction<Signal<E>, Signal, Signal<?>>) Signal::takeUntil).bindLast(stopper));
     }
 
     /**
@@ -2448,11 +2365,10 @@ public final class Signal<V> {
      * <li>Complete - Terminate notifier signal. Souce signal will never retry errors.</li>
      * </ul>
      * 
-     * @param type An error type that you want to retry. The null value accepts any types.
      * @param flow An error notifier to define retrying flow.
      * @return Chainable API
      */
-    public final <E extends Throwable> Signal<V> retryWhen(Class<E> type, WiseFunction<Signal<E>, Signal<?>> flow) {
+    public final <E extends Throwable> Signal<V> retryWhen(WiseFunction<Signal<E>, Signal<?>> flow) {
         // ignore invalid parameter
         if (flow == null) {
             return this;
@@ -2469,12 +2385,7 @@ public final class Signal<V> {
                 if (e instanceof UndeclaredThrowableException) {
                     e = (E) e.getCause();
                 }
-                // determine whether errors should be handled by type
-                if (type == null || type.isInstance(e)) {
-                    error.observer.accept(processing[0] = e); // to user defined error flow
-                } else {
-                    observer.error(e); // to source signal
-                }
+                error.observer.accept(processing[0] = e); // to user defined error flow
             };
 
             // number of remaining retrys
@@ -2837,7 +2748,7 @@ public final class Signal<V> {
      * @return {@link Signal} which ignores all errors.
      */
     public final Signal<V> skipError() {
-        return skipError(null);
+        return skipError((Class[]) null);
     }
 
     /**
@@ -2846,8 +2757,8 @@ public final class Signal<V> {
      * @param type A error type to ignore.
      * @return {@link Signal} which ignores the specified error.
      */
-    public final Signal<V> skipError(Class<? extends Throwable> type) {
-        return recover(type, (Signal) null);
+    public final Signal<V> skipError(Class<? extends Throwable>... type) {
+        return recoverWhen(e -> e.as(type).flatMap(v -> I.signal()));
     }
 
     /**

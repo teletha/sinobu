@@ -9,7 +9,6 @@
  */
 package kiss.signal;
 
-import java.io.IOError;
 import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
@@ -28,49 +27,31 @@ class RecoverTest extends SignalTester {
         assert main.isNotDisposed();
     }
 
-    @Test
-    void recoverByType() {
-        monitor(signal -> signal.recover(IOException.class, "IO"));
-
-        assert main.emit(IOException.class).value("IO");
-        assert main.isNotError();
-        assert main.isNotDisposed();
-
-        assert main.emit(Error.class).value();
-        assert main.isError();
-        assert main.isDisposed();
-    }
-
-    @Test
-    void recoverByNullType() {
-        monitor(signal -> signal.recover(null, "Any"));
-
-        assert main.emit(IOException.class).value("Any");
-        assert main.isNotError();
-        assert main.isNotDisposed();
-
-        assert main.emit(Exception.class).value("Any");
-        assert main.isNotError();
-        assert main.isNotDisposed();
-
-        assert main.emit(RuntimeException.class).value("Any");
-        assert main.isNotError();
-        assert main.isNotDisposed();
-
-        assert main.emit(Error.class).value("Any");
-        assert main.isNotError();
-        assert main.isNotDisposed();
-    }
+    // @Test
+    // void recoverByNullType() {
+    // monitor(signal -> signal.recover(null, "Any"));
+    //
+    // assert main.emit(IOException.class).value("Any");
+    // assert main.isNotError();
+    // assert main.isNotDisposed();
+    //
+    // assert main.emit(Exception.class).value("Any");
+    // assert main.isNotError();
+    // assert main.isNotDisposed();
+    //
+    // assert main.emit(RuntimeException.class).value("Any");
+    // assert main.isNotError();
+    // assert main.isNotDisposed();
+    //
+    // assert main.emit(Error.class).value("Any");
+    // assert main.isNotError();
+    // assert main.isNotDisposed();
+    // }
 
     @Test
     void recoverByNull() {
         monitor(signal -> signal.recover((String) null));
         assert main.emit(NoSuchFieldError.class).value((String) null);
-        assert main.isNotError();
-        assert main.isNotDisposed();
-
-        monitor(signal -> signal.recover(IOException.class, (String) null));
-        assert main.emit(IOException.class).value((String) null);
         assert main.isNotError();
         assert main.isNotDisposed();
     }
@@ -85,48 +66,9 @@ class RecoverTest extends SignalTester {
     }
 
     @Test
-    void recoverSignalByType() {
-        monitor(signal -> signal.recover(IOException.class, I.signal("IO")));
-
-        assert main.emit(IOException.class).value("IO");
-        assert main.isNotError();
-        assert main.isNotDisposed();
-
-        assert main.emit(Error.class).value();
-        assert main.isError();
-        assert main.isDisposed();
-    }
-
-    @Test
-    void recoverSignalByNullType() {
-        monitor(signal -> signal.recover(null, I.signal("Any")));
-
-        assert main.emit(IOException.class).value("Any");
-        assert main.isNotError();
-        assert main.isNotDisposed();
-
-        assert main.emit(Exception.class).value("Any");
-        assert main.isNotError();
-        assert main.isNotDisposed();
-
-        assert main.emit(RuntimeException.class).value("Any");
-        assert main.isNotError();
-        assert main.isNotDisposed();
-
-        assert main.emit(Error.class).value("Any");
-        assert main.isNotError();
-        assert main.isNotDisposed();
-    }
-
-    @Test
     void recoverSignalByNull() {
         monitor(signal -> signal.recover((Signal) null));
         assert main.emit(NoSuchFieldError.class).value();
-        assert main.isNotError();
-        assert main.isNotDisposed();
-
-        monitor(signal -> signal.recover(IOException.class, (Signal) null));
-        assert main.emit(IOException.class).value();
         assert main.isNotError();
         assert main.isNotDisposed();
     }
@@ -164,16 +106,37 @@ class RecoverTest extends SignalTester {
     }
 
     @Test
-    void recoverWhenType() {
-        monitor(signal -> signal.recoverWhen(IOError.class, fail -> fail.mapTo("recover")));
+    void recoverWhenWithType() {
+        monitor(signal -> signal.recoverWhen(fail -> fail.as(IOException.class).mapTo("IO")));
 
-        assert main.emit(IOError.class).value("recover");
+        assert main.emit(IOException.class).value("IO");
         assert main.isNotError();
         assert main.isNotDisposed();
 
         assert main.emit(Error.class).value();
         assert main.isError();
         assert main.isDisposed();
+    }
+
+    @Test
+    void recoverWhenWithNullType() {
+        monitor(signal -> signal.recoverWhen(fail -> fail.as((Class[]) null).mapTo("Any")));
+
+        assert main.emit(IOException.class).value("Any");
+        assert main.isNotError();
+        assert main.isNotDisposed();
+
+        assert main.emit(Exception.class).value("Any");
+        assert main.isNotError();
+        assert main.isNotDisposed();
+
+        assert main.emit(RuntimeException.class).value("Any");
+        assert main.isNotError();
+        assert main.isNotDisposed();
+
+        assert main.emit(Error.class).value("Any");
+        assert main.isNotError();
+        assert main.isNotDisposed();
     }
 
     @Test

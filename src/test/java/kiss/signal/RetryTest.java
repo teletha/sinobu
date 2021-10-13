@@ -10,8 +10,6 @@
 package kiss.signal;
 
 import java.io.IOError;
-import java.nio.channels.IllegalSelectorException;
-import java.util.UnknownFormatConversionException;
 
 import org.junit.jupiter.api.Test;
 
@@ -226,7 +224,7 @@ class RetryTest extends SignalTester {
 
     @Test
     void retryIfType() {
-        monitor(signal -> signal.startWith("retry").retry(IllegalAccessError.class));
+        monitor(signal -> signal.startWith("retry").retryWhen(e -> e.as(IllegalAccessError.class)));
 
         assert main.value("retry");
         assert main.emit(IllegalAccessError.class).value("retry");
@@ -241,7 +239,7 @@ class RetryTest extends SignalTester {
 
     @Test
     void retryIfSuperType() {
-        monitor(signal -> signal.startWith("retry").retry(Error.class));
+        monitor(signal -> signal.startWith("retry").retryWhen(e -> e.as(Error.class)));
 
         assert main.value("retry");
         assert main.emit(Error.class).value("retry");
@@ -256,7 +254,7 @@ class RetryTest extends SignalTester {
 
     @Test
     void retryIfNullTypeAcceptsAnyType() {
-        monitor(signal -> signal.startWith("retry").retry((Class) null));
+        monitor(signal -> signal.startWith("retry").retryWhen(e -> e.as((Class[]) null)));
 
         assert main.value("retry");
         assert main.emit(Error.class).value("retry");
@@ -280,32 +278,9 @@ class RetryTest extends SignalTester {
 
     @Test
     void retryUntilByType() {
-        monitor(signal -> signal.retryUntil(Error.class, other.signal()));
+        monitor(signal -> signal.retryWhen(e -> e.as(Error.class).takeUntil(other.signal())));
         assert main.emit(Error.class, "Error can retry").isEmmitted();
         assert main.emit(IOError.class, "Sub type can retry").isEmmitted();
-        assert main.isNotError();
-        assert main.isNotDisposed();
-
-        assert main.emit(Exception.class, "Exception can't retry").value();
-        assert main.isError();
-        assert main.isDisposed();
-    }
-
-    @Test
-    void retryUntilByTypeNull() {
-        monitor(signal -> signal.retryUntil(null, other.signal()));
-        assert main.emit(Error.class, "null means accepting any error type").isEmmitted();
-        assert main.emit(Exception.class, "null means accepting any error type").isEmmitted();
-        assert main.emit(IllegalSelectorException.class, "null means accepting any error type").isEmmitted();
-        assert main.emit(UnknownFormatConversionException.class, "null means accepting any error type").isEmmitted();
-        assert main.isNotError();
-        assert main.isNotDisposed();
-    }
-
-    @Test
-    void retryUntilByTypeNullNotifier() {
-        monitor(signal -> signal.retryUntil(Error.class, null));
-        assert main.emit(Error.class, IOError.class, ThreadDeath.class, "null notifier means unconditional").isEmmitted();
         assert main.isNotError();
         assert main.isNotDisposed();
 

@@ -29,6 +29,21 @@ class AsTest extends SignalTester {
     }
 
     @Test
+    void multipleTypes() {
+        monitor(signal -> signal.as(Integer.class, Float.class, Long.class));
+
+        assert main.emit(10).value(10);
+        assert main.emit(2.1F).value(2.1F);
+        assert main.emit(-1.1D).value();
+        assert main.emit(20L).value(20L);
+        assert main.emit("5000").value();
+        assert main.emit((Integer) null).value();
+        assert main.isNotCompleted();
+        assert main.isNotError();
+        assert main.isNotDisposed();
+    }
+
+    @Test
     void primitive() {
         monitor(signal -> signal.as(double.class));
 
@@ -44,7 +59,7 @@ class AsTest extends SignalTester {
 
     @Test
     void nullType() {
-        monitor(signal -> signal.as(null));
+        monitor(signal -> signal.as((Class[]) null));
 
         assert main.emit(10).value(10);
         assert main.emit(2.1F).value(2.1F);
