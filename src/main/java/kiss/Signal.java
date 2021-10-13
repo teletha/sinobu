@@ -10,7 +10,7 @@
 package kiss;
 
 import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.NANOSECONDS;
+import static java.util.concurrent.TimeUnit.*;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -2726,27 +2726,7 @@ public final class Signal<V> {
      * @return {ChainableAPI}
      */
     public final Signal<V> skip(V... excludes) {
-        // ignore invalid parameter
-        if (excludes == null) {
-            return this;
-        }
-        return skip(I.set(excludes));
-    }
-
-    /**
-     * <p>
-     * Alias for skip(v -> excludes.contains(v)).
-     * </p>
-     *
-     * @param excludes A collection of skip items.
-     * @return {ChainableAPI}
-     */
-    public final Signal<V> skip(Collection<V> excludes) {
-        // ignore invalid parameter
-        if (excludes == null) {
-            return this;
-        }
-        return skip(excludes::contains);
+        return skip(I.set(excludes)::contains);
     }
 
     /**
@@ -3264,27 +3244,7 @@ public final class Signal<V> {
      * @return {ChainableAPI}
      */
     public final Signal<V> take(V... includes) {
-        // ignore invalid parameter
-        if (includes == null) {
-            return this;
-        }
-        return take(I.set(includes));
-    }
-
-    /**
-     * <p>
-     * Alias for take(v -> includes.contains(v)).
-     * </p>
-     *
-     * @param includes A collection of take items.
-     * @return {ChainableAPI}
-     */
-    public final Signal<V> take(Collection<V> includes) {
-        // ignore invalid parameter
-        if (includes == null) {
-            return this;
-        }
-        return take(includes::contains);
+        return take(I.set(includes)::contains);
     }
 
     /**

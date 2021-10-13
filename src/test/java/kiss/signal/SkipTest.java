@@ -14,8 +14,6 @@ import java.util.function.Predicate;
 
 import org.junit.jupiter.api.Test;
 
-import kiss.I;
-
 class SkipTest extends SignalTester {
 
     @Test
@@ -105,11 +103,20 @@ class SkipTest extends SignalTester {
     }
 
     @Test
-    void skipByCollection() {
-        monitor(signal -> signal.skip(I.set(1, 3)));
+    void skipByNoValue() {
+        monitor(signal -> signal.skip());
 
-        assert main.emit(1, 2, 3).value(2);
-        assert main.emit(1, 2, 3).value(2);
+        assert main.emit(1, 2, 3).value(1, 2, 3);
+        assert main.isNotCompleted();
+        assert main.isNotError();
+        assert main.isNotDisposed();
+    }
+
+    @Test
+    void skipByNullValue() {
+        monitor(signal -> signal.skip((Object[]) null));
+
+        assert main.emit(1, 2, 3).value(1, 2, 3);
         assert main.isNotCompleted();
         assert main.isNotError();
         assert main.isNotDisposed();

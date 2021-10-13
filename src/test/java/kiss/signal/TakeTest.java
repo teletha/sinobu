@@ -28,22 +28,6 @@ class TakeTest extends SignalTester {
     }
 
     @Test
-    void takeValues() {
-        monitor(int.class, signal -> signal.take(2, 3));
-
-        assert main.emit(1, 2, 3, 4).value(2, 3);
-        assert main.isNotCompleted();
-    }
-
-    @Test
-    void takeCollection() {
-        monitor(int.class, signal -> signal.take(I.set(2, 3)));
-
-        assert main.emit(1, 2, 3, 4).value(2, 3);
-        assert main.isNotCompleted();
-    }
-
-    @Test
     void takeNull() {
         monitor(int.class, signal -> signal.take((Predicate) null));
 
@@ -74,6 +58,34 @@ class TakeTest extends SignalTester {
         assert main.emit(1, 2, 3, 4).value(1, 2);
         assert main.isCompleted();
         assert main.isDisposed();
+    }
+
+    @Test
+    void takeByValue() {
+        monitor(signal -> signal.take(2, 3));
+
+        assert main.emit(1, 2, 3, 4).value(2, 3);
+        assert main.isNotCompleted();
+    }
+
+    @Test
+    void takeByNoValue() {
+        monitor(signal -> signal.take());
+
+        assert main.emit(1, 2, 3, 4).value();
+        assert main.isNotCompleted();
+        assert main.isNotError();
+        assert main.isNotDisposed();
+    }
+
+    @Test
+    void takeByNullValue() {
+        monitor(signal -> signal.take((Object[]) null));
+
+        assert main.emit(1, 2, 3, 4).value();
+        assert main.isNotCompleted();
+        assert main.isNotError();
+        assert main.isNotDisposed();
     }
 
     @Test
