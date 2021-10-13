@@ -10,7 +10,7 @@
 package kiss;
 
 import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.*;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -2234,23 +2234,6 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Recover the source {@link Signal} finitly on any error by the specified value.
-     * </p>
-     *
-     * @param count A number of recovery. Zero or negative number will ignore this instruction.
-     * @param value A value to replace error.
-     * @return Chainable API
-     */
-    public final Signal<V> recover(int count, V value) {
-        // ignore invalid parameter
-        if (count < 1) {
-            return this;
-        }
-        return recoverWhen(fail -> fail.take(count).mapTo(value));
-    }
-
-    /**
-     * <p>
      * Recover the source {@link Signal} on the specified error by the specified value. Unspecified
      * error types will pass through the source {@link Signal}.
      * </p>
@@ -2259,20 +2242,7 @@ public final class Signal<V> {
      * @return Chainable API
      */
     public final Signal<V> recover(V value) {
-        return recover(I.signal(value));
-    }
-
-    /**
-     * <p>
-     * Recover the source {@link Signal} on the specified error by the specified value. Unspecified
-     * error types will pass through the source {@link Signal}.
-     * </p>
-     * 
-     * @param value A value to replace error.
-     * @return Chainable API
-     */
-    public final Signal<V> recover(Signal<V> value) {
-        return recoverWhen(fail -> fail.flatMap(e -> value == null ? I.signal() : value));
+        return recover(e -> e.mapTo(value));
     }
 
     /**
@@ -2290,21 +2260,39 @@ public final class Signal<V> {
      * @param notifier An error notifier to define recovering flow.
      * @return Chainable API
      */
-    public final <E extends Throwable> Signal<V> recoverWhen(WiseFunction<Signal<E>, Signal<V>> notifier) {
+    public final <E extends Throwable> Signal<V> recover(WiseFunction<Signal<E>, Signal<V>> notifier) {
         // ignore invalid parameter
         if (notifier == null) {
             return this;
         }
 
         return new Signal<>((observer, disposer) -> {
+            // recorder for the processing error
+            Throwable[] processing = new Throwable[1];
+
             // error notifier
             Subscriber<E> error = new Subscriber();
             error.next = e -> {
-                error.observer.accept(e);
+                error.observer.accept(processing[0] = e);
             };
 
             // define error recovering flow
-            notifier.apply(error.signal()).to(observer::accept, observer::error, () -> error.next = observer::error);
+            notifier.apply(error.signal()).to(v -> {
+                processing[0] = null; // processing error will be handled, so clear it
+                observer.accept(v);
+            }, observer::error, () -> {
+                // Since this error flow has ended,
+                // all subsequent errors are passed to the source signal.
+                error.next = observer::error;
+
+                // Since there is an error in processing, but this error flow has ended,
+                // the processing error is passed to the source signal.
+
+                // The following code is not used as it may send null.
+                // if (processing[0] != null) observer.error(processing[0]);
+                Throwable t = processing[0];
+                if (t != null) observer.error(t);
+            });
 
             // delegate error to the notifier
             return to(observer::accept, error, observer::complete, disposer, false);
@@ -2312,45 +2300,12 @@ public final class Signal<V> {
     }
 
     /**
-     * <p>
      * Retry the source {@link Signal} infinitely whenever any error is occured.
-     * </p>
      *
      * @return {ChainableAPI}
      */
     public final Signal<V> retry() {
-        return retryUntil(never());
-    }
-
-    /**
-     * <p>
-     * Retry the source {@link Signal} finitely whenever any error is occured.
-     * </p>
-     *
-     * @param count A number of retry. Zero or negative number will ignore this instruction.
-     * @return {ChainableAPI}
-     */
-    public final Signal<V> retry(int count) {
-        // ignore invalid parameter
-        if (count < 1) {
-            return this;
-        }
-        return retryWhen(fail -> fail.take(count));
-    }
-
-    /**
-     * <p>
-     * Retry the source {@link Signal} whenever the specified error is occured until the stopper is
-     * signaled.
-     * </p>
-     * 
-     * @param stopper A {@link Signal} whose first emitted item will stop retrying.
-     * @return {ChainableAPI}
-     */
-    public final <E extends Throwable> Signal<V> retryUntil(Signal stopper) {
-        // Use partial applied function to reduce code size.
-        // return retryWhen(type, fail -> fail.takeUntil(stopper));
-        return retryWhen(((WiseBiFunction<Signal<E>, Signal, Signal<?>>) Signal::takeUntil).bindLast(stopper));
+        return retry(Signal::skipNull);
     }
 
     /**
@@ -2368,7 +2323,7 @@ public final class Signal<V> {
      * @param flow An error notifier to define retrying flow.
      * @return Chainable API
      */
-    public final <E extends Throwable> Signal<V> retryWhen(WiseFunction<Signal<E>, Signal<?>> flow) {
+    public final <E extends Throwable> Signal<V> retry(WiseFunction<Signal<E>, Signal<?>> flow) {
         // ignore invalid parameter
         if (flow == null) {
             return this;
@@ -2758,7 +2713,7 @@ public final class Signal<V> {
      * @return {@link Signal} which ignores the specified error.
      */
     public final Signal<V> skipError(Class<? extends Throwable>... type) {
-        return recoverWhen(e -> e.as(type).flatMap(v -> I.signal()));
+        return recover(e -> e.as(type).flatMap(v -> I.signal()));
     }
 
     /**
@@ -3139,11 +3094,7 @@ public final class Signal<V> {
      * @return {ChainableAPI}
      */
     public final Signal<V> take(long count) {
-        // ignore invalid parameter
-        if (count <= 0) {
-            return this;
-        }
-        return take(AtomicLong::new, (context, value) -> context.incrementAndGet() < count, true, true, true);
+        return take(AtomicLong::new, (context, value) -> context.incrementAndGet() < count, true, true, 0 < count);
     }
 
     /**

@@ -61,6 +61,26 @@ class TakeTest extends SignalTester {
     }
 
     @Test
+    void takeByZeroCount() {
+        monitor(int.class, signal -> signal.take(0));
+
+        assert main.emit(1, 2, 3, 4).value();
+        assert main.isNotError();
+        assert main.isCompleted();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void takeByNegativeCount() {
+        monitor(int.class, signal -> signal.take(-2));
+
+        assert main.emit(1, 2, 3, 4).value();
+        assert main.isNotError();
+        assert main.isCompleted();
+        assert main.isDisposed();
+    }
+
+    @Test
     void takeByValue() {
         monitor(signal -> signal.take(2, 3));
 

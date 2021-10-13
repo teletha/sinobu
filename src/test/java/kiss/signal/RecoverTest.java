@@ -57,25 +57,8 @@ class RecoverTest extends SignalTester {
     }
 
     @Test
-    void recoverSignal() {
-        monitor(signal -> signal.recover(I.signal("recover")));
-
-        assert main.emit(Error).value("recover");
-        assert main.isNotError();
-        assert main.isNotDisposed();
-    }
-
-    @Test
-    void recoverSignalByNull() {
-        monitor(signal -> signal.recover((Signal) null));
-        assert main.emit(NoSuchFieldError.class).value();
-        assert main.isNotError();
-        assert main.isNotDisposed();
-    }
-
-    @Test
     void recoverLimit() {
-        monitor(signal -> signal.recover(2, "recover"));
+        monitor(signal -> signal.recover(e -> e.take(2).mapTo("recover")));
 
         assert main.emit(Error.class).value("recover");
         assert main.emit(Error.class).value("recover");
@@ -87,7 +70,7 @@ class RecoverTest extends SignalTester {
 
     @Test
     void recoverLimitZero() {
-        monitor(signal -> signal.recover(0, "don't recover"));
+        monitor(signal -> signal.recover(e -> e.take(0).mapTo("don't recover")));
 
         assert main.emit(Error.class).value();
         assert main.isNotCompleted();
@@ -97,7 +80,7 @@ class RecoverTest extends SignalTester {
 
     @Test
     void recoverLimitNegative() {
-        monitor(signal -> signal.recover(-1, "don't recover"));
+        monitor(signal -> signal.recover(e -> e.take(-1).mapTo("don't recover")));
 
         assert main.emit(Error.class).value();
         assert main.isNotCompleted();
@@ -107,7 +90,7 @@ class RecoverTest extends SignalTester {
 
     @Test
     void recoverWhenWithType() {
-        monitor(signal -> signal.recoverWhen(fail -> fail.as(IOException.class).mapTo("IO")));
+        monitor(signal -> signal.recover(fail -> fail.as(IOException.class).mapTo("IO")));
 
         assert main.emit(IOException.class).value("IO");
         assert main.isNotError();
@@ -120,7 +103,7 @@ class RecoverTest extends SignalTester {
 
     @Test
     void recoverWhenWithNullType() {
-        monitor(signal -> signal.recoverWhen(fail -> fail.as((Class[]) null).mapTo("Any")));
+        monitor(signal -> signal.recover(fail -> fail.as((Class[]) null).mapTo("Any")));
 
         assert main.emit(IOException.class).value("Any");
         assert main.isNotError();
@@ -141,7 +124,7 @@ class RecoverTest extends SignalTester {
 
     @Test
     void recoverWhenWithDelay() {
-        monitor(signal -> signal.recoverWhen(fail -> fail.delay(delay, ms, scheduler).mapTo("recover")));
+        monitor(signal -> signal.recover(fail -> fail.delay(delay, ms, scheduler).mapTo("recover")));
 
         assert main.countObservers() == 1;
         assert main.emit(Error).value();
@@ -158,7 +141,7 @@ class RecoverTest extends SignalTester {
 
     @Test
     void recoverWhenWithDelayAndLimit() {
-        monitor(signal -> signal.recoverWhen(fail -> fail.take(2).delay(delay, ms, scheduler).mapTo("recover")));
+        monitor(signal -> signal.recover(fail -> fail.take(2).delay(delay, ms, scheduler).mapTo("recover")));
 
         assert main.emit(Error).value();
         scheduler.await();
@@ -175,7 +158,7 @@ class RecoverTest extends SignalTester {
 
     @Test
     void recoverWhenWithError() {
-        monitor(signal -> signal.recoverWhen(fail -> fail.flatMap(e -> e instanceof Error ? I.signal("recover") : I.signalError(e))));
+        monitor(signal -> signal.recover(fail -> fail.flatMap(e -> e instanceof Error ? I.signal("recover") : I.signalError(e))));
 
         assert main.emit(Error).value("recover");
         assert main.isNotError();
@@ -188,7 +171,7 @@ class RecoverTest extends SignalTester {
 
     @Test
     void recoverWhenWithComplete() {
-        monitor(signal -> signal.recoverWhen(fail -> fail.take(2).mapTo("recover")));
+        monitor(signal -> signal.recover(fail -> fail.take(2).mapTo("recover")));
 
         assert main.emit("first error will recover", Error).value("first error will recover", "recover");
         assert main.isNotError();
@@ -205,7 +188,7 @@ class RecoverTest extends SignalTester {
         monitor(() -> I.signal("start")
                 .effect(log("Begin"))
                 .map(errorUnaryOperator())
-                .recoverWhen(recover -> recover.take(3).mapTo("OK").effect(log("Recover")))
+                .recover(recover -> recover.take(3).mapTo("OK").effect(log("Recover")))
                 .effect(log("End")));
 
         assert main.isCompleted();
@@ -219,7 +202,7 @@ class RecoverTest extends SignalTester {
     @Test
     void recoverWhenNullNotifier() {
         Signal<Object> signal = I.signal();
-        Signal<Object> recover = signal.recoverWhen(null);
+        Signal<Object> recover = signal.recover(null);
         assert signal == recover;
     }
 }
