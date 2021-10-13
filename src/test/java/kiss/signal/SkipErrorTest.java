@@ -51,7 +51,7 @@ class SkipErrorTest extends SignalTester {
 
     @Test
     void acceptNull() {
-        monitor(signal -> signal.skipError(null));
+        monitor(signal -> signal.skipError((Class[]) null));
 
         main.emit(Exception.class, IOException.class);
         assert main.isNotError();
