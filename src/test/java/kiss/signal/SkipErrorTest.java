@@ -9,6 +9,7 @@
  */
 package kiss.signal;
 
+import java.io.IOError;
 import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
@@ -16,7 +17,7 @@ import org.junit.jupiter.api.Test;
 class SkipErrorTest extends SignalTester {
 
     @Test
-    void error() {
+    void skip() {
         monitor(signal -> signal.skipError());
 
         main.emit(Error.class);
@@ -33,7 +34,7 @@ class SkipErrorTest extends SignalTester {
     }
 
     @Test
-    void errorSpecifiec() {
+    void specifySingleType() {
         monitor(signal -> signal.skipError(Exception.class));
 
         main.emit(Exception.class, IOException.class);
@@ -50,7 +51,28 @@ class SkipErrorTest extends SignalTester {
     }
 
     @Test
-    void acceptNull() {
+    void specifyMultipleTypes() {
+        monitor(signal -> signal.skipError(Exception.class, IOError.class));
+
+        main.emit(Exception.class, IOException.class);
+        assert main.isNotError();
+        assert main.isNotDisposed();
+
+        main.emit(RuntimeException.class, IllegalAccessException.class);
+        assert main.isNotError();
+        assert main.isNotDisposed();
+
+        main.emit(IOError.class);
+        assert main.isNotError();
+        assert main.isNotDisposed();
+
+        main.emit(Error.class);
+        assert main.isError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void nullMeansAnyType() {
         monitor(signal -> signal.skipError((Class[]) null));
 
         main.emit(Exception.class, IOException.class);

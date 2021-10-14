@@ -2611,22 +2611,13 @@ public final class Signal<V> {
     }
 
     /**
-     * Return the {@link Signal} which ignores all errors.
-     * 
-     * @return {@link Signal} which ignores all errors.
-     */
-    public final Signal<V> skipError() {
-        return skipError((Class[]) null);
-    }
-
-    /**
      * Return the {@link Signal} which ignores the specified error.
      * 
      * @param type A error type to ignore.
      * @return {@link Signal} which ignores the specified error.
      */
     public final Signal<V> skipError(Class<? extends Throwable>... type) {
-        return recover(e -> e.as(type).flatMap(v -> I.signal()));
+        return recover(e -> e.as(type).mapTo((V) null).skip(I::accept));
     }
 
     /**
@@ -2636,7 +2627,10 @@ public final class Signal<V> {
      */
     public final Signal<V> skipComplete() {
         return new Signal<>((observer, disposer) -> {
-            return to(observer::accept, observer::error, I.NoOP, disposer, false);
+            Subscriber o = new Subscriber();
+            o.observer = observer;
+            o.complete = I.NoOP;
+            return to(o, disposer);
         });
     }
 
