@@ -2176,7 +2176,7 @@ public final class Signal<V> {
      * @return {ChainableAPI}
      */
     public final Signal<V> repeat() {
-        return repeat(Signal::skipNull);
+        return repeat(I.wiseF(Function.identity()));
     }
 
     /**
@@ -2209,7 +2209,7 @@ public final class Signal<V> {
             // number of remaining repeats
             AtomicInteger remaining = new AtomicInteger();
             // previous repeat operation
-            Disposable[] previous = new Disposable[] {Disposable.empty()};
+            sub.disposer = Disposable.empty();
 
             // define complete repeating flow
             flow.apply(sub.signal()).to(v -> {
@@ -2219,8 +2219,8 @@ public final class Signal<V> {
                 if (remaining.getAndIncrement() == 0) {
                     do {
                         // dispose previous and reconnect
-                        previous[0].dispose();
-                        previous[0] = to(observer::accept, observer::error, complete, disposer.sub(), true);
+                        sub.disposer.dispose();
+                        sub.disposer = to(observer::accept, observer::error, complete, disposer.sub(), true);
                     } while (remaining.decrementAndGet() != 0);
                 }
             }, observer::error, () -> {
@@ -2234,7 +2234,7 @@ public final class Signal<V> {
             });
 
             // connect preassign complete handling flow
-            previous[0] = to(observer::accept, observer::error, complete, disposer.sub(), true);
+            sub.disposer = to(observer::accept, observer::error, complete, disposer.sub(), true);
 
             // API difinition
             return disposer;
@@ -2274,7 +2274,6 @@ public final class Signal<V> {
         return new Signal<>((observer, disposer) -> {
             // build the actual error handler
             Subscriber<E> sub = new Subscriber();
-            sub.disposer = disposer;
             sub.next = e -> {
                 if (e instanceof UndeclaredThrowableException) {
                     e = (E) e.getCause();
@@ -2288,7 +2287,7 @@ public final class Signal<V> {
             // number of remaining retrys
             AtomicInteger remaining = new AtomicInteger();
             // previous retry operation
-            Disposable[] previous = new Disposable[] {Disposable.empty()};
+            sub.disposer = Disposable.empty();
 
             // define error retrying flow
             flow.apply(sub.signal()).to(v -> {
@@ -2298,8 +2297,8 @@ public final class Signal<V> {
                 if (remaining.getAndIncrement() == 0) {
                     do {
                         // dispose previous and reconnect
-                        previous[0].dispose();
-                        previous[0] = to(observer::accept, sub, observer::complete, disposer.sub(), true);
+                        sub.disposer.dispose();
+                        sub.disposer = to(observer::accept, sub, observer::complete, disposer.sub(), true);
                     } while (remaining.decrementAndGet() != 0);
                 }
             }, observer::error, () -> {
@@ -2317,7 +2316,7 @@ public final class Signal<V> {
             });
 
             // connect preassign error handling flow
-            previous[0] = to(observer::accept, sub, observer::complete, disposer.sub(), true);
+            sub.disposer = to(observer::accept, sub, observer::complete, disposer.sub(), true);
 
             // API definition
             return disposer;
