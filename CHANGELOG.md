@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.7.0](https://www.github.com/Teletha/sinobu/compare/v2.6.0...v2.7.0) (2021-10-14)
+
+
+### Features
+
+* Add Signal#pair. ([c115337](https://www.github.com/Teletha/sinobu/commit/c115337da99899891e3bd6e61cf72a41cb2566d3))
+* Drop all Signal#maps methods. ([4200ccb](https://www.github.com/Teletha/sinobu/commit/4200ccbbf1d5479c78fa0ee423bbcff710f62270))
+* Drop Signal#delay(long count), use #buffer(long, long) instead. ([03d8d4e](https://www.github.com/Teletha/sinobu/commit/03d8d4eb8c2a6ec2f6a70993d12cc300cb5c7048))
+* Drop Signal#recover and #retry with configurable parameters. ([d811713](https://www.github.com/Teletha/sinobu/commit/d811713db080f653477dac6c7486820cdf480057))
+* Drop Signal#repeat with configurable parameters. ([7053181](https://www.github.com/Teletha/sinobu/commit/7053181d709792dde66b1fa19ab1c66a338bf28d))
+* Drop Signal#skipError without parameters. ([ada0043](https://www.github.com/Teletha/sinobu/commit/ada0043c695f9682d9cd3ee85ee904e5f3c8a0c2))
+* Drop Signal#take and #skip by duration, use #xxxUntil instead. ([bbf51d5](https://www.github.com/Teletha/sinobu/commit/bbf51d59fa52f445ae5279042b7fbc7c326d6c11))
+* Drop Signal#take(Collection) and #skip(Collection). ([ab7bc80](https://www.github.com/Teletha/sinobu/commit/ab7bc80b1238054861065016008e9f5ec98f723c))
+* Drop Signal#takeUntil(Object) and #skipUntil(Object). ([20eab42](https://www.github.com/Teletha/sinobu/commit/20eab42c12e9205db41a51bb81361124d07fe374))
+* Drop Signale#recover and #retry with error type. ([7f739ed](https://www.github.com/Teletha/sinobu/commit/7f739ed4d91d145d5dc953cdcb7e8f109d299b40))
+
 ## [2.6.0](https://www.github.com/Teletha/sinobu/compare/v2.5.0...v2.6.0) (2021-10-11)
 
 
