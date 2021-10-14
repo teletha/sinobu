@@ -10,7 +10,7 @@
 package kiss;
 
 import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.NANOSECONDS;
+import static java.util.concurrent.TimeUnit.*;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -482,7 +482,17 @@ public final class Signal<V> {
                 boolean validSize = buffer.size() == creationSize;
 
                 if (validTiming && validSize) {
-                    observer.accept(new ArrayList<>(buffer));
+                    // Thinking about what is the fastest way to copy data from Deque to List.
+                    // The following three methods are slower and memory-heavy because they perform
+                    // two complete copies from the data source array.
+                    //
+                    // List.copyOf(buffer)
+                    // List.of(buffer.toArray())
+                    // new ArrayList<>(buffer)
+                    //
+                    // The following method is faster and lighter because it only copies the array
+                    // only once and wraps as list.
+                    observer.accept((List<V>) Arrays.asList(buffer.toArray()));
                 }
 
                 if (validTiming) {
@@ -2011,6 +2021,17 @@ public final class Signal<V> {
 
             return effectOnce(() -> sub.complete = null).to(sub, disposer);
         });
+    }
+
+    /**
+     * This is a utility method for propagating a value along with the previous value. You can
+     * propagate a value from the first time by providing an initial value.
+     * 
+     * @param init A list of initial values.
+     * @return A chained {@link Signal}.
+     */
+    public final Signal<List<V>> pair(V... init) {
+        return startWith(init).buffer(2, 1);
     }
 
     /**
