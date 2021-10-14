@@ -2108,79 +2108,6 @@ public final class Signal<V> {
     }
 
     /**
-     * Generates an {@link Signal} sequence that repeats the given value infinitely.
-     *
-     * @return {ChainableAPI}
-     */
-    public final Signal<V> repeat() {
-        return repeat(Signal::skipNull);
-    }
-
-    /**
-     * Returns an {@link Signal} that emits the same values as the source signal preassign the
-     * exception of an {@link Observer#error(Throwable)}. An error notification from the source will
-     * result in the emission of a Throwable item to the {@link Signal} provided as an argument to
-     * the notificationHandler function. If that {@link Signal} calls {@link Observer#complete()} or
-     * {@link Observer#error(Throwable)} then retry will call {@link Observer#complete()} or
-     * {@link Observer#error(Throwable) } on the child subscription. Otherwise, this {@link Signal}
-     * will resubscribe to the source {@link Signal}.
-     * 
-     * @param notifier A receives an {@link Signal} of notifications preassign which a user can
-     *            complete or error, aborting the retry.
-     * @return Chainable API
-     */
-    public final Signal<V> repeat(WiseFunction<Signal<?>, Signal<?>> notifier) {
-        // ignore invalid parameter
-        if (notifier == null) {
-            return this;
-        }
-
-        return new Signal<>((observer, disposer) -> {
-            // recorder for the processing complete
-            Object[] processing = new Object[1];
-
-            // build the actual complete handler
-            Subscriber<Object> subscriber = new Subscriber();
-            WiseRunnable complete = () -> {
-                subscriber.accept(processing[0] = UNDEFINED);
-            };
-
-            // number of remaining repeats
-            AtomicInteger remaining = new AtomicInteger();
-            // previous repeat operation
-            Disposable[] previous = new Disposable[] {Disposable.empty()};
-
-            // define complete repeating flow
-            notifier.apply(subscriber.signal()).to(v -> {
-                processing[0] = null; // processing complete will be handled, so clear it
-
-                // If you are not repeating, repeat it immediately, otherwise you can do it later
-                if (remaining.getAndIncrement() == 0) {
-                    do {
-                        // dispose previous and reconnect
-                        previous[0].dispose();
-                        previous[0] = to(observer::accept, observer::error, complete, disposer.sub(), true);
-                    } while (remaining.decrementAndGet() != 0);
-                }
-            }, observer::error, () -> {
-                // Since this complete flow has ended,
-                // all subsequent complete are passed to the source signal.
-                subscriber.next = I.wiseC(observer::complete);
-
-                // Since there is a complete in processing, but this complete flow has ended,
-                // the processing complete is passed to the source signal.
-                if (processing[0] != null) observer.complete();
-            });
-
-            // connect preassign complete handling flow
-            previous[0] = to(observer::accept, observer::error, complete, disposer.sub(), true);
-
-            // API difinition
-            return disposer;
-        });
-    }
-
-    /**
      * Recover the source {@link Signal} on the specified error by the specified value. Unspecified
      * error types will pass through the source {@link Signal}.
      * 
@@ -2203,45 +2130,118 @@ public final class Signal<V> {
      * <li>Complete - Terminate notifier signal. Souce signal will never recover errors.</li>
      * </ul>
      * 
-     * @param notifier An error notifier to define recovering flow.
+     * @param flow An error notifier to define recovering flow.
      * @return Chainable API
      */
-    public final <E extends Throwable> Signal<V> recover(WiseFunction<Signal<E>, Signal<V>> notifier) {
+    public final <E extends Throwable> Signal<V> recover(WiseFunction<Signal<E>, Signal<V>> flow) {
         // ignore invalid parameter
-        if (notifier == null) {
+        if (flow == null) {
             return this;
         }
-
+    
         return new Signal<>((observer, disposer) -> {
             // recorder for the processing error
             Throwable[] processing = new Throwable[1];
-
+    
             // error notifier
-            Subscriber<E> error = new Subscriber();
-            error.next = e -> {
-                error.observer.accept(processing[0] = e);
+            Subscriber<E> sub = new Subscriber();
+            sub.next = e -> {
+                sub.observer.accept(processing[0] = e);
             };
-
+    
             // define error recovering flow
-            notifier.apply(error.signal()).to(v -> {
+            flow.apply(sub.signal()).to(v -> {
                 processing[0] = null; // processing error will be handled, so clear it
                 observer.accept(v);
             }, observer::error, () -> {
                 // Since this error flow has ended,
                 // all subsequent errors are passed to the source signal.
-                error.next = observer::error;
-
+                sub.next = observer::error;
+    
                 // Since there is an error in processing, but this error flow has ended,
                 // the processing error is passed to the source signal.
-
+    
                 // The following code is not used as it may send null.
                 // if (processing[0] != null) observer.error(processing[0]);
                 Throwable t = processing[0];
                 if (t != null) observer.error(t);
             });
-
+    
             // delegate error to the notifier
-            return to(observer::accept, error, observer::complete, disposer, false);
+            return to(observer::accept, sub, observer::complete, disposer, false);
+        });
+    }
+
+    /**
+     * Generates an {@link Signal} sequence that repeats the given value infinitely.
+     *
+     * @return {ChainableAPI}
+     */
+    public final Signal<V> repeat() {
+        return repeat(Signal::skipNull);
+    }
+
+    /**
+     * Returns an {@link Signal} that emits the same values as the source signal preassign the
+     * exception of an {@link Observer#error(Throwable)}. An error notification from the source will
+     * result in the emission of a Throwable item to the {@link Signal} provided as an argument to
+     * the notificationHandler function. If that {@link Signal} calls {@link Observer#complete()} or
+     * {@link Observer#error(Throwable)} then retry will call {@link Observer#complete()} or
+     * {@link Observer#error(Throwable) } on the child subscription. Otherwise, this {@link Signal}
+     * will resubscribe to the source {@link Signal}.
+     * 
+     * @param flow A receives an {@link Signal} of notifications preassign which a user can
+     *            complete or error, aborting the retry.
+     * @return Chainable API
+     */
+    public final Signal<V> repeat(WiseFunction<Signal<?>, Signal<?>> flow) {
+        // ignore invalid parameter
+        if (flow == null) {
+            return this;
+        }
+
+        return new Signal<>((observer, disposer) -> {
+            // recorder for the processing complete
+            Object[] processing = new Object[1];
+
+            // build the actual complete handler
+            Subscriber<Object> sub = new Subscriber();
+            WiseRunnable complete = () -> {
+                sub.accept(processing[0] = UNDEFINED);
+            };
+
+            // number of remaining repeats
+            AtomicInteger remaining = new AtomicInteger();
+            // previous repeat operation
+            Disposable[] previous = new Disposable[] {Disposable.empty()};
+
+            // define complete repeating flow
+            flow.apply(sub.signal()).to(v -> {
+                processing[0] = null; // processing complete will be handled, so clear it
+
+                // If you are not repeating, repeat it immediately, otherwise you can do it later
+                if (remaining.getAndIncrement() == 0) {
+                    do {
+                        // dispose previous and reconnect
+                        previous[0].dispose();
+                        previous[0] = to(observer::accept, observer::error, complete, disposer.sub(), true);
+                    } while (remaining.decrementAndGet() != 0);
+                }
+            }, observer::error, () -> {
+                // Since this complete flow has ended,
+                // all subsequent complete are passed to the source signal.
+                sub.next = I.wiseC(observer::complete);
+
+                // Since there is a complete in processing, but this complete flow has ended,
+                // the processing complete is passed to the source signal.
+                if (processing[0] != null) observer.complete();
+            });
+
+            // connect preassign complete handling flow
+            previous[0] = to(observer::accept, observer::error, complete, disposer.sub(), true);
+
+            // API difinition
+            return disposer;
         });
     }
 
@@ -2280,13 +2280,13 @@ public final class Signal<V> {
             Throwable[] processing = new Throwable[1];
 
             // build the actual error handler
-            Subscriber<E> error = new Subscriber();
-            error.disposer = disposer;
-            error.next = e -> {
+            Subscriber<E> sub = new Subscriber();
+            sub.disposer = disposer;
+            sub.next = e -> {
                 if (e instanceof UndeclaredThrowableException) {
                     e = (E) e.getCause();
                 }
-                error.observer.accept(processing[0] = e); // to user defined error flow
+                sub.observer.accept(processing[0] = e); // to user defined error flow
             };
 
             // number of remaining retrys
@@ -2295,7 +2295,7 @@ public final class Signal<V> {
             Disposable[] previous = new Disposable[] {Disposable.empty()};
 
             // define error retrying flow
-            flow.apply(error.signal()).to(v -> {
+            flow.apply(sub.signal()).to(v -> {
                 processing[0] = null; // processing error will be handled, so clear it
 
                 // If you are not retrying, retry it immediately, otherwise you can do it later
@@ -2303,13 +2303,13 @@ public final class Signal<V> {
                     do {
                         // dispose previous and reconnect
                         previous[0].dispose();
-                        previous[0] = to(observer::accept, error, observer::complete, disposer.sub(), true);
+                        previous[0] = to(observer::accept, sub, observer::complete, disposer.sub(), true);
                     } while (remaining.decrementAndGet() != 0);
                 }
             }, observer::error, () -> {
                 // Since this error flow has ended,
                 // all subsequent errors are passed to the source signal.
-                error.next = observer::error;
+                sub.next = observer::error;
 
                 // Since there is an error in processing, but this error flow has ended,
                 // the processing error is passed to the source signal.
@@ -2321,7 +2321,7 @@ public final class Signal<V> {
             });
 
             // connect preassign error handling flow
-            previous[0] = to(observer::accept, error, observer::complete, disposer.sub(), true);
+            previous[0] = to(observer::accept, sub, observer::complete, disposer.sub(), true);
 
             // API definition
             return disposer;
