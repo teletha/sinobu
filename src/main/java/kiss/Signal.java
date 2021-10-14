@@ -1847,34 +1847,6 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Returns an {@link Signal} that applies the given function to each value emitted by an
-     * {@link Signal} and emits the result.
-     * </p>
-     *
-     * @param converter A converter function to apply to each value emitted by this {@link Signal} .
-     *            <code>null</code> will ignore this instruction.
-     * @return {ChainableAPI}
-     */
-    public final <R> Signal<R> maps(WiseBiFunction<? super V, ? super V, R> converter) {
-        Objects.requireNonNull(converter);
-
-        return buffer(2, 1).map(values -> converter.apply(values.get(0), values.get(1)));
-    }
-
-    /**
-     * {@link #map(WiseFunction)} preassign previuos value.
-     *
-     * @param init A initial previous value.
-     * @param converter A converter function to apply to each value emitted by this {@link Signal} .
-     *            <code>null</code> will ignore this instruction.
-     * @return {ChainableAPI}
-     */
-    public final <R> Signal<R> maps(V init, WiseBiFunction<? super V, ? super V, R> converter) {
-        return startWith(init).maps(converter);
-    }
-
-    /**
-     * <p>
      * Returns an {@link Signal} that applies the given constant to each item emitted by an
      * {@link Signal} and emits the result.
      * </p>
