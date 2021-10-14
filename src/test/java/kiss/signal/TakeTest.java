@@ -137,41 +137,13 @@ class TakeTest extends SignalTester {
     }
 
     @Test
-    void takeUntilByValue() {
-        monitor(signal -> signal.takeUntil(30));
-
-        assert main.emit(10, 20, 30, 40).value(10, 20, 30);
-        assert main.isCompleted();
-        assert main.isDisposed();
-    }
-
-    @Test
-    void takeUntilByNullValue() {
-        monitor(signal -> signal.takeUntil((Integer) null));
-
-        assert main.emit(10, 20, null, 40).value(10, 20, null);
-        assert main.isCompleted();
-        assert main.isDisposed();
-    }
-
-    @Test
-    void takeUntilByValueWithRepeat() {
-        monitor(signal -> signal.skip(1).takeUntil(30).repeat());
-
-        assert main.emit(10, 20, 30).value(20, 30);
-        assert main.emit(40, 50, 60).value(50, 60);
-        assert main.isNotCompleted();
-        assert main.isNotDisposed();
-    }
-
-    @Test
-    void takeUntilByTime() {
-        monitor(signal -> signal.take(30, ms));
+    void takeUntilTime() {
+        monitor(signal -> signal.takeUntil(I.schedule(30, ms, scheduler)));
 
         assert main.emit("accept", "values", "in", "30ms").value("accept", "values", "in", "30ms");
         assert main.isNotCompleted();
 
-        scheduler.mark().elapse(30, ms);
+        scheduler.await();
         assert main.emit("drop all values", "because signal was already completed").value();
         assert main.isCompleted();
         assert main.isNotError();

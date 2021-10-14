@@ -14,6 +14,8 @@ import java.util.function.Predicate;
 
 import org.junit.jupiter.api.Test;
 
+import kiss.I;
+
 class SkipTest extends SignalTester {
 
     @Test
@@ -54,25 +56,6 @@ class SkipTest extends SignalTester {
 
         assert main.emit(1, 2, 3, 4).value(3, 4);
         assert main.isNotCompleted();
-    }
-
-    @Test
-    void skipByTime() {
-        monitor(signal -> signal.skip(30, ms));
-
-        assert main.emit(1, 2).value();
-        assert main.isNotCompleted();
-        scheduler.mark().elapse(30, ms);
-        assert main.emit(1, 2).value(1, 2);
-        assert main.isNotCompleted();
-    }
-
-    @Test
-    void skipByTimeWithInitialDelay() {
-        monitor(signal -> signal.skip(30, ms));
-
-        scheduler.mark().elapse(30, ms);
-        assert main.emit(1, 2).value(1, 2);
     }
 
     @Test
@@ -129,6 +112,17 @@ class SkipTest extends SignalTester {
 
         monitor(() -> signal(0, 1, 2, 3, 4, 5).skipAt(index -> index % 2 == 0));
         assert main.value(1, 3, 5);
+    }
+
+    @Test
+    void skipUntilTime() {
+        monitor(signal -> signal.skipUntil(I.schedule(30, ms, scheduler)));
+    
+        assert main.emit(1, 2).value();
+        assert main.isNotCompleted();
+        scheduler.await();
+        assert main.emit(1, 2).value(1, 2);
+        assert main.isNotCompleted();
     }
 
     @Test
@@ -192,36 +186,6 @@ class SkipTest extends SignalTester {
         assert main.isNotDisposed();
         assert other.isNotCompleted();
         assert other.isNotDisposed();
-    }
-
-    @Test
-    void skipUntilValue() {
-        monitor(signal -> signal.skipUntil(4));
-
-        assert main.emit(2, 3, 4, 5).value(4, 5);
-        assert main.emit(2, 3, 4, 5).value(2, 3, 4, 5);
-        assert main.isNotCompleted();
-        assert main.isNotDisposed();
-    }
-
-    @Test
-    void skipUntilValueNull() {
-        monitor(signal -> signal.skipUntil((Object) null));
-
-        assert main.emit(2, 3, null, 4, 5).value(null, 4, 5);
-        assert main.emit(2, 3, 4, null).value(2, 3, 4, null);
-        assert main.isNotCompleted();
-        assert main.isNotDisposed();
-    }
-
-    @Test
-    void skipUntilValueWithRepeat() {
-        monitor(signal -> signal.skipUntil(3).take(2).repeat());
-
-        assert main.emit(2, 3, 4, 5, 6).value(3, 4);
-        assert main.emit(2, 3, 4, 5, 6).value(3, 4);
-        assert main.isNotCompleted();
-        assert main.isNotDisposed();
     }
 
     @Test

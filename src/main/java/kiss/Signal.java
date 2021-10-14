@@ -2600,34 +2600,6 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Bypasses a specified duration in an {@link Signal} sequence and then returns the remaining
-     * values.
-     * </p>
-     *
-     * @param time Time to skip values. Zero or negative number will ignore this instruction.
-     * @param unit A unit of time for the specified timeout. <code>null</code> will ignore this
-     *            instruction.
-     * @return {ChainableAPI}
-     */
-    public final Signal<V> skip(long time, TimeUnit unit) {
-        // ignore invalid parameters
-        if (time <= 0 || unit == null) {
-            return this;
-        }
-
-        return new Signal<>((observer, disposer) -> {
-            long timing = System.nanoTime() + unit.toNanos(time);
-
-            return to(value -> {
-                if (timing < System.nanoTime()) {
-                    observer.accept(value);
-                }
-            }, observer::error, observer::complete, disposer, false);
-        });
-    }
-
-    /**
-     * <p>
      * Returns a specified index values from the start of an {@link Signal} sequence.
      * </p>
      * 
@@ -3112,24 +3084,6 @@ public final class Signal<V> {
      */
     public final Signal<V> take(Signal<Boolean> condition) {
         return take(condition, false, true);
-    }
-
-    /**
-     * <p>
-     * Returns an {@link Signal} sequence while the specified duration.
-     * </p>
-     *
-     * @param time Time to take values. Zero or negative number will ignore this instruction.
-     * @param unit A unit of time for the specified timeout. <code>null</code> will ignore this
-     *            instruction.
-     * @return {ChainableAPI}
-     */
-    public final Signal<V> take(long time, TimeUnit unit) {
-        // ignore invalid parameters
-        if (time <= 0 || unit == null) {
-            return this;
-        }
-        return take(() -> System.nanoTime() + unit.toNanos(time), (limit, value) -> System.nanoTime() < limit, true, true, false);
     }
 
     /**
