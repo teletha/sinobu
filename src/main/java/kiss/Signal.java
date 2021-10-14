@@ -10,7 +10,7 @@
 package kiss;
 
 import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.*;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -2613,11 +2613,11 @@ public final class Signal<V> {
     /**
      * Return the {@link Signal} which ignores the specified error.
      * 
-     * @param type A error type to ignore.
+     * @param types A list of error types to ignore.
      * @return {@link Signal} which ignores the specified error.
      */
-    public final Signal<V> skipError(Class<? extends Throwable>... type) {
-        return recover(e -> e.as(type).mapTo((V) null).skip(I::accept));
+    public final Signal<V> skipError(Class<? extends Throwable>... types) {
+        return recover(e -> e.as(types).mapTo((V) null).skip(I::accept));
     }
 
     /**
@@ -2635,9 +2635,7 @@ public final class Signal<V> {
     }
 
     /**
-     * <p>
      * Alias for skip(Objects::isNull).
-     * </p>
      *
      * @return {ChainableAPI}
      */
@@ -2646,27 +2644,9 @@ public final class Signal<V> {
     }
 
     /**
-     * <p>
-     * This method is equivalent to the following code.
-     * </p>
-     * <pre>
-     * skipUntil(v -> Objects.equals(v, value));
-     * </pre>
-     *
-     * @param value A value to test each item emitted from the source {@link Signal}.
-     * @return An {@link Signal} that begins emitting items emitted by the source {@link Signal}
-     *         when the specified value is coming.
-     */
-    public final Signal<V> skipUntil(V value) {
-        return skipUntil(v -> Objects.equals(v, value));
-    }
-
-    /**
-     * <p>
      * Returns an {@link Signal} that skips all items emitted by the source {@link Signal} as long
      * as a specified condition holds true, but emits all further source items as soon as the
      * condition becomes false.
-     * </p>
      *
      * @param predicate A function to test each item emitted from the source {@link Signal}.
      * @return An {@link Signal} that begins emitting items emitted by the source {@link Signal}
@@ -2679,24 +2659,21 @@ public final class Signal<V> {
         }
 
         return new Signal<>((observer, disposer) -> {
-            AtomicBoolean flag = new AtomicBoolean();
-
-            return to(value -> {
-                if (flag.get()) {
-                    observer.accept(value);
-                } else if (predicate.test(value)) {
-                    flag.set(true);
+            Subscriber<V> o = new Subscriber();
+            o.observer = observer;
+            o.next = value -> {
+                if (predicate.test(value)) {
+                    o.next = null;
                     observer.accept(value);
                 }
-            }, observer::error, observer::complete, disposer, false);
+            };
+            return to(o, disposer);
         });
     }
 
     /**
-     * <p>
      * Returns the values from the source {@link Signal} sequence only after the other
      * {@link Signal} sequence produces a value.
-     * </p>
      *
      * @param timing The second {@link Signal} that has to emit an item before the source
      *            {@link Signal} elements begin to be mirrored by the resulting {@link Signal}.
@@ -3121,23 +3098,6 @@ public final class Signal<V> {
             return this;
         }
         return take(AtomicLong::new, (context, value) -> condition.test(context.getAndIncrement()), true, false, false);
-    }
-
-    /**
-     * <p>
-     * This method is equivalent to the following code.
-     * </p>
-     * <pre>
-     * takeUntil(v -> Objects.equals(v, value));
-     * </pre>
-     *
-     * @param value A value to test each item emitted from the source {@link Signal}.
-     * @return An {@link Signal} that first emits items emitted by the source {@link Signal}, checks
-     *         the specified condition after each item, and then completes if the condition is
-     *         satisfied.
-     */
-    public final Signal<V> takeUntil(V value) {
-        return take(() -> value, Objects::equals, false, true, true);
     }
 
     /**

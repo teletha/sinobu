@@ -117,7 +117,7 @@ class SkipTest extends SignalTester {
     @Test
     void skipUntilTime() {
         monitor(signal -> signal.skipUntil(I.schedule(30, ms, scheduler)));
-    
+
         assert main.emit(1, 2).value();
         assert main.isNotCompleted();
         scheduler.await();
@@ -190,10 +190,11 @@ class SkipTest extends SignalTester {
 
     @Test
     void skipUntilValueCondition() {
-        monitor(int.class, signal -> signal.skipUntil(value -> value == 3));
+        monitor(int.class, signal -> signal.skipUntil(value -> 3 <= value));
 
         assert main.emit(1, 2).value();
         assert main.emit(3, 4).value(3, 4);
+        assert main.emit(1, 2).value(1, 2);
         assert main.isNotCompleted();
         assert main.isNotDisposed();
     }
