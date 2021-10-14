@@ -10,7 +10,7 @@
 package kiss;
 
 import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.NANOSECONDS;
+import static java.util.concurrent.TimeUnit.*;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -2138,35 +2138,33 @@ public final class Signal<V> {
         if (flow == null) {
             return this;
         }
-    
+
         return new Signal<>((observer, disposer) -> {
-            // recorder for the processing error
-            Throwable[] processing = new Throwable[1];
-    
             // error notifier
             Subscriber<E> sub = new Subscriber();
             sub.next = e -> {
-                sub.observer.accept(processing[0] = e);
+                // recorde the processing error
+                sub.observer.accept(sub.obj = e);
             };
-    
+
             // define error recovering flow
             flow.apply(sub.signal()).to(v -> {
-                processing[0] = null; // processing error will be handled, so clear it
+                sub.obj = null; // processing error will be handled, so clear it
                 observer.accept(v);
             }, observer::error, () -> {
                 // Since this error flow has ended,
                 // all subsequent errors are passed to the source signal.
                 sub.next = observer::error;
-    
+
                 // Since there is an error in processing, but this error flow has ended,
                 // the processing error is passed to the source signal.
-    
+
                 // The following code is not used as it may send null.
-                // if (processing[0] != null) observer.error(processing[0]);
-                Throwable t = processing[0];
+                // if (sub.obj != null) observer.error(sub.obj);
+                Throwable t = sub.obj;
                 if (t != null) observer.error(t);
             });
-    
+
             // delegate error to the notifier
             return to(observer::accept, sub, observer::complete, disposer, false);
         });
@@ -2190,8 +2188,8 @@ public final class Signal<V> {
      * {@link Observer#error(Throwable) } on the child subscription. Otherwise, this {@link Signal}
      * will resubscribe to the source {@link Signal}.
      * 
-     * @param flow A receives an {@link Signal} of notifications preassign which a user can
-     *            complete or error, aborting the retry.
+     * @param flow A receives an {@link Signal} of notifications preassign which a user can complete
+     *            or error, aborting the retry.
      * @return Chainable API
      */
     public final Signal<V> repeat(WiseFunction<Signal<?>, Signal<?>> flow) {
@@ -2201,13 +2199,11 @@ public final class Signal<V> {
         }
 
         return new Signal<>((observer, disposer) -> {
-            // recorder for the processing complete
-            Object[] processing = new Object[1];
-
             // build the actual complete handler
             Subscriber<Object> sub = new Subscriber();
             WiseRunnable complete = () -> {
-                sub.accept(processing[0] = UNDEFINED);
+                // recorde the processing completion
+                sub.accept(sub.obj = UNDEFINED);
             };
 
             // number of remaining repeats
@@ -2217,7 +2213,7 @@ public final class Signal<V> {
 
             // define complete repeating flow
             flow.apply(sub.signal()).to(v -> {
-                processing[0] = null; // processing complete will be handled, so clear it
+                sub.obj = null; // processing complete will be handled, so clear it
 
                 // If you are not repeating, repeat it immediately, otherwise you can do it later
                 if (remaining.getAndIncrement() == 0) {
@@ -2234,7 +2230,7 @@ public final class Signal<V> {
 
                 // Since there is a complete in processing, but this complete flow has ended,
                 // the processing complete is passed to the source signal.
-                if (processing[0] != null) observer.complete();
+                if (sub.obj != null) observer.complete();
             });
 
             // connect preassign complete handling flow
@@ -2276,9 +2272,6 @@ public final class Signal<V> {
         }
 
         return new Signal<>((observer, disposer) -> {
-            // recorder for the processing error
-            Throwable[] processing = new Throwable[1];
-
             // build the actual error handler
             Subscriber<E> sub = new Subscriber();
             sub.disposer = disposer;
@@ -2286,7 +2279,10 @@ public final class Signal<V> {
                 if (e instanceof UndeclaredThrowableException) {
                     e = (E) e.getCause();
                 }
-                sub.observer.accept(processing[0] = e); // to user defined error flow
+                // recorde the processing error
+                //
+                // to user defined error flow
+                sub.observer.accept(sub.obj = e);
             };
 
             // number of remaining retrys
@@ -2296,7 +2292,7 @@ public final class Signal<V> {
 
             // define error retrying flow
             flow.apply(sub.signal()).to(v -> {
-                processing[0] = null; // processing error will be handled, so clear it
+                sub.obj = null; // processing error will be handled, so clear it
 
                 // If you are not retrying, retry it immediately, otherwise you can do it later
                 if (remaining.getAndIncrement() == 0) {
@@ -2313,10 +2309,10 @@ public final class Signal<V> {
 
                 // Since there is an error in processing, but this error flow has ended,
                 // the processing error is passed to the source signal.
-
+                //
                 // The following code is not used as it may send null.
-                // if (processing[0] != null) observer.error(processing[0]);
-                Throwable t = processing[0];
+                // if (sub.obj != null) observer.error(sub.obj);
+                Throwable t = sub.obj;
                 if (t != null) observer.error(t);
             });
 
