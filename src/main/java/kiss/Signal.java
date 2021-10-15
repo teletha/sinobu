@@ -10,7 +10,7 @@
 package kiss;
 
 import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.*;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -797,7 +797,7 @@ public final class Signal<V> {
         if (others == null || others.length == 0) {
             return this;
         }
-        return concat(I.list(others));
+        return concat(Arrays.asList(others));
     }
 
     /**
@@ -1879,7 +1879,7 @@ public final class Signal<V> {
      * @return {ChainableAPI}
      */
     public final Signal<V> merge(Signal<? extends V>... others) {
-        return merge(I.list(others));
+        return merge(Arrays.asList(others));
     }
 
     /**
