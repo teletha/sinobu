@@ -36,4 +36,24 @@ class ReverseTest extends SignalTester {
         assert main.isNotError();
         assert main.isDisposed();
     }
+
+    @Test
+    void error() {
+        monitor(signal -> signal.reverse());
+
+        assert main.emit(Error).value();
+        assert main.isNotCompleted();
+        assert main.isError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void complete() {
+        monitor(signal -> signal.reverse());
+
+        assert main.emit(Complete).value();
+        assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+    }
 }
