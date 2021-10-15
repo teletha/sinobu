@@ -31,4 +31,24 @@ class SortTest extends SignalTester {
 
         main.emit(1, 2, Complete);
     }
+
+    @Test
+    void error() {
+        monitor(int.class, signal -> signal.sort(Comparator.naturalOrder()));
+
+        assert main.emit(Error).value();
+        assert main.isError();
+        assert main.isNotCompleted();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void complete() {
+        monitor(int.class, signal -> signal.sort(Comparator.naturalOrder()));
+
+        assert main.emit(Complete).value();
+        assert main.isNotError();
+        assert main.isCompleted();
+        assert main.isDisposed();
+    }
 }

@@ -2703,7 +2703,10 @@ public final class Signal<V> {
      * @return {ChainableAPI}
      */
     public final Signal<V> sort(Comparator<? super V> comparator) {
-        return buffer().effect(e -> e.sort(comparator)).flatIterable(e -> e);
+        return buffer().flatIterable(e -> {
+            e.sort(comparator);
+            return e;
+        });
     }
 
     /**
