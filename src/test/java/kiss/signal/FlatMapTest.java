@@ -9,9 +9,9 @@
  */
 package kiss.signal;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.Test;
 
@@ -89,6 +89,56 @@ class FlatMapTest extends SignalTester {
     }
 
     @Test
+    void withContext() {
+        monitor(Integer.class, signal -> signal.flatMap(AtomicInteger::new, (c, v) -> signal(v, c.incrementAndGet() + v)));
+
+        assert main.emit(10, 20).value(10, 11, 20, 22);
+        assert main.isNotCompleted();
+        assert main.isNotError();
+        assert main.isNotDisposed();
+    }
+
+    @Test
+    void withContextError() {
+        monitor(Integer.class, signal -> signal.flatMap(AtomicInteger::new, (c, v) -> signal(v, c.incrementAndGet() + v)));
+
+        assert main.emit(Error, 10, 20).value();
+        assert main.isNotCompleted();
+        assert main.isError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void withContextErrorInFunction() {
+        monitor(Integer.class, signal -> signal.flatMap(AtomicInteger::new, errorBiFunction()));
+
+        assert main.emit(10, 20).value();
+        assert main.isNotCompleted();
+        assert main.isError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void withContextComplete() {
+        monitor(Integer.class, signal -> signal.flatMap(AtomicInteger::new, (c, v) -> signal(v, c.incrementAndGet() + v)));
+
+        assert main.emit(Complete, 10, 20).value();
+        assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void withNullContext() {
+        monitor(Integer.class, signal -> signal.flatMap(null, (c, v) -> signal(v, v + 1)));
+
+        assert main.emit(10, 20).value(10, 11, 20, 21);
+        assert main.isNotCompleted();
+        assert main.isNotError();
+        assert main.isNotDisposed();
+    }
+
+    @Test
     void delayAndInterval() {
         monitor(Integer.class, signal -> signal
                 .flatMap(time -> signal(time, time + 1).delay(time, ms, scheduler).interval(100, ms, scheduler)));
@@ -121,34 +171,6 @@ class FlatMapTest extends SignalTester {
         assert main.isDisposed();
         assert other.isDisposed();
         assert another.isDisposed();
-    }
-
-    @Test
-    void array() {
-        monitor(String.class, signal -> signal.flatArray(v -> v.split("")));
-
-        assert main.emit("TEST").value("T", "E", "S", "T");
-    }
-
-    @Test
-    void arrayNull() {
-        assertThrows(NullPointerException.class, () -> {
-            monitor(String.class, signal -> signal.flatArray(null));
-        });
-    }
-
-    @Test
-    void iterable() {
-        monitor(String.class, signal -> signal.flatIterable(v -> Arrays.asList(v.split(""))));
-
-        assert main.emit("TEST").value("T", "E", "S", "T");
-    }
-
-    @Test
-    void iterableNull() {
-        assertThrows(NullPointerException.class, () -> {
-            monitor(String.class, signal -> signal.flatIterable(null));
-        });
     }
 
     @Test

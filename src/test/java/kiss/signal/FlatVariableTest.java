@@ -87,6 +87,16 @@ class FlatVariableTest extends SignalTester {
     }
 
     @Test
+    void errorInFunction() {
+        monitor(Person.class, Integer.class, signal -> signal.flatVariable(errorFunction()));
+
+        assert main.emit(Error).value();
+        assert main.isNotCompleted();
+        assert main.isError();
+        assert main.isDisposed();
+    }
+
+    @Test
     void rejectNull() {
         assertThrows(NullPointerException.class, () -> {
             monitor(() -> signal(1, 2).flatVariable((WiseFunction) null));
