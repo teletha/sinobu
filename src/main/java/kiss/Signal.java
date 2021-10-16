@@ -10,7 +10,7 @@
 package kiss;
 
 import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.*;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -777,13 +777,6 @@ public final class Signal<V> {
         return base;
     }
 
-    public final <R> Signal<Map<V, R>> combineLatestMap(WiseFunction<V, Signal<R>> mapper) {
-        return flatMap(v -> mapper.apply(v).map(x -> I.pair(v, x))).scan((WiseSupplier<Map<V, R>>) ConcurrentHashMap::new, (map, v) -> {
-            map.put(v.ⅰ, v.ⅱ);
-            return map;
-        });
-    }
-
     /**
      * Returns an {@link Signal} that emits the items emitted by {@link Signal}s, one after the
      * other, preassignout interleaving them.
@@ -1501,13 +1494,31 @@ public final class Signal<V> {
     public final <R> Signal<R> flatMap(WiseFunction<V, Signal<R>> function) {
         Objects.requireNonNull(function);
 
+        return flatMap(null, (c, v) -> function.apply(v));
+    }
+
+    /**
+     * Returns an {@link Signal} that emits items based on applying a function that you supply to
+     * each item emitted by the source {@link Signal}, where that function returns an {@link Signal}
+     * , and then merging those resulting {@link Signal} and emitting the results of this merger.
+     *
+     * @param function A function that, when applied to an item emitted by the source {@link Signal}
+     *            , returns an {@link Signal}.
+     * @return An {@link Signal} that emits the result of applying the transformation function to
+     *         each item emitted by the source {@link Signal} and merging the results of the
+     *         {@link Signal} obtained from this transformation.
+     */
+    public final <C, R> Signal<R> flatMap(WiseSupplier<C> context, WiseBiFunction<C, V, Signal<R>> function) {
+        Objects.requireNonNull(function);
+
         return new Signal<>((observer, disposer) -> {
+            C c = context == null ? null : context.get();
             Subscriber end = countable(observer, 1);
             end.next = observer;
 
             return to(value -> {
                 end.index++;
-                function.apply(value).to(end, end::error, null, disposer.sub().add(end::complete), true);
+                function.apply(c, value).to(end, end::error, null, disposer.sub().add(end::complete), true);
             }, observer::error, end::complete, disposer, false);
         });
     }
@@ -1682,22 +1693,44 @@ public final class Signal<V> {
      * Returns a new {@link Signal} that invokes the mapper action in parallel thread and waits all
      * of them until all actions are completed.
      *
-     * @param mapper A mapper function.
+     * @param function A mapper function.
      * @return {ChainableAPI}
      */
-    public final <R> Signal<R> joinAll(WiseFunction<V, R> mapper) {
-        return map(mapper::bind).buffer().flatIterable(v -> I.signal(I.scheduler.invokeAll(v)).map(Future<R>::get).toList());
+    public final <R> Signal<R> joinAll(WiseFunction<V, R> function) {
+        return map(function::bind).buffer().flatIterable(v -> I.signal(I.scheduler.invokeAll(v)).map(Future<R>::get).toList());
     }
 
     /**
      * Returns a new {@link Signal} that invokes the mapper action in parallel thread and waits
      * until any single action is completed. All other actions will be cancelled.
      * 
-     * @param mapper A mapper function.
+     * @param function A mapper function.
      * @return {ChainableAPI}
      */
-    public final <R> Signal<R> joinAny(WiseFunction<V, R> mapper) {
-        return map(mapper::bind).buffer().map(I.scheduler::invokeAny);
+    public final <R> Signal<R> joinAny(WiseFunction<V, R> function) {
+        return map(function::bind).buffer().map(I.scheduler::invokeAny);
+    }
+
+    /**
+     * Returns an {@link Signal} that emits items based on applying a function that you supply to
+     * each item emitted by the source {@link Signal}, where that function returns an {@link Signal}
+     * , and then merging those resulting {@link Signal} and emitting the results of this merger.
+     *
+     * @param function A function that, when applied to an item emitted by the source {@link Signal}
+     *            , returns an {@link Signal}.
+     * @return An {@link Signal} that emits the result of applying the transformation function to
+     *         each item emitted by the source {@link Signal} and merging the results of the
+     *         {@link Signal} obtained from this transformation.
+     */
+    public final <R> Signal<Map<V, R>> keyMap(WiseFunction<V, Signal<R>> function) {
+        Objects.requireNonNull(function);
+
+        return flatMap(ConcurrentHashMap<V, R>::new, (map, v) -> {
+            return function.apply(v).map(r -> {
+                map.put(v, r);
+                return map;
+            });
+        });
     }
 
     /**
@@ -1725,14 +1758,14 @@ public final class Signal<V> {
      * ───❶───❷───❸───❹───❺──┼
      * </pre>
      *
-     * @param converter A converter function to apply to each value emitted by this {@link Signal} .
+     * @param function A converter function to apply to each value emitted by this {@link Signal} .
      *            <code>null</code> will ignore this instruction.
      * @return {ChainableAPI}
      */
-    public final <R> Signal<R> map(WiseFunction<? super V, R> converter) {
-        Objects.requireNonNull(converter);
+    public final <R> Signal<R> map(WiseFunction<? super V, R> function) {
+        Objects.requireNonNull(function);
 
-        return map((WiseSupplier) null, (context, value) -> converter.apply(value));
+        return map(null, (context, value) -> function.apply(value));
     }
 
     /**
@@ -1749,18 +1782,18 @@ public final class Signal<V> {
      * ───❶───❷───❸───❹───❺──┼
      * </pre>
      * 
-     * @param contextSupplier A {@link Supplier} of {@link Signal} specific context.
-     * @param converter A converter function to apply to each value emitted by this {@link Signal} .
+     * @param context A {@link Supplier} of {@link Signal} specific context.
+     * @param function A converter function to apply to each value emitted by this {@link Signal} .
      *            <code>null</code> will ignore this instruction.
      * @return {ChainableAPI}
      */
-    public final <C, R> Signal<R> map(WiseSupplier<C> contextSupplier, WiseBiFunction<C, ? super V, R> converter) {
-        Objects.requireNonNull(converter);
+    public final <C, R> Signal<R> map(WiseSupplier<C> context, WiseBiFunction<C, ? super V, R> function) {
+        Objects.requireNonNull(function);
 
         return new Signal<>((observer, disposer) -> {
-            C context = contextSupplier == null ? null : contextSupplier.get();
+            C c = context == null ? null : context.get();
 
-            return to(value -> observer.accept(converter.apply(context, value)), observer::error, observer::complete, disposer, false);
+            return to(value -> observer.accept(function.apply(c, value)), observer::error, observer::complete, disposer, false);
         });
     }
 

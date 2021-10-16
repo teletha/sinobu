@@ -9,13 +9,14 @@
  */
 package kiss.signal;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-class CombineLatestMapTest extends SignalTester {
+class KeyMapTest extends SignalTester {
 
     @Test
-    void combineLatestMap() {
-        monitor(Integer.class, signal -> signal.combineLatestMap(v -> {
+    void keyMap() {
+        monitor(Integer.class, signal -> signal.keyMap(v -> {
             if (v == 1) {
                 return other.signal();
             } else {
@@ -48,7 +49,7 @@ class CombineLatestMapTest extends SignalTester {
 
     @Test
     void error() {
-        monitor(Integer.class, signal -> signal.combineLatestMap(v -> {
+        monitor(Integer.class, signal -> signal.keyMap(v -> {
             if (v == 1) {
                 return other.signal();
             } else {
@@ -64,7 +65,7 @@ class CombineLatestMapTest extends SignalTester {
 
     @Test
     void complete() {
-        monitor(Integer.class, signal -> signal.combineLatestMap(v -> {
+        monitor(Integer.class, signal -> signal.keyMap(v -> {
             if (v == 1) {
                 return other.signal();
             } else {
@@ -76,5 +77,10 @@ class CombineLatestMapTest extends SignalTester {
         assert main.isCompleted();
         assert main.isNotError();
         assert main.isDisposed();
+    }
+
+    @Test
+    void nullMapper() {
+        Assertions.assertThrows(NullPointerException.class, () -> monitor(signal -> signal.keyMap(null)));
     }
 }
