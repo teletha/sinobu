@@ -22,4 +22,24 @@ class SkipCompleteTest extends SignalTester {
         assert main.isNotError();
         assert main.isNotDisposed();
     }
+
+    @Test
+    void error() {
+        monitor(signal -> signal.skipComplete());
+
+        assert main.emit(Error, 1, 2).value();
+        assert main.isNotCompleted();
+        assert main.isError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void value() {
+        monitor(signal -> signal.skipComplete());
+
+        assert main.emit(1, 2).value(1, 2);
+        assert main.isNotCompleted();
+        assert main.isNotError();
+        assert main.isNotDisposed();
+    }
 }

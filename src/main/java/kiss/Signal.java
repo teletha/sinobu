@@ -1471,36 +1471,6 @@ public final class Signal<V> {
     }
 
     /**
-     * Instructs an {@link Signal} to emit an item (returned by a specified function) rather than
-     * invoking onError if it encounters an error.
-     * 
-     * @param resumer
-     * @return {ChainableAPI}
-     */
-    public final Signal<V> errorResume(Signal<? extends V> resumer) {
-        if (resumer == null) {
-            return this;
-        }
-        return errorResume(e -> resumer);
-    }
-
-    /**
-     * Instructs an {@link Signal} to emit an item (returned by a specified function) rather than
-     * invoking onError if it encounters an error.
-     * 
-     * @param resumer
-     * @return {ChainableAPI}
-     */
-    public final Signal<V> errorResume(WiseFunction<? super Throwable, Signal<? extends V>> resumer) {
-        if (resumer == null) {
-            return this;
-        }
-        return new Signal<>((observer, disposer) -> {
-            return to(observer::accept, e -> resumer.apply(e).to(observer, disposer), observer::complete, disposer, false);
-        });
-    }
-
-    /**
      * Returns {@link Signal} that emits only the very first item emitted by the source
      * {@link Signal}, or completes if the source {@link Signal} is empty.
      * 
@@ -2127,7 +2097,11 @@ public final class Signal<V> {
             // define error recovering flow
             flow.apply(sub.signal()).to(v -> {
                 sub.obj = null; // processing error will be handled, so clear it
-                observer.accept(v);
+                if (v == UNDEFINED) {
+                    observer.complete();
+                } else {
+                    observer.accept(v);
+                }
             }, observer::error, () -> {
                 // Since this error flow has ended,
                 // all subsequent errors are passed to the source signal.
@@ -2592,6 +2566,7 @@ public final class Signal<V> {
      * 
      * @param types A list of error types to ignore.
      * @return {@link Signal} which ignores the specified error.
+     * @see #stopError(Class...)
      */
     public final Signal<V> skipError(Class<? extends Throwable>... types) {
         return recover(e -> e.as(types).mapTo((V) null).skip(I::accept));
@@ -2810,6 +2785,17 @@ public final class Signal<V> {
      */
     public final Signal<V> startWithNull() {
         return startWith((V) null);
+    }
+
+    /**
+     * Return the {@link Signal} which replaces the specified error by complete event.
+     * 
+     * @param types A list of error types to replace.
+     * @return {@link Signal} which replaces the specified error by complete event.
+     * @see #skipError(Class...)
+     */
+    public final Signal<V> stopError(Class<? extends Throwable>... types) {
+        return recover(e -> (Signal<V>) e.as(types).mapTo(UNDEFINED));
     }
 
     /**

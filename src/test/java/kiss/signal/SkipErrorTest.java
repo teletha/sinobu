@@ -20,15 +20,35 @@ class SkipErrorTest extends SignalTester {
     void skip() {
         monitor(signal -> signal.skipError());
 
-        main.emit(Error.class);
+        assert main.emit(Error.class, 1, 2).value(1, 2);
         assert main.isNotError();
         assert main.isNotDisposed();
 
-        main.emit(RuntimeException.class);
+        assert main.emit(RuntimeException.class, 3, 4).value(3, 4);
         assert main.isNotError();
         assert main.isNotDisposed();
 
-        main.emit(Exception.class);
+        assert main.emit(Exception.class, 5, 6).value(5, 6);
+        assert main.isNotError();
+        assert main.isNotDisposed();
+    }
+
+    @Test
+    void complete() {
+        monitor(signal -> signal.skipError());
+
+        assert main.emit(Complete, 1, 2).value();
+        assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void value() {
+        monitor(signal -> signal.skipError());
+
+        assert main.emit(1, 2).value(1, 2);
+        assert main.isNotCompleted();
         assert main.isNotError();
         assert main.isNotDisposed();
     }
