@@ -10,7 +10,6 @@
 package kiss.signal;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -106,26 +105,6 @@ class SignalCreationTest extends SignalTester {
     @Test
     void iterableNull() {
         monitor(() -> signal((Iterable) null));
-
-        assert main.value();
-        assert main.isCompleted();
-        assert main.isNotError();
-        assert main.isDisposed();
-    }
-
-    @Test
-    void enumeration() {
-        monitor(1, () -> signal(enume(1, 2)));
-
-        assert main.value(1, 2);
-        assert main.isCompleted();
-        assert main.isNotError();
-        assert main.isDisposed();
-    }
-
-    @Test
-    void enumerationNull() {
-        monitor(() -> signal((Enumeration) null));
 
         assert main.value();
         assert main.isCompleted();
