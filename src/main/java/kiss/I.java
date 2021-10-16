@@ -1105,7 +1105,7 @@ public class I {
 
             if (file.isFile()) {
                 // from jar file
-                names = I.signal(new ZipFile(file).entries()).map(entry -> entry.getName().replace('/', '.'));
+                names = I.signal(new ZipFile(file).entries()::asIterator).map(entry -> entry.getName().replace('/', '.'));
             } else {
                 // from class directory
                 int prefix = file.getPath().length() + 1;
@@ -1947,16 +1947,6 @@ public class I {
      * @return The {@link Signal} to emit sequencial values.
      */
     public static <V> Signal<V> signal(Iterable<V> values) {
-        return I.<V> signal().startWith(values);
-    }
-
-    /**
-     * Signal the specified values.
-     *
-     * @param values A list of values to emit.
-     * @return The {@link Signal} to emit sequencial values.
-     */
-    public static <V> Signal<V> signal(Enumeration<V> values) {
         return I.<V> signal().startWith(values);
     }
 

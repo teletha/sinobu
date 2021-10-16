@@ -9,7 +9,7 @@
  */
 package kiss.signal;
 
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -264,16 +264,6 @@ public class SignalTester {
      * @return
      */
     protected <T> Signal<T> signal(Iterable<T> values) {
-        return I.signal(values);
-    }
-
-    /**
-     * Shorthand method of {@link I#signal(Enumeration)}
-     * 
-     * @param values
-     * @return
-     */
-    protected <T> Signal<T> signal(Enumeration<T> values) {
         return I.signal(values);
     }
 

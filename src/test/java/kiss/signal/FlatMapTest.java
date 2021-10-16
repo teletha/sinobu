@@ -9,7 +9,7 @@
  */
 package kiss.signal;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
 
@@ -121,21 +121,6 @@ class FlatMapTest extends SignalTester {
         assert main.isDisposed();
         assert other.isDisposed();
         assert another.isDisposed();
-    }
-
-    @Test
-    void enumeration() {
-        monitor(() -> signal(10, 20).flatEnum(v -> enume(v, v + 1)));
-
-        assert main.value(10, 11, 20, 21);
-        assert main.isCompleted();
-    }
-
-    @Test
-    void enumerationNull() {
-        assertThrows(NullPointerException.class, () -> {
-            monitor(() -> signal(1, 2).flatEnum(null));
-        });
     }
 
     @Test

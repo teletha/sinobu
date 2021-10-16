@@ -9,8 +9,6 @@
  */
 package kiss.signal;
 
-import java.util.Enumeration;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -71,31 +69,6 @@ class StartWithTest extends SignalTester {
     @Test
     void iterableNull() {
         monitor(() -> signal(1, 2).startWith((Iterable) null));
-        assert main.value(1, 2);
-        assert main.isCompleted();
-        assert main.isDisposed();
-    }
-
-    @Test
-    void enumerable() {
-        monitor(1, () -> signal(3, 4).startWith(enume(0, 1, 2)));
-        assert main.value(0, 1, 2, 3, 4);
-        assert main.isCompleted();
-        assert main.isDisposed();
-    }
-
-    @Test
-    void enumerableError() {
-        monitor(() -> signal(1, 2).startWith(errorEnumeration()));
-        assert main.value();
-        assert main.isError();
-        assert main.isNotCompleted();
-        assert main.isDisposed();
-    }
-
-    @Test
-    void enumerableNull() {
-        monitor(() -> signal(1, 2).startWith((Enumeration) null));
         assert main.value(1, 2);
         assert main.isCompleted();
         assert main.isDisposed();

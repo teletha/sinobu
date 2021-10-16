@@ -10,7 +10,7 @@
 package kiss;
 
 import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.NANOSECONDS;
+import static java.util.concurrent.TimeUnit.*;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Deque;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -1549,21 +1548,6 @@ public final class Signal<V> {
      *         each item emitted by the source {@link Signal} and merging the results of the
      *         {@link Signal} obtained from this transformation.
      */
-    public final <R> Signal<R> flatEnum(WiseFunction<V, ? extends Enumeration<R>> function) {
-        return flatMap(I.wiseF(function.andThen(I::signal)));
-    }
-
-    /**
-     * Returns an {@link Signal} that emits items based on applying a function that you supply to
-     * each item emitted by the source {@link Signal}, where that function returns an {@link Signal}
-     * , and then merging those resulting {@link Signal} and emitting the results of this merger.
-     *
-     * @param function A function that, when applied to an item emitted by the source {@link Signal}
-     *            , returns an {@link Signal}.
-     * @return An {@link Signal} that emits the result of applying the transformation function to
-     *         each item emitted by the source {@link Signal} and merging the results of the
-     *         {@link Signal} obtained from this transformation.
-     */
     public final <R> Signal<R> flatIterable(WiseFunction<V, ? extends Iterable<R>> function) {
         return flatMap(I.wiseF(function.andThen(I::signal)));
     }
@@ -2758,31 +2742,6 @@ public final class Signal<V> {
             }
             return to(observer, disposer);
         });
-    }
-
-    /**
-     * <p>
-     * Emit a specified sequence of items before beginning to emit the items from the source
-     * {@link Signal}.
-     * </p>
-     * <p>
-     * If you want an {@link Signal} to emit a specific sequence of items before it begins emitting
-     * the items normally expected from it, apply the StartWith operator to it.
-     * </p>
-     * <p>
-     * If, on the other hand, you want to append a sequence of items to the end of those normally
-     * emitted by an {@link Signal}, you want the {@link #sequenceMap(WiseFunction)} operator.
-     * </p>
-     *
-     * @param values The values that contains the items you want to emit first.
-     * @return {ChainableAPI}
-     */
-    public final Signal<V> startWith(Enumeration<V> values) {
-        // ignore invalid parameter
-        if (values == null) {
-            return this;
-        }
-        return startWith(values::asIterator);
     }
 
     /**

@@ -50,7 +50,7 @@ public class Classcan {
      * @return list of subclasses
      */
     public static <T> Signal<Class<T>> find(Class<T> type, ClassLoader loader) {
-        return I.signal("META-INF/services/" + type.getName()).flatEnum(loader::getResources).flatIterable(url -> {
+        return I.signal("META-INF/services/" + type.getName()).flatIterable(e -> loader.getResources(e)::asIterator).flatIterable(url -> {
             List<String> lines = new ArrayList();
 
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream(), "UTF-8"))) {
