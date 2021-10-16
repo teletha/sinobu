@@ -1056,15 +1056,7 @@ public final class Signal<V> {
             return this;
         }
 
-        return skip((V) null, (prev, now) -> {
-            if (prev == null) {
-                return now == null;
-            } else if (now == null) {
-                return false;
-            } else {
-                return comparer.test(prev, now);
-            }
-        });
+        return skip((V) null, (prev, now) -> prev == null || now == null ? prev == now : comparer.test(prev, now));
     }
 
     /**
