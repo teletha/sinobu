@@ -13,8 +13,6 @@ import java.util.function.BiPredicate;
 
 import org.junit.jupiter.api.Test;
 
-import kiss.WiseFunction;
-
 class DiffTest extends SignalTester {
 
     @Test
@@ -37,32 +35,6 @@ class DiffTest extends SignalTester {
         assert main.emit((String) null).value((String) null);
         assert main.emit((String) null).value();
         assert main.emit("A").value("A");
-    }
-
-    @Test
-    void keySelector() {
-        monitor(String.class, signal -> signal.diff(String::length));
-
-        assert main.emit("A").value("A");
-        assert main.emit("B").value();
-        assert main.emit("C").value();
-        assert main.emit("AA").value("AA");
-        assert main.emit("BB").value();
-        assert main.emit((String) null).value((String) null);
-        assert main.emit((String) null).value();
-    }
-
-    @Test
-    void keySelectorNull() {
-        monitor(String.class, signal -> signal.diff((WiseFunction) null));
-
-        assert main.emit("A").value("A");
-        assert main.emit("B").value("B");
-        assert main.emit("C").value("C");
-        assert main.emit("AA").value("AA");
-        assert main.emit("BB").value("BB");
-        assert main.emit((String) null).value((String) null);
-        assert main.emit((String) null).value((String) null);
     }
 
     @Test

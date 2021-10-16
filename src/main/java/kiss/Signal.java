@@ -1033,41 +1033,10 @@ public final class Signal<V> {
      *
      * @return {@link Signal} that emits those items from the source {@link Signal} that are
      *         distinct from their immediate predecessors.
-     * @see #diff(WiseFunction)
      * @see #diff(BiPredicate)
      */
     public final Signal<V> diff() {
         return skip((V) null, Objects::equals);
-    }
-
-    /**
-     * Returns an {@link Signal} that emits all items emitted by the source {@link Signal} that are
-     * distinct from their immediate predecessors, according to a key selector function and based on
-     * {@link Object#equals(Object)} comparison of those objects returned by the key selector
-     * function.
-     * <p>
-     * It is recommended the keys' class {@code K} overrides the default {@code Object.equals()} to
-     * provide meaningful comparison between the key objects as the default Java implementation only
-     * considers reference equivalence. Alternatively, use the {@link #diff(BiPredicate)} overload
-     * and provide a comparison function in case the class {@code K} can't be overridden preassign
-     * custom {@code equals()} or the comparison itself should happen on different terms or
-     * properties of the item class {@code V} (for which the keys can be derived via a similar
-     * selector).
-     *
-     * @param <K> the key type
-     * @param keySelector A function that projects an emitted item to a key value that is used to
-     *            decide whether an item is distinct from another one or not.
-     * @return {@link Signal} that emits those items from the source {@link Signal} whose keys are
-     *         distinct from those of their immediate predecessors.
-     * @see #diff()
-     * @see #diff(BiPredicate)
-     */
-    public final <K> Signal<V> diff(WiseFunction<V, K> keySelector) {
-        // ignore invalid parameter
-        if (keySelector == null) {
-            return this;
-        }
-        return diff((prev, now) -> Objects.equals(keySelector.apply(prev), keySelector.apply(now)));
     }
 
     /**
@@ -1080,7 +1049,6 @@ public final class Signal<V> {
      * @return {@link Signal} that emits those items from the source {@link Signal} that are
      *         distinct from their immediate predecessors.
      * @see #diff()
-     * @see #diff(WiseFunction)
      */
     public final Signal<V> diff(BiPredicate<V, V> comparer) {
         // ignore invalid parameter
@@ -1104,6 +1072,7 @@ public final class Signal<V> {
      * {@link Object#equals(Object)}) of this stream.
      *
      * @return {ChainableAPI}
+     * @see #distinct(WiseFunction)
      */
     public final Signal<V> distinct() {
         return distinct(I.wiseF(Function.identity()));
@@ -1114,8 +1083,12 @@ public final class Signal<V> {
      * {@link Object#equals(Object)}) of this stream.
      *
      * @return {ChainableAPI}
+     * @see #distinct()
      */
     public final <K> Signal<V> distinct(WiseFunction<V, K> keySelector) {
+        if (keySelector == null) {
+            return this;
+        }
         return take(HashSet::new, (set, v) -> set.add(v == null ? null : keySelector.apply(v)), true, false, false);
     }
 
