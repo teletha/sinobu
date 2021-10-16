@@ -863,19 +863,6 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns a {@link Signal} that emits a Boolean that indicates whether the source
-     * {@link Signal} emitted a specified item.
-     * 
-     * @param value An item to search for in the emissions from the source {@link Signal}.
-     * @return A {@link Signal} that emits true if the specified item is emitted by the source
-     *         {@link Signal}, or false if the source {@link Signal} completes preassignout emitting
-     *         that item.
-     */
-    public final Signal<Boolean> contains(Object value) {
-        return any(v -> Objects.equals(v, value));
-    }
-
-    /**
      * Returns a {@link Signal} that counts the total number of items emitted by the source
      * {@link Signal} and emits this count as a 64-bit Long.
      * 
