@@ -10,7 +10,7 @@
 package kiss;
 
 import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.NANOSECONDS;
+import static java.util.concurrent.TimeUnit.*;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -424,7 +424,7 @@ public final class Signal<V> {
 
         return (Signal<R>) take(v -> {
             for (Class c : type) {
-                if (I.wrap(c).isInstance(v)) return true;
+                if (c != null && I.wrap(c).isInstance(v)) return true;
             }
 
             if (v instanceof Throwable) {

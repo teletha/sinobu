@@ -58,8 +58,64 @@ class AsTest extends SignalTester {
     }
 
     @Test
+    void sparseTypes() {
+        monitor(signal -> signal.as(new Class[] {null, Number.class, null}));
+
+        assert main.emit(10).value(10);
+        assert main.emit(2.1F).value(2.1F);
+        assert main.emit(-1.1D).value(-1.1D);
+        assert main.emit(20L).value(20L);
+        assert main.emit("5000").value();
+        assert main.isNotCompleted();
+        assert main.isNotError();
+        assert main.isNotDisposed();
+    }
+
+    @Test
     void nullType() {
+        monitor(signal -> signal.as(new Class[] {null, null}));
+
+        assert main.emit(10).value();
+        assert main.emit(2.1F).value();
+        assert main.emit(-1.1D).value();
+        assert main.emit(20L).value();
+        assert main.emit("5000").value();
+        assert main.isNotCompleted();
+        assert main.isNotError();
+        assert main.isNotDisposed();
+    }
+
+    @Test
+    void nullTypes() {
         monitor(signal -> signal.as((Class[]) null));
+
+        assert main.emit(10).value(10);
+        assert main.emit(2.1F).value(2.1F);
+        assert main.emit(-1.1D).value(-1.1D);
+        assert main.emit(20L).value(20L);
+        assert main.emit("5000").value("5000");
+        assert main.isNotCompleted();
+        assert main.isNotError();
+        assert main.isNotDisposed();
+    }
+
+    @Test
+    void emptyTypes() {
+        monitor(signal -> signal.as(new Class[0]));
+
+        assert main.emit(10).value(10);
+        assert main.emit(2.1F).value(2.1F);
+        assert main.emit(-1.1D).value(-1.1D);
+        assert main.emit(20L).value(20L);
+        assert main.emit("5000").value("5000");
+        assert main.isNotCompleted();
+        assert main.isNotError();
+        assert main.isNotDisposed();
+    }
+
+    @Test
+    void noTypes() {
+        monitor(signal -> signal.as());
 
         assert main.emit(10).value(10);
         assert main.emit(2.1F).value(2.1F);
