@@ -1057,7 +1057,7 @@ public final class Signal<V> {
      * @return {ChainableAPI}
      * @see #distinct()
      */
-    public final <K> Signal<V> distinct(WiseFunction<V, K> keySelector) {
+    public final Signal<V> distinct(WiseFunction<V, ?> keySelector) {
         if (keySelector == null) {
             return this;
         }
