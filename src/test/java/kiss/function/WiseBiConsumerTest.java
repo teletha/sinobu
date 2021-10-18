@@ -9,6 +9,7 @@
  */
 package kiss.function;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import kiss.Variable;
@@ -47,8 +48,7 @@ class WiseBiConsumerTest {
 
     @Test
     void narrowHeadLazilyNull() {
-        concat.bindLazily(null).accept("value");
-        assert value.equals("null value");
+        Assertions.assertThrows(NullPointerException.class, () -> concat.bindLazily(null));
     }
 
     @Test
@@ -77,7 +77,6 @@ class WiseBiConsumerTest {
 
     @Test
     void narrowTailLazilyNull() {
-        concat.bindLastLazily(null).accept("value");
-        assert value.equals("value null");
+        Assertions.assertThrows(NullPointerException.class, () -> concat.bindLastLazily(null));
     }
 }

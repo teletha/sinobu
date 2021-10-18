@@ -267,11 +267,11 @@ class VariableTest {
     @Test
     void next() {
         Variable<String> empty = Variable.empty();
-        I.schedule(20, TimeUnit.MILLISECONDS).to(() -> empty.set("changed"));
+        I.schedule(100, TimeUnit.MILLISECONDS).to(() -> empty.set("changed"));
         assert empty.next().equals("changed");
 
         Variable<String> withValue = Variable.of("current");
-        I.schedule(20, TimeUnit.MILLISECONDS).to(() -> withValue.set("changed"));
+        I.schedule(100, TimeUnit.MILLISECONDS).to(() -> withValue.set("changed"));
         assert withValue.next().equals("changed");
     }
 

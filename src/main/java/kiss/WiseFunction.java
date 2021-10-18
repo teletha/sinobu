@@ -11,16 +11,11 @@ package kiss;
 
 import java.util.function.Function;
 
-/**
- * @version 2018/12/07 16:09:15
- */
 public interface WiseFunction<Param, Return>
         extends Function<Param, Return>, Narrow<WiseSupplier<Return>, Param, WiseSupplier<Return>, Param> {
 
     /**
-     * <p>
      * Internal API.
-     * </p>
      * 
      * @param param A proxy parameter.
      * @return A proxy result.

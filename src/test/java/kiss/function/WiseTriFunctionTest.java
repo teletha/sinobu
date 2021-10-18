@@ -9,8 +9,7 @@
  */
 package kiss.function;
 
-import java.util.function.Supplier;
-
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import kiss.Variable;
@@ -43,7 +42,7 @@ class WiseTriFunctionTest {
 
     @Test
     void narrowHeadLazilyNull() {
-        assert concat.bindLazily((Supplier) null).apply("this", "var").equals("null this var");
+        Assertions.assertThrows(NullPointerException.class, () -> concat.bindLazily(null));
     }
 
     @Test
@@ -68,6 +67,6 @@ class WiseTriFunctionTest {
 
     @Test
     void narrowTailLazilyNull() {
-        assert concat.bindLastLazily((Supplier) null).apply("var", "is").equals("var is null");
+        Assertions.assertThrows(NullPointerException.class, () -> concat.bindLastLazily(null));
     }
 }

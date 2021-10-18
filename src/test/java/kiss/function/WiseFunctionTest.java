@@ -9,8 +9,7 @@
  */
 package kiss.function;
 
-import java.util.function.Supplier;
-
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import kiss.Variable;
@@ -43,7 +42,7 @@ class WiseFunctionTest {
 
     @Test
     void narrowHeadLazilyNull() {
-        assert identity.bindLazily((Supplier) null).get() == null;
+        Assertions.assertThrows(NullPointerException.class, () -> identity.bindLazily(null));
     }
 
     @Test
@@ -68,7 +67,7 @@ class WiseFunctionTest {
 
     @Test
     void narrowTailLazilyNull() {
-        assert identity.bindLastLazily((Supplier) null).get() == null;
+        Assertions.assertThrows(NullPointerException.class, () -> identity.bindLastLazily(null));
     }
 
     // @Test
