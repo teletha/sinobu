@@ -10,7 +10,7 @@
 package kiss;
 
 import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.NANOSECONDS;
+import static java.util.concurrent.TimeUnit.*;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -1483,7 +1483,7 @@ public final class Signal<V> {
      *         each item emitted by the source {@link Signal} and merging the results of the
      *         {@link Signal} obtained from this transformation.
      */
-    public final <C, R> Signal<R> flatMap(WiseSupplier<C> context, WiseBiFunction<C, V, Signal<R>> function) {
+    public final <C, R> Signal<R> flatMap(Supplier<C> context, WiseBiFunction<C, V, Signal<R>> function) {
         Objects.requireNonNull(function);
 
         return new Signal<>((observer, disposer) -> {
@@ -1763,7 +1763,7 @@ public final class Signal<V> {
      *            <code>null</code> will ignore this instruction.
      * @return {ChainableAPI}
      */
-    public final <C, R> Signal<R> map(WiseSupplier<C> context, WiseBiFunction<C, ? super V, R> function) {
+    public final <C, R> Signal<R> map(Supplier<C> context, WiseBiFunction<C, ? super V, R> function) {
         Objects.requireNonNull(function);
 
         return new Signal<>((observer, disposer) -> {
