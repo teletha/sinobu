@@ -2289,7 +2289,7 @@ public final class Signal<V> {
      *         the accumulator function.
      */
     public final <A, R> Signal<R> scan(Collector<? super V, A, R> collector) {
-        return scan(I.wiseS(collector.supplier()), (context, value) -> {
+        return scan(collector.supplier(), (context, value) -> {
             collector.accumulator().accept(context, value);
             return context;
         }).map(I.wiseF(collector.finisher()));
