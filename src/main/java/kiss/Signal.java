@@ -313,6 +313,7 @@ public final class Signal<V> {
      */
     public final Set<V> toAlternate() {
         return to(new HashSet(), (set, value) -> {
+
             if (!set.add(value)) {
                 set.remove(value);
             }
@@ -527,7 +528,7 @@ public final class Signal<V> {
      * @return {ChainableAPI}
      */
     public final Signal<List<V>> buffer(Signal<?> boundary) {
-        return buffer(boundary, ArrayList::new);
+        return buffer(boundary, (Supplier<List<V>>) ArrayList::new, List<V>::add).skip(List::isEmpty);
     }
 
     /**
@@ -535,21 +536,8 @@ public final class Signal<V> {
      * {@link Signal} each time the specified boundary {@link Signal} emits an item.
      * 
      * @param boundary A boundary {@link Signal}.
-     * @param supplier A factory function that returns an instance of the collection subclass to be
-     *            used and returned as the buffer.
-     * @return {ChainableAPI}
-     */
-    public final <B extends Collection<V>> Signal<B> buffer(Signal<?> boundary, Supplier<B> supplier) {
-        return buffer(boundary, supplier, Collection::add).skip(B::isEmpty);
-    }
-
-    /**
-     * Returns an {@link Signal} that emits non-overlapping buffered items from the source
-     * {@link Signal} each time the specified boundary {@link Signal} emits an item.
-     * 
-     * @param boundary A boundary {@link Signal}.
-     * @param supplier A factory function that returns an instance of the collection subclass to be
-     *            used and returned as the buffer.
+     * @param supplier A factory function that returns a container instance to be used and returned
+     *            as the buffer.
      * @param assigner A operation function that assigns a value to the buffer.
      * @return {ChainableAPI}
      */
