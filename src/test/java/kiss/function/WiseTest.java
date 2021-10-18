@@ -9,8 +9,6 @@
  */
 package kiss.function;
 
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -18,8 +16,6 @@ import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
-import kiss.WiseBiConsumer;
-import kiss.WiseBiFunction;
 import kiss.WiseConsumer;
 import kiss.WiseFunction;
 import kiss.WiseRunnable;
@@ -54,19 +50,6 @@ class WiseTest {
     }
 
     @Test
-    void biconsumer() {
-        BiConsumer lambda = (p1, p2) -> {
-        };
-        WiseBiConsumer dressed = I.wiseBC(lambda);
-        assert dressed != lambda;
-
-        lambda = (WiseBiConsumer) (p1, p2) -> {
-        };
-        dressed = I.wiseBC(lambda);
-        assert dressed == lambda;
-    }
-
-    @Test
     void supplier() {
         Supplier lambda = () -> "";
         WiseSupplier dressed = I.wiseS(lambda);
@@ -85,17 +68,6 @@ class WiseTest {
 
         lambda = (WiseFunction) p -> "";
         dressed = I.wiseF(lambda);
-        assert dressed == lambda;
-    }
-
-    @Test
-    void bifunction() {
-        BiFunction lambda = (p1, p2) -> "";
-        WiseBiFunction dressed = I.wiseBF(lambda);
-        assert dressed != lambda;
-
-        lambda = (WiseBiFunction) (p1, p2) -> "";
-        dressed = I.wiseBF(lambda);
         assert dressed == lambda;
     }
 }

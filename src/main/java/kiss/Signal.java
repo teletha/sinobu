@@ -10,7 +10,7 @@
 package kiss;
 
 import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.*;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -287,7 +287,7 @@ public final class Signal<V> {
      * @return A {@link Variable} as value receiver.
      */
     public final <A, R> R to(Collector<? super V, A, R> receiver) {
-        return receiver.finisher().apply(to(receiver.supplier().get(), (BiConsumer<A, V>) receiver.accumulator()));
+        return receiver.finisher().apply(to(receiver.supplier().get(), receiver.accumulator()::accept));
     }
 
     /**
@@ -297,9 +297,9 @@ public final class Signal<V> {
      * @param assigner A value assigner.
      * @return A value receiver.
      */
-    public final <R> R to(R receiver, BiConsumer<R, V> assigner) {
+    public final <R> R to(R receiver, WiseBiConsumer<R, V> assigner) {
         // start receiving values
-        to(I.wiseBC(assigner).bind(receiver));
+        to(assigner.bind(receiver));
 
         // API definition
         return receiver;
@@ -858,7 +858,7 @@ public final class Signal<V> {
      *         {@link Signal} as a 64-bit Long item
      */
     public final Signal<Long> count() {
-        return map(AtomicLong::new, I.wiseBF(AtomicLong::incrementAndGet));
+        return map(AtomicLong::new, (counter, v) -> counter.incrementAndGet());
     }
 
     /**
