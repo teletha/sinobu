@@ -2176,39 +2176,6 @@ public class I {
     }
 
     /**
-     * Cast from {@link BiConsumer} to {@link WiseTriConsumer}. All missing parameters will be added
-     * on the right side. All additional caller arguments are ignored.
-     * 
-     * @param lambda A target function.
-     * @return A casted function.
-     */
-    public static <A, B, C> WiseTriConsumer<A, B, C> wiseTC(BiConsumer<A, B> lambda) {
-        return make(null, WiseTriConsumer.class, I.wiseBC(lambda));
-    }
-
-    /**
-     * Cast from {@link Consumer} to {@link WiseTriConsumer}. All missing parameters will be added
-     * on the right side. All additional caller arguments are ignored.
-     * 
-     * @param lambda A target function.
-     * @return A casted function.
-     */
-    public static <A, B, C> WiseTriConsumer<A, B, C> wiseTC(Consumer<A> lambda) {
-        return make(null, WiseTriConsumer.class, I.wiseC(lambda));
-    }
-
-    /**
-     * Cast from {@link Runnable} to {@link WiseTriConsumer}. All missing parameters will be added
-     * on the right side. All additional caller arguments are ignored.
-     * 
-     * @param lambda A target function.
-     * @return A casted function.
-     */
-    public static <A, B, C> WiseTriConsumer<A, B, C> wiseTC(Runnable lambda) {
-        return make(null, WiseTriConsumer.class, I.wiseR(lambda));
-    }
-
-    /**
      * Cast from {@link Supplier} to {@link WiseSupplier}.
      * 
      * @param lambda A target function.
@@ -2269,39 +2236,6 @@ public class I {
      */
     public static <A, B, R> WiseBiFunction<A, B, R> wiseBF(Supplier<R> lambda) {
         return make(null, WiseBiFunction.class, I.wiseS(lambda));
-    }
-
-    /**
-     * Cast from {@link BiFunction} to {@link WiseTriFunction}. All missing parameters will be added
-     * on the right side. All additional caller arguments are ignored.
-     * 
-     * @param lambda A target function.
-     * @return A casted function.
-     */
-    public static <A, B, C, R> WiseTriFunction<A, B, C, R> wiseTF(BiFunction<A, B, R> lambda) {
-        return make(null, WiseTriFunction.class, I.wiseBF(lambda));
-    }
-
-    /**
-     * Cast from {@link Function} to {@link WiseTriFunction}. All missing parameters will be added
-     * on the right side. All additional caller arguments are ignored.
-     * 
-     * @param lambda A target function.
-     * @return A casted function.
-     */
-    public static <A, B, C, R> WiseTriFunction<A, B, C, R> wiseTF(Function<A, R> lambda) {
-        return make(null, WiseTriFunction.class, I.wiseF(lambda));
-    }
-
-    /**
-     * Cast from {@link Supplier} to {@link WiseTriFunction}. All missing parameters will be added
-     * on the right side. All additional caller arguments are ignored.
-     * 
-     * @param lambda A target function.
-     * @return A casted function.
-     */
-    public static <A, B, C, R> WiseTriFunction<A, B, C, R> wiseTF(Supplier<R> lambda) {
-        return make(null, WiseTriFunction.class, I.wiseS(lambda));
     }
 
     /**
