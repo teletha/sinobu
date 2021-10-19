@@ -2289,10 +2289,8 @@ public final class Signal<V> {
      *         the accumulator function.
      */
     public final <A, R> Signal<R> scan(Collector<? super V, A, R> collector) {
-        return scan(collector.supplier(), (context, value) -> {
-            collector.accumulator().accept(context, value);
-            return context;
-        }).map(I.wiseF(collector.finisher()));
+        return scan(collector.supplier(), I.make(null, WiseBiFunction.class, (WiseBiConsumer<A, V>) collector.accumulator()::accept))
+                .map(I.wiseF(collector.finisher()));
     }
 
     /**

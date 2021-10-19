@@ -36,7 +36,7 @@ public interface WiseRunnable extends Runnable, Wise {
      * {@inheritDoc}
      */
     @Override
-    default Void invoke(Object... params) {
+    default Object invoke(Object... params) {
         run();
         return null;
     }

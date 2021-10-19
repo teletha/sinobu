@@ -41,8 +41,8 @@ public interface WiseBiConsumer<Param1, Param2>
      * {@inheritDoc}
      */
     @Override
-    default Void invoke(Object... params) {
+    default Param1 invoke(Object... params) {
         accept((Param1) params[0], (Param2) params[1]);
-        return null;
+        return (Param1) params[0];
     }
 }

@@ -42,8 +42,8 @@ public interface WiseConsumer<Param> extends Consumer<Param>, Narrow<WiseRunnabl
      * {@inheritDoc}
      */
     @Override
-    default Void invoke(Object... params) {
+    default Param invoke(Object... params) {
         accept((Param) params[0]);
-        return null;
+        return (Param) params[0];
     }
 }
