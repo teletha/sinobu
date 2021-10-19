@@ -10,7 +10,7 @@
 package kiss;
 
 import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.*;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -2941,7 +2941,9 @@ public final class Signal<V> {
         if (condition == null) {
             return this;
         }
-        return take(() -> new AtomicReference<>(init), (context, value) -> condition.test(context.getAndSet(value), value));
+
+        return take(((WiseFunction<V, AtomicReference<V>>) AtomicReference<V>::new)
+                .bind(init), (context, value) -> condition.test(context.getAndSet(value), value));
     }
 
     /**

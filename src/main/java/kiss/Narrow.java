@@ -72,7 +72,6 @@ public interface Narrow<FirstBinded, First, LastBinded, Last> extends Wise {
      * @see #bind(Object)
      * @see #bindLazily(Supplier)
      * @see #bindLast(Object)
-     * @see #bindLastLazily(Supplier)
      */
     default LastBinded bindLastLazily(Supplier<Last> param) {
         Objects.requireNonNull(param);
