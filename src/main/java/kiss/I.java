@@ -2168,7 +2168,7 @@ public class I {
      * @param lambda A target function.
      * @return A casted function.
      */
-    public static <A, R> WiseFunction<A, R> wiseFS(Supplier<R> lambda) {
+    public static <A, R> WiseFunction<A, R> wiseF(Supplier<R> lambda) {
         return make(null, WiseFunction.class, I.wiseS(lambda));
     }
 

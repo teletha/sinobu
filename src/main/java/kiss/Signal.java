@@ -940,7 +940,7 @@ public final class Signal<V> {
         if (time == null || time.isNegative() || time.isZero()) {
             return this;
         }
-        return delay(I.wiseFS(Variable.of(time)), scheduler);
+        return delay(I.wiseF(Variable.of(time)), scheduler);
     }
 
     /**
