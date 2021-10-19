@@ -10,7 +10,7 @@
 package kiss;
 
 import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.NANOSECONDS;
+import static java.util.concurrent.TimeUnit.*;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -940,7 +940,7 @@ public final class Signal<V> {
         if (time == null || time.isNegative() || time.isZero()) {
             return this;
         }
-        return delay(I.wiseF(Variable.of(time)), scheduler);
+        return delay(I.wiseF(time), scheduler);
     }
 
     /**
@@ -1783,7 +1783,7 @@ public final class Signal<V> {
      * @return {ChainableAPI}
      */
     public final <R> Signal<R> mapTo(R constant) {
-        return map(v -> constant);
+        return map(I.wiseF(constant));
     }
 
     /**

@@ -57,7 +57,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Deque;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -2152,6 +2151,16 @@ public class I {
     }
 
     /**
+     * Create {@link WiseSupplier} which always return the specified value.
+     * 
+     * @param constant The fixed return value.
+     * @return A created function.
+     */
+    public static <R> WiseSupplier<R> wiseS(R constant) {
+        return wiseS(Variable.of(constant));
+    }
+
+    /**
      * Cast from {@link Function} to {@link WiseFunction}.
      * 
      * @param lambda A target function.
@@ -2170,6 +2179,16 @@ public class I {
      */
     public static <A, R> WiseFunction<A, R> wiseF(Supplier<R> lambda) {
         return make(null, WiseFunction.class, I.wiseS(lambda));
+    }
+
+    /**
+     * Create {@link WiseFunction} which always return the specified value.
+     * 
+     * @param constant The fixed return value.
+     * @return A created function.
+     */
+    public static <A, R> WiseFunction<A, R> wiseF(R constant) {
+        return wiseF(Variable.of(constant));
     }
 
     /**
