@@ -105,14 +105,14 @@ public final class Signal<V> {
     /**
      * For reuse.
      */
-    public static final <R> Signal<R> never() {
-        return new Signal<>((observer, disposer) -> disposer);
-    }
+    private static final BinaryOperator UNDEFINED = (a, b) -> b;
 
     /**
      * For reuse.
      */
-    private static final Object UNDEFINED = new Object();
+    public static final <R> Signal<R> never() {
+        return new Signal<>(UNDEFINED);
+    }
 
     /**
      * The subscriber.
@@ -375,7 +375,7 @@ public final class Signal<V> {
      * @return A {@link Map} as value receiver.
      */
     public final <Key, Value> Map<Key, Value> toMap(Function<V, Key> keyGenerator, Function<V, Value> valueGenerator) {
-        return to(Collectors.toMap(keyGenerator, valueGenerator, (a, b) -> b));
+        return to(Collectors.toMap(keyGenerator, valueGenerator, UNDEFINED));
     }
 
     /**
