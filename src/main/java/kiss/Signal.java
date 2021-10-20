@@ -375,7 +375,7 @@ public final class Signal<V> {
      * @return A {@link Map} as value receiver.
      */
     public final <Key, Value> Map<Key, Value> toMap(Function<V, Key> keyGenerator, Function<V, Value> valueGenerator) {
-        return to(Collectors.toMap(keyGenerator, valueGenerator, UNDEFINED));
+        return to(Collectors.toMap(keyGenerator, valueGenerator, (BinaryOperator<Value>) UNDEFINED));
     }
 
     /**
