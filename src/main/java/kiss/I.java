@@ -1946,7 +1946,7 @@ public class I {
      * @return The {@link Signal} to emit sequencial values.
      */
     public static <V> Signal<V> signal(Iterable<V> values) {
-        return I.<V> signal().startWith(values);
+        return I.signal((V[]) null).startWith(values);
     }
 
     /**
@@ -1956,7 +1956,7 @@ public class I {
      * @return The {@link Signal} to emit sequencial values.
      */
     public static <V> Signal<V> signal(Supplier<V> value) {
-        return I.<V> signal().startWith(value);
+        return I.signal((V[]) null).startWith(value);
     }
 
     /**
