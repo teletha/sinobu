@@ -1469,9 +1469,7 @@ public final class Signal<V> {
      *         {@link Signal} obtained from this transformation.
      */
     public final <R> Signal<R> flatMap(WiseFunction<V, Signal<R>> function) {
-        Objects.requireNonNull(function);
-
-        return flatMap(Variable.of(function), WiseFunction::apply);
+        return flatMap(Variable.of(Objects.requireNonNull(function)), WiseFunction::apply);
     }
 
     /**
@@ -1741,9 +1739,7 @@ public final class Signal<V> {
      * @return {ChainableAPI}
      */
     public final <R> Signal<R> map(WiseFunction<? super V, R> function) {
-        Objects.requireNonNull(function);
-
-        return map(Variable.of(function), WiseFunction::apply);
+        return map(Variable.of(Objects.requireNonNull(function)), WiseFunction::apply);
     }
 
     /**
