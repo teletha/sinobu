@@ -2725,31 +2725,19 @@ public final class Signal<V> {
     }
 
     /**
-     * <p>
      * Emit a specified sequence of items before beginning to emit the items from the source
      * {@link Signal}.
-     * </p>
      *
      * @param values The initial values.
      * @return {ChainableAPI}
      */
     public final Signal<V> startWith(Signal<V> values) {
-        // ignore invalid parameter
-        if (values == null) {
-            return this;
-        }
-
-        return new Signal<>((observer, disposer) -> {
-            values.to(observer::accept, observer::error, () -> to(observer, disposer), disposer.sub(), true);
-            return disposer;
-        });
+        return values == null ? this : values.concat(this);
     }
 
     /**
-     * <p>
      * Emit <code>null</code> item before beginning to emit the items from the source
      * {@link Signal}.
-     * </p>
      * 
      * @return {ChainableAPI}
      */
