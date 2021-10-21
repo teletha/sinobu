@@ -1,5 +1,27 @@
 # Changelog
 
+## [2.8.0](https://www.github.com/Teletha/sinobu/compare/v2.7.0...v2.8.0) (2021-10-21)
+
+
+### Features
+
+* Add I#wiseF(constant) and #wiseS(constant). ([075560c](https://www.github.com/Teletha/sinobu/commit/075560c3766f2eada35c43257fd6f5b4f958e32b))
+* Drop Enumeration support for Signal. ([d05017c](https://www.github.com/Teletha/sinobu/commit/d05017c9fa07c936146c95e06386e1b2bac244ee))
+* Drop I#wiseBC and #wiseBF. ([fa42ffb](https://www.github.com/Teletha/sinobu/commit/fa42ffb4eb8387252e84019a061d5d14c428283f))
+* Drop I#wiseTC and #wiseTF ([1716c6d](https://www.github.com/Teletha/sinobu/commit/1716c6d74b3cd8fb661410efffbdae36036441e3))
+* Drop Signal#buffer(Signal boundary, Supplier collection). ([9306315](https://www.github.com/Teletha/sinobu/commit/9306315c627d17fa64f96a36463553366bb62bf1))
+* Drop Signal#contains, use #any instead. ([123e9e8](https://www.github.com/Teletha/sinobu/commit/123e9e8593824a88b24c4d44e76ef0afc5e176be))
+* Drop Signal#diff(WiseFunction<V, K> keySelector). ([05c5d39](https://www.github.com/Teletha/sinobu/commit/05c5d39c7b0d76bc63e79aece286446e40c9e60a))
+* Drop Signal#errorResume and add Signal#stopError. ([c458c06](https://www.github.com/Teletha/sinobu/commit/c458c06a7f4ccd9f937d5c2b8b2d3cc5683c66fa))
+* Rename from Signal#combineLatestMap to #keyMap. ([91d42fd](https://www.github.com/Teletha/sinobu/commit/91d42fd73abaed41fe67fcc63311f06b88ece640))
+
+
+### Bug Fixes
+
+* Change signatures for Signal#map and #flatMap with context. ([74ac5c5](https://www.github.com/Teletha/sinobu/commit/74ac5c5750e05ff1dab0195c58008935fbd67382))
+* Narrow#bindLazily and #bindLastLazily reject null parameter. ([65a46ff](https://www.github.com/Teletha/sinobu/commit/65a46ff46c8a66f7a72fda48595edecd0c375a07))
+* Signal#as accepts null type. ([9677713](https://www.github.com/Teletha/sinobu/commit/9677713a62fa8b946adc0934c97459175a09b83e))
+
 ## [2.7.0](https://www.github.com/Teletha/sinobu/compare/v2.6.0...v2.7.0) (2021-10-14)
 
 
