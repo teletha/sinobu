@@ -10,7 +10,7 @@
 package kiss;
 
 import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.NANOSECONDS;
+import static java.util.concurrent.TimeUnit.*;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -105,13 +105,13 @@ public final class Signal<V> {
     /**
      * For reuse.
      */
-    private static final BinaryOperator UNDEFINED = (a, b) -> b;
+    private static final BinaryOperator UNDEF = (a, b) -> b;
 
     /**
      * For reuse.
      */
     public static final <R> Signal<R> never() {
-        return new Signal<>(UNDEFINED);
+        return new Signal<>(UNDEF);
     }
 
     /**
@@ -375,7 +375,9 @@ public final class Signal<V> {
      * @return A {@link Map} as value receiver.
      */
     public final <Key, Value> Map<Key, Value> toMap(Function<V, Key> keyGenerator, Function<V, Value> valueGenerator) {
-        return to(Collectors.toMap(keyGenerator, valueGenerator, (BinaryOperator<Value>) UNDEFINED));
+        // When compiling with ECJ, this is not a problem, but when compiling with JDK, an error
+        // will occur unless you explicitly specify the generic type.
+        return to(Collectors.toMap(keyGenerator, valueGenerator, (BinaryOperator<Value>) UNDEF));
     }
 
     /**
@@ -720,15 +722,15 @@ public final class Signal<V> {
      */
     public final <O, R> Signal<R> combineLatest(Signal<O> other, BiFunction<V, O, R> function) {
         return new Signal<>((observer, disposer) -> {
-            AtomicReference<V> baseValue = new AtomicReference(UNDEFINED);
-            AtomicReference<O> otherValue = new AtomicReference(UNDEFINED);
+            AtomicReference<V> baseValue = new AtomicReference(UNDEF);
+            AtomicReference<O> otherValue = new AtomicReference(UNDEF);
             Subscriber completer = countable(observer, 2);
 
             return disposer.add(to(value -> {
                 baseValue.set(value);
                 O joined = otherValue.get();
 
-                if (joined != UNDEFINED) {
+                if (joined != UNDEF) {
                     observer.accept(function.apply(value, joined));
                 }
             }, observer::error, completer::complete)).add(other.to(value -> {
@@ -736,7 +738,7 @@ public final class Signal<V> {
 
                 V joined = baseValue.get();
 
-                if (joined != UNDEFINED) {
+                if (joined != UNDEF) {
                     observer.accept(function.apply(joined, value));
                 }
             }, observer::error, completer::complete));
@@ -2071,7 +2073,7 @@ public final class Signal<V> {
             // define error recovering flow
             flow.apply(sub.signal()).to(v -> {
                 sub.obj = null; // processing error will be handled, so clear it
-                if (v == UNDEFINED) {
+                if (v == UNDEF) {
                     observer.complete();
                 } else {
                     observer.accept(v);
@@ -2128,7 +2130,7 @@ public final class Signal<V> {
             Subscriber<Object> sub = new Subscriber();
             WiseRunnable complete = () -> {
                 // recorde the processing completion
-                sub.accept(sub.obj = UNDEFINED);
+                sub.accept(sub.obj = UNDEF);
             };
 
             // number of remaining repeats
@@ -2331,10 +2333,10 @@ public final class Signal<V> {
      */
     public final <R> Signal<R> scan(WiseFunction<V, R> first, WiseBiFunction<R, V, R> others) {
         return new Signal<>((observer, disposer) -> {
-            AtomicReference<R> ref = new AtomicReference(UNDEFINED);
+            AtomicReference<R> ref = new AtomicReference(UNDEF);
 
             return to(v -> {
-                observer.accept(ref.updateAndGet(prev -> prev == UNDEFINED ? first.apply(v) : others.apply(prev, v)));
+                observer.accept(ref.updateAndGet(prev -> prev == UNDEF ? first.apply(v) : others.apply(prev, v)));
             }, observer::error, observer::complete, disposer, false);
         });
     }
@@ -2767,7 +2769,7 @@ public final class Signal<V> {
      * @see #skipError(Class...)
      */
     public final Signal<V> stopError(Class<? extends Throwable>... types) {
-        return recover(e -> (Signal<V>) e.as(types).mapTo(UNDEFINED));
+        return recover(e -> (Signal<V>) e.as(types).mapTo(UNDEF));
     }
 
     /**
