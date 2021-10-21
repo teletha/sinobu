@@ -10,7 +10,7 @@
 package kiss;
 
 import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.*;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -1471,7 +1471,7 @@ public final class Signal<V> {
     public final <R> Signal<R> flatMap(WiseFunction<V, Signal<R>> function) {
         Objects.requireNonNull(function);
 
-        return flatMap(null, (c, v) -> function.apply(v));
+        return flatMap(Variable.of(function), WiseFunction::apply);
     }
 
     /**
@@ -1743,7 +1743,7 @@ public final class Signal<V> {
     public final <R> Signal<R> map(WiseFunction<? super V, R> function) {
         Objects.requireNonNull(function);
 
-        return map(null, (context, value) -> function.apply(value));
+        return map(Variable.of(function), WiseFunction::apply);
     }
 
     /**
