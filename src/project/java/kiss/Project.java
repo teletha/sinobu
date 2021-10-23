@@ -11,6 +11,8 @@ package kiss;
 
 import javax.lang.model.SourceVersion;
 
+import bee.task.Jar;
+
 public class Project extends bee.api.Project {
 
     {
@@ -36,5 +38,9 @@ public class Project extends bee.api.Project {
         require("org.slf4j", "slf4j-nop").atTest();
 
         versionControlSystem("https://github.com/teletha/sinobu");
+
+        // Task Settings
+        Jar.SkipDebugInfo = true;
+        Jar.SkipTraceInfo = false;
     }
 }
