@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8"/>
+		<title>sinobu API</title>
+		<link href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release/build/styles/zenburn.min.css" media="print" onload="this.media=&#39;all&#39;" rel="stylesheet"/>
+		<script async="true" src="/highlight.js"></script>
+		<script src="/mimic.js" type="module"></script>
+		<link href="/main.css" rel="stylesheet"/>
+	</head>
+	<body class="j">
+		<header class="e">
+			<h1 class="S" date="2021-11-06" ver="2.8.0"><code>sinobu</code></h1>
+			<nav class="J"><a href="/api/"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="/main.svg#package"/>
+					</svg><code>API</code></a><a href="https://github.com/teletha/sinobu/discussions" target="_blank"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="/main.svg#user"/>
+					</svg>Community</a><a href="/doc/changelog.html"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="/main.svg#activity"/>
+					</svg>Activity</a><a href="https://github.com/teletha/sinobu" target="_blank"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="/main.svg#github"/>
+					</svg>Repository</a></nav>
+			<div class="P" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="/main.svg#sun"/>
+					</svg>
+				</a><a id="dark" title="Change to a darker color scheme"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="/main.svg#moon"/>
+					</svg>
+				</a></div>
+		</header>
+		<main class="M">
+			<nav class="g">
+				<div></div>
+			</nav>
+			<article class="L" id="Article">
+				<section class="V"><code class="O">kiss.model</code>
+					<h2 class="Class Z"><code class="H">Model</code><code class="X">&#60;<code>M</code>&#62;</code></h2>
+					<ul class="C D">
+						<li><code>M</code></li>
+					</ul><span class="B"><code><a href="/api/kiss.model.Model.html">Model</a></code> is the advanced representation of Class in Sinobu.</span></section>
+				<section class="V" id="type">
+					<h2 class="d"><i class="FINAL"><i class="PUBLIC"></i></i><code class="H">type</code><i class="a"><code class="return">java.lang.Class<code class="parameters"><code>M</code></code></code></i></h2><span class="B">The Class which is represented by this <code><a href="/api/kiss.model.Model.html">Model</a></code>.</span></section>
+				<section class="V" id="name">
+					<h2 class="d"><i class="FINAL"><i class="PUBLIC"></i></i><code class="H">name</code><i class="a"><code class="return">java.lang.String</code></i></h2><span class="B">The human readable identifier of this object model.</span></section>
+				<section class="V" id="atomic">
+					<h2 class="d"><i class="FINAL"><i class="PUBLIC"></i></i><code class="H">atomic</code><i class="a"><code class="return">boolean</code></i></h2><span class="B">Whether this <code><a href="/api/kiss.model.Model.html">Model</a></code> is an atomic type or a object type.</span></section>
+				<section class="V" id="property(java.lang.String)">
+					<h2 class="d"><i class="PUBLIC"></i><code class="H">property</code><code class="X">(<code>java.lang.String</code> <code class="parameterName">name</code>)</code><i class="a"><code><a href="/api/kiss.model.Property.html">Property</a></code></i></h2>
+					<table class="K">
+						<tr class="c">
+							<td><code>java.lang.String</code> <code>name</code></td>
+							<td><span>A name of property.</span></td>
+						</tr>
+						<tr class="i">
+							<td><code><a href="/api/kiss.model.Property.html">Property</a></code></td>
+							<td><span>A suitable property or <code>null</code>.</span></td>
+						</tr>
+					</table><span class="B">Find the property which has the specified name in this object model. If the suitable property
+ is not found, <code>null</code> is returned.</span></section>
+				<section class="V" id="properties()">
+					<h2 class="d"><i class="PUBLIC"></i><code class="H">properties</code><code class="X">()</code><i class="a"><code>java.util.List<code class="parameters"><code><a href="/api/kiss.model.Property.html">Property</a></code></code></code></i></h2>
+					<table class="K">
+						<tr class="i">
+							<td><code>java.util.List<code class="parameters"><code><a href="/api/kiss.model.Property.html">Property</a></code></code></code></td>
+							<td></td>
+						</tr>
+					</table><span class="B">List up all properties.</span></section>
+				<section class="V" id="get(java.lang.Object,kiss.model.Property)">
+					<h2 class="d"><i class="PUBLIC"></i><code class="H">get</code><code class="X">(<code>M</code> <code class="parameterName">object</code>, <code><a href="/api/kiss.model.Property.html">Property</a></code> <code class="parameterName">property</code>)</code><i class="a"><code>java.lang.Object</code></i></h2>
+					<table class="K">
+						<tr class="c">
+							<td><code>M</code> <code>object</code></td>
+							<td><span>A object as source. This value must not be <code>null</code>.</span></td>
+						</tr>
+						<tr class="c">
+							<td><code><a href="/api/kiss.model.Property.html">Property</a></code> <code>property</code></td>
+							<td><span>A property. This value must not be <code>null</code>.</span></td>
+						</tr>
+						<tr class="i">
+							<td><code>java.lang.Object</code></td>
+							<td><span>A resolved property value. This value may be <code>null</code>.</span></td>
+						</tr>
+					</table><span class="B">Returns the value of the given property in the given object.</span></section>
+				<section class="V" id="set(java.lang.Object,kiss.model.Property,java.lang.Object)">
+					<h2 class="d"><i class="PUBLIC"></i><code class="H">set</code><code class="X">(<code>M</code> <code class="parameterName">object</code>, <code><a href="/api/kiss.model.Property.html">Property</a></code> <code class="parameterName">property</code>, <code>java.lang.Object</code> <code class="parameterName">value</code>)</code><i class="a"><code>M</code></i></h2>
+					<table class="K">
+						<tr class="c">
+							<td><code>M</code> <code>object</code></td>
+							<td><span>A object as source. This value must not be <code>null</code>.</span></td>
+						</tr>
+						<tr class="c">
+							<td><code><a href="/api/kiss.model.Property.html">Property</a></code> <code>property</code></td>
+							<td><span>A property. This value must not be <code>null</code>.</span></td>
+						</tr>
+						<tr class="c">
+							<td><code>java.lang.Object</code> <code>value</code></td>
+							<td><span>A new property value that you want to set. This value accepts <code>null</code>.</span></td>
+						</tr>
+						<tr class="i">
+							<td><code>M</code></td>
+							<td></td>
+						</tr>
+					</table><span class="B">Change the given property in the given object to the given new property value.</span></section>
+				<section class="V" id="observe(java.lang.Object,kiss.model.Property)">
+					<h2 class="d"><i class="PUBLIC"></i><code class="H">observe</code><code class="X">(<code>M</code> <code class="parameterName">object</code>, <code><a href="/api/kiss.model.Property.html">Property</a></code> <code class="parameterName">property</code>)</code><i class="a"><code><a href="/api/kiss.Signal.html">Signal</a></code></i></h2>
+					<table class="K">
+						<tr class="c">
+							<td><code>M</code> <code>object</code></td>
+							<td><span>A object as source. This value must not be <code>null</code>.</span></td>
+						</tr>
+						<tr class="c">
+							<td><code><a href="/api/kiss.model.Property.html">Property</a></code> <code>property</code></td>
+							<td><span>A property. This value must not be <code>null</code>.</span></td>
+						</tr>
+						<tr class="i">
+							<td><code><a href="/api/kiss.Signal.html">Signal</a></code></td>
+							<td><span>A property observer.</span></td>
+						</tr>
+					</table><span class="B">Observe the given property in the given object.</span></section>
+				<section class="V" id="walk(java.lang.Object,kiss.WiseTriConsumer)">
+					<h2 class="d"><i class="PUBLIC"></i><code class="H">walk</code><code class="X">(<code>M</code> <code class="parameterName">object</code>, <code><a href="/api/kiss.WiseTriConsumer.html">WiseTriConsumer</a><code class="parameters"><code><a href="/api/kiss.model.Model.html">Model</a><code class="parameters"><code>M</code></code></code>, <code><a href="/api/kiss.model.Property.html">Property</a></code>, <code>java.lang.Object</code></code></code> <code class="parameterName">walker</code>)</code><i class="a"><code>void</code></i></h2>
+					<table class="K">
+						<tr class="c">
+							<td><code>M</code> <code>object</code></td>
+							<td><span>A object as source. This value must not be <code>null</code>,</span></td>
+						</tr>
+						<tr class="c">
+							<td><code><a href="/api/kiss.WiseTriConsumer.html">WiseTriConsumer</a><code class="parameters"><code><a href="/api/kiss.model.Model.html">Model</a><code class="parameters"><code>M</code></code></code>, <code><a href="/api/kiss.model.Property.html">Property</a></code>, <code>java.lang.Object</code></code></code> <code>walker</code></td>
+							<td><span>A property iterator. This value accepts <code>null</code>.</span></td>
+						</tr>
+					</table><span class="B">Iterate over all properties in the given object and propagate the property and it&#39;s value to
+ the given property walker.</span></section>
+				<section class="V" id="of(java.lang.Object)">
+					<h2 class="d"><i class="PUBLIC STATIC"></i><code class="H">of</code><code class="X">(<code>M</code> <code class="parameterName">modelType</code>)</code><i class="a"><code><a href="/api/kiss.model.Model.html">Model</a><code class="parameters"><code>M</code></code></code></i></h2>
+					<table class="K">
+						<tr class="b">
+							<td><code>M</code></td>
+							<td></td>
+						</tr>
+						<tr class="c">
+							<td><code>M</code> <code>modelType</code></td>
+							<td><span>A model class.</span></td>
+						</tr>
+						<tr class="i">
+							<td><code><a href="/api/kiss.model.Model.html">Model</a><code class="parameters"><code>M</code></code></code></td>
+							<td><span>The information about the given model class.</span></td>
+						</tr>
+					</table><span class="B">Utility method to retrieve the cached model. If the model of the given class is not found,
+ IllegalArgumentException will be thrown.
+ <p>
+ If the given model has no cached information, it will be created automatically. This
+ operation is thread-safe.
+ 
+							<p>
+ Note : All classes do not necessary have each information. Some classes might share same
+ <code><a href="/api/kiss.model.Model.html">Model</a></code> object. (e.g. AutoGenerated Class)</p>
+						</p>
+					</span></section>
+				<section class="V" id="of(java.lang.Class)">
+					<h2 class="d"><i class="PUBLIC STATIC"></i><code class="H">of</code><code class="X">(<code>java.lang.Class<code class="parameters"><code>?</code><code class="super"><code>M</code></code></code></code> <code class="parameterName">modelClass</code>)</code><i class="a"><code><a href="/api/kiss.model.Model.html">Model</a><code class="parameters"><code>M</code></code></code></i></h2>
+					<table class="K">
+						<tr class="b">
+							<td><code>M</code></td>
+							<td></td>
+						</tr>
+						<tr class="c">
+							<td><code>java.lang.Class<code class="parameters"><code>?</code><code class="super"><code>M</code></code></code></code> <code>modelClass</code></td>
+							<td><span>A model class.</span></td>
+						</tr>
+						<tr class="i">
+							<td><code><a href="/api/kiss.model.Model.html">Model</a><code class="parameters"><code>M</code></code></code></td>
+							<td><span>The information about the given model class.</span></td>
+						</tr>
+					</table><span class="B">Utility method to retrieve the cached model. If the model of the given class is not found,
+ IllegalArgumentException will be thrown.
+ <p>
+ If the given model has no cached information, it will be created automatically. This
+ operation is thread-safe.
+ 
+							<p>
+ Note : All classes do not necessary have each information. Some classes might share same
+ <code><a href="/api/kiss.model.Model.html">Model</a></code> object. (e.g. AutoGenerated Class)</p>
+						</p>
+					</span></section>
+				<section class="V" id="collectAnnotatedMethods(java.lang.Class)">
+					<h2 class="d"><i class="PUBLIC STATIC"></i><code class="H">collectAnnotatedMethods</code><code class="X">(<code>java.lang.Class</code> <code class="parameterName">clazz</code>)</code><i class="a"><code>java.util.Map<code class="parameters"><code>java.lang.reflect.Method</code>, <code>java.util.List<code class="parameters"><code>java.lang.annotation.Annotation</code></code></code></code></code></i></h2>
+					<table class="K">
+						<tr class="c">
+							<td><code>java.lang.Class</code> <code>clazz</code></td>
+							<td><span>A target class.</span></td>
+						</tr>
+						<tr class="i">
+							<td><code>java.util.Map<code class="parameters"><code>java.lang.reflect.Method</code>, <code>java.util.List<code class="parameters"><code>java.lang.annotation.Annotation</code></code></code></code></code></td>
+							<td><span>A table of method and annnotations.</span></td>
+						</tr>
+					</table><span class="B">Collect all annotated methods and thire annotations.</span></section>
+				<section class="V" id="collectConstructors(java.lang.Class)">
+					<h2 class="d"><i class="PUBLIC STATIC"></i><code class="H">collectConstructors</code><code class="X">(<code>java.lang.Class<code class="parameters"><code>T</code></code></code> <code class="parameterName">clazz</code>)</code><i class="a"><code array="fix">java.lang.reflect.Constructor<code class="parameters"><code>T</code></code></code></i></h2>
+					<table class="K">
+						<tr class="b">
+							<td><code>T</code></td>
+							<td><span>A class type.</span></td>
+						</tr>
+						<tr class="c">
+							<td><code>java.lang.Class<code class="parameters"><code>T</code></code></code> <code>clazz</code></td>
+							<td><span>A target class.</span></td>
+						</tr>
+						<tr class="i">
+							<td><code array="fix">java.lang.reflect.Constructor<code class="parameters"><code>T</code></code></code></td>
+							<td><span>A collected constructors.</span></td>
+						</tr>
+					</table><span class="B">Collect all constructors which are defined in the specified Class. If the given class
+ is interface, primitive types, array class or <code>void</code>, <code>empty array</code>
+ will be return.</span></section>
+				<section class="V" id="collectTypes(java.lang.Class)">
+					<h2 class="d"><i class="PUBLIC STATIC"></i><code class="H">collectTypes</code><code class="X">(<code>java.lang.Class</code> <code class="parameterName">clazz</code>)</code><i class="a"><code>java.util.Set<code class="parameters"><code>java.lang.Class</code></code></code></i></h2>
+					<table class="K">
+						<tr class="c">
+							<td><code>java.lang.Class</code> <code>clazz</code></td>
+							<td><span>A target class. <code>null</code> will be return the empty set.</span></td>
+						</tr>
+						<tr class="i">
+							<td><code>java.util.Set<code class="parameters"><code>java.lang.Class</code></code></code></td>
+							<td><span>A set of classes, with predictable bottom-up iteration order.</span></td>
+						</tr>
+					</table><span class="B">Collect all classes which are extended or implemented by the target class.</span></section>
+				<section class="V" id="collectParameters(java.lang.reflect.Type,java.lang.reflect.GenericDeclaration)">
+					<h2 class="d"><i class="PUBLIC STATIC"></i><code class="H">collectParameters</code><code class="X">(<code>java.lang.reflect.Type</code> <code class="parameterName">type</code>, <code>java.lang.reflect.GenericDeclaration</code> <code class="parameterName">target</code>)</code><i class="a"><code array="fix">java.lang.reflect.Type</code></i></h2>
+					<table class="K">
+						<tr class="c">
+							<td><code>java.lang.reflect.Type</code> <code>type</code></td>
+							<td><span>A class type which implements(extends) the specified target interface(class).
+            <code>null</code> will be return the zero-length array.</span></td>
+						</tr>
+						<tr class="c">
+							<td><code>java.lang.reflect.GenericDeclaration</code> <code>target</code></td>
+							<td><span>A target type to list up types. <code>null</code> will be return the
+            zero-length array.</span></td>
+						</tr>
+						<tr class="i">
+							<td><code array="fix">java.lang.reflect.Type</code></td>
+							<td><span>A list of actual types.</span></td>
+						</tr>
+					</table><span class="B">List up all target types which are implemented or extended by the specified class.</span></section>
+			</article>
+			<aside class="U" id="SubNavi">
+				<div class="k">
+					<h5 class="Y">Fields</h5>
+					<ul>
+						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#type">type</a></code><i class="T"><code class="return">java.lang.Class<code class="parameters"><code>M</code></code></code></i></li>
+						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#name">name</a></code><i class="T"><code class="return">java.lang.String</code></i></li>
+						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#atomic">atomic</a></code><i class="T"><code class="return">boolean</code></i></li>
+					</ul>
+					<h5 class="Y">Static Methods</h5>
+					<ul>
+						<li><i class="PUBLIC STATIC"></i><code><a href="#of(java.lang.Object)">of</a></code><code class="X">(<code>M</code> <code class="parameterName">modelType</code>)</code><i class="T"><code><a href="/api/kiss.model.Model.html">Model</a><code class="parameters"><code>M</code></code></code></i></li>
+						<li><i class="PUBLIC STATIC"></i><code><a href="#of(java.lang.Class)">of</a></code><code class="X">(<code>java.lang.Class<code class="parameters"><code>?</code><code class="super"><code>M</code></code></code></code> <code class="parameterName">modelClass</code>)</code><i class="T"><code><a href="/api/kiss.model.Model.html">Model</a><code class="parameters"><code>M</code></code></code></i></li>
+						<li><i class="PUBLIC STATIC"></i><code><a href="#collectAnnotatedMethods(java.lang.Class)">collectAnnotatedMethods</a></code><code class="X">(<code>java.lang.Class</code> <code class="parameterName">clazz</code>)</code><i class="T"><code>java.util.Map<code class="parameters"><code>java.lang.reflect.Method</code>, <code>java.util.List<code class="parameters"><code>java.lang.annotation.Annotation</code></code></code></code></code></i></li>
+						<li><i class="PUBLIC STATIC"></i><code><a href="#collectConstructors(java.lang.Class)">collectConstructors</a></code><code class="X">(<code>java.lang.Class<code class="parameters"><code>T</code></code></code> <code class="parameterName">clazz</code>)</code><i class="T"><code array="fix">java.lang.reflect.Constructor<code class="parameters"><code>T</code></code></code></i></li>
+						<li><i class="PUBLIC STATIC"></i><code><a href="#collectTypes(java.lang.Class)">collectTypes</a></code><code class="X">(<code>java.lang.Class</code> <code class="parameterName">clazz</code>)</code><i class="T"><code>java.util.Set<code class="parameters"><code>java.lang.Class</code></code></code></i></li>
+						<li><i class="PUBLIC STATIC"></i><code><a href="#collectParameters(java.lang.reflect.Type,java.lang.reflect.GenericDeclaration)">collectParameters</a></code><code class="X">(<code>java.lang.reflect.Type</code> <code class="parameterName">type</code>, <code>java.lang.reflect.GenericDeclaration</code> <code class="parameterName">target</code>)</code><i class="T"><code array="fix">java.lang.reflect.Type</code></i></li>
+					</ul>
+					<h5 class="Y">Methods</h5>
+					<ul>
+						<li><i class="PUBLIC"></i><code><a href="#property(java.lang.String)">property</a></code><code class="X">(<code>java.lang.String</code> <code class="parameterName">name</code>)</code><i class="T"><code><a href="/api/kiss.model.Property.html">Property</a></code></i></li>
+						<li><i class="PUBLIC"></i><code><a href="#properties()">properties</a></code><code class="X">()</code><i class="T"><code>java.util.List<code class="parameters"><code><a href="/api/kiss.model.Property.html">Property</a></code></code></code></i></li>
+						<li><i class="PUBLIC"></i><code><a href="#get(java.lang.Object,kiss.model.Property)">get</a></code><code class="X">(<code>M</code> <code class="parameterName">object</code>, <code><a href="/api/kiss.model.Property.html">Property</a></code> <code class="parameterName">property</code>)</code><i class="T"><code>java.lang.Object</code></i></li>
+						<li><i class="PUBLIC"></i><code><a href="#set(java.lang.Object,kiss.model.Property,java.lang.Object)">set</a></code><code class="X">(<code>M</code> <code class="parameterName">object</code>, <code><a href="/api/kiss.model.Property.html">Property</a></code> <code class="parameterName">property</code>, <code>java.lang.Object</code> <code class="parameterName">value</code>)</code><i class="T"><code>M</code></i></li>
+						<li><i class="PUBLIC"></i><code><a href="#observe(java.lang.Object,kiss.model.Property)">observe</a></code><code class="X">(<code>M</code> <code class="parameterName">object</code>, <code><a href="/api/kiss.model.Property.html">Property</a></code> <code class="parameterName">property</code>)</code><i class="T"><code><a href="/api/kiss.Signal.html">Signal</a></code></i></li>
+						<li><i class="PUBLIC"></i><code><a href="#walk(java.lang.Object,kiss.WiseTriConsumer)">walk</a></code><code class="X">(<code>M</code> <code class="parameterName">object</code>, <code><a href="/api/kiss.WiseTriConsumer.html">WiseTriConsumer</a><code class="parameters"><code><a href="/api/kiss.model.Model.html">Model</a><code class="parameters"><code>M</code></code></code>, <code><a href="/api/kiss.model.Property.html">Property</a></code>, <code>java.lang.Object</code></code></code> <code class="parameterName">walker</code>)</code><i class="T"><code>void</code></i></li>
+					</ul>
+				</div>
+			</aside>
+		</main>
+		<script src="/root.js"></script>
+		<script src="/main.js" type="module"></script>
+	</body>
+</html>
