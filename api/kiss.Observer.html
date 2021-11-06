@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8"/>
+		<title>sinobu API</title>
+		<link href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release/build/styles/zenburn.min.css" media="print" onload="this.media=&#39;all&#39;" rel="stylesheet"/>
+		<script async="true" src="/sinobu/highlight.js"></script>
+		<script src="/sinobu/mimic.js" type="module"></script>
+		<link href="/sinobu/main.css" rel="stylesheet"/>
+	</head>
+	<body class="T">
+		<header class="J">
+			<h1 class="Q" date="2021-11-06" ver="2.8.0"><code>sinobu</code></h1>
+			<nav class="c"><a href="/sinobu/api/"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="/sinobu/main.svg#package"/>
+					</svg><code>API</code></a><a href="https://github.com/teletha/sinobu/discussions" target="_blank"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="/sinobu/main.svg#user"/>
+					</svg>Community</a><a href="/sinobu/doc/changelog.html"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="/sinobu/main.svg#activity"/>
+					</svg>Activity</a><a href="https://github.com/teletha/sinobu" target="_blank"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="/sinobu/main.svg#github"/>
+					</svg>Repository</a></nav>
+			<div class="O" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="/sinobu/main.svg#sun"/>
+					</svg>
+				</a><a id="dark" title="Change to a darker color scheme"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="/sinobu/main.svg#moon"/>
+					</svg>
+				</a></div>
+		</header>
+		<main class="L">
+			<nav class="V">
+				<div></div>
+			</nav>
+			<article class="g" id="Article">
+				<section class="k"><code class="e">kiss</code>
+					<h2 class="Functional H"><code class="K">Observer</code><code class="d">&#60;<code>V</code>&#62;</code></h2>
+					<ul class="C D">
+						<li><code>V</code><span>The object that provides notification information.</span></li>
+					</ul>
+					<ul class="C F">
+						<li><code>java.util.function.Consumer<code class="parameters"><code>V</code></code></code></li>
+					</ul>
+					<ul class="C G">
+						<li><code><a href="/sinobu/api/kiss.Signaling.html">Signaling</a><code class="parameters"><code>V</code></code></code></li>
+					</ul><span class="B"><p>
+ Provides a mechanism for receiving push-based notifications.
+ </p>
+ <p>
+ After an <code><a href="/sinobu/api/kiss.Observer.html">Observer</a></code> calls an <code><a href="/sinobu/api/kiss.Signal.html#to(kiss.Observer)">Signal#to(Observer)</a></code> method, the <code><a href="/sinobu/api/kiss.Signal.html">Signal</a></code> calls
+ the <code><a href="/sinobu/api/kiss.Observer.html#accept(java.lang.Object)">#accept(Object)</a></code> method to provide notifications. A well-behaved <code><a href="/sinobu/api/kiss.Signal.html">Signal</a></code> will
+ call an <code><a href="/sinobu/api/kiss.Observer.html#complete()">#complete()</a></code> closure exactly once or the Observer&#39;s <code><a href="/sinobu/api/kiss.Observer.html#error(java.lang.Throwable)">#error(Throwable)</a></code>
+ closure exactly once.
+ </p>
+					</span></section>
+				<section class="k" id="complete()">
+					<h2 class="Z"><i class="DEFAULT"><i class="PUBLIC"></i></i><code class="K">complete</code><code class="d">()</code><i class="R"><code>void</code></i></h2><span class="B"><p>
+ Notifies the observer that the provider has finished sending push-based notifications.
+ </p>
+ <p>
+ The <code><a href="/sinobu/api/kiss.Signal.html">Signal</a></code> will not call this closure if it calls <code><a href="/sinobu/api/kiss.Observer.html#error(java.lang.Throwable)">#error(Throwable)</a></code>.
+ </p>
+					</span></section>
+				<section class="k" id="error(java.lang.Throwable)">
+					<h2 class="Z"><i class="DEFAULT"><i class="PUBLIC"></i></i><code class="K">error</code><code class="d">(<code>java.lang.Throwable</code> <code class="parameterName">e</code>)</code><i class="R"><code>void</code></i></h2>
+					<table class="a">
+						<tr class="I">
+							<td><code>java.lang.Throwable</code> <code>e</code></td>
+							<td><span>An object that provides additional information about the error.</span></td>
+						</tr>
+					</table><span class="B"><p>
+ Notifies the observer that the provider has experienced an error condition.
+ </p>
+ <p>
+ If the <code><a href="/sinobu/api/kiss.Signal.html">Signal</a></code> calls this closure, it will not thereafter call <code><a href="/sinobu/api/kiss.Observer.html#accept(java.lang.Object)">#accept(Object)</a></code>
+ or <code><a href="/sinobu/api/kiss.Observer.html#complete()">#complete()</a></code>.
+ </p>
+					</span></section>
+			</article>
+			<aside class="i" id="SubNavi">
+				<div class="M">
+					<h5 class="h">Methods</h5>
+					<ul>
+						<li><i class="DEFAULT"><i class="PUBLIC"></i></i><code><a href="#complete()">complete</a></code><code class="d">()</code><i class="j"><code>void</code></i></li>
+						<li><i class="DEFAULT"><i class="PUBLIC"></i></i><code><a href="#error(java.lang.Throwable)">error</a></code><code class="d">(<code>java.lang.Throwable</code> <code class="parameterName">e</code>)</code><i class="j"><code>void</code></i></li>
+					</ul>
+				</div>
+			</aside>
+		</main>
+		<script src="/sinobu/root.js"></script>
+		<script src="/sinobu/main.js" type="module"></script>
+	</body>
+</html>
