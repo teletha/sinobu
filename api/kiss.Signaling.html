@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8"/>
+		<title>sinobu API</title>
+		<link href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release/build/styles/zenburn.min.css" media="print" onload="this.media=&#39;all&#39;" rel="stylesheet"/>
+		<script async="true" src="/sinobu/highlight.js"></script>
+		<script src="/sinobu/mimic.js" type="module"></script>
+		<link href="/sinobu/main.css" rel="stylesheet"/>
+	</head>
+	<body class="e">
+		<header class="R">
+			<h1 class="X" date="2021-11-06" ver="2.8.0"><code>sinobu</code></h1>
+			<nav class="K"><a href="/sinobu/doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="/sinobu/main.svg#text"/>
+					</svg>Document</a><a href="/sinobu/api/"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="/sinobu/main.svg#package"/>
+					</svg><code>API</code></a><a href="https://github.com/teletha/sinobu/discussions" target="_blank"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="/sinobu/main.svg#user"/>
+					</svg>Community</a><a href="/sinobu/doc/changelog.html"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="/sinobu/main.svg#activity"/>
+					</svg>Activity</a><a href="https://github.com/teletha/sinobu" target="_blank"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="/sinobu/main.svg#github"/>
+					</svg>Repository</a></nav>
+			<div class="Y" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="/sinobu/main.svg#sun"/>
+					</svg>
+				</a><a id="dark" title="Change to a darker color scheme"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="/sinobu/main.svg#moon"/>
+					</svg>
+				</a></div>
+		</header>
+		<main class="N">
+			<nav class="W">
+				<div></div>
+			</nav>
+			<article class="T" id="Article">
+				<section class="I"><code class="d">kiss</code>
+					<h2 class="Class Z"><code class="O">Signaling</code><code class="P">&#60;<code>V</code>&#62;</code></h2>
+					<ul class="C D">
+						<li><code>V</code></li>
+					</ul>
+					<ul class="C F">
+						<li><code>java.util.function.Consumer<code class="parameters"><code>V</code></code></code></li>
+						<li><code><a href="/sinobu/api/kiss.Observer.html">Observer</a><code class="parameters"><code>V</code></code></code></li>
+					</ul><span class="B">Simple <code><a href="/sinobu/api/kiss.Signal.html">Signal</a></code> support subject.</span></section>
+				<section class="I" id="expose">
+					<h2 class="M"><i class="FINAL"><i class="PUBLIC"></i></i><code class="O">expose</code><i class="Q"><code class="return"><a href="/sinobu/api/kiss.Signal.html">Signal</a><code class="parameters"><code>V</code></code></code></i></h2><span class="B">The exposed interface.</span></section>
+				<section class="I" id="Signaling()">
+					<h2 class="M"><i class="PUBLIC"></i><code class="O">Signaling</code><code class="P">()</code></h2>
+				</section>
+				<section class="I" id="accept(java.lang.Object)">
+					<h2 class="M"><i class="OVERRIDE PUBLIC"></i><code class="O">accept</code><code class="P">(<code>V</code> <code class="parameterName">value</code>)</code><i class="Q"><code>void</code></i></h2>
+					<table class="h">
+						<tr class="L">
+							<td><code>V</code> <code>value</code></td>
+							<td></td>
+						</tr>
+					</table>
+				</section>
+				<section class="I" id="complete()">
+					<h2 class="M"><i class="OVERRIDE PUBLIC"></i><code class="O">complete</code><code class="P">()</code><i class="Q"><code>void</code></i></h2>
+				</section>
+				<section class="I" id="error(java.lang.Throwable)">
+					<h2 class="M"><i class="OVERRIDE PUBLIC"></i><code class="O">error</code><code class="P">(<code>java.lang.Throwable</code> <code class="parameterName">error</code>)</code><i class="Q"><code>void</code></i></h2>
+					<table class="h">
+						<tr class="L">
+							<td><code>java.lang.Throwable</code> <code>error</code></td>
+							<td></td>
+						</tr>
+					</table>
+				</section>
+			</article>
+			<aside class="b" id="SubNavi">
+				<div class="V">
+					<h5 class="i">Constructors</h5>
+					<ul>
+						<li><i class="PUBLIC"></i><code><a href="#Signaling()">Signaling</a></code><code class="P">()</code></li>
+					</ul>
+					<h5 class="i">Fields</h5>
+					<ul>
+						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#expose">expose</a></code><i class="U"><code class="return"><a href="/sinobu/api/kiss.Signal.html">Signal</a><code class="parameters"><code>V</code></code></code></i></li>
+					</ul>
+					<h5 class="i">Methods</h5>
+					<ul>
+						<li><i class="OVERRIDE PUBLIC"></i><code><a href="#accept(java.lang.Object)">accept</a></code><code class="P">(<code>V</code> <code class="parameterName">value</code>)</code><i class="U"><code>void</code></i></li>
+						<li><i class="OVERRIDE PUBLIC"></i><code><a href="#complete()">complete</a></code><code class="P">()</code><i class="U"><code>void</code></i></li>
+						<li><i class="OVERRIDE PUBLIC"></i><code><a href="#error(java.lang.Throwable)">error</a></code><code class="P">(<code>java.lang.Throwable</code> <code class="parameterName">error</code>)</code><i class="U"><code>void</code></i></li>
+					</ul>
+				</div>
+			</aside>
+		</main>
+		<script src="/sinobu/root.js"></script>
+		<script src="/sinobu/main.js" type="module"></script>
+	</body>
+</html>

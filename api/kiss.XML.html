@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8"/>
+		<title>sinobu API</title>
+		<link href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release/build/styles/zenburn.min.css" media="print" onload="this.media=&#39;all&#39;" rel="stylesheet"/>
+		<script async="true" src="/sinobu/highlight.js"></script>
+		<script src="/sinobu/mimic.js" type="module"></script>
+		<link href="/sinobu/main.css" rel="stylesheet"/>
+	</head>
+	<body class="e">
+		<header class="R">
+			<h1 class="X" date="2021-11-06" ver="2.8.0"><code>sinobu</code></h1>
+			<nav class="K"><a href="/sinobu/doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="/sinobu/main.svg#text"/>
+					</svg>Document</a><a href="/sinobu/api/"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="/sinobu/main.svg#package"/>
+					</svg><code>API</code></a><a href="https://github.com/teletha/sinobu/discussions" target="_blank"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="/sinobu/main.svg#user"/>
+					</svg>Community</a><a href="/sinobu/doc/changelog.html"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="/sinobu/main.svg#activity"/>
+					</svg>Activity</a><a href="https://github.com/teletha/sinobu" target="_blank"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="/sinobu/main.svg#github"/>
+					</svg>Repository</a></nav>
+			<div class="Y" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="/sinobu/main.svg#sun"/>
+					</svg>
+				</a><a id="dark" title="Change to a darker color scheme"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="/sinobu/main.svg#moon"/>
+					</svg>
+				</a></div>
+		</header>
+		<main class="N">
+			<nav class="W">
+				<div></div>
+			</nav>
+			<article class="T" id="Article">
+				<section class="I"><code class="d">kiss</code>
+					<h2 class="Class Z"><code class="O">XML</code></h2>
+					<ul class="C F">
+						<li><code>java.util.function.Consumer<code class="parameters"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></code></code></li>
+						<li><code>java.lang.Iterable<code class="parameters"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></code></code></li>
+					</ul>
+				</section>
+				<section class="I" id="accept(kiss.XML)">
+					<h2 class="M"><i class="OVERRIDE PUBLIC"></i><code class="O">accept</code><code class="P">(<code><a href="/sinobu/api/kiss.XML.html">XML</a></code> <code class="parameterName">parent</code>)</code><i class="Q"><code>void</code></i></h2>
+					<table class="h">
+						<tr class="L">
+							<td><code><a href="/sinobu/api/kiss.XML.html">XML</a></code> <code>parent</code></td>
+							<td><span>A parent element.</span></td>
+						</tr>
+					</table><span class="B">Inserts this XML as a child element for the specified parent element.</span></section>
+				<section class="I" id="append(java.lang.Object)">
+					<h2 class="M"><i class="PUBLIC"></i><code class="O">append</code><code class="P">(<code>java.lang.Object</code> <code class="parameterName">xml</code>)</code><i class="Q"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></i></h2>
+					<table class="h">
+						<tr class="L">
+							<td><code>java.lang.Object</code> <code>xml</code></td>
+							<td><span>A element set to append.</span></td>
+						</tr>
+						<tr class="a">
+							<td><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></td>
+							<td><span>Chainable API.</span></td>
+						</tr>
+					</table><span class="B"><p>
+ Insert content, specified by the parameter, to the end of each element in the set of matched
+ elements.
+ </p>
+					</span></section>
+				<section class="I" id="prepend(java.lang.Object)">
+					<h2 class="M"><i class="PUBLIC"></i><code class="O">prepend</code><code class="P">(<code>java.lang.Object</code> <code class="parameterName">xml</code>)</code><i class="Q"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></i></h2>
+					<table class="h">
+						<tr class="L">
+							<td><code>java.lang.Object</code> <code>xml</code></td>
+							<td><span>A element set to prepend.</span></td>
+						</tr>
+						<tr class="a">
+							<td><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></td>
+							<td><span>Chainable API.</span></td>
+						</tr>
+					</table><span class="B"><p>
+ Insert content, specified by the parameter, to the beginning of each element in the set of
+ matched elements.
+ </p>
+					</span></section>
+				<section class="I" id="before(java.lang.Object)">
+					<h2 class="M"><i class="PUBLIC"></i><code class="O">before</code><code class="P">(<code>java.lang.Object</code> <code class="parameterName">xml</code>)</code><i class="Q"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></i></h2>
+					<table class="h">
+						<tr class="L">
+							<td><code>java.lang.Object</code> <code>xml</code></td>
+							<td><span>A element set to add.</span></td>
+						</tr>
+						<tr class="a">
+							<td><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></td>
+							<td><span>Chainable API.</span></td>
+						</tr>
+					</table><span class="B"><p>
+ Insert content, specified by the parameter, before each element in the set of matched
+ elements.
+ </p>
+					</span></section>
+				<section class="I" id="after(java.lang.Object)">
+					<h2 class="M"><i class="PUBLIC"></i><code class="O">after</code><code class="P">(<code>java.lang.Object</code> <code class="parameterName">xml</code>)</code><i class="Q"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></i></h2>
+					<table class="h">
+						<tr class="L">
+							<td><code>java.lang.Object</code> <code>xml</code></td>
+							<td><span>A element set to add</span></td>
+						</tr>
+						<tr class="a">
+							<td><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></td>
+							<td><span>Chainable API.</span></td>
+						</tr>
+					</table><span class="B"><p>
+ Insert content, specified by the parameter, after each element in the set of matched
+ elements.
+ </p>
+					</span></section>
+				<section class="I" id="empty()">
+					<h2 class="M"><i class="PUBLIC"></i><code class="O">empty</code><code class="P">()</code><i class="Q"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></i></h2>
+					<table class="h">
+						<tr class="a">
+							<td><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></td>
+							<td><span>Chainable API.</span></td>
+						</tr>
+					</table><span class="B"><p>
+ Remove all child nodes of the set of matched elements from the DOM.
+ </p>
+					</span></section>
+				<section class="I" id="remove()">
+					<h2 class="M"><i class="PUBLIC"></i><code class="O">remove</code><code class="P">()</code><i class="Q"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></i></h2>
+					<table class="h">
+						<tr class="a">
+							<td><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></td>
+							<td><span>Chainable API.</span></td>
+						</tr>
+					</table><span class="B"><p>
+ Remove the set of matched elements from the DOM.
+ </p>
+ <p>
+ Similar to <code><a href="/sinobu/api/kiss.XML.html#empty()">#empty()</a></code>, the <code><a href="/sinobu/api/kiss.XML.html#remove()">#remove()</a></code> method takes elements out of the DOM. Use
+ <code><a href="/sinobu/api/kiss.XML.html#remove()">#remove()</a></code> when you want to remove the element itself, as well as everything inside
+ it.
+ </p>
+					</span></section>
+				<section class="I" id="wrap(java.lang.Object)">
+					<h2 class="M"><i class="PUBLIC"></i><code class="O">wrap</code><code class="P">(<code>java.lang.Object</code> <code class="parameterName">xml</code>)</code><i class="Q"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></i></h2>
+					<table class="h">
+						<tr class="L">
+							<td><code>java.lang.Object</code> <code>xml</code></td>
+							<td><span>A element set to wrap.</span></td>
+						</tr>
+						<tr class="a">
+							<td><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></td>
+							<td><span>Chainable API.</span></td>
+						</tr>
+					</table><span class="B"><p>
+ Wrap an HTML structure around each element in the set of matched elements.
+ </p>
+					</span></section>
+				<section class="I" id="wrapAll(java.lang.Object)">
+					<h2 class="M"><i class="PUBLIC"></i><code class="O">wrapAll</code><code class="P">(<code>java.lang.Object</code> <code class="parameterName">xml</code>)</code><i class="Q"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></i></h2>
+					<table class="h">
+						<tr class="L">
+							<td><code>java.lang.Object</code> <code>xml</code></td>
+							<td><span>A element set to wrap.</span></td>
+						</tr>
+						<tr class="a">
+							<td><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></td>
+							<td><span>Chainable API.</span></td>
+						</tr>
+					</table><span class="B"><p>
+ Wrap an HTML structure around all elements in the set of matched elements.
+ </p>
+					</span></section>
+				<section class="I" id="clone()">
+					<h2 class="M"><i class="OVERRIDE PUBLIC"></i><code class="O">clone</code><code class="P">()</code><i class="Q"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></i></h2>
+					<table class="h">
+						<tr class="a">
+							<td><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></td>
+							<td></td>
+						</tr>
+					</table><span class="B"><p>
+ Create a deep copy of the set of matched elements.
+ </p>
+ <p>
+ The .clone() method performs a deep copy of the set of matched elements, meaning that it
+ copies the matched elements as well as all of their descendant elements and text nodes. When
+ used in conjunction with one of the insertion methods, .clone() is a convenient way to
+ duplicate elements on a page.
+ </p>
+ </span></section>
+				<section class="I" id="text()">
+					<h2 class="M"><i class="PUBLIC"></i><code class="O">text</code><code class="P">()</code><i class="Q"><code>java.lang.String</code></i></h2>
+					<table class="h">
+						<tr class="a">
+							<td><code>java.lang.String</code></td>
+							<td><span>Chainable API.</span></td>
+						</tr>
+					</table><span class="B"><p>
+ Get the combined text contents of each element in the set of matched elements, including
+ their descendants.
+ </p>
+					</span></section>
+				<section class="I" id="text(java.lang.String)">
+					<h2 class="M"><i class="PUBLIC"></i><code class="O">text</code><code class="P">(<code>java.lang.String</code> <code class="parameterName">text</code>)</code><i class="Q"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></i></h2>
+					<table class="h">
+						<tr class="L">
+							<td><code>java.lang.String</code> <code>text</code></td>
+							<td><span>A text to set.</span></td>
+						</tr>
+						<tr class="a">
+							<td><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></td>
+							<td><span>Chainable API.</span></td>
+						</tr>
+					</table><span class="B"><p>
+ Set the content of each element in the set of matched elements to the specified text.
+ </p>
+					</span></section>
+				<section class="I" id="name()">
+					<h2 class="M"><i class="PUBLIC"></i><code class="O">name</code><code class="P">()</code><i class="Q"><code>java.lang.String</code></i></h2>
+					<table class="h">
+						<tr class="a">
+							<td><code>java.lang.String</code></td>
+							<td><span>An element name.</span></td>
+						</tr>
+					</table><span class="B"><p>
+ Get the element name for the first element in the set of matched elements.
+ </p>
+					</span></section>
+				<section class="I" id="attr(java.lang.String)">
+					<h2 class="M"><i class="PUBLIC"></i><code class="O">attr</code><code class="P">(<code>java.lang.String</code> <code class="parameterName">name</code>)</code><i class="Q"><code>java.lang.String</code></i></h2>
+					<table class="h">
+						<tr class="L">
+							<td><code>java.lang.String</code> <code>name</code></td>
+							<td><span>An attribute name.</span></td>
+						</tr>
+						<tr class="a">
+							<td><code>java.lang.String</code></td>
+							<td><span>Chainable API.</span></td>
+						</tr>
+					</table><span class="B"><p>
+ Get the value of an attribute for the first element in the set of matched elements.
+ </p>
+					</span></section>
+				<section class="I" id="attr(java.lang.String,java.lang.Object)">
+					<h2 class="M"><i class="PUBLIC"></i><code class="O">attr</code><code class="P">(<code>java.lang.String</code> <code class="parameterName">name</code>, <code>java.lang.Object</code> <code class="parameterName">value</code>)</code><i class="Q"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></i></h2>
+					<table class="h">
+						<tr class="L">
+							<td><code>java.lang.String</code> <code>name</code></td>
+							<td><span>An attribute name.</span></td>
+						</tr>
+						<tr class="L">
+							<td><code>java.lang.Object</code> <code>value</code></td>
+							<td><span>An attribute value.</span></td>
+						</tr>
+						<tr class="a">
+							<td><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></td>
+							<td><span>Chainable API.</span></td>
+						</tr>
+					</table><span class="B"><p>
+ Set one or more attributes for the set of matched elements.
+ </p>
+					</span></section>
+				<section class="I" id="addClass(java.lang.String...)">
+					<h2 class="M"><i class="PUBLIC"></i><code class="O">addClass</code><code class="P">(<code array="var">java.lang.String</code> <code class="parameterName">names</code>)</code><i class="Q"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></i></h2>
+					<table class="h">
+						<tr class="L">
+							<td><code array="var">java.lang.String</code> <code>names</code></td>
+							<td><span>Space separated class name list.</span></td>
+						</tr>
+						<tr class="a">
+							<td><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></td>
+							<td><span>Chainable API.</span></td>
+						</tr>
+					</table><span class="B"><p>
+ Adds the specified class(es) to each of the set of matched elements.
+ </p>
+ <p>
+ It&#39;s important to note that this method does not replace a class. It simply adds the class,
+ appending it to any which may already be assigned to the elements. More than one class may be
+ added at a time, separated by a space, to the set of matched elements.
+ </p>
+					</span></section>
+				<section class="I" id="removeClass(java.lang.String...)">
+					<h2 class="M"><i class="PUBLIC"></i><code class="O">removeClass</code><code class="P">(<code array="var">java.lang.String</code> <code class="parameterName">names</code>)</code><i class="Q"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></i></h2>
+					<table class="h">
+						<tr class="L">
+							<td><code array="var">java.lang.String</code> <code>names</code></td>
+							<td><span>Space separated class name list.</span></td>
+						</tr>
+						<tr class="a">
+							<td><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></td>
+							<td><span>Chainable API.</span></td>
+						</tr>
+					</table><span class="B"><p>
+ Remove a single class, multiple classes, or all classes from each element in the set of
+ matched elements.
+ </p>
+ <p>
+ If a class name is included as a parameter, then only that class will be removed from the set
+ of matched elements. If no class names are specified in the parameter, all classes will be
+ removed. More than one class may be removed at a time, separated by a space, from the set of
+ matched elements.
+ </p>
+					</span></section>
+				<section class="I" id="toggleClass(java.lang.String)">
+					<h2 class="M"><i class="PUBLIC"></i><code class="O">toggleClass</code><code class="P">(<code>java.lang.String</code> <code class="parameterName">name</code>)</code><i class="Q"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></i></h2>
+					<table class="h">
+						<tr class="L">
+							<td><code>java.lang.String</code> <code>name</code></td>
+							<td><span>A class name.</span></td>
+						</tr>
+						<tr class="a">
+							<td><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></td>
+							<td><span>Chainable API.</span></td>
+						</tr>
+					</table><span class="B"><p>
+ Add or remove one class from each element in the set of matched elements, depending on either
+ the class&#39;s presence or the value of the switch argument.
+ </p>
+					</span></section>
+				<section class="I" id="hasClass(java.lang.String)">
+					<h2 class="M"><i class="PUBLIC"></i><code class="O">hasClass</code><code class="P">(<code>java.lang.String</code> <code class="parameterName">name</code>)</code><i class="Q"><code>boolean</code></i></h2>
+					<table class="h">
+						<tr class="L">
+							<td><code>java.lang.String</code> <code>name</code></td>
+							<td><span>A class name.</span></td>
+						</tr>
+						<tr class="a">
+							<td><code>boolean</code></td>
+							<td><span>Chainable API.</span></td>
+						</tr>
+					</table><span class="B"><p>
+ Determine whether any of the matched elements are assigned the given class.
+ </p>
+					</span></section>
+				<section class="I" id="first()">
+					<h2 class="M"><i class="FINAL"><i class="PUBLIC"></i></i><code class="O">first</code><code class="P">()</code><i class="Q"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></i></h2>
+					<table class="h">
+						<tr class="a">
+							<td><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></td>
+							<td><span>Chainable API.</span></td>
+						</tr>
+					</table><span class="B">Reduce the set of matched elements to the first in the set.</span></section>
+				<section class="I" id="last()">
+					<h2 class="M"><i class="FINAL"><i class="PUBLIC"></i></i><code class="O">last</code><code class="P">()</code><i class="Q"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></i></h2>
+					<table class="h">
+						<tr class="a">
+							<td><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></td>
+							<td><span>Chainable API.</span></td>
+						</tr>
+					</table><span class="B">Reduce the set of matched elements to the final one in the set.</span></section>
+				<section class="I" id="child(java.lang.String)">
+					<h2 class="M"><i class="FINAL"><i class="PUBLIC"></i></i><code class="O">child</code><code class="P">(<code>java.lang.String</code> <code class="parameterName">name</code>)</code><i class="Q"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></i></h2>
+					<table class="h">
+						<tr class="L">
+							<td><code>java.lang.String</code> <code>name</code></td>
+							<td><span>A child element name.</span></td>
+						</tr>
+						<tr class="a">
+							<td><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></td>
+							<td><span>A created child elements.</span></td>
+						</tr>
+					</table><span class="B">Append new child element with the specified name and traverse into them.</span></section>
+				<section class="I" id="children()">
+					<h2 class="M"><i class="FINAL"><i class="PUBLIC"></i></i><code class="O">children</code><code class="P">()</code><i class="Q"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></i></h2>
+					<table class="h">
+						<tr class="a">
+							<td><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></td>
+							<td><span>A set of children elements.</span></td>
+						</tr>
+					</table><span class="B">Get the children of each element in the current set of matched elements.</span></section>
+				<section class="I" id="firstChild()">
+					<h2 class="M"><i class="FINAL"><i class="PUBLIC"></i></i><code class="O">firstChild</code><code class="P">()</code><i class="Q"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></i></h2>
+					<table class="h">
+						<tr class="a">
+							<td><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></td>
+							<td><span>A set of fisrt elements.</span></td>
+						</tr>
+					</table><span class="B">Get the first child element of each element in the current set of matched elements.</span></section>
+				<section class="I" id="lastChild()">
+					<h2 class="M"><i class="FINAL"><i class="PUBLIC"></i></i><code class="O">lastChild</code><code class="P">()</code><i class="Q"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></i></h2>
+					<table class="h">
+						<tr class="a">
+							<td><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></td>
+							<td><span>A set of last elements.</span></td>
+						</tr>
+					</table><span class="B">Get the last child element of each element in the current set of matched elements.</span></section>
+				<section class="I" id="parent()">
+					<h2 class="M"><i class="FINAL"><i class="PUBLIC"></i></i><code class="O">parent</code><code class="P">()</code><i class="Q"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></i></h2>
+					<table class="h">
+						<tr class="a">
+							<td><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></td>
+							<td><span>A set of parent elements.</span></td>
+						</tr>
+					</table><span class="B">Get the parent of each element in the current set of matched elements.</span></section>
+				<section class="I" id="prev()">
+					<h2 class="M"><i class="FINAL"><i class="PUBLIC"></i></i><code class="O">prev</code><code class="P">()</code><i class="Q"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></i></h2>
+					<table class="h">
+						<tr class="a">
+							<td><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></td>
+							<td><span>A set of previous elements.</span></td>
+						</tr>
+					</table><span class="B">Get the previous sibling element of each element in the current set of matched elements.</span></section>
+				<section class="I" id="next()">
+					<h2 class="M"><i class="FINAL"><i class="PUBLIC"></i></i><code class="O">next</code><code class="P">()</code><i class="Q"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></i></h2>
+					<table class="h">
+						<tr class="a">
+							<td><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></td>
+							<td><span>A set of next elements.</span></td>
+						</tr>
+					</table><span class="B">Get the next sibling element of each element in the current set of matched elements.</span></section>
+				<section class="I" id="find(java.lang.String)">
+					<h2 class="M"><i class="PUBLIC"></i><code class="O">find</code><code class="P">(<code>java.lang.String</code> <code class="parameterName">selector</code>)</code><i class="Q"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></i></h2>
+					<table class="h">
+						<tr class="L">
+							<td><code>java.lang.String</code> <code>selector</code></td>
+							<td><span>A string containing a css selector expression to match elements against.</span></td>
+						</tr>
+						<tr class="a">
+							<td><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></td>
+							<td><span>Chainable API.</span></td>
+						</tr>
+					</table><span class="B">Get the descendants of each element in the current set of matched elements, filtered by a css
+ selector.</span></section>
+				<section class="I" id="size()">
+					<h2 class="M"><i class="PUBLIC"></i><code class="O">size</code><code class="P">()</code><i class="Q"><code>int</code></i></h2>
+					<table class="h">
+						<tr class="a">
+							<td><code>int</code></td>
+							<td><span>A size of current node set.</span></td>
+						</tr>
+					</table><span class="B"><p>
+ Return size of the current node set.
+ </p>
+					</span></section>
+				<section class="I" id="effect(kiss.WiseFunction)">
+					<h2 class="M"><i class="PUBLIC"></i><code class="O">effect</code><code class="P">(<code><a href="/sinobu/api/kiss.WiseFunction.html">WiseFunction</a><code class="parameters"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code>, <code>R</code></code></code> <code class="parameterName">process</code>)</code><i class="Q"><code>R</code></i></h2>
+					<table class="h">
+						<tr class="J">
+							<td><code>R</code></td>
+							<td></td>
+						</tr>
+						<tr class="L">
+							<td><code><a href="/sinobu/api/kiss.WiseFunction.html">WiseFunction</a><code class="parameters"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code>, <code>R</code></code></code> <code>process</code></td>
+							<td></td>
+						</tr>
+						<tr class="a">
+							<td><code>R</code></td>
+							<td></td>
+						</tr>
+					</table><span class="B">Apply the specified process to this <code><a href="/sinobu/api/kiss.XML.html">XML</a></code>. This is helpful for fluent method chain to
+ intercept your own operation.</span></section>
+				<section class="I" id="iterator()">
+					<h2 class="M"><i class="OVERRIDE PUBLIC"></i><code class="O">iterator</code><code class="P">()</code><i class="Q"><code>java.util.Iterator<code class="parameters"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></code></code></i></h2>
+					<table class="h">
+						<tr class="a">
+							<td><code>java.util.Iterator<code class="parameters"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></code></code></td>
+							<td></td>
+						</tr>
+					</table>
+				</section>
+				<section class="I" id="to()">
+					<h2 class="M"><i class="PUBLIC"></i><code class="O">to</code><code class="P">()</code><i class="Q"><code>org.w3c.dom.Node</code></i></h2>
+					<table class="h">
+						<tr class="a">
+							<td><code>org.w3c.dom.Node</code></td>
+							<td><span>A first Node or <code>null</code>.</span></td>
+						</tr>
+					</table><span class="B"><p>
+ Convert the first element to Node.
+ </p>
+					</span></section>
+				<section class="I" id="to(java.lang.Appendable)">
+					<h2 class="M"><i class="PUBLIC"></i><code class="O">to</code><code class="P">(<code>java.lang.Appendable</code> <code class="parameterName">output</code>)</code><i class="Q"><code>void</code></i></h2>
+					<table class="h">
+						<tr class="L">
+							<td><code>java.lang.Appendable</code> <code>output</code></td>
+							<td><span>An output channel.</span></td>
+						</tr>
+					</table><span class="B"><p>
+ Write this element to the specified output with the simple format option.
+ </p>
+					</span></section>
+				<section class="I" id="to(java.lang.Appendable,java.lang.String,java.lang.String...)">
+					<h2 class="M"><i class="PUBLIC"></i><code class="O">to</code><code class="P">(<code>java.lang.Appendable</code> <code class="parameterName">output</code>, <code>java.lang.String</code> <code class="parameterName">indent</code>, <code array="var">java.lang.String</code> <code class="parameterName">inlineAndNonEmpty</code>)</code><i class="Q"><code>void</code></i></h2>
+					<table class="h">
+						<tr class="L">
+							<td><code>java.lang.Appendable</code> <code>output</code></td>
+							<td><span>An output channel.</span></td>
+						</tr>
+						<tr class="L">
+							<td><code>java.lang.String</code> <code>indent</code></td>
+							<td><span>Specify the indentation string to use when formatting. If null is specified,
+            formatting will not be performed.</span></td>
+						</tr>
+						<tr class="L">
+							<td><code array="var">java.lang.String</code> <code>inlineAndNonEmpty</code></td>
+							<td><span>At the time of formatting, the element with the specified name is
+            regarded as an inline element, and line breaks and indentation are not performed
+            on the surrounding elements. Also, if an element whose name starts with &#34;&#34; is
+            specified, it will not be treated as an empty element and will always have a start
+            tag and end tag.</span></td>
+						</tr>
+					</table><span class="B"><p>
+ Write this element to the specified output with your format settings.
+ </p>
+					</span></section>
+				<section class="I" id="toString()">
+					<h2 class="M"><i class="OVERRIDE PUBLIC"></i><code class="O">toString</code><code class="P">()</code><i class="Q"><code>java.lang.String</code></i></h2>
+					<table class="h">
+						<tr class="a">
+							<td><code>java.lang.String</code></td>
+							<td></td>
+						</tr>
+					</table>
+				</section>
+			</article>
+			<aside class="b" id="SubNavi">
+				<div class="V">
+					<h5 class="i">Methods</h5>
+					<ul>
+						<li><i class="OVERRIDE PUBLIC"></i><code><a href="#accept(kiss.XML)">accept</a></code><code class="P">(<code><a href="/sinobu/api/kiss.XML.html">XML</a></code> <code class="parameterName">parent</code>)</code><i class="U"><code>void</code></i></li>
+						<li><i class="PUBLIC"></i><code><a href="#append(java.lang.Object)">append</a></code><code class="P">(<code>java.lang.Object</code> <code class="parameterName">xml</code>)</code><i class="U"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></i></li>
+						<li><i class="PUBLIC"></i><code><a href="#prepend(java.lang.Object)">prepend</a></code><code class="P">(<code>java.lang.Object</code> <code class="parameterName">xml</code>)</code><i class="U"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></i></li>
+						<li><i class="PUBLIC"></i><code><a href="#before(java.lang.Object)">before</a></code><code class="P">(<code>java.lang.Object</code> <code class="parameterName">xml</code>)</code><i class="U"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></i></li>
+						<li><i class="PUBLIC"></i><code><a href="#after(java.lang.Object)">after</a></code><code class="P">(<code>java.lang.Object</code> <code class="parameterName">xml</code>)</code><i class="U"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></i></li>
+						<li><i class="PUBLIC"></i><code><a href="#empty()">empty</a></code><code class="P">()</code><i class="U"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></i></li>
+						<li><i class="PUBLIC"></i><code><a href="#remove()">remove</a></code><code class="P">()</code><i class="U"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></i></li>
+						<li><i class="PUBLIC"></i><code><a href="#wrap(java.lang.Object)">wrap</a></code><code class="P">(<code>java.lang.Object</code> <code class="parameterName">xml</code>)</code><i class="U"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></i></li>
+						<li><i class="PUBLIC"></i><code><a href="#wrapAll(java.lang.Object)">wrapAll</a></code><code class="P">(<code>java.lang.Object</code> <code class="parameterName">xml</code>)</code><i class="U"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></i></li>
+						<li><i class="OVERRIDE PUBLIC"></i><code><a href="#clone()">clone</a></code><code class="P">()</code><i class="U"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></i></li>
+						<li><i class="PUBLIC"></i><code><a href="#text()">text</a></code><code class="P">()</code><i class="U"><code>java.lang.String</code></i></li>
+						<li><i class="PUBLIC"></i><code><a href="#text(java.lang.String)">text</a></code><code class="P">(<code>java.lang.String</code> <code class="parameterName">text</code>)</code><i class="U"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></i></li>
+						<li><i class="PUBLIC"></i><code><a href="#name()">name</a></code><code class="P">()</code><i class="U"><code>java.lang.String</code></i></li>
+						<li><i class="PUBLIC"></i><code><a href="#attr(java.lang.String)">attr</a></code><code class="P">(<code>java.lang.String</code> <code class="parameterName">name</code>)</code><i class="U"><code>java.lang.String</code></i></li>
+						<li><i class="PUBLIC"></i><code><a href="#attr(java.lang.String,java.lang.Object)">attr</a></code><code class="P">(<code>java.lang.String</code> <code class="parameterName">name</code>, <code>java.lang.Object</code> <code class="parameterName">value</code>)</code><i class="U"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></i></li>
+						<li><i class="PUBLIC"></i><code><a href="#addClass(java.lang.String...)">addClass</a></code><code class="P">(<code array="var">java.lang.String</code> <code class="parameterName">names</code>)</code><i class="U"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></i></li>
+						<li><i class="PUBLIC"></i><code><a href="#removeClass(java.lang.String...)">removeClass</a></code><code class="P">(<code array="var">java.lang.String</code> <code class="parameterName">names</code>)</code><i class="U"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></i></li>
+						<li><i class="PUBLIC"></i><code><a href="#toggleClass(java.lang.String)">toggleClass</a></code><code class="P">(<code>java.lang.String</code> <code class="parameterName">name</code>)</code><i class="U"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></i></li>
+						<li><i class="PUBLIC"></i><code><a href="#hasClass(java.lang.String)">hasClass</a></code><code class="P">(<code>java.lang.String</code> <code class="parameterName">name</code>)</code><i class="U"><code>boolean</code></i></li>
+						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#first()">first</a></code><code class="P">()</code><i class="U"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></i></li>
+						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#last()">last</a></code><code class="P">()</code><i class="U"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></i></li>
+						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#child(java.lang.String)">child</a></code><code class="P">(<code>java.lang.String</code> <code class="parameterName">name</code>)</code><i class="U"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></i></li>
+						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#children()">children</a></code><code class="P">()</code><i class="U"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></i></li>
+						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#firstChild()">firstChild</a></code><code class="P">()</code><i class="U"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></i></li>
+						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#lastChild()">lastChild</a></code><code class="P">()</code><i class="U"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></i></li>
+						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#parent()">parent</a></code><code class="P">()</code><i class="U"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></i></li>
+						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#prev()">prev</a></code><code class="P">()</code><i class="U"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></i></li>
+						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#next()">next</a></code><code class="P">()</code><i class="U"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></i></li>
+						<li><i class="PUBLIC"></i><code><a href="#find(java.lang.String)">find</a></code><code class="P">(<code>java.lang.String</code> <code class="parameterName">selector</code>)</code><i class="U"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></i></li>
+						<li><i class="PUBLIC"></i><code><a href="#size()">size</a></code><code class="P">()</code><i class="U"><code>int</code></i></li>
+						<li><i class="PUBLIC"></i><code><a href="#effect(kiss.WiseFunction)">effect</a></code><code class="P">(<code><a href="/sinobu/api/kiss.WiseFunction.html">WiseFunction</a><code class="parameters"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code>, <code>R</code></code></code> <code class="parameterName">process</code>)</code><i class="U"><code>R</code></i></li>
+						<li><i class="OVERRIDE PUBLIC"></i><code><a href="#iterator()">iterator</a></code><code class="P">()</code><i class="U"><code>java.util.Iterator<code class="parameters"><code><a href="/sinobu/api/kiss.XML.html">XML</a></code></code></code></i></li>
+						<li><i class="PUBLIC"></i><code><a href="#to()">to</a></code><code class="P">()</code><i class="U"><code>org.w3c.dom.Node</code></i></li>
+						<li><i class="PUBLIC"></i><code><a href="#to(java.lang.Appendable)">to</a></code><code class="P">(<code>java.lang.Appendable</code> <code class="parameterName">output</code>)</code><i class="U"><code>void</code></i></li>
+						<li><i class="PUBLIC"></i><code><a href="#to(java.lang.Appendable,java.lang.String,java.lang.String...)">to</a></code><code class="P">(<code>java.lang.Appendable</code> <code class="parameterName">output</code>, <code>java.lang.String</code> <code class="parameterName">indent</code>, <code array="var">java.lang.String</code> <code class="parameterName">inlineAndNonEmpty</code>)</code><i class="U"><code>void</code></i></li>
+						<li><i class="OVERRIDE PUBLIC"></i><code><a href="#toString()">toString</a></code><code class="P">()</code><i class="U"><code>java.lang.String</code></i></li>
+					</ul>
+				</div>
+			</aside>
+		</main>
+		<script src="/sinobu/root.js"></script>
+		<script src="/sinobu/main.js" type="module"></script>
+	</body>
+</html>

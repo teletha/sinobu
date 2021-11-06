@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8"/>
+		<title>sinobu API</title>
+		<link href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release/build/styles/zenburn.min.css" media="print" onload="this.media=&#39;all&#39;" rel="stylesheet"/>
+		<script async="true" src="/sinobu/highlight.js"></script>
+		<script src="/sinobu/mimic.js" type="module"></script>
+		<link href="/sinobu/main.css" rel="stylesheet"/>
+	</head>
+	<body class="e">
+		<header class="R">
+			<h1 class="X" date="2021-11-06" ver="2.8.0"><code>sinobu</code></h1>
+			<nav class="K"><a href="/sinobu/doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="/sinobu/main.svg#text"/>
+					</svg>Document</a><a href="/sinobu/api/"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="/sinobu/main.svg#package"/>
+					</svg><code>API</code></a><a href="https://github.com/teletha/sinobu/discussions" target="_blank"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="/sinobu/main.svg#user"/>
+					</svg>Community</a><a href="/sinobu/doc/changelog.html"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="/sinobu/main.svg#activity"/>
+					</svg>Activity</a><a href="https://github.com/teletha/sinobu" target="_blank"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="/sinobu/main.svg#github"/>
+					</svg>Repository</a></nav>
+			<div class="Y" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="/sinobu/main.svg#sun"/>
+					</svg>
+				</a><a id="dark" title="Change to a darker color scheme"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="/sinobu/main.svg#moon"/>
+					</svg>
+				</a></div>
+		</header>
+		<main class="N">
+			<nav class="W">
+				<div></div>
+			</nav>
+			<article class="T" id="Article">
+				<section class="I"><code class="d">kiss</code>
+					<h2 class="Interface Z"><code class="O">Extensible</code></h2>
+					<ul class="C G">
+						<li><code><a href="/sinobu/api/kiss.Decoder.html">Decoder</a><code class="parameters"><code>M</code></code></code></li>
+						<li><code><a href="/sinobu/api/kiss.Encoder.html">Encoder</a><code class="parameters"><code>M</code></code></code></li>
+						<li><code><a href="/sinobu/api/kiss.ExtensionFactory.html">ExtensionFactory</a><code class="parameters"><code>E</code></code></code></li>
+						<li><code><a href="/sinobu/api/kiss.Lifestyle.html">Lifestyle</a><code class="parameters"><code>M</code></code></code></li>
+						<li><code><a href="/sinobu/api/kiss.Singleton.html">Singleton</a><code class="parameters"><code>M</code></code></code></li>
+					</ul><span class="B"><p>
+ This is a marker interface for Extension Point of your application.
+ </p>
+ <p>
+ All Extension Points are recognized automatically by Sinobu if you use <code><a href="/sinobu/api/kiss.I.html#load(java.lang.Class)">I#load(Class)</a></code> or
+ <code><a href="/sinobu/api/kiss.I.html#load(java.net.URL)">I#load(java.net.URL)</a></code> methods properly. And an Extension Point will provide some
+ Extensions.
+ </p>
+ <h2 id="ExtensionPoint">What is Extension Point?</h2>
+ <p>
+ We give a definition of <em>Extension Point</em> like the following.
+ </p>
+ <ul>
+ 
+							<li>It implements <code><a href="/sinobu/api/kiss.Extensible.html">Extensible</a></code> interface.</li>
+ 
+							<li>It has <code><a href="/sinobu/api/kiss.Extensible.html">Extensible</a></code> interface in not ancestor but parent.</li>
+ </ul>
+ <pre>
+ interface ThisIsExtensionPoint extends Extensible {
+ }
+ 
+ interface ThisIsNotExtensionPoint implements ThisIsExtensionPoint {
+ }
+ 
+ class ThisIsAlsoExtensionPoint implements Extensible {
+     // This is both Extension Point and Extension.
+ }
+ </pre>
+ <h2 id="Extension">What is Extension?</h2>
+ <p>
+ We give a definition of <em>Extension</em> like the following.
+ </p>
+ <ul>
+ 
+							<li>It implements any Extension Point or is Extension Point itself.</li>
+ 
+							<li>It must be concrete class and has a suitable constructor for Sinobu (see also
+ <code><a href="/sinobu/api/kiss.I.html#make(java.lang.Class)">I#make(Class)</a></code> method).</li>
+ </ul>
+ <pre>
+ class ThisIsExtension implements Extensible {
+     // This is both Extension Point and Extension.
+ }
+ 
+ class ThisIsAlsoExtension extends ThisIsExtension {
+     // But not Extension Point.
+ }
+ 
+ class ThisIsNotExtension extends ThisIsExtension {
+ 
+     public ThisIsNotExtension(NotInjectable object) {
+         // because of invalid constructor
+     }
+ }
+ </pre>
+ <h2 id="ExtensionKey">What is Extension Key?</h2>
+ <p>
+ You can provide <em>Extension Key</em> for each Extensions by using parameter. The key makes easy
+ finding an Extension you need (see also <code><a href="/sinobu/api/kiss.I.html#find(java.lang.Class,java.lang.Class)">I#find(Class, Class)</a></code>).
+ </p>
+ <pre>
+ interface ExtensionPointWithKeyK extends Extensible {
+ }
+ 
+ class ExtensionWithKey implements ExtensionPointWithKeyString {
+     // Associate this Extension with String class.
+ }
+ 
+ class ExtensionWithAnotherKey implements ExtensionPointWithKeyList {
+     // Associate this Extension with List interface.
+ }
+ </pre>
+					</span></section>
+			</article>
+			<aside class="b" id="SubNavi">
+				<div class="V"></div>
+			</aside>
+		</main>
+		<script src="/sinobu/root.js"></script>
+		<script src="/sinobu/main.js" type="module"></script>
+	</body>
+</html>
