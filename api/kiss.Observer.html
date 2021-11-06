@@ -8,10 +8,10 @@
 		<script src="/sinobu/mimic.js" type="module"></script>
 		<link href="/sinobu/main.css" rel="stylesheet"/>
 	</head>
-	<body class="e">
-		<header class="R">
-			<h1 class="X" date="2021-11-06" ver="2.8.0"><code>sinobu</code></h1>
-			<nav class="K"><a href="/sinobu/doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
+	<body class="a">
+		<header class="g">
+			<h1 class="c" date="2021-11-06" ver="2.8.0"><code>sinobu</code></h1>
+			<nav class="h"><a href="/sinobu/doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="/sinobu/main.svg#text"/>
 					</svg>Document</a><a href="/sinobu/api/"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="/sinobu/main.svg#package"/>
@@ -30,18 +30,18 @@
 					</svg>
 				</a></div>
 		</header>
-		<main class="N">
+		<main class="I">
 			<nav class="W">
 				<div></div>
 			</nav>
-			<article class="T" id="Article">
-				<section class="I"><code class="d">kiss</code>
-					<h2 class="Functional Z"><code class="O">Observer</code><code class="P">&#60;<code>V</code>&#62;</code></h2>
+			<article class="Q" id="Article">
+				<section class="L"><code class="e">kiss</code>
+					<h2 class="Functional b"><code class="T">Observer</code><code class="O">&#60;<code>V</code>&#62;</code></h2>
 					<ul class="C D">
 						<li><code>V</code><span>The object that provides notification information.</span></li>
 					</ul>
 					<ul class="C F">
-						<li><code>java.util.function.Consumer<code class="parameters"><code>V</code></code></code></li>
+						<li><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>V</code></code></code></li>
 					</ul>
 					<ul class="C G">
 						<li><code><a href="/sinobu/api/kiss.Signaling.html">Signaling</a><code class="parameters"><code>V</code></code></code></li>
@@ -55,19 +55,19 @@
  closure exactly once.
  </p>
 					</span></section>
-				<section class="I" id="complete()">
-					<h2 class="M"><i class="DEFAULT"><i class="PUBLIC"></i></i><code class="O">complete</code><code class="P">()</code><i class="Q"><code>void</code></i></h2><span class="B"><p>
+				<section class="L" id="complete()">
+					<h2 class="P"><i class="DEFAULT"><i class="PUBLIC"></i></i><code class="T">complete</code><code class="O">()</code><i class="N"><code>void</code></i></h2><span class="B"><p>
  Notifies the observer that the provider has finished sending push-based notifications.
  </p>
  <p>
  The <code><a href="/sinobu/api/kiss.Signal.html">Signal</a></code> will not call this closure if it calls <code><a href="/sinobu/api/kiss.Observer.html#error(java.lang.Throwable)">#error(Throwable)</a></code>.
  </p>
 					</span></section>
-				<section class="I" id="error(java.lang.Throwable)">
-					<h2 class="M"><i class="DEFAULT"><i class="PUBLIC"></i></i><code class="O">error</code><code class="P">(<code>java.lang.Throwable</code> <code class="parameterName">e</code>)</code><i class="Q"><code>void</code></i></h2>
-					<table class="h">
-						<tr class="L">
-							<td><code>java.lang.Throwable</code> <code>e</code></td>
+				<section class="L" id="error(java.lang.Throwable)">
+					<h2 class="P"><i class="DEFAULT"><i class="PUBLIC"></i></i><code class="T">error</code><code class="O">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Throwable.html">Throwable</a></code> <code class="parameterName">e</code>)</code><i class="N"><code>void</code></i></h2>
+					<table class="U">
+						<tr class="d">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Throwable.html">Throwable</a></code> <code>e</code></td>
 							<td><span>An object that provides additional information about the error.</span></td>
 						</tr>
 					</table><span class="B"><p>
@@ -79,12 +79,12 @@
  </p>
 					</span></section>
 			</article>
-			<aside class="b" id="SubNavi">
-				<div class="V">
-					<h5 class="i">Methods</h5>
+			<aside class="S" id="SubNavi">
+				<div class="i">
+					<h5 class="H">Methods</h5>
 					<ul>
-						<li><i class="DEFAULT"><i class="PUBLIC"></i></i><code><a href="#complete()">complete</a></code><code class="P">()</code><i class="U"><code>void</code></i></li>
-						<li><i class="DEFAULT"><i class="PUBLIC"></i></i><code><a href="#error(java.lang.Throwable)">error</a></code><code class="P">(<code>java.lang.Throwable</code> <code class="parameterName">e</code>)</code><i class="U"><code>void</code></i></li>
+						<li><i class="DEFAULT"><i class="PUBLIC"></i></i><code><a href="#complete()">complete</a></code><code class="O">()</code><i class="V"><code>void</code></i></li>
+						<li><i class="DEFAULT"><i class="PUBLIC"></i></i><code><a href="#error(java.lang.Throwable)">error</a></code><code class="O">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Throwable.html">Throwable</a></code> <code class="parameterName">e</code>)</code><i class="V"><code>void</code></i></li>
 					</ul>
 				</div>
 			</aside>

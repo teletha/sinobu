@@ -8,10 +8,10 @@
 		<script src="/sinobu/mimic.js" type="module"></script>
 		<link href="/sinobu/main.css" rel="stylesheet"/>
 	</head>
-	<body class="e">
-		<header class="R">
-			<h1 class="X" date="2021-11-06" ver="2.8.0"><code>sinobu</code></h1>
-			<nav class="K"><a href="/sinobu/doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
+	<body class="a">
+		<header class="g">
+			<h1 class="c" date="2021-11-06" ver="2.8.0"><code>sinobu</code></h1>
+			<nav class="h"><a href="/sinobu/doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="/sinobu/main.svg#text"/>
 					</svg>Document</a><a href="/sinobu/api/"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="/sinobu/main.svg#package"/>
@@ -30,22 +30,22 @@
 					</svg>
 				</a></div>
 		</header>
-		<main class="N">
+		<main class="I">
 			<nav class="W">
 				<div></div>
 			</nav>
-			<article class="T" id="Article">
-				<section class="I"><code class="d">kiss</code>
-					<h2 class="Class Z"><code class="O">Variable</code><code class="P">&#60;<code>V</code>&#62;</code></h2>
+			<article class="Q" id="Article">
+				<section class="L"><code class="e">kiss</code>
+					<h2 class="Class b"><code class="T">Variable</code><code class="O">&#60;<code>V</code>&#62;</code></h2>
 					<ul class="C D">
 						<li><code>V</code></li>
 					</ul>
 					<ul class="C F">
-						<li><code>java.util.function.Consumer<code class="parameters"><code>V</code></code></code></li>
-						<li><code>java.util.function.Supplier<code class="parameters"><code>V</code></code></code></li>
+						<li><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>V</code></code></code></li>
+						<li><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code>V</code></code></code></li>
 					</ul><span class="B">A reassignable container object which may or may not contain a non-null value. If a value is
  present, <code><a href="/sinobu/api/kiss.Variable.html#isPresent()">#isPresent()</a></code> returns true. If no value is present, the object is considered
- empty and <code><a href="/sinobu/api/kiss.Variable.html#isPresent()">#isPresent()</a></code> returns false. Unlike Optional, this container is
+ empty and <code><a href="/sinobu/api/kiss.Variable.html#isPresent()">#isPresent()</a></code> returns false. Unlike <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Optional.html">Optional</a></code>, this container is
  reassignable.
  <p>
  Additional methods that depend on the presence or absence of a contained value are provided, such
@@ -55,322 +55,322 @@
 							<p/>
 						</p>
 					</span></section>
-				<section class="I" id="v">
-					<h2 class="M"><i class="TRANSIENT FINAL"><i class="PUBLIC"></i></i><code class="O">v</code><i class="Q"><code class="return">V</code></i></h2><span class="B">The current value. This value is not final but read-only.</span></section>
-				<section class="I" id="Variable(java.lang.Object)">
-					<h2 class="M"><i class="PROTECTED"></i><code class="O">Variable</code><code class="P">(<code>V</code> <code class="parameterName">value</code>)</code></h2>
-					<table class="h">
-						<tr class="L">
+				<section class="L" id="v">
+					<h2 class="P"><i class="FINAL TRANSIENT"><i class="PUBLIC"></i></i><code class="T">v</code><i class="N"><code class="return">V</code></i></h2><span class="B">The current value. This value is not final but read-only.</span></section>
+				<section class="L" id="Variable(java.lang.Object)">
+					<h2 class="P"><i class="PROTECTED"></i><code class="T">Variable</code><code class="O">(<code>V</code> <code class="parameterName">value</code>)</code></h2>
+					<table class="U">
+						<tr class="d">
 							<td><code>V</code> <code>value</code></td>
 							<td></td>
 						</tr>
 					</table><span class="B">Hide constructor.</span></section>
-				<section class="I" id="accept(java.lang.Object)">
-					<h2 class="M"><i class="OVERRIDE PUBLIC"></i><code class="O">accept</code><code class="P">(<code>V</code> <code class="parameterName">value</code>)</code><i class="Q"><code>void</code></i></h2>
-					<table class="h">
-						<tr class="L">
+				<section class="L" id="accept(java.lang.Object)">
+					<h2 class="P"><i class="OVERRIDE PUBLIC"></i><code class="T">accept</code><code class="O">(<code>V</code> <code class="parameterName">value</code>)</code><i class="N"><code>void</code></i></h2>
+					<table class="U">
+						<tr class="d">
 							<td><code>V</code> <code>value</code></td>
 							<td></td>
 						</tr>
 					</table>
 				</section>
-				<section class="I" id="acquire()">
-					<h2 class="M"><i class="FINAL"><i class="PUBLIC"></i></i><code class="O">acquire</code><code class="P">()</code><i class="Q"><code>V</code></i></h2>
-					<table class="h">
-						<tr class="a">
+				<section class="L" id="acquire()">
+					<h2 class="P"><i class="FINAL"><i class="PUBLIC"></i></i><code class="T">acquire</code><code class="O">()</code><i class="N"><code>V</code></i></h2>
+					<table class="U">
+						<tr class="X">
 							<td><code>V</code></td>
 							<td><span>Current value or next value.</span></td>
 						</tr>
 					</table><span class="B">Get the current value. If there is no value, wait until the value is set.</span></section>
-				<section class="I" id="exact()">
-					<h2 class="M"><i class="FINAL"><i class="PUBLIC"></i></i><code class="O">exact</code><code class="P">()</code><i class="Q"><code>V</code></i></h2>
-					<table class="h">
-						<tr class="a">
+				<section class="L" id="exact()">
+					<h2 class="P"><i class="FINAL"><i class="PUBLIC"></i></i><code class="T">exact</code><code class="O">()</code><i class="N"><code>V</code></i></h2>
+					<table class="U">
+						<tr class="X">
 							<td><code>V</code></td>
 							<td><span>Current value or throws error.</span></td>
 						</tr>
-					</table><span class="B">Get the current value. If there is no value, NullPointerException will be thrown.</span></section>
-				<section class="I" id="get()">
-					<h2 class="M"><i class="FINAL"><i class="OVERRIDE PUBLIC"></i></i><code class="O">get</code><code class="P">()</code><i class="Q"><code>V</code></i></h2>
-					<table class="h">
-						<tr class="a">
+					</table><span class="B">Get the current value. If there is no value, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/NullPointerException.html">NullPointerException</a></code> will be thrown.</span></section>
+				<section class="L" id="get()">
+					<h2 class="P"><i class="FINAL"><i class="OVERRIDE PUBLIC"></i></i><code class="T">get</code><code class="O">()</code><i class="N"><code>V</code></i></h2>
+					<table class="U">
+						<tr class="X">
 							<td><code>V</code></td>
 							<td><span>Current value or null.</span></td>
 						</tr>
 					</table><span class="B">Get the current value. If there is no value, returns null.</span></section>
-				<section class="I" id="intercept(kiss.WiseBiFunction)">
-					<h2 class="M"><i class="FINAL"><i class="PUBLIC"></i></i><code class="O">intercept</code><code class="P">(<code><a href="/sinobu/api/kiss.WiseBiFunction.html">WiseBiFunction</a><code class="parameters"><code>V</code>, <code>V</code>, <code>V</code></code></code> <code class="parameterName">interceptor</code>)</code><i class="Q"><code><a href="/sinobu/api/kiss.Variable.html">Variable</a><code class="parameters"><code>V</code></code></code></i></h2>
-					<table class="h">
-						<tr class="L">
+				<section class="L" id="intercept(kiss.WiseBiFunction)">
+					<h2 class="P"><i class="FINAL"><i class="PUBLIC"></i></i><code class="T">intercept</code><code class="O">(<code><a href="/sinobu/api/kiss.WiseBiFunction.html">WiseBiFunction</a><code class="parameters"><code>V</code>, <code>V</code>, <code>V</code></code></code> <code class="parameterName">interceptor</code>)</code><i class="N"><code><a href="/sinobu/api/kiss.Variable.html">Variable</a><code class="parameters"><code>V</code></code></code></i></h2>
+					<table class="U">
+						<tr class="d">
 							<td><code><a href="/sinobu/api/kiss.WiseBiFunction.html">WiseBiFunction</a><code class="parameters"><code>V</code>, <code>V</code>, <code>V</code></code></code> <code>interceptor</code></td>
 							<td><span>A interceptor for value modification. First parameter is the current
             value, Second parameter is the new value.</span></td>
 						</tr>
-						<tr class="a">
+						<tr class="X">
 							<td><code><a href="/sinobu/api/kiss.Variable.html">Variable</a><code class="parameters"><code>V</code></code></code></td>
 							<td><span>Chainable API.</span></td>
 						</tr>
 					</table><span class="B">Intercept the value modification.</span></section>
-				<section class="I" id="is(java.lang.Object)">
-					<h2 class="M"><i class="FINAL"><i class="PUBLIC"></i></i><code class="O">is</code><code class="P">(<code>V</code> <code class="parameterName">value</code>)</code><i class="Q"><code>boolean</code></i></h2>
-					<table class="h">
-						<tr class="L">
+				<section class="L" id="is(java.lang.Object)">
+					<h2 class="P"><i class="FINAL"><i class="PUBLIC"></i></i><code class="T">is</code><code class="O">(<code>V</code> <code class="parameterName">value</code>)</code><i class="N"><code>boolean</code></i></h2>
+					<table class="U">
+						<tr class="d">
 							<td><code>V</code> <code>value</code></td>
 							<td><span>A value to check the equality.</span></td>
 						</tr>
-						<tr class="a">
+						<tr class="X">
 							<td><code>boolean</code></td>
 							<td><span>A result of equality.</span></td>
 						</tr>
 					</table><span class="B">Test whether the current value is equal to the specified value or not.</span></section>
-				<section class="I" id="is(java.util.function.Predicate)">
-					<h2 class="M"><i class="FINAL"><i class="PUBLIC"></i></i><code class="O">is</code><code class="P">(<code>java.util.function.Predicate<code class="parameters"><code>V</code></code></code> <code class="parameterName">condition</code>)</code><i class="Q"><code>boolean</code></i></h2>
-					<table class="h">
-						<tr class="L">
-							<td><code>java.util.function.Predicate<code class="parameters"><code>V</code></code></code> <code>condition</code></td>
+				<section class="L" id="is(java.util.function.Predicate)">
+					<h2 class="P"><i class="FINAL"><i class="PUBLIC"></i></i><code class="T">is</code><code class="O">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Predicate.html">Predicate</a><code class="parameters"><code>V</code></code></code> <code class="parameterName">condition</code>)</code><i class="N"><code>boolean</code></i></h2>
+					<table class="U">
+						<tr class="d">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Predicate.html">Predicate</a><code class="parameters"><code>V</code></code></code> <code>condition</code></td>
 							<td><span>A value validator.</span></td>
 						</tr>
-						<tr class="a">
+						<tr class="X">
 							<td><code>boolean</code></td>
 							<td><span>A result of validation.</span></td>
 						</tr>
 					</table><span class="B">Test whether the current value fulfills the specified condition or not.</span></section>
-				<section class="I" id="isNot(java.lang.Object)">
-					<h2 class="M"><i class="FINAL"><i class="PUBLIC"></i></i><code class="O">isNot</code><code class="P">(<code>V</code> <code class="parameterName">value</code>)</code><i class="Q"><code>boolean</code></i></h2>
-					<table class="h">
-						<tr class="L">
+				<section class="L" id="isNot(java.lang.Object)">
+					<h2 class="P"><i class="FINAL"><i class="PUBLIC"></i></i><code class="T">isNot</code><code class="O">(<code>V</code> <code class="parameterName">value</code>)</code><i class="N"><code>boolean</code></i></h2>
+					<table class="U">
+						<tr class="d">
 							<td><code>V</code> <code>value</code></td>
 							<td><span>A value to check the equality.</span></td>
 						</tr>
-						<tr class="a">
+						<tr class="X">
 							<td><code>boolean</code></td>
 							<td><span>A result of equality.</span></td>
 						</tr>
 					</table><span class="B">Test whether the current value is NOT equal to the specified value or not.</span></section>
-				<section class="I" id="isNot(java.util.function.Predicate)">
-					<h2 class="M"><i class="FINAL"><i class="PUBLIC"></i></i><code class="O">isNot</code><code class="P">(<code>java.util.function.Predicate<code class="parameters"><code>V</code></code></code> <code class="parameterName">condition</code>)</code><i class="Q"><code>boolean</code></i></h2>
-					<table class="h">
-						<tr class="L">
-							<td><code>java.util.function.Predicate<code class="parameters"><code>V</code></code></code> <code>condition</code></td>
+				<section class="L" id="isNot(java.util.function.Predicate)">
+					<h2 class="P"><i class="FINAL"><i class="PUBLIC"></i></i><code class="T">isNot</code><code class="O">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Predicate.html">Predicate</a><code class="parameters"><code>V</code></code></code> <code class="parameterName">condition</code>)</code><i class="N"><code>boolean</code></i></h2>
+					<table class="U">
+						<tr class="d">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Predicate.html">Predicate</a><code class="parameters"><code>V</code></code></code> <code>condition</code></td>
 							<td><span>A value validator.</span></td>
 						</tr>
-						<tr class="a">
+						<tr class="X">
 							<td><code>boolean</code></td>
 							<td><span>A result of validation.</span></td>
 						</tr>
 					</table><span class="B">Test whether the current value does NOT fulfill the specified condition or not.</span></section>
-				<section class="I" id="isAbsent()">
-					<h2 class="M"><i class="FINAL"><i class="PUBLIC"></i></i><code class="O">isAbsent</code><code class="P">()</code><i class="Q"><code>boolean</code></i></h2>
-					<table class="h">
-						<tr class="a">
+				<section class="L" id="isAbsent()">
+					<h2 class="P"><i class="FINAL"><i class="PUBLIC"></i></i><code class="T">isAbsent</code><code class="O">()</code><i class="N"><code>boolean</code></i></h2>
+					<table class="U">
+						<tr class="X">
 							<td><code>boolean</code></td>
 							<td><span>A result.</span></td>
 						</tr>
 					</table><span class="B">Check whether the value is absent or not.</span></section>
-				<section class="I" id="isPresent()">
-					<h2 class="M"><i class="FINAL"><i class="PUBLIC"></i></i><code class="O">isPresent</code><code class="P">()</code><i class="Q"><code>boolean</code></i></h2>
-					<table class="h">
-						<tr class="a">
+				<section class="L" id="isPresent()">
+					<h2 class="P"><i class="FINAL"><i class="PUBLIC"></i></i><code class="T">isPresent</code><code class="O">()</code><i class="N"><code>boolean</code></i></h2>
+					<table class="U">
+						<tr class="X">
 							<td><code>boolean</code></td>
 							<td><span>A result.</span></td>
 						</tr>
 					</table><span class="B">Check whether the value is present or not.</span></section>
-				<section class="I" id="isFixed()">
-					<h2 class="M"><i class="FINAL"><i class="PUBLIC"></i></i><code class="O">isFixed</code><code class="P">()</code><i class="Q"><code>boolean</code></i></h2>
-					<table class="h">
-						<tr class="a">
+				<section class="L" id="isFixed()">
+					<h2 class="P"><i class="FINAL"><i class="PUBLIC"></i></i><code class="T">isFixed</code><code class="O">()</code><i class="N"><code>boolean</code></i></h2>
+					<table class="U">
+						<tr class="X">
 							<td><code>boolean</code></td>
 							<td><span>A result.</span></td>
 						</tr>
 					</table><span class="B">Chech whether the value is fiexed or not.</span></section>
-				<section class="I" id="fix()">
-					<h2 class="M"><i class="FINAL"><i class="PUBLIC"></i></i><code class="O">fix</code><code class="P">()</code><i class="Q"><code><a href="/sinobu/api/kiss.Variable.html">Variable</a><code class="parameters"><code>V</code></code></code></i></h2>
-					<table class="h">
-						<tr class="a">
+				<section class="L" id="fix()">
+					<h2 class="P"><i class="FINAL"><i class="PUBLIC"></i></i><code class="T">fix</code><code class="O">()</code><i class="N"><code><a href="/sinobu/api/kiss.Variable.html">Variable</a><code class="parameters"><code>V</code></code></code></i></h2>
+					<table class="U">
+						<tr class="X">
 							<td><code><a href="/sinobu/api/kiss.Variable.html">Variable</a><code class="parameters"><code>V</code></code></code></td>
 							<td><span>Chainable API.</span></td>
 						</tr>
 					</table><span class="B">Fix this value as immutable.</span></section>
-				<section class="I" id="flatMap(java.util.function.Function)">
-					<h2 class="M"><i class="FINAL"><i class="PUBLIC"></i></i><code class="O">flatMap</code><code class="P">(<code>java.util.function.Function<code class="parameters"><code>V</code>, <code><a href="/sinobu/api/kiss.Variable.html">Variable</a><code class="parameters"><code>R</code></code></code></code></code> <code class="parameterName">mapper</code>)</code><i class="Q"><code><a href="/sinobu/api/kiss.Variable.html">Variable</a><code class="parameters"><code>R</code></code></code></i></h2>
-					<table class="h">
-						<tr class="J">
+				<section class="L" id="flatMap(java.util.function.Function)">
+					<h2 class="P"><i class="FINAL"><i class="PUBLIC"></i></i><code class="T">flatMap</code><code class="O">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html">Function</a><code class="parameters"><code>V</code>, <code><a href="/sinobu/api/kiss.Variable.html">Variable</a><code class="parameters"><code>R</code></code></code></code></code> <code class="parameterName">mapper</code>)</code><i class="N"><code><a href="/sinobu/api/kiss.Variable.html">Variable</a><code class="parameters"><code>R</code></code></code></i></h2>
+					<table class="U">
+						<tr class="f">
 							<td><code>R</code></td>
 							<td></td>
 						</tr>
-						<tr class="L">
-							<td><code>java.util.function.Function<code class="parameters"><code>V</code>, <code><a href="/sinobu/api/kiss.Variable.html">Variable</a><code class="parameters"><code>R</code></code></code></code></code> <code>mapper</code></td>
+						<tr class="d">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html">Function</a><code class="parameters"><code>V</code>, <code><a href="/sinobu/api/kiss.Variable.html">Variable</a><code class="parameters"><code>R</code></code></code></code></code> <code>mapper</code></td>
 							<td><span>The mapping function to apply to a value, if present.</span></td>
 						</tr>
-						<tr class="a">
+						<tr class="X">
 							<td><code><a href="/sinobu/api/kiss.Variable.html">Variable</a><code class="parameters"><code>R</code></code></code></td>
 							<td><span>The computed <code><a href="/sinobu/api/kiss.Variable.html">Variable</a></code>.</span></td>
 						</tr>
 					</table><span class="B">If a value is present, returns the result of applying the given <code><a href="/sinobu/api/kiss.Variable.html">Variable</a></code>-bearing
  mapping function to the value, otherwise returns an empty <code><a href="/sinobu/api/kiss.Variable.html">Variable</a></code>.</span></section>
-				<section class="I" id="map(java.util.function.Function)">
-					<h2 class="M"><i class="FINAL"><i class="PUBLIC"></i></i><code class="O">map</code><code class="P">(<code>java.util.function.Function<code class="parameters"><code>?</code><code class="super"><code>V</code></code>, <code>?</code><code class="extends"><code>R</code></code></code></code> <code class="parameterName">then</code>)</code><i class="Q"><code><a href="/sinobu/api/kiss.Variable.html">Variable</a><code class="parameters"><code>R</code></code></code></i></h2>
-					<table class="h">
-						<tr class="J">
+				<section class="L" id="map(java.util.function.Function)">
+					<h2 class="P"><i class="FINAL"><i class="PUBLIC"></i></i><code class="T">map</code><code class="O">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html">Function</a><code class="parameters"><code>?</code><code class="super"><code>V</code></code>, <code>?</code><code class="extends"><code>R</code></code></code></code> <code class="parameterName">then</code>)</code><i class="N"><code><a href="/sinobu/api/kiss.Variable.html">Variable</a><code class="parameters"><code>R</code></code></code></i></h2>
+					<table class="U">
+						<tr class="f">
 							<td><code>R</code></td>
 							<td></td>
 						</tr>
-						<tr class="L">
-							<td><code>java.util.function.Function<code class="parameters"><code>?</code><code class="super"><code>V</code></code>, <code>?</code><code class="extends"><code>R</code></code></code></code> <code>then</code></td>
+						<tr class="d">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html">Function</a><code class="parameters"><code>?</code><code class="super"><code>V</code></code>, <code>?</code><code class="extends"><code>R</code></code></code></code> <code>then</code></td>
 							<td><span>An action to perform.</span></td>
 						</tr>
-						<tr class="a">
+						<tr class="X">
 							<td><code><a href="/sinobu/api/kiss.Variable.html">Variable</a><code class="parameters"><code>R</code></code></code></td>
 							<td><span>The computed <code><a href="/sinobu/api/kiss.Variable.html">Variable</a></code>.</span></td>
 						</tr>
 					</table><span class="B">Perform the specified action if the value is present.</span></section>
-				<section class="I" id="next()">
-					<h2 class="M"><i class="FINAL"><i class="PUBLIC"></i></i><code class="O">next</code><code class="P">()</code><i class="Q"><code>V</code></i></h2>
-					<table class="h">
-						<tr class="a">
+				<section class="L" id="next()">
+					<h2 class="P"><i class="FINAL"><i class="PUBLIC"></i></i><code class="T">next</code><code class="O">()</code><i class="N"><code>V</code></i></h2>
+					<table class="U">
+						<tr class="X">
 							<td><code>V</code></td>
 							<td><span>The next value.</span></td>
 						</tr>
 					</table><span class="B">Get the value to be set next. The method waits until a new value is set.</span></section>
-				<section class="I" id="observe()">
-					<h2 class="M"><i class="SYNCHRONIZED FINAL"><i class="PUBLIC"></i></i><code class="O">observe</code><code class="P">()</code><i class="Q"><code><a href="/sinobu/api/kiss.Signal.html">Signal</a><code class="parameters"><code>V</code></code></code></i></h2>
-					<table class="h">
-						<tr class="a">
+				<section class="L" id="observe()">
+					<h2 class="P"><i class="FINAL SYNCHRONIZED"><i class="PUBLIC"></i></i><code class="T">observe</code><code class="O">()</code><i class="N"><code><a href="/sinobu/api/kiss.Signal.html">Signal</a><code class="parameters"><code>V</code></code></code></i></h2>
+					<table class="U">
+						<tr class="X">
 							<td><code><a href="/sinobu/api/kiss.Signal.html">Signal</a><code class="parameters"><code>V</code></code></code></td>
 							<td><span>The <code><a href="/sinobu/api/kiss.Signal.html">Signal</a></code> which notifies value modification.</span></td>
 						</tr>
 					</table><span class="B">Observe this <code><a href="/sinobu/api/kiss.Variable.html">Variable</a></code>.</span></section>
-				<section class="I" id="observing()">
-					<h2 class="M"><i class="FINAL"><i class="PUBLIC"></i></i><code class="O">observing</code><code class="P">()</code><i class="Q"><code><a href="/sinobu/api/kiss.Signal.html">Signal</a><code class="parameters"><code>V</code></code></code></i></h2>
-					<table class="h">
-						<tr class="a">
+				<section class="L" id="observing()">
+					<h2 class="P"><i class="FINAL"><i class="PUBLIC"></i></i><code class="T">observing</code><code class="O">()</code><i class="N"><code><a href="/sinobu/api/kiss.Signal.html">Signal</a><code class="parameters"><code>V</code></code></code></i></h2>
+					<table class="U">
+						<tr class="X">
 							<td><code><a href="/sinobu/api/kiss.Signal.html">Signal</a><code class="parameters"><code>V</code></code></code></td>
 							<td><span>The <code><a href="/sinobu/api/kiss.Signal.html">Signal</a></code> which notifies value modification.</span></td>
 						</tr>
 					</table><span class="B">Observe this <code><a href="/sinobu/api/kiss.Variable.html">Variable</a></code> with the current value.</span></section>
-				<section class="I" id="or(java.lang.Object)">
-					<h2 class="M"><i class="FINAL"><i class="PUBLIC"></i></i><code class="O">or</code><code class="P">(<code>V</code> <code class="parameterName">other</code>)</code><i class="Q"><code>V</code></i></h2>
-					<table class="h">
-						<tr class="L">
+				<section class="L" id="or(java.lang.Object)">
+					<h2 class="P"><i class="FINAL"><i class="PUBLIC"></i></i><code class="T">or</code><code class="O">(<code>V</code> <code class="parameterName">other</code>)</code><i class="N"><code>V</code></i></h2>
+					<table class="U">
+						<tr class="d">
 							<td><code>V</code> <code>other</code></td>
 							<td><span>A value to be returned if there is no value present, may be null.</span></td>
 						</tr>
-						<tr class="a">
+						<tr class="X">
 							<td><code>V</code></td>
 							<td><span>The current value or alternative value.</span></td>
 						</tr>
 					</table><span class="B">Get the current value. If there is no value, returns the specified alternative value.</span></section>
-				<section class="I" id="or(java.util.function.Supplier)">
-					<h2 class="M"><i class="FINAL"><i class="PUBLIC"></i></i><code class="O">or</code><code class="P">(<code>java.util.function.Supplier<code class="parameters"><code>V</code></code></code> <code class="parameterName">other</code>)</code><i class="Q"><code>V</code></i></h2>
-					<table class="h">
-						<tr class="L">
-							<td><code>java.util.function.Supplier<code class="parameters"><code>V</code></code></code> <code>other</code></td>
+				<section class="L" id="or(java.util.function.Supplier)">
+					<h2 class="P"><i class="FINAL"><i class="PUBLIC"></i></i><code class="T">or</code><code class="O">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code>V</code></code></code> <code class="parameterName">other</code>)</code><i class="N"><code>V</code></i></h2>
+					<table class="U">
+						<tr class="d">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code>V</code></code></code> <code>other</code></td>
 							<td><span>A value to be returned if there is no value present, may be null.</span></td>
 						</tr>
-						<tr class="a">
+						<tr class="X">
 							<td><code>V</code></td>
 							<td><span>The current value or alternative value.</span></td>
 						</tr>
 					</table><span class="B">Get the current value. If there is no value, returns the specified alternative value.</span></section>
-				<section class="I" id="set(java.lang.Object)">
-					<h2 class="M"><i class="SYNCHRONIZED FINAL"><i class="PUBLIC"></i></i><code class="O">set</code><code class="P">(<code>V</code> <code class="parameterName">value</code>)</code><i class="Q"><code>V</code></i></h2>
-					<table class="h">
-						<tr class="L">
+				<section class="L" id="set(java.lang.Object)">
+					<h2 class="P"><i class="FINAL SYNCHRONIZED"><i class="PUBLIC"></i></i><code class="T">set</code><code class="O">(<code>V</code> <code class="parameterName">value</code>)</code><i class="N"><code>V</code></i></h2>
+					<table class="U">
+						<tr class="d">
 							<td><code>V</code> <code>value</code></td>
 							<td><span>A value to assign.</span></td>
 						</tr>
-						<tr class="a">
+						<tr class="X">
 							<td><code>V</code></td>
 							<td><span>A previous value.</span></td>
 						</tr>
 					</table><span class="B">Assign the new value.</span></section>
-				<section class="I" id="set(java.util.function.Supplier)">
-					<h2 class="M"><i class="FINAL"><i class="PUBLIC"></i></i><code class="O">set</code><code class="P">(<code>java.util.function.Supplier<code class="parameters"><code>V</code></code></code> <code class="parameterName">value</code>)</code><i class="Q"><code>V</code></i></h2>
-					<table class="h">
-						<tr class="L">
-							<td><code>java.util.function.Supplier<code class="parameters"><code>V</code></code></code> <code>value</code></td>
+				<section class="L" id="set(java.util.function.Supplier)">
+					<h2 class="P"><i class="FINAL"><i class="PUBLIC"></i></i><code class="T">set</code><code class="O">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code>V</code></code></code> <code class="parameterName">value</code>)</code><i class="N"><code>V</code></i></h2>
+					<table class="U">
+						<tr class="d">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code>V</code></code></code> <code>value</code></td>
 							<td><span>A value generator.</span></td>
 						</tr>
-						<tr class="a">
+						<tr class="X">
 							<td><code>V</code></td>
 							<td><span>A previous value.</span></td>
 						</tr>
 					</table><span class="B">Assign the new value.</span></section>
-				<section class="I" id="set(java.util.function.UnaryOperator)">
-					<h2 class="M"><i class="FINAL"><i class="PUBLIC"></i></i><code class="O">set</code><code class="P">(<code>java.util.function.UnaryOperator<code class="parameters"><code>V</code></code></code> <code class="parameterName">value</code>)</code><i class="Q"><code>V</code></i></h2>
-					<table class="h">
-						<tr class="L">
-							<td><code>java.util.function.UnaryOperator<code class="parameters"><code>V</code></code></code> <code>value</code></td>
+				<section class="L" id="set(java.util.function.UnaryOperator)">
+					<h2 class="P"><i class="FINAL"><i class="PUBLIC"></i></i><code class="T">set</code><code class="O">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/UnaryOperator.html">UnaryOperator</a><code class="parameters"><code>V</code></code></code> <code class="parameterName">value</code>)</code><i class="N"><code>V</code></i></h2>
+					<table class="U">
+						<tr class="d">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/UnaryOperator.html">UnaryOperator</a><code class="parameters"><code>V</code></code></code> <code>value</code></td>
 							<td><span>A value generator.</span></td>
 						</tr>
-						<tr class="a">
+						<tr class="X">
 							<td><code>V</code></td>
 							<td><span>A previous value.</span></td>
 						</tr>
 					</table><span class="B">Assign the new value.</span></section>
-				<section class="I" id="to(java.util.function.Consumer)">
-					<h2 class="M"><i class="FINAL"><i class="PUBLIC"></i></i><code class="O">to</code><code class="P">(<code>java.util.function.Consumer<code class="parameters"><code>V</code></code></code> <code class="parameterName">some</code>)</code><i class="Q"><code>void</code></i></h2>
-					<table class="h">
-						<tr class="L">
-							<td><code>java.util.function.Consumer<code class="parameters"><code>V</code></code></code> <code>some</code></td>
+				<section class="L" id="to(java.util.function.Consumer)">
+					<h2 class="P"><i class="FINAL"><i class="PUBLIC"></i></i><code class="T">to</code><code class="O">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>V</code></code></code> <code class="parameterName">some</code>)</code><i class="N"><code>void</code></i></h2>
+					<table class="U">
+						<tr class="d">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>V</code></code></code> <code>some</code></td>
 							<td><span>A user action.</span></td>
 						</tr>
 					</table><span class="B">Execute the specified action if the value is present.</span></section>
-				<section class="I" id="to(java.util.function.Consumer,java.lang.Runnable)">
-					<h2 class="M"><i class="FINAL"><i class="PUBLIC"></i></i><code class="O">to</code><code class="P">(<code>java.util.function.Consumer<code class="parameters"><code>V</code></code></code> <code class="parameterName">some</code>, <code>java.lang.Runnable</code> <code class="parameterName">none</code>)</code><i class="Q"><code>void</code></i></h2>
-					<table class="h">
-						<tr class="L">
-							<td><code>java.util.function.Consumer<code class="parameters"><code>V</code></code></code> <code>some</code></td>
+				<section class="L" id="to(java.util.function.Consumer,java.lang.Runnable)">
+					<h2 class="P"><i class="FINAL"><i class="PUBLIC"></i></i><code class="T">to</code><code class="O">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>V</code></code></code> <code class="parameterName">some</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code> <code class="parameterName">none</code>)</code><i class="N"><code>void</code></i></h2>
+					<table class="U">
+						<tr class="d">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>V</code></code></code> <code>some</code></td>
 							<td><span>A user action.</span></td>
 						</tr>
-						<tr class="L">
-							<td><code>java.lang.Runnable</code> <code>none</code></td>
+						<tr class="d">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code> <code>none</code></td>
 							<td></td>
 						</tr>
 					</table><span class="B">Execute the specified action.</span></section>
-				<section class="I" id="hashCode()">
-					<h2 class="M"><i class="FINAL"><i class="OVERRIDE PUBLIC"></i></i><code class="O">hashCode</code><code class="P">()</code><i class="Q"><code>int</code></i></h2>
-					<table class="h">
-						<tr class="a">
+				<section class="L" id="hashCode()">
+					<h2 class="P"><i class="FINAL"><i class="OVERRIDE PUBLIC"></i></i><code class="T">hashCode</code><code class="O">()</code><i class="N"><code>int</code></i></h2>
+					<table class="U">
+						<tr class="X">
 							<td><code>int</code></td>
 							<td></td>
 						</tr>
 					</table>
 				</section>
-				<section class="I" id="equals(java.lang.Object)">
-					<h2 class="M"><i class="FINAL"><i class="OVERRIDE PUBLIC"></i></i><code class="O">equals</code><code class="P">(<code>java.lang.Object</code> <code class="parameterName">obj</code>)</code><i class="Q"><code>boolean</code></i></h2>
-					<table class="h">
-						<tr class="L">
-							<td><code>java.lang.Object</code> <code>obj</code></td>
+				<section class="L" id="equals(java.lang.Object)">
+					<h2 class="P"><i class="FINAL"><i class="OVERRIDE PUBLIC"></i></i><code class="T">equals</code><code class="O">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code class="parameterName">obj</code>)</code><i class="N"><code>boolean</code></i></h2>
+					<table class="U">
+						<tr class="d">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code>obj</code></td>
 							<td></td>
 						</tr>
-						<tr class="a">
+						<tr class="X">
 							<td><code>boolean</code></td>
 							<td></td>
 						</tr>
 					</table>
 				</section>
-				<section class="I" id="toString()">
-					<h2 class="M"><i class="OVERRIDE PUBLIC"></i><code class="O">toString</code><code class="P">()</code><i class="Q"><code>java.lang.String</code></i></h2>
-					<table class="h">
-						<tr class="a">
-							<td><code>java.lang.String</code></td>
+				<section class="L" id="toString()">
+					<h2 class="P"><i class="OVERRIDE PUBLIC"></i><code class="T">toString</code><code class="O">()</code><i class="N"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code></i></h2>
+					<table class="U">
+						<tr class="X">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code></td>
 							<td></td>
 						</tr>
 					</table>
 				</section>
-				<section class="I" id="of(java.lang.Object)">
-					<h2 class="M"><i class="PUBLIC STATIC"></i><code class="O">of</code><code class="P">(<code>T</code> <code class="parameterName">value</code>)</code><i class="Q"><code><a href="/sinobu/api/kiss.Variable.html">Variable</a><code class="parameters"><code>T</code></code></code></i></h2>
-					<table class="h">
-						<tr class="J">
+				<section class="L" id="of(java.lang.Object)">
+					<h2 class="P"><i class="STATIC PUBLIC"></i><code class="T">of</code><code class="O">(<code>T</code> <code class="parameterName">value</code>)</code><i class="N"><code><a href="/sinobu/api/kiss.Variable.html">Variable</a><code class="parameters"><code>T</code></code></code></i></h2>
+					<table class="U">
+						<tr class="f">
 							<td><code>T</code></td>
 							<td></td>
 						</tr>
-						<tr class="L">
+						<tr class="d">
 							<td><code>T</code> <code>value</code></td>
 							<td><span>An actual value, <code>null</code> will be acceptable.</span></td>
 						</tr>
-						<tr class="a">
+						<tr class="X">
 							<td><code><a href="/sinobu/api/kiss.Variable.html">Variable</a><code class="parameters"><code>T</code></code></code></td>
 							<td><span>A created <code><a href="/sinobu/api/kiss.Variable.html">Variable</a></code>.</span></td>
 						</tr>
@@ -378,14 +378,14 @@
  Create <code><a href="/sinobu/api/kiss.Variable.html">Variable</a></code> with the specified value.
  </p>
 					</span></section>
-				<section class="I" id="empty()">
-					<h2 class="M"><i class="PUBLIC STATIC"></i><code class="O">empty</code><code class="P">()</code><i class="Q"><code><a href="/sinobu/api/kiss.Variable.html">Variable</a><code class="parameters"><code>T</code></code></code></i></h2>
-					<table class="h">
-						<tr class="J">
+				<section class="L" id="empty()">
+					<h2 class="P"><i class="STATIC PUBLIC"></i><code class="T">empty</code><code class="O">()</code><i class="N"><code><a href="/sinobu/api/kiss.Variable.html">Variable</a><code class="parameters"><code>T</code></code></code></i></h2>
+					<table class="U">
+						<tr class="f">
 							<td><code>T</code></td>
 							<td></td>
 						</tr>
-						<tr class="a">
+						<tr class="X">
 							<td><code><a href="/sinobu/api/kiss.Variable.html">Variable</a><code class="parameters"><code>T</code></code></code></td>
 							<td><span>A new empty <code><a href="/sinobu/api/kiss.Variable.html">Variable</a></code>.</span></td>
 						</tr>
@@ -394,51 +394,51 @@
  </p>
 					</span></section>
 			</article>
-			<aside class="b" id="SubNavi">
-				<div class="V">
-					<h5 class="i">Constructors</h5>
+			<aside class="S" id="SubNavi">
+				<div class="i">
+					<h5 class="H">Constructors</h5>
 					<ul>
-						<li><i class="PROTECTED"></i><code><a href="#Variable(java.lang.Object)">Variable</a></code><code class="P">(<code>V</code> <code class="parameterName">value</code>)</code></li>
+						<li><i class="PROTECTED"></i><code><a href="#Variable(java.lang.Object)">Variable</a></code><code class="O">(<code>V</code> <code class="parameterName">value</code>)</code></li>
 					</ul>
-					<h5 class="i">Fields</h5>
+					<h5 class="H">Fields</h5>
 					<ul>
-						<li><i class="TRANSIENT FINAL"><i class="PUBLIC"></i></i><code><a href="#v">v</a></code><i class="U"><code class="return">V</code></i></li>
+						<li><i class="FINAL TRANSIENT"><i class="PUBLIC"></i></i><code><a href="#v">v</a></code><i class="V"><code class="return">V</code></i></li>
 					</ul>
-					<h5 class="i">Static Methods</h5>
+					<h5 class="H">Static Methods</h5>
 					<ul>
-						<li><i class="PUBLIC STATIC"></i><code><a href="#of(java.lang.Object)">of</a></code><code class="P">(<code>T</code> <code class="parameterName">value</code>)</code><i class="U"><code><a href="/sinobu/api/kiss.Variable.html">Variable</a><code class="parameters"><code>T</code></code></code></i></li>
-						<li><i class="PUBLIC STATIC"></i><code><a href="#empty()">empty</a></code><code class="P">()</code><i class="U"><code><a href="/sinobu/api/kiss.Variable.html">Variable</a><code class="parameters"><code>T</code></code></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="#of(java.lang.Object)">of</a></code><code class="O">(<code>T</code> <code class="parameterName">value</code>)</code><i class="V"><code><a href="/sinobu/api/kiss.Variable.html">Variable</a><code class="parameters"><code>T</code></code></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="#empty()">empty</a></code><code class="O">()</code><i class="V"><code><a href="/sinobu/api/kiss.Variable.html">Variable</a><code class="parameters"><code>T</code></code></code></i></li>
 					</ul>
-					<h5 class="i">Methods</h5>
+					<h5 class="H">Methods</h5>
 					<ul>
-						<li><i class="OVERRIDE PUBLIC"></i><code><a href="#accept(java.lang.Object)">accept</a></code><code class="P">(<code>V</code> <code class="parameterName">value</code>)</code><i class="U"><code>void</code></i></li>
-						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#acquire()">acquire</a></code><code class="P">()</code><i class="U"><code>V</code></i></li>
-						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#exact()">exact</a></code><code class="P">()</code><i class="U"><code>V</code></i></li>
-						<li><i class="FINAL"><i class="OVERRIDE PUBLIC"></i></i><code><a href="#get()">get</a></code><code class="P">()</code><i class="U"><code>V</code></i></li>
-						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#intercept(kiss.WiseBiFunction)">intercept</a></code><code class="P">(<code><a href="/sinobu/api/kiss.WiseBiFunction.html">WiseBiFunction</a><code class="parameters"><code>V</code>, <code>V</code>, <code>V</code></code></code> <code class="parameterName">interceptor</code>)</code><i class="U"><code><a href="/sinobu/api/kiss.Variable.html">Variable</a><code class="parameters"><code>V</code></code></code></i></li>
-						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#is(java.lang.Object)">is</a></code><code class="P">(<code>V</code> <code class="parameterName">value</code>)</code><i class="U"><code>boolean</code></i></li>
-						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#is(java.util.function.Predicate)">is</a></code><code class="P">(<code>java.util.function.Predicate<code class="parameters"><code>V</code></code></code> <code class="parameterName">condition</code>)</code><i class="U"><code>boolean</code></i></li>
-						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#isNot(java.lang.Object)">isNot</a></code><code class="P">(<code>V</code> <code class="parameterName">value</code>)</code><i class="U"><code>boolean</code></i></li>
-						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#isNot(java.util.function.Predicate)">isNot</a></code><code class="P">(<code>java.util.function.Predicate<code class="parameters"><code>V</code></code></code> <code class="parameterName">condition</code>)</code><i class="U"><code>boolean</code></i></li>
-						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#isAbsent()">isAbsent</a></code><code class="P">()</code><i class="U"><code>boolean</code></i></li>
-						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#isPresent()">isPresent</a></code><code class="P">()</code><i class="U"><code>boolean</code></i></li>
-						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#isFixed()">isFixed</a></code><code class="P">()</code><i class="U"><code>boolean</code></i></li>
-						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#fix()">fix</a></code><code class="P">()</code><i class="U"><code><a href="/sinobu/api/kiss.Variable.html">Variable</a><code class="parameters"><code>V</code></code></code></i></li>
-						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#flatMap(java.util.function.Function)">flatMap</a></code><code class="P">(<code>java.util.function.Function<code class="parameters"><code>V</code>, <code><a href="/sinobu/api/kiss.Variable.html">Variable</a><code class="parameters"><code>R</code></code></code></code></code> <code class="parameterName">mapper</code>)</code><i class="U"><code><a href="/sinobu/api/kiss.Variable.html">Variable</a><code class="parameters"><code>R</code></code></code></i></li>
-						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#map(java.util.function.Function)">map</a></code><code class="P">(<code>java.util.function.Function<code class="parameters"><code>?</code><code class="super"><code>V</code></code>, <code>?</code><code class="extends"><code>R</code></code></code></code> <code class="parameterName">then</code>)</code><i class="U"><code><a href="/sinobu/api/kiss.Variable.html">Variable</a><code class="parameters"><code>R</code></code></code></i></li>
-						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#next()">next</a></code><code class="P">()</code><i class="U"><code>V</code></i></li>
-						<li><i class="SYNCHRONIZED FINAL"><i class="PUBLIC"></i></i><code><a href="#observe()">observe</a></code><code class="P">()</code><i class="U"><code><a href="/sinobu/api/kiss.Signal.html">Signal</a><code class="parameters"><code>V</code></code></code></i></li>
-						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#observing()">observing</a></code><code class="P">()</code><i class="U"><code><a href="/sinobu/api/kiss.Signal.html">Signal</a><code class="parameters"><code>V</code></code></code></i></li>
-						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#or(java.lang.Object)">or</a></code><code class="P">(<code>V</code> <code class="parameterName">other</code>)</code><i class="U"><code>V</code></i></li>
-						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#or(java.util.function.Supplier)">or</a></code><code class="P">(<code>java.util.function.Supplier<code class="parameters"><code>V</code></code></code> <code class="parameterName">other</code>)</code><i class="U"><code>V</code></i></li>
-						<li><i class="SYNCHRONIZED FINAL"><i class="PUBLIC"></i></i><code><a href="#set(java.lang.Object)">set</a></code><code class="P">(<code>V</code> <code class="parameterName">value</code>)</code><i class="U"><code>V</code></i></li>
-						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#set(java.util.function.Supplier)">set</a></code><code class="P">(<code>java.util.function.Supplier<code class="parameters"><code>V</code></code></code> <code class="parameterName">value</code>)</code><i class="U"><code>V</code></i></li>
-						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#set(java.util.function.UnaryOperator)">set</a></code><code class="P">(<code>java.util.function.UnaryOperator<code class="parameters"><code>V</code></code></code> <code class="parameterName">value</code>)</code><i class="U"><code>V</code></i></li>
-						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#to(java.util.function.Consumer)">to</a></code><code class="P">(<code>java.util.function.Consumer<code class="parameters"><code>V</code></code></code> <code class="parameterName">some</code>)</code><i class="U"><code>void</code></i></li>
-						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#to(java.util.function.Consumer,java.lang.Runnable)">to</a></code><code class="P">(<code>java.util.function.Consumer<code class="parameters"><code>V</code></code></code> <code class="parameterName">some</code>, <code>java.lang.Runnable</code> <code class="parameterName">none</code>)</code><i class="U"><code>void</code></i></li>
-						<li><i class="FINAL"><i class="OVERRIDE PUBLIC"></i></i><code><a href="#hashCode()">hashCode</a></code><code class="P">()</code><i class="U"><code>int</code></i></li>
-						<li><i class="FINAL"><i class="OVERRIDE PUBLIC"></i></i><code><a href="#equals(java.lang.Object)">equals</a></code><code class="P">(<code>java.lang.Object</code> <code class="parameterName">obj</code>)</code><i class="U"><code>boolean</code></i></li>
-						<li><i class="OVERRIDE PUBLIC"></i><code><a href="#toString()">toString</a></code><code class="P">()</code><i class="U"><code>java.lang.String</code></i></li>
+						<li><i class="OVERRIDE PUBLIC"></i><code><a href="#accept(java.lang.Object)">accept</a></code><code class="O">(<code>V</code> <code class="parameterName">value</code>)</code><i class="V"><code>void</code></i></li>
+						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#acquire()">acquire</a></code><code class="O">()</code><i class="V"><code>V</code></i></li>
+						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#exact()">exact</a></code><code class="O">()</code><i class="V"><code>V</code></i></li>
+						<li><i class="FINAL"><i class="OVERRIDE PUBLIC"></i></i><code><a href="#get()">get</a></code><code class="O">()</code><i class="V"><code>V</code></i></li>
+						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#intercept(kiss.WiseBiFunction)">intercept</a></code><code class="O">(<code><a href="/sinobu/api/kiss.WiseBiFunction.html">WiseBiFunction</a><code class="parameters"><code>V</code>, <code>V</code>, <code>V</code></code></code> <code class="parameterName">interceptor</code>)</code><i class="V"><code><a href="/sinobu/api/kiss.Variable.html">Variable</a><code class="parameters"><code>V</code></code></code></i></li>
+						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#is(java.lang.Object)">is</a></code><code class="O">(<code>V</code> <code class="parameterName">value</code>)</code><i class="V"><code>boolean</code></i></li>
+						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#is(java.util.function.Predicate)">is</a></code><code class="O">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Predicate.html">Predicate</a><code class="parameters"><code>V</code></code></code> <code class="parameterName">condition</code>)</code><i class="V"><code>boolean</code></i></li>
+						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#isNot(java.lang.Object)">isNot</a></code><code class="O">(<code>V</code> <code class="parameterName">value</code>)</code><i class="V"><code>boolean</code></i></li>
+						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#isNot(java.util.function.Predicate)">isNot</a></code><code class="O">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Predicate.html">Predicate</a><code class="parameters"><code>V</code></code></code> <code class="parameterName">condition</code>)</code><i class="V"><code>boolean</code></i></li>
+						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#isAbsent()">isAbsent</a></code><code class="O">()</code><i class="V"><code>boolean</code></i></li>
+						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#isPresent()">isPresent</a></code><code class="O">()</code><i class="V"><code>boolean</code></i></li>
+						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#isFixed()">isFixed</a></code><code class="O">()</code><i class="V"><code>boolean</code></i></li>
+						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#fix()">fix</a></code><code class="O">()</code><i class="V"><code><a href="/sinobu/api/kiss.Variable.html">Variable</a><code class="parameters"><code>V</code></code></code></i></li>
+						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#flatMap(java.util.function.Function)">flatMap</a></code><code class="O">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html">Function</a><code class="parameters"><code>V</code>, <code><a href="/sinobu/api/kiss.Variable.html">Variable</a><code class="parameters"><code>R</code></code></code></code></code> <code class="parameterName">mapper</code>)</code><i class="V"><code><a href="/sinobu/api/kiss.Variable.html">Variable</a><code class="parameters"><code>R</code></code></code></i></li>
+						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#map(java.util.function.Function)">map</a></code><code class="O">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html">Function</a><code class="parameters"><code>?</code><code class="super"><code>V</code></code>, <code>?</code><code class="extends"><code>R</code></code></code></code> <code class="parameterName">then</code>)</code><i class="V"><code><a href="/sinobu/api/kiss.Variable.html">Variable</a><code class="parameters"><code>R</code></code></code></i></li>
+						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#next()">next</a></code><code class="O">()</code><i class="V"><code>V</code></i></li>
+						<li><i class="FINAL SYNCHRONIZED"><i class="PUBLIC"></i></i><code><a href="#observe()">observe</a></code><code class="O">()</code><i class="V"><code><a href="/sinobu/api/kiss.Signal.html">Signal</a><code class="parameters"><code>V</code></code></code></i></li>
+						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#observing()">observing</a></code><code class="O">()</code><i class="V"><code><a href="/sinobu/api/kiss.Signal.html">Signal</a><code class="parameters"><code>V</code></code></code></i></li>
+						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#or(java.lang.Object)">or</a></code><code class="O">(<code>V</code> <code class="parameterName">other</code>)</code><i class="V"><code>V</code></i></li>
+						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#or(java.util.function.Supplier)">or</a></code><code class="O">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code>V</code></code></code> <code class="parameterName">other</code>)</code><i class="V"><code>V</code></i></li>
+						<li><i class="FINAL SYNCHRONIZED"><i class="PUBLIC"></i></i><code><a href="#set(java.lang.Object)">set</a></code><code class="O">(<code>V</code> <code class="parameterName">value</code>)</code><i class="V"><code>V</code></i></li>
+						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#set(java.util.function.Supplier)">set</a></code><code class="O">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code>V</code></code></code> <code class="parameterName">value</code>)</code><i class="V"><code>V</code></i></li>
+						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#set(java.util.function.UnaryOperator)">set</a></code><code class="O">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/UnaryOperator.html">UnaryOperator</a><code class="parameters"><code>V</code></code></code> <code class="parameterName">value</code>)</code><i class="V"><code>V</code></i></li>
+						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#to(java.util.function.Consumer)">to</a></code><code class="O">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>V</code></code></code> <code class="parameterName">some</code>)</code><i class="V"><code>void</code></i></li>
+						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="#to(java.util.function.Consumer,java.lang.Runnable)">to</a></code><code class="O">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>V</code></code></code> <code class="parameterName">some</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code> <code class="parameterName">none</code>)</code><i class="V"><code>void</code></i></li>
+						<li><i class="FINAL"><i class="OVERRIDE PUBLIC"></i></i><code><a href="#hashCode()">hashCode</a></code><code class="O">()</code><i class="V"><code>int</code></i></li>
+						<li><i class="FINAL"><i class="OVERRIDE PUBLIC"></i></i><code><a href="#equals(java.lang.Object)">equals</a></code><code class="O">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code class="parameterName">obj</code>)</code><i class="V"><code>boolean</code></i></li>
+						<li><i class="OVERRIDE PUBLIC"></i><code><a href="#toString()">toString</a></code><code class="O">()</code><i class="V"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code></i></li>
 					</ul>
 				</div>
 			</aside>
