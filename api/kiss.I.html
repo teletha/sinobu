@@ -1,0 +1,2046 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8"/>
+		<title>Sinobu API</title>
+		<base href="../"/>
+		<link href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release/build/styles/zenburn.min.css" media="print" onload="this.media=&#39;all&#39;" rel="stylesheet"/>
+		<script async="true" src="highlight.js"></script>
+		<script src="mimic.js" type="module"></script>
+		<link href="main.css" rel="stylesheet"/>
+	</head>
+	<body class="R">
+		<header class="T">
+			<h1 class="i" date="2021-11-07" ver="2.8.0"><code>Sinobu</code></h1>
+			<nav class="U"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="main.svg#text"/>
+					</svg>Document</a><a href="api/"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="main.svg#package"/>
+					</svg><code>API</code></a><a href="https://github.com//teletha/sinobu/discussions" target="_blank"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="main.svg#user"/>
+					</svg>Community</a><a href="doc/changelog.html"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="main.svg#activity"/>
+					</svg>Activity</a><a href="https://github.com//teletha/sinobu" target="_blank"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="main.svg#github"/>
+					</svg>Repository</a></nav>
+			<div class="S" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="main.svg#sun"/>
+					</svg>
+				</a><a id="dark" title="Change to a darker color scheme"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="main.svg#moon"/>
+					</svg>
+				</a></div>
+		</header>
+		<main class="M">
+			<nav class="h">
+				<div></div>
+			</nav>
+			<article class="O" id="Article">
+				<section class="W"><code class="g">kiss</code>
+					<h2 class="Class e"><code class="I">I</code></h2><span class="B"><p>
+ Sinobu is not obsolete framework but utility, which can manipulate objects as a
+ extremely-condensed facade.
+ </p>
+ <dl>
+ 
+							<dt>Instantiation and Management</dt>
+ 
+							<dd>
+ 
+								<p>
+ Usually, the container which manages the object uses “get” method to provide such functionality.
+ However, Sinobu uses <code><a href="api/kiss.I.html#make(java.lang.Class)">#make(Class)</a></code>. This difference of method name indicates the
+ difference of the way for the management of objects, which also greatly affects the default
+ lifestyle (called Scope in other containers).
+ </p>
+ 
+								<p>
+ We do not provides the functionalities related to object lifecycle through Sinobu, because we
+ believe that it is better to use functionalities equipped in Java as much as possible. For
+ example, if you want to receive initialization callbacks, it is better to use constructor.
+ </p>
+ </dd>
+ 
+							<dt>Dependency Injection</dt>
+ 
+							<dd>
+ 
+								<p>
+ Sinobu supports Constructor Injection <em>only</em>. The Constructor Injection is a dependency
+ injection variant where an object gets all its dependencies via the constructor. We can say that
+ there is no possibility that Operation Injection, Field Injection and Interface Injection will be
+ supported in the days to come. This is one of the most important policy in Sinobu. The following
+ is a benefit of Constructor Injection:
+ </p>
+ 
+								<ul>
+ 
+									<li>It makes a strong dependency contract</li>
+ 
+									<li>It makes effective use of constructor in object lifecycle</li>
+ 
+									<li>It makes JavaBeans property clean</li>
+ 
+									<li>It makes testing easy, since dependencies can be passed in as Mock Object</li>
+ </ul>
+ 
+								<p>
+ The following is a deficit of Constructor Injection:
+ </p>
+ 
+								<ul>
+ 
+									<li>It can&#39;t resolve circular dependency</li>
+ </ul>
+ </dd>
+ </dl>
+					</span></section>
+				<section class="W" id="NoOP">
+					<h2 class="j"><i class="FINAL"><i class="STATIC PUBLIC"></i></i><code class="I">NoOP</code><i class="Z"><code class="return"><a href="api/kiss.WiseRunnable.html">WiseRunnable</a></code></i></h2><span class="B">No Operation</span></section>
+				<section class="W" id="Lang">
+					<h2 class="j"><i class="FINAL"><i class="STATIC PUBLIC"></i></i><code class="I">Lang</code><i class="Z"><code class="return"><a href="api/kiss.Variable.html">Variable</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code></code></code></i></h2><span class="B">The default language in this vm environment.</span></section>
+				<section class="W" id="Logger">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">Logger</code><i class="Z"><code class="return"><a href="api/kiss.WiseTriConsumer.html">WiseTriConsumer</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/System.Logger.Level.html">Level</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/CharBuffer.html">CharBuffer</a></code></code></code></i></h2><span class="B">The user-defined extra log appender.</span></section>
+				<section class="W" id="accept(java.lang.Object)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">accept</code><code class="f">(<code>A</code> <code class="parameterName">a</code>)</code><i class="Z"><code>boolean</code></i></h2>
+					<table class="V">
+						<tr class="L">
+							<td><code>A</code></td>
+							<td></td>
+						</tr>
+						<tr class="H">
+							<td><code>A</code> <code>a</code></td>
+							<td></td>
+						</tr>
+						<tr class="b">
+							<td><code>boolean</code></td>
+							<td></td>
+						</tr>
+					</table><span class="B">Accept any value. Use with method reference.</span>
+					<pre><code class="lang-java">@Test
+void accept() {
+    Predicate&#60;String&#62; accept = I::accept;
+    assert accept.test(&#34;accept&#34;) == true;
+    assert accept.test(&#34;all&#34;) == true;
+    assert accept.test(null) == true;
+}</code></pre>
+				</section>
+				<section class="W" id="accept(java.lang.Object,java.lang.Object)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">accept</code><code class="f">(<code>A</code> <code class="parameterName">a</code>, <code>B</code> <code class="parameterName">b</code>)</code><i class="Z"><code>boolean</code></i></h2>
+					<table class="V">
+						<tr class="L">
+							<td><code>A</code></td>
+							<td></td>
+						</tr>
+						<tr class="L">
+							<td><code>B</code></td>
+							<td></td>
+						</tr>
+						<tr class="H">
+							<td><code>A</code> <code>a</code></td>
+							<td></td>
+						</tr>
+						<tr class="H">
+							<td><code>B</code> <code>b</code></td>
+							<td></td>
+						</tr>
+						<tr class="b">
+							<td><code>boolean</code></td>
+							<td></td>
+						</tr>
+					</table><span class="B">Accept any value. Use with method reference.</span>
+					<pre><code class="lang-java">@Test
+void accept2() {
+    BiPredicate&#60;String, Integer&#62; accept = I::accept;
+    assert accept.test(&#34;accept&#34;, 1) == true;
+    assert accept.test(&#34;all&#34;, -1) == true;
+    assert accept.test(null, 0) == true;
+}</code></pre>
+				</section>
+				<section class="W" id="array(java.lang.Object[],java.lang.Object...)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">array</code><code class="f">(<code array="fix">T</code> <code class="parameterName">one</code>, <code array="var">T</code> <code class="parameterName">other</code>)</code><i class="Z"><code array="fix">T</code></i></h2>
+					<table class="V">
+						<tr class="L">
+							<td><code>T</code></td>
+							<td><span>Array element types.</span></td>
+						</tr>
+						<tr class="H">
+							<td><code array="fix">T</code> <code>one</code></td>
+							<td><span>Array to be concatenated at the top.</span></td>
+						</tr>
+						<tr class="H">
+							<td><code array="var">T</code> <code>other</code></td>
+							<td><span>Array to be concatenated at the end.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code array="fix">T</code></td>
+							<td><span>Newly created array with concatenated elements.</span></td>
+						</tr>
+					</table><span class="B">Creates a new array whose elements are the concatenated elements of the two given arrays.</span>
+					<pre><code class="lang-java">@Test
+void concatTwoArrays() {
+    String[] head = {&#34;a&#34;, &#34;b&#34;, &#34;c&#34;};
+    String[] tail = {&#34;d&#34;, &#34;e&#34;};
+
+    assert Arrays.equals(I.array(head, tail), new String[] {&#34;a&#34;, &#34;b&#34;, &#34;c&#34;, &#34;d&#34;, &#34;e&#34;});
+}</code></pre>
+				</section>
+				<section class="W" id="bundle(java.lang.Object...)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">bundle</code><code class="f">(<code array="var">T</code> <code class="parameterName">items</code>)</code><i class="Z"><code>T</code></i></h2>
+					<table class="V">
+						<tr class="L">
+							<td><code>T</code></td>
+							<td><span>Interface type.</span></td>
+						</tr>
+						<tr class="H">
+							<td><code array="var">T</code> <code>items</code></td>
+							<td><span>A set of objects that implement a common interface.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code>T</code></td>
+							<td><span>A bundled interface.</span></td>
+						</tr>
+					</table><span class="B">Create a new bundled implementation of the interface common to the given objects. Calling a
+ method of the retrieved implementation object will transparently call the same method on all
+ the given objects. In the case of a method with a return value, the result of the last
+ object&#39;s call will be used.
+ <p>
+ In situations where the compiler cannot estimate the type of the common interface, use
+ <code><a href="api/kiss.I.html#bundle(java.lang.Class,java.lang.Object...)">I#bundle(Class, Object...)</a></code> instead, which can specify the type.
+ </p>
+					</span>
+					<pre><code class="lang-java">@Test
+void bundleRunnables() {
+    int[] value = {0};
+
+    Runnable bundled = I.bundle(() -&#62; value[0] += 1, () -&#62; value[0] += 2);
+    bundled.run();
+    assert value[0] == 3;
+
+    bundled.run();
+    assert value[0] == 6;
+}</code></pre>
+					<pre><code class="lang-java">@Test
+void returnLastInterfaceResult() {
+    Function&#60;Integer, Integer&#62; bundled = I.bundle(x -&#62; x + 1, y -&#62; y + 2);
+    assert bundled.apply(10) == 12;
+}</code></pre>
+					<pre><code class="lang-java">@Test
+void cantInferCommonInterface() {
+    ArrayList array = new ArrayList();
+    LinkedList linked = new LinkedList();
+
+    assertThrows(IllegalArgumentException.class, () -&#62; I.bundle(array, linked));
+}</code></pre>
+				</section>
+				<section class="W" id="bundle(java.lang.Class,java.lang.Object...)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">bundle</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>T</code></code></code> <code class="parameterName">type</code>, <code array="var">T</code> <code class="parameterName">items</code>)</code><i class="Z"><code>T</code></i></h2>
+					<table class="V">
+						<tr class="L">
+							<td><code>T</code></td>
+							<td><span>Interface type.</span></td>
+						</tr>
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>T</code></code></code> <code>type</code></td>
+							<td><span>Specify the common interfaces.</span></td>
+						</tr>
+						<tr class="H">
+							<td><code array="var">T</code> <code>items</code></td>
+							<td><span>A set of objects that implement a common interface.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code>T</code></td>
+							<td><span>A bundled interface.</span></td>
+						</tr>
+					</table><span class="B">Create a new bundled implementation of the interface common to the given objects. Calling a
+ method of the retrieved implementation object will transparently call the same method on all
+ the given objects. In the case of a method with a return value, the result of the last
+ object&#39;s call will be used.</span>
+					<pre><code class="lang-java">@Test
+void bundleList() {
+    ArrayList array = new ArrayList();
+    LinkedList linked = new LinkedList();
+
+    List bundled = I.bundle(List.class, array, linked);
+    bundled.add(10);
+
+    assert array.size() == 1;
+    assert linked.size() == 1;
+}</code></pre>
+				</section>
+				<section class="W" id="collect(java.lang.Class,java.lang.Object...)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">collect</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>T</code></code></code> <code class="parameterName">type</code>, <code array="var">V</code> <code class="parameterName">items</code>)</code><i class="Z"><code>T</code></i></h2>
+					<table class="V">
+						<tr class="L">
+							<td><code>T</code><code class="extends"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html">Collection</a><code class="parameters"><code>V</code></code></code></code></td>
+							<td><span>Specify the concrete class which implements the <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html">Collection</a></code>, but the
+            <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html">List</a></code> and <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html">Set</a></code> interfaces may be specified as exceptions.</span></td>
+						</tr>
+						<tr class="L">
+							<td><code>V</code></td>
+							<td><span>The type of the <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html">Collection</a></code>&#39;s items.</span></td>
+						</tr>
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>T</code></code></code> <code>type</code></td>
+							<td><span>A <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html">Collection</a></code> type.</span></td>
+						</tr>
+						<tr class="H">
+							<td><code array="var">V</code> <code>items</code></td>
+							<td><span>A list of itmes.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code>T</code></td>
+							<td><span>The new created <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html">Collection</a></code>.</span></td>
+						</tr>
+					</table><span class="B">Create a new <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Collection.html">Collection</a></code> to hold the specified items. Basically, the type of the
+ collection should be a real class, but if it is a <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html">List</a></code> or <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html">Set</a></code>, the default
+ implementation class (<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/ArrayList.html">ArrayList</a></code> , <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/HashSet.html">HashSet</a></code>) will be used.</span>
+					<pre><code class="lang-java">@Test
+public void collect() {
+    List&#60;Integer&#62; list = I.collect(List.class, 1, 2, 3);
+    assert list instanceof ArrayList;
+    assert list.size() == 3;
+    assert list.get(0) == 1;
+    assert list.get(1) == 2;
+    assert list.get(2) == 3;
+}</code></pre>
+					<pre><code class="lang-java">@Test
+public void collectWithNoItem() {
+    List&#60;Integer&#62; list = I.collect(LinkedList.class);
+    assert list instanceof LinkedList;
+    assert list.isEmpty();
+}</code></pre>
+				</section>
+				<section class="W" id="copy(java.io.InputStream,java.io.OutputStream,boolean)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">copy</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/InputStream.html">InputStream</a></code> <code class="parameterName">input</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/OutputStream.html">OutputStream</a></code> <code class="parameterName">output</code>, <code>boolean</code> <code class="parameterName">close</code>)</code><i class="Z"><code>void</code></i></h2>
+					<table class="V">
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/InputStream.html">InputStream</a></code> <code>input</code></td>
+							<td><span><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/InputStream.html">InputStream</a></code> to which data will be read from.</span></td>
+						</tr>
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/OutputStream.html">OutputStream</a></code> <code>output</code></td>
+							<td><span><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/OutputStream.html">OutputStream</a></code> to which data will be write to.</span></td>
+						</tr>
+						<tr class="H">
+							<td><code>boolean</code> <code>close</code></td>
+							<td><span>Whether input and output streams will be closed automatically or not.</span></td>
+						</tr>
+					</table><span class="B">Copies data from <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/InputStream.html">InputStream</a></code> to <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/OutputStream.html">OutputStream</a></code>. This method does the data
+ buffering internally, so you do not need to do the buffering explicitly.</span>
+					<pre><code class="lang-java">@Test
+void copyInputStream() {
+    byte[] bytes = {0, 1, 2, 3};
+    ByteArrayInputStream in = new ByteArrayInputStream(bytes);
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+    I.copy(in, out, true);
+
+    assert Arrays.equals(bytes, out.toByteArray());
+}</code></pre>
+				</section>
+				<section class="W" id="copy(java.lang.Readable,java.lang.Appendable,boolean)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">copy</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Readable.html">Readable</a></code> <code class="parameterName">input</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Appendable.html">Appendable</a></code> <code class="parameterName">output</code>, <code>boolean</code> <code class="parameterName">close</code>)</code><i class="Z"><code>void</code></i></h2>
+					<table class="V">
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Readable.html">Readable</a></code> <code>input</code></td>
+							<td><span><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Readable.html">Readable</a></code> to which data will be read from.</span></td>
+						</tr>
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Appendable.html">Appendable</a></code> <code>output</code></td>
+							<td><span><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Appendable.html">Appendable</a></code> to which data will be write to.</span></td>
+						</tr>
+						<tr class="H">
+							<td><code>boolean</code> <code>close</code></td>
+							<td><span>Whether input and output streams will be closed automatically or not.</span></td>
+						</tr>
+					</table><span class="B">Copies data from <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Readable.html">Readable</a></code> to <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Appendable.html">Appendable</a></code>. This method does the data buffering
+ internally, so you do not need to do the buffering explicitly.</span>
+					<pre><code class="lang-java">@Test
+void copyReadable() {
+    String value = &#34;test&#34;;
+    StringReader in = new StringReader(value);
+    StringWriter out = new StringWriter();
+
+    I.copy(in, out, true);
+
+    assert out.toString().equals(value);
+}</code></pre>
+				</section>
+				<section class="W" id="debug(java.lang.Object)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">debug</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code class="parameterName">msg</code>)</code><i class="Z"><code>void</code></i></h2>
+					<table class="V">
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code>msg</code></td>
+							<td><span>A message log.</span></td>
+						</tr>
+					</table><span class="B">Write <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/System.Logger.Level.html#DEBUG">java.lang.System.Logger.Level#DEBUG</a></code> log.</span></section>
+				<section class="W" id="debug(java.lang.String,java.lang.Object)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">debug</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code class="parameterName">name</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code class="parameterName">msg</code>)</code><i class="Z"><code>void</code></i></h2>
+					<table class="V">
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code>name</code></td>
+							<td><span>A logger name.</span></td>
+						</tr>
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code>msg</code></td>
+							<td><span>A message log.</span></td>
+						</tr>
+					</table><span class="B">Write <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/System.Logger.Level.html#DEBUG">java.lang.System.Logger.Level#DEBUG</a></code> log.</span></section>
+				<section class="W" id="env(java.lang.String)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">env</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code class="parameterName">name</code>)</code><i class="Z"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code></i></h2>
+					<table class="V">
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code>name</code></td>
+							<td><span>A environment variable name.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code></td>
+							<td><span>The value of the environment variable with the specified name, or <code>null</code>
+         if it does not exist.</span></td>
+						</tr>
+					</table><span class="B">Read environment variables based on the following priorities (sources higher in the list take
+ precedence over those located lower).
+ <ol>
+ 
+							<li><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/System.html#getenv(java.lang.String)">System#getenv(String)</a></code></li>
+ 
+							<li>.env property file in current working directory (optional)</li>
+ 
+							<li>.env property file on the classpath (optional)</li>
+ </ol>
+					</span>
+					<pre><code class="lang-java">@Test
+@EnabledIfEnvironmentVariable(named = &#34;TEMP&#34;, matches = &#34;.*&#34;)
+void env() {
+    assert I.env(&#34;TEMP&#34;) != null; // The value varies depending on the execution environment.
+    assert I.env(&#34;not-exist&#34;) == null;
+}</code></pre>
+				</section>
+				<section class="W" id="env(java.lang.String,java.lang.Object)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">env</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code class="parameterName">name</code>, <code>T</code> <code class="parameterName">defaults</code>)</code><i class="Z"><code>T</code></i></h2>
+					<table class="V">
+						<tr class="L">
+							<td><code>T</code></td>
+							<td></td>
+						</tr>
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code>name</code></td>
+							<td><span>A environment variable name.</span></td>
+						</tr>
+						<tr class="H">
+							<td><code>T</code> <code>defaults</code></td>
+							<td><span>If the specified name is not found, set and return this default value.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code>T</code></td>
+							<td><span>The value of the environment variable with the specified name.</span></td>
+						</tr>
+					</table><span class="B">Read environment variables based on the following priorities (sources higher in the list take
+ precedence over those located lower). If the environment variable with the specified name
+ does not exist, the value specified as the default value will be set as the new environment
+ variable and used.
+ <ol>
+ 
+							<li><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/System.html#getenv(java.lang.String)">System#getenv(String)</a></code></li>
+ 
+							<li>.env property file in current working directory (optional)</li>
+ 
+							<li>.env property file on the classpath (optional)</li>
+ </ol>
+					</span></section>
+				<section class="W" id="error(java.lang.Object)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">error</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code class="parameterName">msg</code>)</code><i class="Z"><code>void</code></i></h2>
+					<table class="V">
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code>msg</code></td>
+							<td><span>A message log.</span></td>
+						</tr>
+					</table><span class="B">Write <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/System.Logger.Level.html#ERROR">java.lang.System.Logger.Level#ERROR</a></code> log.</span></section>
+				<section class="W" id="error(java.lang.String,java.lang.Object)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">error</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code class="parameterName">name</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code class="parameterName">msg</code>)</code><i class="Z"><code>void</code></i></h2>
+					<table class="V">
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code>name</code></td>
+							<td><span>A logger name.</span></td>
+						</tr>
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code>msg</code></td>
+							<td><span>A message log.</span></td>
+						</tr>
+					</table><span class="B">Write <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/System.Logger.Level.html#ERROR">java.lang.System.Logger.Level#ERROR</a></code> log.</span></section>
+				<section class="W" id="express(java.lang.String,java.lang.Object...)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">express</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code class="parameterName">text</code>, <code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code class="parameterName">contexts</code>)</code><i class="Z"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code></i></h2>
+					<table class="V">
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code>text</code></td>
+							<td><span>A text with the path of the property names enclosed in &#34;{}&#34;.</span></td>
+						</tr>
+						<tr class="H">
+							<td><code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code>contexts</code></td>
+							<td><span>A list of context values.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code></td>
+							<td><span>A calculated text.</span></td>
+						</tr>
+					</table><span class="B">It is a very simple template engine that can calculate a string that replaces the path of a
+ property names enclosed in &#34;{}&#34; with the actual value of the property. Support
+ <a href="https://mustache.github.io/mustache.5.html">Mustache Syntax</a> partially.</span>
+					<pre><code class="lang-java">@Test
+void variable() {
+    KVS context = $(&#34;lang&#34;, &#34;the minimum language&#34;);
+
+    assert I.express(&#34;I want {lang}.&#34;, context).equals(&#34;I want the minimum language.&#34;);
+}</code></pre>
+					<pre><code class="lang-java">@Test
+void bean() {
+    Person bean = new Person();
+    bean.setAge(15);
+    bean.setLastName(&#34;Kahu&#34;);
+    bean.setFirstName(&#34;Tino&#34;);
+
+    assert I.express(&#34;{firstName}({age}) : It&#39;s noisy.&#34;, bean).equals(&#34;Tino(15) : It&#39;s noisy.&#34;);
+}</code></pre>
+					<pre><code class="lang-java">@Test
+void section() {
+    List context = List.of(&#34;one&#34;, &#34;two&#34;, &#34;three&#34;);
+
+    assert I.express(&#34;&#34;&#34;
+            &#60;ul&#62;
+                {#this}
+                &#60;li&#62;{.}&#60;/li&#62;
+                {/this}
+            &#60;/ul&#62;
+            &#34;&#34;&#34;, context).equals(&#34;&#34;&#34;
+            &#60;ul&#62;
+                &#60;li&#62;one&#60;/li&#62;
+                &#60;li&#62;two&#60;/li&#62;
+                &#60;li&#62;three&#60;/li&#62;
+            &#60;/ul&#62;
+            &#34;&#34;&#34;);
+}</code></pre>
+					<pre><code class="lang-java">@Test
+void sectionByEmptyList() {
+    List context = Collections.emptyList();
+
+    assert I.express(&#34;{#this}The text here will not be output.{/this}&#34;, context).equals(&#34;&#34;);
+}</code></pre>
+					<pre><code class="lang-java">@Test
+void sectionByFalse() {
+    boolean context = false;
+
+    assert I.express(&#34;{#this}The text here will not be output.{/this}&#34;, context).equals(&#34;&#34;);
+}</code></pre>
+					<pre><code class="lang-java">@Test
+void sectionInvertByEmptyList() {
+    List context = Collections.emptyList();
+
+    assert I.express(&#34;&#34;&#34;
+            &#60;ul&#62;
+                {#this}
+                &#60;li&#62;{.}&#60;/li&#62;
+                {/this}
+                {^this}
+                &#60;li&#62;No Items&#60;/li&#62;
+                {/this}
+            &#60;/ul&#62;
+            &#34;&#34;&#34;, context).equals(&#34;&#34;&#34;
+            &#60;ul&#62;
+                &#60;li&#62;No Items&#60;/li&#62;
+            &#60;/ul&#62;
+            &#34;&#34;&#34;);
+}</code></pre>
+				</section>
+				<section class="W" id="express(java.lang.String,java.lang.Object[],kiss.WiseTriFunction...)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">express</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code class="parameterName">text</code>, <code array="fix"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code class="parameterName">contexts</code>, <code array="var"><a href="api/kiss.WiseTriFunction.html">WiseTriFunction</a><code class="parameters"><code><a href="api/kiss.model.Model.html">Model</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code></code></code> <code class="parameterName">resolvers</code>)</code><i class="Z"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code></i></h2>
+					<table class="V">
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code>text</code></td>
+							<td><span>A text with the path of the property names enclosed in &#34;{}&#34;.</span></td>
+						</tr>
+						<tr class="H">
+							<td><code array="fix"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code>contexts</code></td>
+							<td><span>A list of context values.</span></td>
+						</tr>
+						<tr class="H">
+							<td><code array="var"><a href="api/kiss.WiseTriFunction.html">WiseTriFunction</a><code class="parameters"><code><a href="api/kiss.model.Model.html">Model</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code></code></code> <code>resolvers</code></td>
+							<td></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code></td>
+							<td><span>A calculated text.</span></td>
+						</tr>
+					</table><span class="B">It is a very simple template engine that can calculate a string that replaces the path of a
+ property names enclosed in &#34;{}&#34; with the actual value of the property. Support
+ <a href="https://mustache.github.io/mustache.5.html">Mustache Syntax</a> partially.</span></section>
+				<section class="W" id="find(java.lang.Class)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">find</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>E</code></code></code> <code class="parameterName">extensionPoint</code>)</code><i class="Z"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html">List</a><code class="parameters"><code>E</code></code></code></i></h2>
+					<table class="V">
+						<tr class="L">
+							<td><code>E</code><code class="extends"><code><a href="api/kiss.Extensible.html">Extensible</a></code></code></td>
+							<td><span>An Extension Point.</span></td>
+						</tr>
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>E</code></code></code> <code>extensionPoint</code></td>
+							<td><span>An extension point class. The
+            <a href="Extensible#ExtensionPoint">Extension Point</a> class is only accepted,
+            otherwise this method will return empty list.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html">List</a><code class="parameters"><code>E</code></code></code></td>
+							<td><span>All Extensions of the given Extension Point or empty list.</span></td>
+						</tr>
+					</table><span class="B"><p>
+ Find all <a href="Extensible.html#Extension">Extensions</a> which are specified by the given
+ <a href="Extensible#ExtensionPoint">Extension Point</a>.
+ </p>
+ <p>
+ The returned list will be &#34;safe&#34; in that no references to it are maintained by Sinobu. (In
+ other words, this method must allocate a new list). The caller is thus free to modify the
+ returned list.
+ </p>
+					</span></section>
+				<section class="W" id="find(java.lang.Class,java.lang.Class)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">find</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>E</code></code></code> <code class="parameterName">extensionPoint</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a></code> <code class="parameterName">key</code>)</code><i class="Z"><code>E</code></i></h2>
+					<table class="V">
+						<tr class="L">
+							<td><code>E</code><code class="extends"><code><a href="api/kiss.Extensible.html">Extensible</a></code></code></td>
+							<td><span>An Extension Point.</span></td>
+						</tr>
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>E</code></code></code> <code>extensionPoint</code></td>
+							<td><span>An Extension Point class. The
+            <a href="Extensible#ExtensionPoint">Extension Point</a> class is only accepted,
+            otherwise this method will return <code>null</code>.</span></td>
+						</tr>
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a></code> <code>key</code></td>
+							<td><span>An <a href="Extensible.html#ExtensionKey">Extension Key</a> class.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code>E</code></td>
+							<td><span>A associated Extension of the given Extension Point and the given Extension Key or
+         <code>null</code>.</span></td>
+						</tr>
+					</table><span class="B"><p>
+ Find the <a href="Extensible.html#Extension">Extension</a> which are specified by the given
+ <a href="Extensible#ExtensionPoint">Extension Point</a> and the given key.
+ </p>
+					</span></section>
+				<section class="W" id="findAs(java.lang.Class)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">findAs</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>E</code></code></code> <code class="parameterName">extensionPoint</code>)</code><i class="Z"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html">List</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>E</code></code></code></code></code></i></h2>
+					<table class="V">
+						<tr class="L">
+							<td><code>E</code><code class="extends"><code><a href="api/kiss.Extensible.html">Extensible</a></code></code></td>
+							<td><span>An Extension Point.</span></td>
+						</tr>
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>E</code></code></code> <code>extensionPoint</code></td>
+							<td><span>An extension point class. The
+            <a href="Extensible#ExtensionPoint">Extension Point</a> class is only accepted,
+            otherwise this method will return empty list.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html">List</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>E</code></code></code></code></code></td>
+							<td><span>All Extension classes of the given Extension Point or empty list.</span></td>
+						</tr>
+					</table><span class="B"><p>
+ Find all <a href="Extensible.html#Extension">Extensions</a> classes which are specified by
+ the given <a href="Extensible#ExtensionPoint">Extension Point</a>.
+ </p>
+ <p>
+ The returned list will be &#34;safe&#34; in that no references to it are maintained by Sinobu. (In
+ other words, this method must allocate a new list). The caller is thus free to modify the
+ returned list.
+ </p>
+					</span></section>
+				<section class="W" id="http(java.lang.String,java.lang.Class,java.net.http.HttpClient...)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">http</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code class="parameterName">request</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>T</code></code></code> <code class="parameterName">type</code>, <code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.net.http/java/net/http/HttpClient.html">HttpClient</a></code> <code class="parameterName">client</code>)</code><i class="Z"><code><a href="api/kiss.Signal.html">Signal</a><code class="parameters"><code>T</code></code></code></i></h2>
+					<table class="V">
+						<tr class="L">
+							<td><code>T</code></td>
+							<td><span><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/InputStream.html">InputStream</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.net.http/java/net/http/HttpResponse.html">HttpResponse</a></code>, <code><a href="api/kiss.XML.html">XML</a></code>, or your
+            bean class</span></td>
+						</tr>
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code>request</code></td>
+							<td><span>Request URI.</span></td>
+						</tr>
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>T</code></code></code> <code>type</code></td>
+							<td><span>Response handler. (<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/InputStream.html">InputStream</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.net.http/java/net/http/HttpResponse.html">HttpResponse</a></code>,
+            <code><a href="api/kiss.XML.html">XML</a></code>, or your bean class)</span></td>
+						</tr>
+						<tr class="H">
+							<td><code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.net.http/java/net/http/HttpClient.html">HttpClient</a></code> <code>client</code></td>
+							<td></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="api/kiss.Signal.html">Signal</a><code class="parameters"><code>T</code></code></code></td>
+							<td><span>If the request is successful, the content will be sent. If the request is
+         unsuccessful, an error will be sent.</span></td>
+						</tr>
+					</table><span class="B">Gets the response from the specified URL (including https), converting it to the specified
+ type. Supported types are as follows:
+ <ul>
+ 
+							<li><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code></li>
+ 
+							<li><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/InputStream.html">InputStream</a></code></li>
+ 
+							<li><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.net.http/java/net/http/HttpResponse.html">HttpResponse</a></code></li>
+ 
+							<li><code><a href="api/kiss.XML.html">XML</a></code></li>
+ 
+							<li><code><a href="api/kiss.JSON.html">JSON</a></code></li>
+ 
+							<li>Any types that can be mapped from JSON</li>
+ </ul>
+ <p>
+ It will check the Content-Encoding header and automatically decompress the body if it is
+ compressed with gzip or deflate. HTTP communication by this method is done asynchronously. It
+ is possible to process it synchronously by calling the return value&#39;s
+ <code><a href="api/kiss.Signal.html#waitForTerminate()">Signal#waitForTerminate()</a></code>.
+ </p>
+					</span>
+					<pre><code class="lang-java">@Test
+void responseString() {
+    httpClientMock.onGet().doReturn(&#34;ok&#34;);
+
+    assert I.http(&#34;http://test.com&#34;, String.class, httpClientMock).to().is(&#34;ok&#34;);
+}</code></pre>
+					<pre><code class="lang-java">@Test
+void responseHTML() {
+    httpClientMock.onGet().doReturnXML(&#34;&#60;html&#62;&#60;body&#62;contents&#60;/body&#62;&#60;/html&#62;&#34;);
+
+    XML xml = I.http(&#34;http://test.com&#34;, XML.class, httpClientMock).to().exact();
+    assert xml.name().equals(&#34;html&#34;);
+    assert xml.text().equals(&#34;contents&#34;);
+}</code></pre>
+					<pre><code class="lang-java">@Test
+void responseJSON() {
+    httpClientMock.onGet().doReturnJSON(text(&#34;{&#39;state&#39; : &#39;ok&#39;}&#34;));
+
+    JSON json = I.http(&#34;http://test.com&#34;, JSON.class, httpClientMock).to().exact();
+    assert json.get(String.class, &#34;state&#34;).equals(&#34;ok&#34;);
+}</code></pre>
+					<pre><code class="lang-java">@Test
+void responseMappedType() {
+    class Response {
+        public String state;
+    }
+
+    httpClientMock.onGet().doReturnJSON(text(&#34;{&#39;state&#39; : &#39;ok&#39;}&#34;));
+
+    Response response = I.http(&#34;http://test.com&#34;, Response.class, httpClientMock).to().exact();
+    assert response.state.equals(&#34;ok&#34;);
+}</code></pre>
+				</section>
+				<section class="W" id="http(java.net.http.HttpRequest.Builder,java.lang.Class,java.net.http.HttpClient...)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">http</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.net.http/java/net/http/HttpRequest.Builder.html">Builder</a></code> <code class="parameterName">request</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>T</code></code></code> <code class="parameterName">type</code>, <code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.net.http/java/net/http/HttpClient.html">HttpClient</a></code> <code class="parameterName">client</code>)</code><i class="Z"><code><a href="api/kiss.Signal.html">Signal</a><code class="parameters"><code>T</code></code></code></i></h2>
+					<table class="V">
+						<tr class="L">
+							<td><code>T</code></td>
+							<td><span><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/InputStream.html">InputStream</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.net.http/java/net/http/HttpResponse.html">HttpResponse</a></code>, <code><a href="api/kiss.XML.html">XML</a></code>, or your
+            bean class</span></td>
+						</tr>
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.net.http/java/net/http/HttpRequest.Builder.html">Builder</a></code> <code>request</code></td>
+							<td><span>Request builder.</span></td>
+						</tr>
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>T</code></code></code> <code>type</code></td>
+							<td><span>Response handler. (<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/InputStream.html">InputStream</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.net.http/java/net/http/HttpResponse.html">HttpResponse</a></code>,
+            <code><a href="api/kiss.XML.html">XML</a></code>, or your bean class)</span></td>
+						</tr>
+						<tr class="H">
+							<td><code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.net.http/java/net/http/HttpClient.html">HttpClient</a></code> <code>client</code></td>
+							<td></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="api/kiss.Signal.html">Signal</a><code class="parameters"><code>T</code></code></code></td>
+							<td><span>If the request is successful, the content will be sent. If the request is
+         unsuccessful, an error will be sent.</span></td>
+						</tr>
+					</table><span class="B">Gets the response from the specified URL (including https), converting it to the specified
+ type. Supported types are as follows:
+ <ul>
+ 
+							<li><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code></li>
+ 
+							<li><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/InputStream.html">InputStream</a></code></li>
+ 
+							<li><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.net.http/java/net/http/HttpResponse.html">HttpResponse</a></code></li>
+ 
+							<li><code><a href="api/kiss.XML.html">XML</a></code></li>
+ 
+							<li><code><a href="api/kiss.JSON.html">JSON</a></code></li>
+ 
+							<li>Any types that can be mapped from JSON</li>
+ </ul>
+ <p>
+ It will check the Content-Encoding header and automatically decompress the body if it is
+ compressed with gzip or deflate. HTTP communication by this method is done asynchronously. It
+ is possible to process it synchronously by calling the return value&#39;s
+ <code><a href="api/kiss.Signal.html#waitForTerminate()">Signal#waitForTerminate()</a></code>.
+ </p>
+					</span></section>
+				<section class="W" id="http(java.lang.String,java.util.function.Consumer,java.net.http.HttpClient...)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">http</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code class="parameterName">uri</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.net.http/java/net/http/WebSocket.html">WebSocket</a></code></code></code> <code class="parameterName">open</code>, <code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.net.http/java/net/http/HttpClient.html">HttpClient</a></code> <code class="parameterName">client</code>)</code><i class="Z"><code><a href="api/kiss.Signal.html">Signal</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code></code></code></i></h2>
+					<table class="V">
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code>uri</code></td>
+							<td><span>URI to connect.</span></td>
+						</tr>
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.net.http/java/net/http/WebSocket.html">WebSocket</a></code></code></code> <code>open</code></td>
+							<td><span>Called only once, when a connection is established.</span></td>
+						</tr>
+						<tr class="H">
+							<td><code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.net.http/java/net/http/HttpClient.html">HttpClient</a></code> <code>client</code></td>
+							<td></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="api/kiss.Signal.html">Signal</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code></code></code></td>
+							<td><span>Communication status.</span></td>
+						</tr>
+					</table><span class="B">Connect to the specified URI by Websocket. The status of the communication is transmitted to
+ <code><a href="api/kiss.Signal.html">Signal</a></code>. Once the connection is established, it performs a &#39;open&#39; callback.</span></section>
+				<section class="W" id="info(java.lang.Object)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">info</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code class="parameterName">msg</code>)</code><i class="Z"><code>void</code></i></h2>
+					<table class="V">
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code>msg</code></td>
+							<td><span>A message log.</span></td>
+						</tr>
+					</table><span class="B">Write <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/System.Logger.Level.html#INFO">java.lang.System.Logger.Level#INFO</a></code> log.</span></section>
+				<section class="W" id="info(java.lang.String,java.lang.Object)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">info</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code class="parameterName">name</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code class="parameterName">msg</code>)</code><i class="Z"><code>void</code></i></h2>
+					<table class="V">
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code>name</code></td>
+							<td><span>A logger name.</span></td>
+						</tr>
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code>msg</code></td>
+							<td><span>A message log.</span></td>
+						</tr>
+					</table><span class="B">Write <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/System.Logger.Level.html#INFO">java.lang.System.Logger.Level#INFO</a></code> log.</span></section>
+				<section class="W" id="json(java.lang.String)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">json</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code class="parameterName">input</code>)</code><i class="Z"><code><a href="api/kiss.JSON.html">JSON</a></code></i></h2>
+					<table class="V">
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code>input</code></td>
+							<td><span>A json format text. <code>null</code> will throw <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/NullPointerException.html">NullPointerException</a></code>.
+            The empty or invalid format data will throw <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/IllegalStateException.html">IllegalStateException</a></code>.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="api/kiss.JSON.html">JSON</a></code></td>
+							<td><span>A parsed <code><a href="api/kiss.JSON.html">JSON</a></code>.</span></td>
+						</tr>
+					</table><span class="B">Parse the specified JSON format text.</span></section>
+				<section class="W" id="json(java.nio.file.Path)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">json</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/file/Path.html">Path</a></code> <code class="parameterName">input</code>)</code><i class="Z"><code><a href="api/kiss.JSON.html">JSON</a></code></i></h2>
+					<table class="V">
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/file/Path.html">Path</a></code> <code>input</code></td>
+							<td><span>A json format text. <code>null</code> will throw <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/NullPointerException.html">NullPointerException</a></code>.
+            The empty or invalid format data will throw <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/IllegalStateException.html">IllegalStateException</a></code>.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="api/kiss.JSON.html">JSON</a></code></td>
+							<td><span>A parsed <code><a href="api/kiss.JSON.html">JSON</a></code>.</span></td>
+						</tr>
+					</table><span class="B">Parse the specified JSON format text.</span></section>
+				<section class="W" id="json(java.io.InputStream)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">json</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/InputStream.html">InputStream</a></code> <code class="parameterName">input</code>)</code><i class="Z"><code><a href="api/kiss.JSON.html">JSON</a></code></i></h2>
+					<table class="V">
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/InputStream.html">InputStream</a></code> <code>input</code></td>
+							<td><span>A json format text. <code>null</code> will throw <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/NullPointerException.html">NullPointerException</a></code>.
+            The empty or invalid format data will throw <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/IllegalStateException.html">IllegalStateException</a></code>.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="api/kiss.JSON.html">JSON</a></code></td>
+							<td><span>A parsed <code><a href="api/kiss.JSON.html">JSON</a></code>.</span></td>
+						</tr>
+					</table><span class="B">Parse the specified JSON format text.</span></section>
+				<section class="W" id="json(java.io.Reader)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">json</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/Reader.html">Reader</a></code> <code class="parameterName">input</code>)</code><i class="Z"><code><a href="api/kiss.JSON.html">JSON</a></code></i></h2>
+					<table class="V">
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/Reader.html">Reader</a></code> <code>input</code></td>
+							<td><span>A json format text. <code>null</code> will throw <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/NullPointerException.html">NullPointerException</a></code>.
+            The empty or invalid format data will throw <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/IllegalStateException.html">IllegalStateException</a></code>.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="api/kiss.JSON.html">JSON</a></code></td>
+							<td><span>A parsed <code><a href="api/kiss.JSON.html">JSON</a></code>.</span></td>
+						</tr>
+					</table><span class="B">Parse the specified JSON format text.</span></section>
+				<section class="W" id="list(java.lang.Object...)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">list</code><code class="f">(<code array="var">V</code> <code class="parameterName">items</code>)</code><i class="Z"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html">List</a><code class="parameters"><code>V</code></code></code></i></h2>
+					<table class="V">
+						<tr class="L">
+							<td><code>V</code></td>
+							<td></td>
+						</tr>
+						<tr class="H">
+							<td><code array="var">V</code> <code>items</code></td>
+							<td><span>A list of itmes.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html">List</a><code class="parameters"><code>V</code></code></code></td>
+							<td><span>The new created <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/ArrayList.html">ArrayList</a></code>.</span></td>
+						</tr>
+					</table><span class="B">Create <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/ArrayList.html">ArrayList</a></code> with the specified items.</span></section>
+				<section class="W" id="load(java.net.URL)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">load</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/net/URL.html">URL</a></code> <code class="parameterName">source</code>)</code><i class="Z"><code><a href="api/kiss.Disposable.html">Disposable</a></code></i></h2>
+					<table class="V">
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/net/URL.html">URL</a></code> <code>source</code></td>
+							<td><span>A source class to indicate the class set which are loaded.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="api/kiss.Disposable.html">Disposable</a></code></td>
+							<td><span>Call <code><a href="api/kiss.Disposable.html#dispose()">Disposable#dispose()</a></code> to unload the registered extension.</span></td>
+						</tr>
+					</table><span class="B"><p>
+ Load all <code><a href="api/kiss.Extensible.html">Extensible</a></code> types from the specified source.
+ </p>
+ <p>
+ You can create the special service loader file &#34;META-INF/services/kiss.Extensible&#34; which
+ enumerates pre-scanned class names.
+ </p>
+					</span></section>
+				<section class="W" id="load(java.lang.Class)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">load</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a></code> <code class="parameterName">source</code>)</code><i class="Z"><code><a href="api/kiss.Disposable.html">Disposable</a></code></i></h2>
+					<table class="V">
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a></code> <code>source</code></td>
+							<td><span>A source class to indicate the class set which are loaded.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="api/kiss.Disposable.html">Disposable</a></code></td>
+							<td><span>Call <code><a href="api/kiss.Disposable.html#dispose()">Disposable#dispose()</a></code> to unload the registered extension.</span></td>
+						</tr>
+					</table><span class="B"><p>
+ Load all <code><a href="api/kiss.Extensible.html">Extensible</a></code> types from the specified source.
+ </p>
+ <p>
+ You can create the special service loader file &#34;META-INF/services/kiss.Extensible&#34; which
+ enumerates pre-scanned class names.
+ </p>
+					</span></section>
+				<section class="W" id="make(java.lang.Class)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">make</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>?</code><code class="extends"><code>T</code></code></code></code> <code class="parameterName">modelClass</code>)</code><i class="Z"><code>T</code></i></h2>
+					<table class="V">
+						<tr class="L">
+							<td><code>T</code></td>
+							<td><span>A model type.</span></td>
+						</tr>
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>?</code><code class="extends"><code>T</code></code></code></code> <code>modelClass</code></td>
+							<td><span>A target class to create instance.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code>T</code></td>
+							<td><span>A instance of the specified model class. This instance is managed by Sinobu.</span></td>
+						</tr>
+					</table><span class="B"><p>
+ Returns a new or cached instance of the model class.
+ </p>
+ <p>
+ This method supports the top-level class and the member type. If the local class or the
+ anonymous class is passed to this argument, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/UnsupportedOperationException.html">UnsupportedOperationException</a></code> will be
+ thrown. There is a possibility that a part of this limitation will be removed in the future.
+ </p>
+					</span></section>
+				<section class="W" id="make(java.lang.Class,java.lang.reflect.InvocationHandler)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">make</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>T</code></code></code> <code class="parameterName">type</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/reflect/InvocationHandler.html">InvocationHandler</a></code> <code class="parameterName">handler</code>)</code><i class="Z"><code>T</code></i></h2>
+					<table class="V">
+						<tr class="L">
+							<td><code>T</code></td>
+							<td></td>
+						</tr>
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>T</code></code></code> <code>type</code></td>
+							<td><span>A model type.</span></td>
+						</tr>
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/reflect/InvocationHandler.html">InvocationHandler</a></code> <code>handler</code></td>
+							<td><span>A proxy handler.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code>T</code></td>
+							<td></td>
+						</tr>
+					</table><span class="B">Create proxy instance.</span></section>
+				<section class="W" id="pair(java.lang.Object,java.lang.Object)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">pair</code><code class="f">(<code>A</code> <code class="parameterName">param1</code>, <code>B</code> <code class="parameterName">param2</code>)</code><i class="Z"><code><a href="api/kiss.Ⅱ.html">Ⅱ</a><code class="parameters"><code>A</code>, <code>B</code></code></code></i></h2>
+					<table class="V">
+						<tr class="L">
+							<td><code>A</code></td>
+							<td></td>
+						</tr>
+						<tr class="L">
+							<td><code>B</code></td>
+							<td></td>
+						</tr>
+						<tr class="H">
+							<td><code>A</code> <code>param1</code></td>
+							<td><span>A first parameter.</span></td>
+						</tr>
+						<tr class="H">
+							<td><code>B</code> <code>param2</code></td>
+							<td><span>A second parameter.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="api/kiss.Ⅱ.html">Ⅱ</a><code class="parameters"><code>A</code>, <code>B</code></code></code></td>
+							<td></td>
+						</tr>
+					</table><span class="B">Create value set.</span></section>
+				<section class="W" id="pair(java.lang.Object,java.lang.Object,java.lang.Object)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">pair</code><code class="f">(<code>A</code> <code class="parameterName">param1</code>, <code>B</code> <code class="parameterName">param2</code>, <code>C</code> <code class="parameterName">param3</code>)</code><i class="Z"><code><a href="api/kiss.Ⅲ.html">Ⅲ</a><code class="parameters"><code>A</code>, <code>B</code>, <code>C</code></code></code></i></h2>
+					<table class="V">
+						<tr class="L">
+							<td><code>A</code></td>
+							<td></td>
+						</tr>
+						<tr class="L">
+							<td><code>B</code></td>
+							<td></td>
+						</tr>
+						<tr class="L">
+							<td><code>C</code></td>
+							<td></td>
+						</tr>
+						<tr class="H">
+							<td><code>A</code> <code>param1</code></td>
+							<td><span>A first parameter.</span></td>
+						</tr>
+						<tr class="H">
+							<td><code>B</code> <code>param2</code></td>
+							<td><span>A second parameter.</span></td>
+						</tr>
+						<tr class="H">
+							<td><code>C</code> <code>param3</code></td>
+							<td><span>A third parameter.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="api/kiss.Ⅲ.html">Ⅲ</a><code class="parameters"><code>A</code>, <code>B</code>, <code>C</code></code></code></td>
+							<td></td>
+						</tr>
+					</table><span class="B">Create value set.</span></section>
+				<section class="W" id="prototype(java.lang.Class)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">prototype</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>M</code></code></code> <code class="parameterName">model</code>)</code><i class="Z"><code><a href="api/kiss.Lifestyle.html">Lifestyle</a><code class="parameters"><code>M</code></code></code></i></h2>
+					<table class="V">
+						<tr class="L">
+							<td><code>M</code></td>
+							<td><span>A <code><a href="api/kiss.Managed.html">Managed</a></code> class.</span></td>
+						</tr>
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>M</code></code></code> <code>model</code></td>
+							<td><span>A model type.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="api/kiss.Lifestyle.html">Lifestyle</a><code class="parameters"><code>M</code></code></code></td>
+							<td><span>A built <code><a href="api/kiss.Lifestyle.html">Lifestyle</a></code> that creates a new instance every time demanded.</span></td>
+						</tr>
+					</table><span class="B">Build prototype-like <code><a href="api/kiss.Lifestyle.html">Lifestyle</a></code> that creates a new instance every time demanded. This
+ is default lifestyle in Sinobu.
+ <p>
+ The created <code><a href="api/kiss.Lifestyle.html">Lifestyle</a></code> has the functionality of Dependency Injection. The Lifestyle
+ attempts to create an instance using the first constructor declared with the fewest number of
+ arguments. If the argument contains a <code><a href="api/kiss.Managed.html">Managed</a></code> type, an instance of that type will
+ also be created automatically. This dependency injection is done at the same time when the
+ model is instantiated. But if you want to delay the creation of the dependency until it is
+ needed, you can set the argument type to Lifestyle
+							<dependency_type>.
+ 
+								<p>
+ You may also specify a <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a></code> type as an argument if you need the currently processing
+ model type. This feature is mainly available when implementing the special generic
+ <code><a href="api/kiss.Lifestyle.html">Lifestyle</a></code>.</p>
+							</dependency_type>
+						</p>
+					</span></section>
+				<section class="W" id="quiet(java.lang.Object)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">quiet</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code class="parameterName">object</code>)</code><i class="Z"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/RuntimeException.html">RuntimeException</a></code></i></h2>
+					<table class="V">
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code>object</code></td>
+							<td><span>A exception to throw quietly or a object to close quietly.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/RuntimeException.html">RuntimeException</a></code></td>
+							<td><span>A pseudo unchecked exception.</span></td>
+						</tr>
+					</table><span class="B"><p>
+ Close the specified object quietly if it is <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html">AutoCloseable</a></code>. Equivalent to
+ <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html#close()">AutoCloseable#close()</a></code>, except any exceptions will be ignored. This is typically used
+ in finally block like the following.
+ </p>
+ <p>
+ 
+							<pre>
+ AutoCloseable input = null;
+
+ try {
+     // some IO action
+ } catch (Exception e) {
+     throw e;
+ } finally {
+     I.quiet(input);
+ }
+ </pre>
+ 
+							<p>
+ Throw the specified checked exception quietly or close the specified <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html">AutoCloseable</a></code>
+ object quietly.
+ </p>
+ 
+							<p>
+ This method <em>doesn&#39;t</em> wrap checked exception around unchecked exception (e.g. new
+ RuntimeException(e)) and <em>doesn&#39;t</em> shelve it. This method deceive the compiler that
+ the checked exception is unchecked one. So you can catch a raw checked exception in the
+ caller of the method which calls this method.
+ </p>
+ 
+							<p>
+ 
+								<pre>
+ private void callerWithoutErrorHandling() {
+     methodQuietly();
+ }
+
+ private void callerWithErrorHandling() {
+     try {
+         methodQuietly();
+     } catch (Exception e) {
+         // you can catch the checked exception here
+     }
+ }
+
+ private void methodQuietly() {
+     try {
+         // throw some cheched exception
+     } catch (CheckedException e) {
+         throw I.quiet(e); // rethrow checked exception quietly
+     }
+ }
+ </pre>
+							</p>
+						</p>
+					</span></section>
+				<section class="W" id="recurse(kiss.WiseTriConsumer)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">recurse</code><code class="f">(<code><a href="api/kiss.WiseTriConsumer.html">WiseTriConsumer</a><code class="parameters"><code><a href="api/kiss.WiseBiConsumer.html">WiseBiConsumer</a><code class="parameters"><code>A</code>, <code>B</code></code></code>, <code>A</code>, <code>B</code></code></code> <code class="parameterName">function</code>)</code><i class="Z"><code><a href="api/kiss.WiseBiConsumer.html">WiseBiConsumer</a><code class="parameters"><code>A</code>, <code>B</code></code></code></i></h2>
+					<table class="V">
+						<tr class="L">
+							<td><code>A</code></td>
+							<td></td>
+						</tr>
+						<tr class="L">
+							<td><code>B</code></td>
+							<td></td>
+						</tr>
+						<tr class="H">
+							<td><code><a href="api/kiss.WiseTriConsumer.html">WiseTriConsumer</a><code class="parameters"><code><a href="api/kiss.WiseBiConsumer.html">WiseBiConsumer</a><code class="parameters"><code>A</code>, <code>B</code></code></code>, <code>A</code>, <code>B</code></code></code> <code>function</code></td>
+							<td><span>A recursive function.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="api/kiss.WiseBiConsumer.html">WiseBiConsumer</a><code class="parameters"><code>A</code>, <code>B</code></code></code></td>
+							<td><span>A created function.</span></td>
+						</tr>
+					</table><span class="B"><p>
+ Define recursive <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/BiConsumer.html">BiConsumer</a></code>.
+ </p>
+ <pre>
+ I.recurse((self, param1, param2) -&#62; {
+     // your function code
+ });
+ </pre>
+					</span></section>
+				<section class="W" id="recurse(kiss.WiseTriFunction)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">recurse</code><code class="f">(<code><a href="api/kiss.WiseTriFunction.html">WiseTriFunction</a><code class="parameters"><code><a href="api/kiss.WiseBiFunction.html">WiseBiFunction</a><code class="parameters"><code>A</code>, <code>B</code>, <code>R</code></code></code>, <code>A</code>, <code>B</code>, <code>R</code></code></code> <code class="parameterName">function</code>)</code><i class="Z"><code><a href="api/kiss.WiseBiFunction.html">WiseBiFunction</a><code class="parameters"><code>A</code>, <code>B</code>, <code>R</code></code></code></i></h2>
+					<table class="V">
+						<tr class="L">
+							<td><code>A</code></td>
+							<td></td>
+						</tr>
+						<tr class="L">
+							<td><code>B</code></td>
+							<td></td>
+						</tr>
+						<tr class="L">
+							<td><code>R</code></td>
+							<td></td>
+						</tr>
+						<tr class="H">
+							<td><code><a href="api/kiss.WiseTriFunction.html">WiseTriFunction</a><code class="parameters"><code><a href="api/kiss.WiseBiFunction.html">WiseBiFunction</a><code class="parameters"><code>A</code>, <code>B</code>, <code>R</code></code></code>, <code>A</code>, <code>B</code>, <code>R</code></code></code> <code>function</code></td>
+							<td><span>A recursive function.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="api/kiss.WiseBiFunction.html">WiseBiFunction</a><code class="parameters"><code>A</code>, <code>B</code>, <code>R</code></code></code></td>
+							<td><span>A created function.</span></td>
+						</tr>
+					</table><span class="B"><p>
+ Define recursive <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/BiFunction.html">BiFunction</a></code>.
+ </p>
+ <pre>
+ I.recurse((self, param1, param2) -&#62; {
+     // your function code
+ });
+ </pre>
+					</span></section>
+				<section class="W" id="recurse(kiss.WiseBiConsumer)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">recurse</code><code class="f">(<code><a href="api/kiss.WiseBiConsumer.html">WiseBiConsumer</a><code class="parameters"><code><a href="api/kiss.WiseConsumer.html">WiseConsumer</a><code class="parameters"><code>A</code></code></code>, <code>A</code></code></code> <code class="parameterName">function</code>)</code><i class="Z"><code><a href="api/kiss.WiseConsumer.html">WiseConsumer</a><code class="parameters"><code>A</code></code></code></i></h2>
+					<table class="V">
+						<tr class="L">
+							<td><code>A</code></td>
+							<td></td>
+						</tr>
+						<tr class="H">
+							<td><code><a href="api/kiss.WiseBiConsumer.html">WiseBiConsumer</a><code class="parameters"><code><a href="api/kiss.WiseConsumer.html">WiseConsumer</a><code class="parameters"><code>A</code></code></code>, <code>A</code></code></code> <code>function</code></td>
+							<td><span>A target function to convert.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="api/kiss.WiseConsumer.html">WiseConsumer</a><code class="parameters"><code>A</code></code></code></td>
+							<td><span>A converted recursive function.</span></td>
+						</tr>
+					</table><span class="B"><p>
+ Define recursive <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a></code>.
+ </p>
+ <pre>
+ I.recurse((self, param) -&#62; {
+     // your function code
+ });
+ </pre>
+					</span></section>
+				<section class="W" id="recurse(kiss.WiseBiFunction)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">recurse</code><code class="f">(<code><a href="api/kiss.WiseBiFunction.html">WiseBiFunction</a><code class="parameters"><code><a href="api/kiss.WiseFunction.html">WiseFunction</a><code class="parameters"><code>A</code>, <code>R</code></code></code>, <code>A</code>, <code>R</code></code></code> <code class="parameterName">function</code>)</code><i class="Z"><code><a href="api/kiss.WiseFunction.html">WiseFunction</a><code class="parameters"><code>A</code>, <code>R</code></code></code></i></h2>
+					<table class="V">
+						<tr class="L">
+							<td><code>A</code></td>
+							<td></td>
+						</tr>
+						<tr class="L">
+							<td><code>R</code></td>
+							<td></td>
+						</tr>
+						<tr class="H">
+							<td><code><a href="api/kiss.WiseBiFunction.html">WiseBiFunction</a><code class="parameters"><code><a href="api/kiss.WiseFunction.html">WiseFunction</a><code class="parameters"><code>A</code>, <code>R</code></code></code>, <code>A</code>, <code>R</code></code></code> <code>function</code></td>
+							<td><span>A recursive function.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="api/kiss.WiseFunction.html">WiseFunction</a><code class="parameters"><code>A</code>, <code>R</code></code></code></td>
+							<td><span>A created function.</span></td>
+						</tr>
+					</table><span class="B"><p>
+ Define recursive <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html">Function</a></code>.
+ </p>
+ <pre>
+ I.recurse((self, param) -&#62; {
+     // your function code
+ });
+ </pre>
+					</span></section>
+				<section class="W" id="recurse(kiss.WiseConsumer)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">recurse</code><code class="f">(<code><a href="api/kiss.WiseConsumer.html">WiseConsumer</a><code class="parameters"><code><a href="api/kiss.WiseRunnable.html">WiseRunnable</a></code></code></code> <code class="parameterName">function</code>)</code><i class="Z"><code><a href="api/kiss.WiseRunnable.html">WiseRunnable</a></code></i></h2>
+					<table class="V">
+						<tr class="H">
+							<td><code><a href="api/kiss.WiseConsumer.html">WiseConsumer</a><code class="parameters"><code><a href="api/kiss.WiseRunnable.html">WiseRunnable</a></code></code></code> <code>function</code></td>
+							<td><span>A recursive function.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="api/kiss.WiseRunnable.html">WiseRunnable</a></code></td>
+							<td><span>A created function.</span></td>
+						</tr>
+					</table><span class="B"><p>
+ Define recursive <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code>.
+ </p>
+ <pre>
+ I.recurse(self -&#62; {
+     // your function code
+ });
+ </pre>
+					</span></section>
+				<section class="W" id="recurse(kiss.WiseFunction)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">recurse</code><code class="f">(<code><a href="api/kiss.WiseFunction.html">WiseFunction</a><code class="parameters"><code><a href="api/kiss.WiseSupplier.html">WiseSupplier</a><code class="parameters"><code>R</code></code></code>, <code>R</code></code></code> <code class="parameterName">function</code>)</code><i class="Z"><code><a href="api/kiss.WiseSupplier.html">WiseSupplier</a><code class="parameters"><code>R</code></code></code></i></h2>
+					<table class="V">
+						<tr class="L">
+							<td><code>R</code></td>
+							<td></td>
+						</tr>
+						<tr class="H">
+							<td><code><a href="api/kiss.WiseFunction.html">WiseFunction</a><code class="parameters"><code><a href="api/kiss.WiseSupplier.html">WiseSupplier</a><code class="parameters"><code>R</code></code></code>, <code>R</code></code></code> <code>function</code></td>
+							<td><span>A recursive function.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="api/kiss.WiseSupplier.html">WiseSupplier</a><code class="parameters"><code>R</code></code></code></td>
+							<td><span>A created function.</span></td>
+						</tr>
+					</table><span class="B"><p>
+ Define recursive <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html">Supplier</a></code>.
+ </p>
+ <pre>
+ I.recurse(self -&#62; {
+     // your function code
+ });
+ </pre>
+					</span></section>
+				<section class="W" id="reject(java.lang.Object)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">reject</code><code class="f">(<code>A</code> <code class="parameterName">a</code>)</code><i class="Z"><code>boolean</code></i></h2>
+					<table class="V">
+						<tr class="L">
+							<td><code>A</code></td>
+							<td></td>
+						</tr>
+						<tr class="H">
+							<td><code>A</code> <code>a</code></td>
+							<td></td>
+						</tr>
+						<tr class="b">
+							<td><code>boolean</code></td>
+							<td></td>
+						</tr>
+					</table><span class="B">Reject any value. Use with method reference.</span>
+					<pre><code class="lang-java">@Test
+void reject() {
+    Predicate&#60;String&#62; reject = I::reject;
+    assert reject.test(&#34;reject&#34;) == false;
+    assert reject.test(&#34;all&#34;) == false;
+    assert reject.test(null) == false;
+}</code></pre>
+				</section>
+				<section class="W" id="reject(java.lang.Object,java.lang.Object)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">reject</code><code class="f">(<code>A</code> <code class="parameterName">a</code>, <code>B</code> <code class="parameterName">b</code>)</code><i class="Z"><code>boolean</code></i></h2>
+					<table class="V">
+						<tr class="L">
+							<td><code>A</code></td>
+							<td></td>
+						</tr>
+						<tr class="L">
+							<td><code>B</code></td>
+							<td></td>
+						</tr>
+						<tr class="H">
+							<td><code>A</code> <code>a</code></td>
+							<td></td>
+						</tr>
+						<tr class="H">
+							<td><code>B</code> <code>b</code></td>
+							<td></td>
+						</tr>
+						<tr class="b">
+							<td><code>boolean</code></td>
+							<td></td>
+						</tr>
+					</table><span class="B">Reject any value. Use with method reference.</span>
+					<pre><code class="lang-java">@Test
+void reject2() {
+    BiPredicate&#60;String, Integer&#62; accept = I::reject;
+    assert accept.test(&#34;reject&#34;, 1) == false;
+    assert accept.test(&#34;all&#34;, -1) == false;
+    assert accept.test(null, 0) == false;
+}</code></pre>
+				</section>
+				<section class="W" id="schedule(java.lang.Runnable)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">schedule</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code> <code class="parameterName">task</code>)</code><i class="Z"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/CompletableFuture.html">CompletableFuture</a><code class="parameters"><code>?</code></code></code></i></h2>
+					<table class="V">
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code> <code>task</code></td>
+							<td><span>A task to execute.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/CompletableFuture.html">CompletableFuture</a><code class="parameters"><code>?</code></code></code></td>
+							<td><span>A result of the executing task.</span></td>
+						</tr>
+					</table><span class="B">Execute the specified task in the sinobu managed background thread pool.</span></section>
+				<section class="W" id="schedule(long,java.util.concurrent.TimeUnit,java.util.concurrent.ScheduledExecutorService...)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">schedule</code><code class="f">(<code>long</code> <code class="parameterName">delayTime</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/TimeUnit.html">TimeUnit</a></code> <code class="parameterName">unit</code>, <code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/ScheduledExecutorService.html">ScheduledExecutorService</a></code> <code class="parameterName">scheduler</code>)</code><i class="Z"><code><a href="api/kiss.Signal.html">Signal</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Long.html">Long</a></code></code></code></i></h2>
+					<table class="V">
+						<tr class="H">
+							<td><code>long</code> <code>delayTime</code></td>
+							<td><span>The delay time to wait before emitting the first value of 1L</span></td>
+						</tr>
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/TimeUnit.html">TimeUnit</a></code> <code>unit</code></td>
+							<td><span>The time unit for <code>delayTime</code></span></td>
+						</tr>
+						<tr class="H">
+							<td><code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/ScheduledExecutorService.html">ScheduledExecutorService</a></code> <code>scheduler</code></td>
+							<td><span>The task scheduler.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="api/kiss.Signal.html">Signal</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Long.html">Long</a></code></code></code></td>
+							<td><span><code><a href="api/kiss.Signal.html">Signal</a></code> that emits a <code>1L</code> after the <code>delayTime</code></span></td>
+						</tr>
+					</table><span class="B">Returns an <code><a href="api/kiss.Signal.html">Signal</a></code> that emits a <code>1L</code> after the <code>delayTime</code>.</span></section>
+				<section class="W" id="schedule(long,long,java.util.concurrent.TimeUnit,boolean,java.util.concurrent.ScheduledExecutorService...)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">schedule</code><code class="f">(<code>long</code> <code class="parameterName">delayTime</code>, <code>long</code> <code class="parameterName">intervalTime</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/TimeUnit.html">TimeUnit</a></code> <code class="parameterName">unit</code>, <code>boolean</code> <code class="parameterName">fixedRate</code>, <code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/ScheduledExecutorService.html">ScheduledExecutorService</a></code> <code class="parameterName">scheduler</code>)</code><i class="Z"><code><a href="api/kiss.Signal.html">Signal</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Long.html">Long</a></code></code></code></i></h2>
+					<table class="V">
+						<tr class="H">
+							<td><code>long</code> <code>delayTime</code></td>
+							<td><span>The initial delay time to wait before emitting the first value of 1L</span></td>
+						</tr>
+						<tr class="H">
+							<td><code>long</code> <code>intervalTime</code></td>
+							<td><span>The period of time between emissions of the subsequent numbers</span></td>
+						</tr>
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/TimeUnit.html">TimeUnit</a></code> <code>unit</code></td>
+							<td><span>the time unit for both <code>delayTime</code> and <code>intervalTime</code></span></td>
+						</tr>
+						<tr class="H">
+							<td><code>boolean</code> <code>fixedRate</code></td>
+							<td></td>
+						</tr>
+						<tr class="H">
+							<td><code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/ScheduledExecutorService.html">ScheduledExecutorService</a></code> <code>scheduler</code></td>
+							<td></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="api/kiss.Signal.html">Signal</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Long.html">Long</a></code></code></code></td>
+							<td><span><code><a href="api/kiss.Signal.html">Signal</a></code> that emits a 1L after the <code>delayTime</code> and ever increasing
+         numbers after each <code>intervalTime</code> of time thereafter</span></td>
+						</tr>
+					</table><span class="B">Returns an <code><a href="api/kiss.Signal.html">Signal</a></code> that emits a <code>1L</code> after the <code>delayTime</code> and ever
+ increasing numbers after each <code>intervalTime</code> of time thereafter.</span></section>
+				<section class="W" id="schedule(java.time.LocalTime,long,java.util.concurrent.TimeUnit,java.util.concurrent.ScheduledExecutorService...)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">schedule</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/LocalTime.html">LocalTime</a></code> <code class="parameterName">time</code>, <code>long</code> <code class="parameterName">interval</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/TimeUnit.html">TimeUnit</a></code> <code class="parameterName">unit</code>, <code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/ScheduledExecutorService.html">ScheduledExecutorService</a></code> <code class="parameterName">scheduler</code>)</code><i class="Z"><code><a href="api/kiss.Signal.html">Signal</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Long.html">Long</a></code></code></code></i></h2>
+					<table class="V">
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/LocalTime.html">LocalTime</a></code> <code>time</code></td>
+							<td><span>The base time.</span></td>
+						</tr>
+						<tr class="H">
+							<td><code>long</code> <code>interval</code></td>
+							<td><span>The period of time between emissions of the subsequent numbers</span></td>
+						</tr>
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/TimeUnit.html">TimeUnit</a></code> <code>unit</code></td>
+							<td><span>The interval time unit.</span></td>
+						</tr>
+						<tr class="H">
+							<td><code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/ScheduledExecutorService.html">ScheduledExecutorService</a></code> <code>scheduler</code></td>
+							<td><span>The task scheduler.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="api/kiss.Signal.html">Signal</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Long.html">Long</a></code></code></code></td>
+							<td><span><code><a href="api/kiss.Signal.html">Signal</a></code> that emits a 1L at the <code>time</code> and ever increasing numbers after
+         each <code>interval</code> of time thereafter</span></td>
+						</tr>
+					</table><span class="B">Create a time-based periodic executable scheduler. It will be executed at regular intervals
+ starting from a specified base time. (For example, if the base time is 00:05 and the interval
+ is 30 minutes, the actual execution time will be 00:05, 00:30, 01:05, 01:35, and so on.</span></section>
+				<section class="W" id="set(java.lang.Object...)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">set</code><code class="f">(<code array="var">V</code> <code class="parameterName">items</code>)</code><i class="Z"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html">Set</a><code class="parameters"><code>V</code></code></code></i></h2>
+					<table class="V">
+						<tr class="L">
+							<td><code>V</code></td>
+							<td></td>
+						</tr>
+						<tr class="H">
+							<td><code array="var">V</code> <code>items</code></td>
+							<td><span>A list of itmes.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html">Set</a><code class="parameters"><code>V</code></code></code></td>
+							<td><span>The new created <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/HashSet.html">HashSet</a></code>.</span></td>
+						</tr>
+					</table><span class="B">Create <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/HashSet.html">HashSet</a></code> with the specified items.</span></section>
+				<section class="W" id="signal(java.lang.Object...)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">signal</code><code class="f">(<code array="var">V</code> <code class="parameterName">values</code>)</code><i class="Z"><code><a href="api/kiss.Signal.html">Signal</a><code class="parameters"><code>V</code></code></code></i></h2>
+					<table class="V">
+						<tr class="L">
+							<td><code>V</code></td>
+							<td></td>
+						</tr>
+						<tr class="H">
+							<td><code array="var">V</code> <code>values</code></td>
+							<td><span>A list of values to emit.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="api/kiss.Signal.html">Signal</a><code class="parameters"><code>V</code></code></code></td>
+							<td><span>The <code><a href="api/kiss.Signal.html">Signal</a></code> to emit sequencial values.</span></td>
+						</tr>
+					</table><span class="B">Signal the specified values.</span></section>
+				<section class="W" id="signal(java.lang.Iterable)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">signal</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html">Iterable</a><code class="parameters"><code>V</code></code></code> <code class="parameterName">values</code>)</code><i class="Z"><code><a href="api/kiss.Signal.html">Signal</a><code class="parameters"><code>V</code></code></code></i></h2>
+					<table class="V">
+						<tr class="L">
+							<td><code>V</code></td>
+							<td></td>
+						</tr>
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html">Iterable</a><code class="parameters"><code>V</code></code></code> <code>values</code></td>
+							<td><span>A list of values to emit.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="api/kiss.Signal.html">Signal</a><code class="parameters"><code>V</code></code></code></td>
+							<td><span>The <code><a href="api/kiss.Signal.html">Signal</a></code> to emit sequencial values.</span></td>
+						</tr>
+					</table><span class="B">Signal the specified values.</span></section>
+				<section class="W" id="signal(java.util.function.Supplier)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">signal</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code>V</code></code></code> <code class="parameterName">value</code>)</code><i class="Z"><code><a href="api/kiss.Signal.html">Signal</a><code class="parameters"><code>V</code></code></code></i></h2>
+					<table class="V">
+						<tr class="L">
+							<td><code>V</code></td>
+							<td></td>
+						</tr>
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code>V</code></code></code> <code>value</code></td>
+							<td><span>A value to emit.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="api/kiss.Signal.html">Signal</a><code class="parameters"><code>V</code></code></code></td>
+							<td><span>The <code><a href="api/kiss.Signal.html">Signal</a></code> to emit sequencial values.</span></td>
+						</tr>
+					</table><span class="B"><code><a href="api/kiss.Signal.html">Signal</a></code> the specified values.</span></section>
+				<section class="W" id="signalError(java.lang.Throwable)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">signalError</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Throwable.html">Throwable</a></code> <code class="parameterName">error</code>)</code><i class="Z"><code><a href="api/kiss.Signal.html">Signal</a><code class="parameters"><code>V</code></code></code></i></h2>
+					<table class="V">
+						<tr class="L">
+							<td><code>V</code></td>
+							<td></td>
+						</tr>
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Throwable.html">Throwable</a></code> <code>error</code></td>
+							<td><span>An error to emit.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="api/kiss.Signal.html">Signal</a><code class="parameters"><code>V</code></code></code></td>
+							<td><span>The <code><a href="api/kiss.Signal.html">Signal</a></code> to emit error.</span></td>
+						</tr>
+					</table><span class="B">Returns an <code><a href="api/kiss.Signal.html">Signal</a></code> that invokes an <code><a href="api/kiss.Observer.html#error(java.lang.Throwable)">Observer#error(Throwable)</a></code> method when the
+ <code><a href="api/kiss.Observer.html">Observer</a></code> subscribes to it.</span></section>
+				<section class="W" id="trace(java.lang.Object)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">trace</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code class="parameterName">msg</code>)</code><i class="Z"><code>void</code></i></h2>
+					<table class="V">
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code>msg</code></td>
+							<td><span>A message log.</span></td>
+						</tr>
+					</table><span class="B">Write <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/System.Logger.Level.html#TRACE">java.lang.System.Logger.Level#TRACE</a></code> log.</span></section>
+				<section class="W" id="trace(java.lang.String,java.lang.Object)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">trace</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code class="parameterName">name</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code class="parameterName">msg</code>)</code><i class="Z"><code>void</code></i></h2>
+					<table class="V">
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code>name</code></td>
+							<td><span>A logger name.</span></td>
+						</tr>
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code>msg</code></td>
+							<td><span>A message log.</span></td>
+						</tr>
+					</table><span class="B">Write <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/System.Logger.Level.html#TRACE">java.lang.System.Logger.Level#TRACE</a></code> log.</span></section>
+				<section class="W" id="transform(java.lang.Object,java.lang.Class)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">transform</code><code class="f">(<code>In</code> <code class="parameterName">input</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>Out</code></code></code> <code class="parameterName">output</code>)</code><i class="Z"><code>Out</code></i></h2>
+					<table class="V">
+						<tr class="L">
+							<td><code>In</code></td>
+							<td><span>A input type you want to transform from.</span></td>
+						</tr>
+						<tr class="L">
+							<td><code>Out</code></td>
+							<td><span>An output type you want to transform into.</span></td>
+						</tr>
+						<tr class="H">
+							<td><code>In</code> <code>input</code></td>
+							<td><span>A target object.</span></td>
+						</tr>
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>Out</code></code></code> <code>output</code></td>
+							<td><span>A target type.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code>Out</code></td>
+							<td><span>A transformed object.</span></td>
+						</tr>
+					</table><span class="B">Transform any type object into the specified type if possible.</span></section>
+				<section class="W" id="translate(java.lang.String,java.lang.Object...)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">translate</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code class="parameterName">text</code>, <code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code class="parameterName">context</code>)</code><i class="Z"><code><a href="api/kiss.Variable.html">Variable</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code></code></code></i></h2>
+					<table class="V">
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code>text</code></td>
+							<td><span>Basic English sentences.</span></td>
+						</tr>
+						<tr class="H">
+							<td><code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code>context</code></td>
+							<td><span>Parameters to be assigned to variables in a sentence. (Optional)</span></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="api/kiss.Variable.html">Variable</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code></code></code></td>
+							<td></td>
+						</tr>
+					</table><span class="B">The text will be automatically translated. Basic sentences must be written in English. It
+ will be translated online automatically into the language specified in the global variable
+ <code><a href="api/kiss.I.html#Lang">#Lang</a></code>. Once the text is translated, it is saved to the local disk and loaded from
+ there in the future.</span></section>
+				<section class="W" id="type(java.lang.String)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">type</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code class="parameterName">fqcn</code>)</code><i class="Z"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a></code></i></h2>
+					<table class="V">
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code>fqcn</code></td>
+							<td><span>A fully qualified class name to want.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a></code></td>
+							<td><span>The specified class.</span></td>
+						</tr>
+					</table><span class="B">Find the class by the specified fully qualified class name.</span></section>
+				<section class="W" id="warn(java.lang.Object)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">warn</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code class="parameterName">msg</code>)</code><i class="Z"><code>void</code></i></h2>
+					<table class="V">
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code>msg</code></td>
+							<td><span>A message log.</span></td>
+						</tr>
+					</table><span class="B">Write <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/System.Logger.Level.html#WARNING">java.lang.System.Logger.Level#WARNING</a></code> log.</span></section>
+				<section class="W" id="warn(java.lang.String,java.lang.Object)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">warn</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code class="parameterName">name</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code class="parameterName">msg</code>)</code><i class="Z"><code>void</code></i></h2>
+					<table class="V">
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code>name</code></td>
+							<td><span>A logger name.</span></td>
+						</tr>
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code>msg</code></td>
+							<td><span>A message log.</span></td>
+						</tr>
+					</table><span class="B">Write <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/System.Logger.Level.html#WARNING">java.lang.System.Logger.Level#WARNING</a></code> log.</span></section>
+				<section class="W" id="wiseR(java.lang.Runnable)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">wiseR</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code> <code class="parameterName">lambda</code>)</code><i class="Z"><code><a href="api/kiss.WiseRunnable.html">WiseRunnable</a></code></i></h2>
+					<table class="V">
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code> <code>lambda</code></td>
+							<td><span>A target function.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="api/kiss.WiseRunnable.html">WiseRunnable</a></code></td>
+							<td><span>A casted function.</span></td>
+						</tr>
+					</table><span class="B">Cast from <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code> to <code><a href="api/kiss.WiseRunnable.html">WiseRunnable</a></code>.</span>
+					<pre><code class="lang-java">@Test
+void runnable() {
+    Runnable lambda = () -&#62; {
+    };
+    WiseRunnable dressed = I.wiseR(lambda);
+    assert dressed != lambda;
+
+    lambda = (WiseRunnable) () -&#62; {
+    };
+    dressed = I.wiseR(lambda);
+    assert dressed == lambda;
+}</code></pre>
+				</section>
+				<section class="W" id="wiseC(java.util.function.Consumer)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">wiseC</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>A</code></code></code> <code class="parameterName">lambda</code>)</code><i class="Z"><code><a href="api/kiss.WiseConsumer.html">WiseConsumer</a><code class="parameters"><code>A</code></code></code></i></h2>
+					<table class="V">
+						<tr class="L">
+							<td><code>A</code></td>
+							<td></td>
+						</tr>
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>A</code></code></code> <code>lambda</code></td>
+							<td><span>A target function.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="api/kiss.WiseConsumer.html">WiseConsumer</a><code class="parameters"><code>A</code></code></code></td>
+							<td><span>A casted function.</span></td>
+						</tr>
+					</table><span class="B">Cast from <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a></code> to <code><a href="api/kiss.WiseConsumer.html">WiseConsumer</a></code>.</span>
+					<pre><code class="lang-java">@Test
+void consumer() {
+    Consumer lambda = v -&#62; {
+    };
+    WiseConsumer dressed = I.wiseC(lambda);
+    assert dressed != lambda;
+
+    lambda = (WiseConsumer) v -&#62; {
+    };
+    dressed = I.wiseC(lambda);
+    assert dressed == lambda;
+}</code></pre>
+				</section>
+				<section class="W" id="wiseC(java.lang.Runnable)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">wiseC</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code> <code class="parameterName">lambda</code>)</code><i class="Z"><code><a href="api/kiss.WiseConsumer.html">WiseConsumer</a><code class="parameters"><code>A</code></code></code></i></h2>
+					<table class="V">
+						<tr class="L">
+							<td><code>A</code></td>
+							<td></td>
+						</tr>
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code> <code>lambda</code></td>
+							<td><span>A target function.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="api/kiss.WiseConsumer.html">WiseConsumer</a><code class="parameters"><code>A</code></code></code></td>
+							<td><span>A casted function.</span></td>
+						</tr>
+					</table><span class="B">Cast from <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code> to <code><a href="api/kiss.WiseConsumer.html">WiseConsumer</a></code>. All missing parameters will be added on
+ the right side. All additional caller arguments are ignored.</span>
+					<pre><code class="lang-java">@Test
+void consumerFromRunnable() throws Throwable {
+    int[] counter = {0};
+    WiseConsumer&#60;String&#62; consumer = I.wiseC(() -&#62; counter[0]++);
+    assert counter[0] == 0;
+
+    consumer.accept(&#34;invoke as Consumer&#34;);
+    assert counter[0] == 1;
+
+    consumer.ACCEPT(&#34;invoke as WiseConsumer&#34;);
+    assert counter[0] == 2;
+}</code></pre>
+				</section>
+				<section class="W" id="wiseS(java.util.function.Supplier)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">wiseS</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code>R</code></code></code> <code class="parameterName">lambda</code>)</code><i class="Z"><code><a href="api/kiss.WiseSupplier.html">WiseSupplier</a><code class="parameters"><code>R</code></code></code></i></h2>
+					<table class="V">
+						<tr class="L">
+							<td><code>R</code></td>
+							<td></td>
+						</tr>
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code>R</code></code></code> <code>lambda</code></td>
+							<td><span>A target function.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="api/kiss.WiseSupplier.html">WiseSupplier</a><code class="parameters"><code>R</code></code></code></td>
+							<td><span>A casted function.</span></td>
+						</tr>
+					</table><span class="B">Cast from <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html">Supplier</a></code> to <code><a href="api/kiss.WiseSupplier.html">WiseSupplier</a></code>.</span>
+					<pre><code class="lang-java">@Test
+void supplier() {
+    Supplier lambda = () -&#62; &#34;&#34;;
+    WiseSupplier dressed = I.wiseS(lambda);
+    assert dressed != lambda;
+
+    lambda = (WiseSupplier) () -&#62; &#34;&#34;;
+    dressed = I.wiseS(lambda);
+    assert dressed == lambda;
+}</code></pre>
+				</section>
+				<section class="W" id="wiseS(java.lang.Object)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">wiseS</code><code class="f">(<code>R</code> <code class="parameterName">constant</code>)</code><i class="Z"><code><a href="api/kiss.WiseSupplier.html">WiseSupplier</a><code class="parameters"><code>R</code></code></code></i></h2>
+					<table class="V">
+						<tr class="L">
+							<td><code>R</code></td>
+							<td></td>
+						</tr>
+						<tr class="H">
+							<td><code>R</code> <code>constant</code></td>
+							<td><span>The fixed return value.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="api/kiss.WiseSupplier.html">WiseSupplier</a><code class="parameters"><code>R</code></code></code></td>
+							<td><span>A created function.</span></td>
+						</tr>
+					</table><span class="B">Create <code><a href="api/kiss.WiseSupplier.html">WiseSupplier</a></code> which always return the specified value.</span>
+					<pre><code class="lang-java">@Test
+void supplierFromConstant() {
+    WiseSupplier supplier = I.wiseS(&#34;constant&#34;);
+    assert supplier.get().equals(&#34;constant&#34;);
+}</code></pre>
+					<pre><code class="lang-java">@Test
+void supplierFromNullConstant() {
+    WiseSupplier supplier = I.wiseS((Object) null);
+    assert supplier.get() == null;
+}</code></pre>
+				</section>
+				<section class="W" id="wiseF(java.util.function.Function)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">wiseF</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html">Function</a><code class="parameters"><code>A</code>, <code>R</code></code></code> <code class="parameterName">lambda</code>)</code><i class="Z"><code><a href="api/kiss.WiseFunction.html">WiseFunction</a><code class="parameters"><code>A</code>, <code>R</code></code></code></i></h2>
+					<table class="V">
+						<tr class="L">
+							<td><code>A</code></td>
+							<td></td>
+						</tr>
+						<tr class="L">
+							<td><code>R</code></td>
+							<td></td>
+						</tr>
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html">Function</a><code class="parameters"><code>A</code>, <code>R</code></code></code> <code>lambda</code></td>
+							<td><span>A target function.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="api/kiss.WiseFunction.html">WiseFunction</a><code class="parameters"><code>A</code>, <code>R</code></code></code></td>
+							<td><span>A casted function.</span></td>
+						</tr>
+					</table><span class="B">Cast from <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html">Function</a></code> to <code><a href="api/kiss.WiseFunction.html">WiseFunction</a></code>.</span>
+					<pre><code class="lang-java">@Test
+void function() {
+    Function lambda = p -&#62; &#34;&#34;;
+    WiseFunction dressed = I.wiseF(lambda);
+    assert dressed != lambda;
+
+    lambda = (WiseFunction) p -&#62; &#34;&#34;;
+    dressed = I.wiseF(lambda);
+    assert dressed == lambda;
+}</code></pre>
+				</section>
+				<section class="W" id="wiseF(java.util.function.Supplier)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">wiseF</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code>R</code></code></code> <code class="parameterName">lambda</code>)</code><i class="Z"><code><a href="api/kiss.WiseFunction.html">WiseFunction</a><code class="parameters"><code>A</code>, <code>R</code></code></code></i></h2>
+					<table class="V">
+						<tr class="L">
+							<td><code>A</code></td>
+							<td></td>
+						</tr>
+						<tr class="L">
+							<td><code>R</code></td>
+							<td></td>
+						</tr>
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code>R</code></code></code> <code>lambda</code></td>
+							<td><span>A target function.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="api/kiss.WiseFunction.html">WiseFunction</a><code class="parameters"><code>A</code>, <code>R</code></code></code></td>
+							<td><span>A casted function.</span></td>
+						</tr>
+					</table><span class="B">Cast from <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html">Supplier</a></code> to <code><a href="api/kiss.WiseFunction.html">WiseFunction</a></code>. All missing parameters will be added on
+ the right side. All additional caller arguments are ignored.</span>
+					<pre><code class="lang-java">@Test
+void functionFromSupplier() {
+    WiseFunction&#60;String, String&#62; function = I.wiseF(() -&#62; &#34;constant&#34;);
+    assert function.apply(&#34;any value&#34;).equals(&#34;constant&#34;);
+    assert function.apply(&#34;returns the fixed value&#34;).equals(&#34;constant&#34;);
+}</code></pre>
+				</section>
+				<section class="W" id="wiseF(java.lang.Object)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">wiseF</code><code class="f">(<code>R</code> <code class="parameterName">constant</code>)</code><i class="Z"><code><a href="api/kiss.WiseFunction.html">WiseFunction</a><code class="parameters"><code>A</code>, <code>R</code></code></code></i></h2>
+					<table class="V">
+						<tr class="L">
+							<td><code>A</code></td>
+							<td></td>
+						</tr>
+						<tr class="L">
+							<td><code>R</code></td>
+							<td></td>
+						</tr>
+						<tr class="H">
+							<td><code>R</code> <code>constant</code></td>
+							<td><span>The fixed return value.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="api/kiss.WiseFunction.html">WiseFunction</a><code class="parameters"><code>A</code>, <code>R</code></code></code></td>
+							<td><span>A created function.</span></td>
+						</tr>
+					</table><span class="B">Create <code><a href="api/kiss.WiseFunction.html">WiseFunction</a></code> which always return the specified value.</span>
+					<pre><code class="lang-java">@Test
+void functionFromConstant() {
+    WiseFunction&#60;String, String&#62; function = I.wiseF(&#34;constant&#34;);
+    assert function.apply(&#34;any value&#34;).equals(&#34;constant&#34;);
+    assert function.apply(&#34;returns the fixed value&#34;).equals(&#34;constant&#34;);
+}</code></pre>
+					<pre><code class="lang-java">@Test
+void functionFromNullConstant() {
+    WiseFunction&#60;String, String&#62; function = I.wiseF((String) null);
+    assert function.apply(&#34;any value&#34;) == null;
+    assert function.apply(&#34;returns the fixed value&#34;) == null;
+}</code></pre>
+				</section>
+				<section class="W" id="wrap(java.lang.Class)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">wrap</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a></code> <code class="parameterName">type</code>)</code><i class="Z"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a></code></i></h2>
+					<table class="V">
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a></code> <code>type</code></td>
+							<td><span>A <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a></code> object to convert to non-primitive class.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a></code></td>
+							<td><span>A non-primitive <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a></code> object.</span></td>
+						</tr>
+					</table><span class="B">Return a non-primitive <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a></code> of the specified <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a></code> object. <code>null</code>
+ will be return <code>null</code>.</span></section>
+				<section class="W" id="write(java.lang.Object)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">write</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code class="parameterName">input</code>)</code><i class="Z"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code></i></h2>
+					<table class="V">
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code>input</code></td>
+							<td><span>A Java object. All properties will be serialized deeply. <code>null</code> will
+            throw <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/NullPointerException.html">java.lang.NullPointerException</a></code>.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code></td>
+							<td><span>A JSON representation of Java object.</span></td>
+						</tr>
+					</table><span class="B">Write JSON representation of Java object.</span></section>
+				<section class="W" id="write(java.lang.Object,java.lang.Appendable)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">write</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code class="parameterName">input</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Appendable.html">Appendable</a></code> <code class="parameterName">out</code>)</code><i class="Z"><code>void</code></i></h2>
+					<table class="V">
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code>input</code></td>
+							<td><span>A Java object. All properties will be serialized deeply. <code>null</code> will
+            throw <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/NullPointerException.html">java.lang.NullPointerException</a></code>.</span></td>
+						</tr>
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Appendable.html">Appendable</a></code> <code>out</code></td>
+							<td><span>A serialized data output. <code>null</code> will throw
+            <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/NullPointerException.html">NullPointerException</a></code>.</span></td>
+						</tr>
+					</table><span class="B"><p>
+ Write JSON representation of Java object to the specified output.
+ </p>
+ <p>
+ If the output object implements <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html">AutoCloseable</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/AutoCloseable.html#close()">AutoCloseable#close()</a></code> method
+ will be invoked certainly.
+ </p>
+					</span></section>
+				<section class="W" id="xml(java.lang.String)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">xml</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code class="parameterName">input</code>)</code><i class="Z"><code><a href="api/kiss.XML.html">XML</a></code></i></h2>
+					<table class="V">
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code>input</code></td>
+							<td><span>Text of xml representation.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="api/kiss.XML.html">XML</a></code></td>
+							<td><span>A constructed <code><a href="api/kiss.XML.html">XML</a></code>.</span></td>
+						</tr>
+					</table><span class="B">Parse the specified XML format text.</span></section>
+				<section class="W" id="xml(java.nio.file.Path)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">xml</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/file/Path.html">Path</a></code> <code class="parameterName">input</code>)</code><i class="Z"><code><a href="api/kiss.XML.html">XML</a></code></i></h2>
+					<table class="V">
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/file/Path.html">Path</a></code> <code>input</code></td>
+							<td><span>Path to the XML file.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="api/kiss.XML.html">XML</a></code></td>
+							<td><span>A constructed <code><a href="api/kiss.XML.html">XML</a></code>.</span></td>
+						</tr>
+					</table><span class="B">Parse the specified XML format text.</span></section>
+				<section class="W" id="xml(java.io.InputStream)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">xml</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/InputStream.html">InputStream</a></code> <code class="parameterName">input</code>)</code><i class="Z"><code><a href="api/kiss.XML.html">XML</a></code></i></h2>
+					<table class="V">
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/InputStream.html">InputStream</a></code> <code>input</code></td>
+							<td><span>Text stream of xml representation.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="api/kiss.XML.html">XML</a></code></td>
+							<td><span>A constructed <code><a href="api/kiss.XML.html">XML</a></code>.</span></td>
+						</tr>
+					</table><span class="B">Parse the specified XML format text.</span></section>
+				<section class="W" id="xml(java.io.Reader)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">xml</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/Reader.html">Reader</a></code> <code class="parameterName">input</code>)</code><i class="Z"><code><a href="api/kiss.XML.html">XML</a></code></i></h2>
+					<table class="V">
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/Reader.html">Reader</a></code> <code>input</code></td>
+							<td><span>Text stream of xml representation.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="api/kiss.XML.html">XML</a></code></td>
+							<td><span>A constructed <code><a href="api/kiss.XML.html">XML</a></code>.</span></td>
+						</tr>
+					</table><span class="B">Parse the specified XML format text.</span></section>
+				<section class="W" id="xml(org.w3c.dom.Node)">
+					<h2 class="j"><i class="STATIC PUBLIC"></i><code class="I">xml</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.xml/org/w3c/dom/Node.html">Node</a></code> <code class="parameterName">input</code>)</code><i class="Z"><code><a href="api/kiss.XML.html">XML</a></code></i></h2>
+					<table class="V">
+						<tr class="H">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.xml/org/w3c/dom/Node.html">Node</a></code> <code>input</code></td>
+							<td><span>A xml expression.</span></td>
+						</tr>
+						<tr class="b">
+							<td><code><a href="api/kiss.XML.html">XML</a></code></td>
+							<td><span>A constructed <code><a href="api/kiss.XML.html">XML</a></code>.</span></td>
+						</tr>
+					</table><span class="B">Parse the specified XML format text.</span></section>
+			</article>
+			<aside class="c" id="SubNavi">
+				<div class="J">
+					<h5 class="P">Static Fields</h5>
+					<ul>
+						<li><i class="FINAL"><i class="STATIC PUBLIC"></i></i><code><a href="api/kiss.I.html#NoOP">NoOP</a></code><i class="N"><code class="return"><a href="api/kiss.WiseRunnable.html">WiseRunnable</a></code></i></li>
+						<li><i class="FINAL"><i class="STATIC PUBLIC"></i></i><code><a href="api/kiss.I.html#Lang">Lang</a></code><i class="N"><code class="return"><a href="api/kiss.Variable.html">Variable</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code></code></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#Logger">Logger</a></code><i class="N"><code class="return"><a href="api/kiss.WiseTriConsumer.html">WiseTriConsumer</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/System.Logger.Level.html">Level</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/CharBuffer.html">CharBuffer</a></code></code></code></i></li>
+					</ul>
+					<h5 class="P">Static Methods</h5>
+					<ul>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#accept(java.lang.Object)">accept</a></code><code class="f">(<code>A</code> <code class="parameterName">a</code>)</code><i class="N"><code>boolean</code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#accept(java.lang.Object,java.lang.Object)">accept</a></code><code class="f">(<code>A</code> <code class="parameterName">a</code>, <code>B</code> <code class="parameterName">b</code>)</code><i class="N"><code>boolean</code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#array(java.lang.Object[],java.lang.Object...)">array</a></code><code class="f">(<code array="fix">T</code> <code class="parameterName">one</code>, <code array="var">T</code> <code class="parameterName">other</code>)</code><i class="N"><code array="fix">T</code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#bundle(java.lang.Object...)">bundle</a></code><code class="f">(<code array="var">T</code> <code class="parameterName">items</code>)</code><i class="N"><code>T</code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#bundle(java.lang.Class,java.lang.Object...)">bundle</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>T</code></code></code> <code class="parameterName">type</code>, <code array="var">T</code> <code class="parameterName">items</code>)</code><i class="N"><code>T</code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#collect(java.lang.Class,java.lang.Object...)">collect</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>T</code></code></code> <code class="parameterName">type</code>, <code array="var">V</code> <code class="parameterName">items</code>)</code><i class="N"><code>T</code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#copy(java.io.InputStream,java.io.OutputStream,boolean)">copy</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/InputStream.html">InputStream</a></code> <code class="parameterName">input</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/OutputStream.html">OutputStream</a></code> <code class="parameterName">output</code>, <code>boolean</code> <code class="parameterName">close</code>)</code><i class="N"><code>void</code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#copy(java.lang.Readable,java.lang.Appendable,boolean)">copy</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Readable.html">Readable</a></code> <code class="parameterName">input</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Appendable.html">Appendable</a></code> <code class="parameterName">output</code>, <code>boolean</code> <code class="parameterName">close</code>)</code><i class="N"><code>void</code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#debug(java.lang.Object)">debug</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code class="parameterName">msg</code>)</code><i class="N"><code>void</code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#debug(java.lang.String,java.lang.Object)">debug</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code class="parameterName">name</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code class="parameterName">msg</code>)</code><i class="N"><code>void</code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#env(java.lang.String)">env</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code class="parameterName">name</code>)</code><i class="N"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#env(java.lang.String,java.lang.Object)">env</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code class="parameterName">name</code>, <code>T</code> <code class="parameterName">defaults</code>)</code><i class="N"><code>T</code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#error(java.lang.Object)">error</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code class="parameterName">msg</code>)</code><i class="N"><code>void</code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#error(java.lang.String,java.lang.Object)">error</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code class="parameterName">name</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code class="parameterName">msg</code>)</code><i class="N"><code>void</code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#express(java.lang.String,java.lang.Object...)">express</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code class="parameterName">text</code>, <code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code class="parameterName">contexts</code>)</code><i class="N"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#express(java.lang.String,java.lang.Object[],kiss.WiseTriFunction...)">express</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code class="parameterName">text</code>, <code array="fix"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code class="parameterName">contexts</code>, <code array="var"><a href="api/kiss.WiseTriFunction.html">WiseTriFunction</a><code class="parameters"><code><a href="api/kiss.model.Model.html">Model</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code></code></code> <code class="parameterName">resolvers</code>)</code><i class="N"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#find(java.lang.Class)">find</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>E</code></code></code> <code class="parameterName">extensionPoint</code>)</code><i class="N"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html">List</a><code class="parameters"><code>E</code></code></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#find(java.lang.Class,java.lang.Class)">find</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>E</code></code></code> <code class="parameterName">extensionPoint</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a></code> <code class="parameterName">key</code>)</code><i class="N"><code>E</code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#findAs(java.lang.Class)">findAs</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>E</code></code></code> <code class="parameterName">extensionPoint</code>)</code><i class="N"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html">List</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>E</code></code></code></code></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#http(java.lang.String,java.lang.Class,java.net.http.HttpClient...)">http</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code class="parameterName">request</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>T</code></code></code> <code class="parameterName">type</code>, <code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.net.http/java/net/http/HttpClient.html">HttpClient</a></code> <code class="parameterName">client</code>)</code><i class="N"><code><a href="api/kiss.Signal.html">Signal</a><code class="parameters"><code>T</code></code></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#http(java.net.http.HttpRequest.Builder,java.lang.Class,java.net.http.HttpClient...)">http</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.net.http/java/net/http/HttpRequest.Builder.html">Builder</a></code> <code class="parameterName">request</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>T</code></code></code> <code class="parameterName">type</code>, <code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.net.http/java/net/http/HttpClient.html">HttpClient</a></code> <code class="parameterName">client</code>)</code><i class="N"><code><a href="api/kiss.Signal.html">Signal</a><code class="parameters"><code>T</code></code></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#http(java.lang.String,java.util.function.Consumer,java.net.http.HttpClient...)">http</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code class="parameterName">uri</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.net.http/java/net/http/WebSocket.html">WebSocket</a></code></code></code> <code class="parameterName">open</code>, <code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.net.http/java/net/http/HttpClient.html">HttpClient</a></code> <code class="parameterName">client</code>)</code><i class="N"><code><a href="api/kiss.Signal.html">Signal</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code></code></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#info(java.lang.Object)">info</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code class="parameterName">msg</code>)</code><i class="N"><code>void</code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#info(java.lang.String,java.lang.Object)">info</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code class="parameterName">name</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code class="parameterName">msg</code>)</code><i class="N"><code>void</code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#json(java.lang.String)">json</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code class="parameterName">input</code>)</code><i class="N"><code><a href="api/kiss.JSON.html">JSON</a></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#json(java.nio.file.Path)">json</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/file/Path.html">Path</a></code> <code class="parameterName">input</code>)</code><i class="N"><code><a href="api/kiss.JSON.html">JSON</a></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#json(java.io.InputStream)">json</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/InputStream.html">InputStream</a></code> <code class="parameterName">input</code>)</code><i class="N"><code><a href="api/kiss.JSON.html">JSON</a></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#json(java.io.Reader)">json</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/Reader.html">Reader</a></code> <code class="parameterName">input</code>)</code><i class="N"><code><a href="api/kiss.JSON.html">JSON</a></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#list(java.lang.Object...)">list</a></code><code class="f">(<code array="var">V</code> <code class="parameterName">items</code>)</code><i class="N"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html">List</a><code class="parameters"><code>V</code></code></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#load(java.net.URL)">load</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/net/URL.html">URL</a></code> <code class="parameterName">source</code>)</code><i class="N"><code><a href="api/kiss.Disposable.html">Disposable</a></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#load(java.lang.Class)">load</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a></code> <code class="parameterName">source</code>)</code><i class="N"><code><a href="api/kiss.Disposable.html">Disposable</a></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#make(java.lang.Class)">make</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>?</code><code class="extends"><code>T</code></code></code></code> <code class="parameterName">modelClass</code>)</code><i class="N"><code>T</code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#make(java.lang.Class,java.lang.reflect.InvocationHandler)">make</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>T</code></code></code> <code class="parameterName">type</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/reflect/InvocationHandler.html">InvocationHandler</a></code> <code class="parameterName">handler</code>)</code><i class="N"><code>T</code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#pair(java.lang.Object,java.lang.Object)">pair</a></code><code class="f">(<code>A</code> <code class="parameterName">param1</code>, <code>B</code> <code class="parameterName">param2</code>)</code><i class="N"><code><a href="api/kiss.Ⅱ.html">Ⅱ</a><code class="parameters"><code>A</code>, <code>B</code></code></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#pair(java.lang.Object,java.lang.Object,java.lang.Object)">pair</a></code><code class="f">(<code>A</code> <code class="parameterName">param1</code>, <code>B</code> <code class="parameterName">param2</code>, <code>C</code> <code class="parameterName">param3</code>)</code><i class="N"><code><a href="api/kiss.Ⅲ.html">Ⅲ</a><code class="parameters"><code>A</code>, <code>B</code>, <code>C</code></code></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#prototype(java.lang.Class)">prototype</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>M</code></code></code> <code class="parameterName">model</code>)</code><i class="N"><code><a href="api/kiss.Lifestyle.html">Lifestyle</a><code class="parameters"><code>M</code></code></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#quiet(java.lang.Object)">quiet</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code class="parameterName">object</code>)</code><i class="N"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/RuntimeException.html">RuntimeException</a></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#recurse(kiss.WiseTriConsumer)">recurse</a></code><code class="f">(<code><a href="api/kiss.WiseTriConsumer.html">WiseTriConsumer</a><code class="parameters"><code><a href="api/kiss.WiseBiConsumer.html">WiseBiConsumer</a><code class="parameters"><code>A</code>, <code>B</code></code></code>, <code>A</code>, <code>B</code></code></code> <code class="parameterName">function</code>)</code><i class="N"><code><a href="api/kiss.WiseBiConsumer.html">WiseBiConsumer</a><code class="parameters"><code>A</code>, <code>B</code></code></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#recurse(kiss.WiseTriFunction)">recurse</a></code><code class="f">(<code><a href="api/kiss.WiseTriFunction.html">WiseTriFunction</a><code class="parameters"><code><a href="api/kiss.WiseBiFunction.html">WiseBiFunction</a><code class="parameters"><code>A</code>, <code>B</code>, <code>R</code></code></code>, <code>A</code>, <code>B</code>, <code>R</code></code></code> <code class="parameterName">function</code>)</code><i class="N"><code><a href="api/kiss.WiseBiFunction.html">WiseBiFunction</a><code class="parameters"><code>A</code>, <code>B</code>, <code>R</code></code></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#recurse(kiss.WiseBiConsumer)">recurse</a></code><code class="f">(<code><a href="api/kiss.WiseBiConsumer.html">WiseBiConsumer</a><code class="parameters"><code><a href="api/kiss.WiseConsumer.html">WiseConsumer</a><code class="parameters"><code>A</code></code></code>, <code>A</code></code></code> <code class="parameterName">function</code>)</code><i class="N"><code><a href="api/kiss.WiseConsumer.html">WiseConsumer</a><code class="parameters"><code>A</code></code></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#recurse(kiss.WiseBiFunction)">recurse</a></code><code class="f">(<code><a href="api/kiss.WiseBiFunction.html">WiseBiFunction</a><code class="parameters"><code><a href="api/kiss.WiseFunction.html">WiseFunction</a><code class="parameters"><code>A</code>, <code>R</code></code></code>, <code>A</code>, <code>R</code></code></code> <code class="parameterName">function</code>)</code><i class="N"><code><a href="api/kiss.WiseFunction.html">WiseFunction</a><code class="parameters"><code>A</code>, <code>R</code></code></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#recurse(kiss.WiseConsumer)">recurse</a></code><code class="f">(<code><a href="api/kiss.WiseConsumer.html">WiseConsumer</a><code class="parameters"><code><a href="api/kiss.WiseRunnable.html">WiseRunnable</a></code></code></code> <code class="parameterName">function</code>)</code><i class="N"><code><a href="api/kiss.WiseRunnable.html">WiseRunnable</a></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#recurse(kiss.WiseFunction)">recurse</a></code><code class="f">(<code><a href="api/kiss.WiseFunction.html">WiseFunction</a><code class="parameters"><code><a href="api/kiss.WiseSupplier.html">WiseSupplier</a><code class="parameters"><code>R</code></code></code>, <code>R</code></code></code> <code class="parameterName">function</code>)</code><i class="N"><code><a href="api/kiss.WiseSupplier.html">WiseSupplier</a><code class="parameters"><code>R</code></code></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#reject(java.lang.Object)">reject</a></code><code class="f">(<code>A</code> <code class="parameterName">a</code>)</code><i class="N"><code>boolean</code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#reject(java.lang.Object,java.lang.Object)">reject</a></code><code class="f">(<code>A</code> <code class="parameterName">a</code>, <code>B</code> <code class="parameterName">b</code>)</code><i class="N"><code>boolean</code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#schedule(java.lang.Runnable)">schedule</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code> <code class="parameterName">task</code>)</code><i class="N"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/CompletableFuture.html">CompletableFuture</a><code class="parameters"><code>?</code></code></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#schedule(long,java.util.concurrent.TimeUnit,java.util.concurrent.ScheduledExecutorService...)">schedule</a></code><code class="f">(<code>long</code> <code class="parameterName">delayTime</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/TimeUnit.html">TimeUnit</a></code> <code class="parameterName">unit</code>, <code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/ScheduledExecutorService.html">ScheduledExecutorService</a></code> <code class="parameterName">scheduler</code>)</code><i class="N"><code><a href="api/kiss.Signal.html">Signal</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Long.html">Long</a></code></code></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#schedule(long,long,java.util.concurrent.TimeUnit,boolean,java.util.concurrent.ScheduledExecutorService...)">schedule</a></code><code class="f">(<code>long</code> <code class="parameterName">delayTime</code>, <code>long</code> <code class="parameterName">intervalTime</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/TimeUnit.html">TimeUnit</a></code> <code class="parameterName">unit</code>, <code>boolean</code> <code class="parameterName">fixedRate</code>, <code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/ScheduledExecutorService.html">ScheduledExecutorService</a></code> <code class="parameterName">scheduler</code>)</code><i class="N"><code><a href="api/kiss.Signal.html">Signal</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Long.html">Long</a></code></code></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#schedule(java.time.LocalTime,long,java.util.concurrent.TimeUnit,java.util.concurrent.ScheduledExecutorService...)">schedule</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/LocalTime.html">LocalTime</a></code> <code class="parameterName">time</code>, <code>long</code> <code class="parameterName">interval</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/TimeUnit.html">TimeUnit</a></code> <code class="parameterName">unit</code>, <code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/ScheduledExecutorService.html">ScheduledExecutorService</a></code> <code class="parameterName">scheduler</code>)</code><i class="N"><code><a href="api/kiss.Signal.html">Signal</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Long.html">Long</a></code></code></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#set(java.lang.Object...)">set</a></code><code class="f">(<code array="var">V</code> <code class="parameterName">items</code>)</code><i class="N"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Set.html">Set</a><code class="parameters"><code>V</code></code></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#signal(java.lang.Object...)">signal</a></code><code class="f">(<code array="var">V</code> <code class="parameterName">values</code>)</code><i class="N"><code><a href="api/kiss.Signal.html">Signal</a><code class="parameters"><code>V</code></code></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#signal(java.lang.Iterable)">signal</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html">Iterable</a><code class="parameters"><code>V</code></code></code> <code class="parameterName">values</code>)</code><i class="N"><code><a href="api/kiss.Signal.html">Signal</a><code class="parameters"><code>V</code></code></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#signal(java.util.function.Supplier)">signal</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code>V</code></code></code> <code class="parameterName">value</code>)</code><i class="N"><code><a href="api/kiss.Signal.html">Signal</a><code class="parameters"><code>V</code></code></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#signalError(java.lang.Throwable)">signalError</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Throwable.html">Throwable</a></code> <code class="parameterName">error</code>)</code><i class="N"><code><a href="api/kiss.Signal.html">Signal</a><code class="parameters"><code>V</code></code></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#trace(java.lang.Object)">trace</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code class="parameterName">msg</code>)</code><i class="N"><code>void</code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#trace(java.lang.String,java.lang.Object)">trace</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code class="parameterName">name</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code class="parameterName">msg</code>)</code><i class="N"><code>void</code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#transform(java.lang.Object,java.lang.Class)">transform</a></code><code class="f">(<code>In</code> <code class="parameterName">input</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>Out</code></code></code> <code class="parameterName">output</code>)</code><i class="N"><code>Out</code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#translate(java.lang.String,java.lang.Object...)">translate</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code class="parameterName">text</code>, <code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code class="parameterName">context</code>)</code><i class="N"><code><a href="api/kiss.Variable.html">Variable</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code></code></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#type(java.lang.String)">type</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code class="parameterName">fqcn</code>)</code><i class="N"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#warn(java.lang.Object)">warn</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code class="parameterName">msg</code>)</code><i class="N"><code>void</code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#warn(java.lang.String,java.lang.Object)">warn</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code class="parameterName">name</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code class="parameterName">msg</code>)</code><i class="N"><code>void</code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#wiseR(java.lang.Runnable)">wiseR</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code> <code class="parameterName">lambda</code>)</code><i class="N"><code><a href="api/kiss.WiseRunnable.html">WiseRunnable</a></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#wiseC(java.util.function.Consumer)">wiseC</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>A</code></code></code> <code class="parameterName">lambda</code>)</code><i class="N"><code><a href="api/kiss.WiseConsumer.html">WiseConsumer</a><code class="parameters"><code>A</code></code></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#wiseC(java.lang.Runnable)">wiseC</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code> <code class="parameterName">lambda</code>)</code><i class="N"><code><a href="api/kiss.WiseConsumer.html">WiseConsumer</a><code class="parameters"><code>A</code></code></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#wiseS(java.util.function.Supplier)">wiseS</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code>R</code></code></code> <code class="parameterName">lambda</code>)</code><i class="N"><code><a href="api/kiss.WiseSupplier.html">WiseSupplier</a><code class="parameters"><code>R</code></code></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#wiseS(java.lang.Object)">wiseS</a></code><code class="f">(<code>R</code> <code class="parameterName">constant</code>)</code><i class="N"><code><a href="api/kiss.WiseSupplier.html">WiseSupplier</a><code class="parameters"><code>R</code></code></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#wiseF(java.util.function.Function)">wiseF</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html">Function</a><code class="parameters"><code>A</code>, <code>R</code></code></code> <code class="parameterName">lambda</code>)</code><i class="N"><code><a href="api/kiss.WiseFunction.html">WiseFunction</a><code class="parameters"><code>A</code>, <code>R</code></code></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#wiseF(java.util.function.Supplier)">wiseF</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code>R</code></code></code> <code class="parameterName">lambda</code>)</code><i class="N"><code><a href="api/kiss.WiseFunction.html">WiseFunction</a><code class="parameters"><code>A</code>, <code>R</code></code></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#wiseF(java.lang.Object)">wiseF</a></code><code class="f">(<code>R</code> <code class="parameterName">constant</code>)</code><i class="N"><code><a href="api/kiss.WiseFunction.html">WiseFunction</a><code class="parameters"><code>A</code>, <code>R</code></code></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#wrap(java.lang.Class)">wrap</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a></code> <code class="parameterName">type</code>)</code><i class="N"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#write(java.lang.Object)">write</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code class="parameterName">input</code>)</code><i class="N"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#write(java.lang.Object,java.lang.Appendable)">write</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code class="parameterName">input</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Appendable.html">Appendable</a></code> <code class="parameterName">out</code>)</code><i class="N"><code>void</code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#xml(java.lang.String)">xml</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code class="parameterName">input</code>)</code><i class="N"><code><a href="api/kiss.XML.html">XML</a></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#xml(java.nio.file.Path)">xml</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/nio/file/Path.html">Path</a></code> <code class="parameterName">input</code>)</code><i class="N"><code><a href="api/kiss.XML.html">XML</a></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#xml(java.io.InputStream)">xml</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/InputStream.html">InputStream</a></code> <code class="parameterName">input</code>)</code><i class="N"><code><a href="api/kiss.XML.html">XML</a></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#xml(java.io.Reader)">xml</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/Reader.html">Reader</a></code> <code class="parameterName">input</code>)</code><i class="N"><code><a href="api/kiss.XML.html">XML</a></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.I.html#xml(org.w3c.dom.Node)">xml</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.xml/org/w3c/dom/Node.html">Node</a></code> <code class="parameterName">input</code>)</code><i class="N"><code><a href="api/kiss.XML.html">XML</a></code></i></li>
+					</ul>
+				</div>
+			</aside>
+		</main>
+		<script src="root.js"></script>
+		<script src="main.js" type="module"></script>
+	</body>
+</html>
