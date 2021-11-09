@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.9.0](https://www.github.com/Teletha/sinobu/compare/v2.8.0...v2.9.0) (2021-11-09)
+
+
+### Features
+
+* Remove debug info from class files. ([9aba01c](https://www.github.com/Teletha/sinobu/commit/9aba01cc00d54f4e440d64500c518c9b83ea3beb))
+
+
+### Bug Fixes
+
+* I#json(String) and #xml(String) accepts URL text. ([3a9478f](https://www.github.com/Teletha/sinobu/commit/3a9478f549090801f754fb2b7a3d88dd1691f19d))
+
 ## [2.8.0](https://www.github.com/Teletha/sinobu/compare/v2.7.0...v2.8.0) (2021-10-21)
 
 
