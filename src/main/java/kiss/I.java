@@ -2259,7 +2259,7 @@ public class I {
      * @throws IllegalStateException If the input data is empty or invalid format.
      */
     public static XML xml(String input) {
-        return input.charAt(0) == 'h' ? I.http(input, XML.class).to().acquire() : I.xml(null, input);
+        return input.startsWith("http:/") || input.startsWith("https:/") ? I.http(input, XML.class).to().acquire() : I.xml(null, input);
     }
 
     /**
