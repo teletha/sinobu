@@ -969,7 +969,7 @@ public class I {
      * @throws IllegalStateException If the input data is empty or invalid format.
      */
     public static JSON json(String input) {
-        return json(new StringReader(input));
+        return input.charAt(0) == 'h' ? I.http(input, JSON.class).to().acquire() : json(new StringReader(input));
     }
 
     /**
@@ -2259,7 +2259,7 @@ public class I {
      * @throws IllegalStateException If the input data is empty or invalid format.
      */
     public static XML xml(String input) {
-        return I.xml(null, input);
+        return input.charAt(0) == 'h' ? I.http(input, XML.class).to().acquire() : I.xml(null, input);
     }
 
     /**
