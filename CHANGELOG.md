@@ -1,33 +1,5 @@
 # Changelog
 
-### [2.9.4](https://www.github.com/teletha/sinobu/compare/v2.9.3...v2.9.4) (2021-11-10)
-
-
-### Miscellaneous Chores
-
-* update github user name ([82776fc](https://www.github.com/teletha/sinobu/commit/82776fc0d484758994a5f5715837c84336433e3b))
-
-### [2.9.3](https://www.github.com/Teletha/sinobu/compare/v2.9.2...v2.9.3) (2021-11-10)
-
-
-### Miscellaneous Chores
-
-* try to fix unpublished artifact in jitpack ([4d113de](https://www.github.com/Teletha/sinobu/commit/4d113decdf6ee7071153e72e3346c02453d1b533))
-
-### [2.9.2](https://www.github.com/Teletha/sinobu/compare/v2.9.1...v2.9.2) (2021-11-10)
-
-
-### Miscellaneous Chores
-
-* ci process ([4044aca](https://www.github.com/Teletha/sinobu/commit/4044aca07c0f24f2e682994db762337c7c2817f5))
-
-### [2.9.1](https://www.github.com/Teletha/sinobu/compare/v2.9.0...v2.9.1) (2021-11-10)
-
-
-### Bug Fixes
-
-* ci process ([89f6918](https://www.github.com/Teletha/sinobu/commit/89f69182595c4fc37d07dcd8f7d1f0a68b721ad0))
-
 ## [2.9.0](https://www.github.com/Teletha/sinobu/compare/v2.8.0...v2.9.0) (2021-11-09)
 
 
