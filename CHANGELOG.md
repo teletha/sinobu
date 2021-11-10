@@ -1,5 +1,12 @@
 # Changelog
 
+### [2.9.4](https://www.github.com/teletha/sinobu/compare/v2.9.3...v2.9.4) (2021-11-10)
+
+
+### Miscellaneous Chores
+
+* update github user name ([82776fc](https://www.github.com/teletha/sinobu/commit/82776fc0d484758994a5f5715837c84336433e3b))
+
 ### [2.9.3](https://www.github.com/Teletha/sinobu/compare/v2.9.2...v2.9.3) (2021-11-10)
 
 
