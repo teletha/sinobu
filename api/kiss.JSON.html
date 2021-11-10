@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8"/>
+		<title>Sinobu API</title>
+		<base href="../"/>
+		<link href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release/build/styles/zenburn.min.css" media="print" onload="this.media=&#39;all&#39;" rel="stylesheet"/>
+		<script async="true" src="highlight.js"></script>
+		<script src="mimic.js" type="module"></script>
+		<link href="main.css" rel="stylesheet"/>
+	</head>
+	<body class="S">
+		<header class="a">
+			<h1 class="h" date="2021-11-10" ver="2.9.4"><code>Sinobu</code></h1>
+			<nav class="R"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="main.svg#text"/>
+					</svg>Document</a><a href="api/"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="main.svg#package"/>
+					</svg><code>API</code></a><a href="https://github.com//teletha/sinobu/discussions" target="_blank"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="main.svg#user"/>
+					</svg>Community</a><a href="doc/changelog.html"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="main.svg#activity"/>
+					</svg>Activity</a><a href="https://github.com//teletha/sinobu" target="_blank"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="main.svg#github"/>
+					</svg>Repository</a></nav>
+			<div class="b" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="main.svg#sun"/>
+					</svg>
+				</a><a id="dark" title="Change to a darker color scheme"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="main.svg#moon"/>
+					</svg>
+				</a></div>
+		</header>
+		<main class="I">
+			<nav class="i">
+				<div></div>
+			</nav>
+			<article class="W" id="Article">
+				<section class="P"><code class="f">kiss</code>
+					<h2 class="Class c"><code class="X">JSON</code></h2>
+				</section>
+				<section class="P" id="JSON()">
+					<h2 class="J"><i class="PUBLIC"></i><code class="X">JSON</code><code class="Y">()</code></h2><span class="B">Create empty JSON object.</span></section>
+				<section class="P" id="as(java.lang.Class)">
+					<h2 class="J"><i class="PUBLIC"></i><code class="X">as</code><code class="Y">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>M</code></code></code> <code class="parameterName">type</code>)</code><i class="g"><code>M</code></i></h2>
+					<table class="K">
+						<tr class="U">
+							<td><code>M</code></td>
+							<td></td>
+						</tr>
+						<tr class="Q">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>M</code></code></code> <code>type</code></td>
+							<td><span>A model type.</span></td>
+						</tr>
+						<tr class="T">
+							<td><code>M</code></td>
+							<td><span>A created model.</span></td>
+						</tr>
+					</table><span class="B">Data mapping to the specified model.</span></section>
+				<section class="P" id="as(java.lang.Object)">
+					<h2 class="J"><i class="PUBLIC"></i><code class="X">as</code><code class="Y">(<code>M</code> <code class="parameterName">value</code>)</code><i class="g"><code>M</code></i></h2>
+					<table class="K">
+						<tr class="U">
+							<td><code>M</code></td>
+							<td></td>
+						</tr>
+						<tr class="Q">
+							<td><code>M</code> <code>value</code></td>
+							<td><span>A model.</span></td>
+						</tr>
+						<tr class="T">
+							<td><code>M</code></td>
+							<td><span>A specified model.</span></td>
+						</tr>
+					</table><span class="B">Data mapping to the specified model.</span></section>
+				<section class="P" id="has(java.lang.String)">
+					<h2 class="J"><i class="PUBLIC"></i><code class="X">has</code><code class="Y">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code class="parameterName">key</code>)</code><i class="g"><code>boolean</code></i></h2>
+					<table class="K">
+						<tr class="Q">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code>key</code></td>
+							<td><span>A target key.</span></td>
+						</tr>
+						<tr class="T">
+							<td><code>boolean</code></td>
+							<td><span>A result.</span></td>
+						</tr>
+					</table><span class="B">Check the direct child which has the specified key.</span></section>
+				<section class="P" id="has(java.lang.String,java.lang.Object)">
+					<h2 class="J"><i class="PUBLIC"></i><code class="X">has</code><code class="Y">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code class="parameterName">key</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code class="parameterName">value</code>)</code><i class="g"><code>boolean</code></i></h2>
+					<table class="K">
+						<tr class="Q">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code>key</code></td>
+							<td><span>A target key.</span></td>
+						</tr>
+						<tr class="Q">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code>value</code></td>
+							<td><span>An expected value.</span></td>
+						</tr>
+						<tr class="T">
+							<td><code>boolean</code></td>
+							<td><span>A result.</span></td>
+						</tr>
+					</table><span class="B">Check the direct child value with the specified key.</span></section>
+				<section class="P" id="get(java.lang.String)">
+					<h2 class="J"><i class="PUBLIC"></i><code class="X">get</code><code class="Y">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code class="parameterName">key</code>)</code><i class="g"><code><a href="api/kiss.JSON.html">JSON</a></code></i></h2>
+					<table class="K">
+						<tr class="Q">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code>key</code></td>
+							<td><span>A key for value to find.</span></td>
+						</tr>
+						<tr class="T">
+							<td><code><a href="api/kiss.JSON.html">JSON</a></code></td>
+							<td><span>An associated value.</span></td>
+						</tr>
+					</table><span class="B">Get the direct child value as your type with the specified key. Unknown key and object key
+ will return null.</span></section>
+				<section class="P" id="get(java.lang.Class,java.lang.String)">
+					<h2 class="J"><i class="PUBLIC"></i><code class="X">get</code><code class="Y">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>T</code></code></code> <code class="parameterName">type</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code class="parameterName">key</code>)</code><i class="g"><code>T</code></i></h2>
+					<table class="K">
+						<tr class="U">
+							<td><code>T</code></td>
+							<td></td>
+						</tr>
+						<tr class="Q">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>T</code></code></code> <code>type</code></td>
+							<td><span>A value type to find.</span></td>
+						</tr>
+						<tr class="Q">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code>key</code></td>
+							<td><span>A key for value to find.</span></td>
+						</tr>
+						<tr class="T">
+							<td><code>T</code></td>
+							<td><span>An associated value.</span></td>
+						</tr>
+					</table><span class="B">Get the direct child value as your type with the specified key. Unknown key and object key
+ will return null.</span></section>
+				<section class="P" id="text(java.lang.String)">
+					<h2 class="J"><i class="PUBLIC"></i><code class="X">text</code><code class="Y">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code class="parameterName">key</code>)</code><i class="g"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code></i></h2>
+					<table class="K">
+						<tr class="Q">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code>key</code></td>
+							<td><span>A key for value to find.</span></td>
+						</tr>
+						<tr class="T">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code></td>
+							<td><span>An associated value.</span></td>
+						</tr>
+					</table><span class="B">Get the direct child value as your type with the specified key. Unknown key and object key
+ will return null.</span></section>
+				<section class="P" id="set(java.lang.String,java.lang.Object)">
+					<h2 class="J"><i class="PUBLIC"></i><code class="X">set</code><code class="Y">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code class="parameterName">key</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code class="parameterName">value</code>)</code><i class="g"><code><a href="api/kiss.JSON.html">JSON</a></code></i></h2>
+					<table class="K">
+						<tr class="Q">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code>key</code></td>
+							<td><span>A key.</span></td>
+						</tr>
+						<tr class="Q">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code>value</code></td>
+							<td><span>A value.</span></td>
+						</tr>
+						<tr class="T">
+							<td><code><a href="api/kiss.JSON.html">JSON</a></code></td>
+							<td><span>Chainable API.</span></td>
+						</tr>
+					</table><span class="B">Set the direct child value with the specified key.</span></section>
+				<section class="P" id="find(java.lang.String...)">
+					<h2 class="J"><i class="PUBLIC"></i><code class="X">find</code><code class="Y">(<code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code class="parameterName">path</code>)</code><i class="g"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html">List</a><code class="parameters"><code><a href="api/kiss.JSON.html">JSON</a></code></code></code></i></h2>
+					<table class="K">
+						<tr class="Q">
+							<td><code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code>path</code></td>
+							<td><span>A property path.</span></td>
+						</tr>
+						<tr class="T">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html">List</a><code class="parameters"><code><a href="api/kiss.JSON.html">JSON</a></code></code></code></td>
+							<td><span>A result set.</span></td>
+						</tr>
+					</table><span class="B">Get all objects pointed to by the property path starting from this JSON. The property path
+ can use the property name and the wildcard &#34;*&#34;.</span></section>
+				<section class="P" id="find(java.lang.Class,java.lang.String...)">
+					<h2 class="J"><i class="PUBLIC"></i><code class="X">find</code><code class="Y">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>T</code></code></code> <code class="parameterName">type</code>, <code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code class="parameterName">path</code>)</code><i class="g"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html">List</a><code class="parameters"><code>T</code></code></code></i></h2>
+					<table class="K">
+						<tr class="U">
+							<td><code>T</code></td>
+							<td></td>
+						</tr>
+						<tr class="Q">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>T</code></code></code> <code>type</code></td>
+							<td><span>The convertion type.</span></td>
+						</tr>
+						<tr class="Q">
+							<td><code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code>path</code></td>
+							<td><span>A property path.</span></td>
+						</tr>
+						<tr class="T">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html">List</a><code class="parameters"><code>T</code></code></code></td>
+							<td><span>A result set.</span></td>
+						</tr>
+					</table><span class="B">Get all objects pointed to by the property path starting from this JSON. The property path
+ can use the property name and the wildcard &#34;*&#34;.</span></section>
+				<section class="P" id="toString()">
+					<h2 class="J"><i class="OVERRIDE PUBLIC"></i><code class="X">toString</code><code class="Y">()</code><i class="g"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code></i></h2>
+					<table class="K">
+						<tr class="T">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code></td>
+							<td></td>
+						</tr>
+					</table>
+				</section>
+			</article>
+			<aside class="k" id="SubNavi">
+				<div class="N">
+					<h5 class="e">Constructors</h5>
+					<ul>
+						<li><i class="PUBLIC"></i><code><a href="api/kiss.JSON.html#JSON()">JSON</a></code><code class="Y">()</code></li>
+					</ul>
+					<h5 class="e">Methods</h5>
+					<ul>
+						<li><i class="PUBLIC"></i><code><a href="api/kiss.JSON.html#as(java.lang.Class)">as</a></code><code class="Y">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>M</code></code></code> <code class="parameterName">type</code>)</code><i class="V"><code>M</code></i></li>
+						<li><i class="PUBLIC"></i><code><a href="api/kiss.JSON.html#as(java.lang.Object)">as</a></code><code class="Y">(<code>M</code> <code class="parameterName">value</code>)</code><i class="V"><code>M</code></i></li>
+						<li><i class="PUBLIC"></i><code><a href="api/kiss.JSON.html#has(java.lang.String)">has</a></code><code class="Y">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code class="parameterName">key</code>)</code><i class="V"><code>boolean</code></i></li>
+						<li><i class="PUBLIC"></i><code><a href="api/kiss.JSON.html#has(java.lang.String,java.lang.Object)">has</a></code><code class="Y">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code class="parameterName">key</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code class="parameterName">value</code>)</code><i class="V"><code>boolean</code></i></li>
+						<li><i class="PUBLIC"></i><code><a href="api/kiss.JSON.html#get(java.lang.String)">get</a></code><code class="Y">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code class="parameterName">key</code>)</code><i class="V"><code><a href="api/kiss.JSON.html">JSON</a></code></i></li>
+						<li><i class="PUBLIC"></i><code><a href="api/kiss.JSON.html#get(java.lang.Class,java.lang.String)">get</a></code><code class="Y">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>T</code></code></code> <code class="parameterName">type</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code class="parameterName">key</code>)</code><i class="V"><code>T</code></i></li>
+						<li><i class="PUBLIC"></i><code><a href="api/kiss.JSON.html#text(java.lang.String)">text</a></code><code class="Y">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code class="parameterName">key</code>)</code><i class="V"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code></i></li>
+						<li><i class="PUBLIC"></i><code><a href="api/kiss.JSON.html#set(java.lang.String,java.lang.Object)">set</a></code><code class="Y">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code class="parameterName">key</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code> <code class="parameterName">value</code>)</code><i class="V"><code><a href="api/kiss.JSON.html">JSON</a></code></i></li>
+						<li><i class="PUBLIC"></i><code><a href="api/kiss.JSON.html#find(java.lang.String...)">find</a></code><code class="Y">(<code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code class="parameterName">path</code>)</code><i class="V"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html">List</a><code class="parameters"><code><a href="api/kiss.JSON.html">JSON</a></code></code></code></i></li>
+						<li><i class="PUBLIC"></i><code><a href="api/kiss.JSON.html#find(java.lang.Class,java.lang.String...)">find</a></code><code class="Y">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>T</code></code></code> <code class="parameterName">type</code>, <code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code> <code class="parameterName">path</code>)</code><i class="V"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html">List</a><code class="parameters"><code>T</code></code></code></i></li>
+						<li><i class="OVERRIDE PUBLIC"></i><code><a href="api/kiss.JSON.html#toString()">toString</a></code><code class="Y">()</code><i class="V"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html">String</a></code></i></li>
+					</ul>
+				</div>
+			</aside>
+		</main>
+		<script src="root.js"></script>
+		<script src="main.js" type="module"></script>
+	</body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8"/>
+		<title>Sinobu API</title>
+		<base href="../"/>
+		<link href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release/build/styles/zenburn.min.css" media="print" onload="this.media=&#39;all&#39;" rel="stylesheet"/>
+		<script async="true" src="highlight.js"></script>
+		<script src="mimic.js" type="module"></script>
+		<link href="main.css" rel="stylesheet"/>
+	</head>
+	<body class="S">
+		<header class="a">
+			<h1 class="h" date="2021-11-10" ver="2.9.4"><code>Sinobu</code></h1>
+			<nav class="R"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="main.svg#text"/>
+					</svg>Document</a><a href="api/"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="main.svg#package"/>
+					</svg><code>API</code></a><a href="https://github.com//teletha/sinobu/discussions" target="_blank"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="main.svg#user"/>
+					</svg>Community</a><a href="doc/changelog.html"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="main.svg#activity"/>
+					</svg>Activity</a><a href="https://github.com//teletha/sinobu" target="_blank"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="main.svg#github"/>
+					</svg>Repository</a></nav>
+			<div class="b" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="main.svg#sun"/>
+					</svg>
+				</a><a id="dark" title="Change to a darker color scheme"><svg class="A svg" viewBox="0 0 24 24">
+						<use href="main.svg#moon"/>
+					</svg>
+				</a></div>
+		</header>
+		<main class="I">
+			<nav class="i">
+				<div></div>
+			</nav>
+			<article class="W" id="Article">
+				<section class="P"><code class="f">kiss</code>
+					<h2 class="Interface c"><code class="X">Extensible</code></h2>
+					<ul class="C G">
+						<li><code><a href="api/kiss.Decoder.html">Decoder</a><code class="parameters"><code>M</code></code></code></li>
+						<li><code><a href="api/kiss.Encoder.html">Encoder</a><code class="parameters"><code>M</code></code></code></li>
+						<li><code><a href="api/kiss.ExtensionFactory.html">ExtensionFactory</a><code class="parameters"><code>E</code></code></code></li>
+						<li><code><a href="api/kiss.Lifestyle.html">Lifestyle</a><code class="parameters"><code>M</code></code></code></li>
+						<li><code><a href="api/kiss.Singleton.html">Singleton</a><code class="parameters"><code>M</code></code></code></li>
+					</ul><span class="B"><p>
+ This is a marker interface for Extension Point of your application.
+ </p>
+ <p>
+ All Extension Points are recognized automatically by Sinobu if you use <code><a href="api/kiss.I.html#load(java.lang.Class)">I#load(Class)</a></code> or
+ <code><a href="api/kiss.I.html#load(java.net.URL)">I#load(java.net.URL)</a></code> methods properly. And an Extension Point will provide some
+ Extensions.
+ </p>
+ <h2 id="ExtensionPoint">What is Extension Point?</h2>
+ <p>
+ We give a definition of <em>Extension Point</em> like the following.
+ </p>
+ <ul>
+ 
+							<li>It implements <code><a href="api/kiss.Extensible.html">Extensible</a></code> interface.</li>
+ 
+							<li>It has <code><a href="api/kiss.Extensible.html">Extensible</a></code> interface in not ancestor but parent.</li>
+ </ul>
+ <pre>
+ interface ThisIsExtensionPoint extends Extensible {
+ }
+ 
+ interface ThisIsNotExtensionPoint implements ThisIsExtensionPoint {
+ }
+ 
+ class ThisIsAlsoExtensionPoint implements Extensible {
+     // This is both Extension Point and Extension.
+ }
+ </pre>
+ <h2 id="Extension">What is Extension?</h2>
+ <p>
+ We give a definition of <em>Extension</em> like the following.
+ </p>
+ <ul>
+ 
+							<li>It implements any Extension Point or is Extension Point itself.</li>
+ 
+							<li>It must be concrete class and has a suitable constructor for Sinobu (see also
+ <code><a href="api/kiss.I.html#make(java.lang.Class)">I#make(Class)</a></code> method).</li>
+ </ul>
+ <pre>
+ class ThisIsExtension implements Extensible {
+     // This is both Extension Point and Extension.
+ }
+ 
+ class ThisIsAlsoExtension extends ThisIsExtension {
+     // But not Extension Point.
+ }
+ 
+ class ThisIsNotExtension extends ThisIsExtension {
+ 
+     public ThisIsNotExtension(NotInjectable object) {
+         // because of invalid constructor
+     }
+ }
+ </pre>
+ <h2 id="ExtensionKey">What is Extension Key?</h2>
+ <p>
+ You can provide <em>Extension Key</em> for each Extensions by using parameter. The key makes easy
+ finding an Extension you need (see also <code><a href="api/kiss.I.html#find(java.lang.Class,java.lang.Class)">I#find(Class, Class)</a></code>).
+ </p>
+ <pre>
+ interface ExtensionPointWithKeyK extends Extensible {
+ }
+ 
+ class ExtensionWithKey implements ExtensionPointWithKeyString {
+     // Associate this Extension with String class.
+ }
+ 
+ class ExtensionWithAnotherKey implements ExtensionPointWithKeyList {
+     // Associate this Extension with List interface.
+ }
+ </pre>
+					</span></section>
+			</article>
+			<aside class="k" id="SubNavi">
+				<div class="N"></div>
+			</aside>
+		</main>
+		<script src="root.js"></script>
+		<script src="main.js" type="module"></script>
+	</body>
+</html>
