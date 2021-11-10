@@ -121,7 +121,7 @@
 				<version>3.8.1</version>
 				<configuration>
 					<encoding>UTF-8</encoding>
-					<release>16</release>
+					<release>11</release>
 					<compilerArgs/>
 				</configuration>
 			</plugin>
