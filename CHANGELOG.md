@@ -1,5 +1,12 @@
 # Changelog
 
+### [2.9.1](https://www.github.com/Teletha/sinobu/compare/v2.9.0...v2.9.1) (2021-11-10)
+
+
+### Bug Fixes
+
+* ci process ([89f6918](https://www.github.com/Teletha/sinobu/commit/89f69182595c4fc37d07dcd8f7d1f0a68b721ad0))
+
 ## [2.9.0](https://www.github.com/Teletha/sinobu/compare/v2.8.0...v2.9.0) (2021-11-09)
 
 
