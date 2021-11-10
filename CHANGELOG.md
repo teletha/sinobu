@@ -1,5 +1,12 @@
 # Changelog
 
+### [2.9.3](https://www.github.com/Teletha/sinobu/compare/v2.9.2...v2.9.3) (2021-11-10)
+
+
+### Miscellaneous Chores
+
+* try to fix unpublished artifact in jitpack ([4d113de](https://www.github.com/Teletha/sinobu/commit/4d113decdf6ee7071153e72e3346c02453d1b533))
+
 ### [2.9.2](https://www.github.com/Teletha/sinobu/compare/v2.9.1...v2.9.2) (2021-11-10)
 
 
