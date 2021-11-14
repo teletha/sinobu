@@ -67,6 +67,24 @@ public class JSON {
     }
 
     /**
+     * Data mapping to the {@link Map} with {@link String} key and your specified model.
+     * 
+     * @param type A model type.
+     * @return The key-value pair.
+     */
+    public <M> Map<String, M> asMap(Class<M> type) {
+        if (root instanceof Map) {
+            Map map = new HashMap();
+            for (Entry e : ((Map<String, Object>) root).entrySet()) {
+                map.put(e.getKey(), as(type, e.getValue()));
+            }
+            return map;
+        } else {
+            return Map.of();
+        }
+    }
+
+    /**
      * Helper method to convert json object to java object.
      * 
      * @param <M>

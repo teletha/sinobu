@@ -9,6 +9,8 @@
  */
 package kiss.json;
 
+import java.util.Map;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -216,11 +218,32 @@ public class ManipulateTest {
         assert json.has("key", true);
     }
 
+    @Test
     void hasFalse() {
         JSON json = I.json("""
                 { "key" : false }
                 """);
         assert json.has("key", "false");
         assert json.has("key", false);
+    }
+
+    @Test
+    void asMap() {
+        JSON json = I.json("""
+                { "one" : "1" }
+                """);
+
+        Map<String, String> map = json.asMap(String.class);
+        assert map.get("one").equals("1");
+    }
+
+    @Test
+    void asMapWithTypeTransformation() {
+        JSON json = I.json("""
+                { "one" : "1" }
+                """);
+
+        Map<String, Integer> map = json.asMap(int.class);
+        assert map.get("one") == 1;
     }
 }
