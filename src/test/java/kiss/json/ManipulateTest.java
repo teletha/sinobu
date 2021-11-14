@@ -246,4 +246,13 @@ public class ManipulateTest {
         Map<String, Integer> map = json.asMap(int.class);
         assert map.get("one") == 1;
     }
+
+    @Test
+    void asMapWithNullType() {
+        JSON json = I.json("""
+                { "one" : "1" }
+                """);
+
+        Assertions.assertThrows(NullPointerException.class, () -> json.asMap(null));
+    }
 }
