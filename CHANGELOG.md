@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.10.0](https://www.github.com/teletha/sinobu/compare/v2.9.4...v2.10.0) (2021-11-14)
+
+
+### Features
+
+* Add JSON#asMap(Class<M>). ([00995c2](https://www.github.com/teletha/sinobu/commit/00995c2b4511fa232e64dfa5e1f6c10a97ff7197))
+
 ## [2.9.0](https://www.github.com/Teletha/sinobu/compare/v2.8.0...v2.9.0) (2021-11-09)
 
 
