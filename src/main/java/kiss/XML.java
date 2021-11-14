@@ -644,7 +644,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      *            formatting will not be performed.
      * @param inlineAndNonEmpty At the time of formatting, the element with the specified name is
      *            regarded as an inline element, and line breaks and indentation are not performed
-     *            on the surrounding elements. Also, if an element whose name starts with "&" is
+     *            on the surrounding elements. Also, if an element whose name starts with "&amp;" is
      *            specified, it will not be treated as an empty element and will always have a start
      *            tag and end tag.
      */

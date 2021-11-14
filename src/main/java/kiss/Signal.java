@@ -332,10 +332,9 @@ public final class Signal<V> {
     /**
      * Groups the elements according to the classification function and returns the result in a
      * {@link Map}. The classification function maps elements to some key type K. The method
-     * produces a Map<K, List<V>> whose keys are the values resulting from applying the
-     * classification function to the input elements, and whose corresponding values are Lists
-     * containing the input elements which map to the associated key under the classification
-     * function.
+     * produces a {@link Map} whose keys are the values resulting from applying the classification
+     * function to the input elements, and whose corresponding values are Lists containing the input
+     * elements which map to the associated key under the classification function.
      * <p>
      * There are no guarantees on the type, mutability, serializability, or thread-safety of the
      * {@link Map} or {@link List} objects returned.
