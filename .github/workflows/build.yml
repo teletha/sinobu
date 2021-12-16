@@ -19,11 +19,10 @@ jobs:
       with:
         distribution: zulu
         java-version: 16
-        cache: maven
 
     - name: Build artifact and site
       run: |
-        if [ -e bee ]; then
+        if [ -e "bee" ]; then
           source bee install doc:site
         else
           version=$(curl -SsL https://git.io/stable-bee)
