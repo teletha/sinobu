@@ -17,7 +17,6 @@ public class Project extends bee.api.Project {
 
     {
         product("com.github.teletha", "sinobu", ref("version.txt"));
-        producer("Nameless Production Committee");
         describe("Sinobu is not obsolete framework but utility, which can manipulate objects as a extremely-condensed facade.");
 
         require(SourceVersion.latest(), SourceVersion.RELEASE_11, SourceVersion.latest());
