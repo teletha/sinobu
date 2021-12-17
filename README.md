@@ -126,6 +126,7 @@ If you think something might be a bug, but you're not sure, ask on StackOverflow
 
 ## Built with
 Sinobu depends on the following products on runtime.
+* No Dependency
 
 Sinobu depends on the following products on test.
 * [HttpClientMock-1.0.0](https://mvnrepository.com/artifact/com.pgs-soft/HttpClientMock/1.0.0)
