@@ -59,9 +59,10 @@ public class DocumentDoc {
          * <li>Multilingualization</li>
          * <li>Template
          * engine(<a href="https://mustache.github.io/mustache.5.html">Mustache</a>)</li>
-         * <li>Dynamic plug-in mechanisms</li>
+         * <li>Dynamic plug-in mechanism</li>
          * <li>Domain specific languages</li>
-         * <li>Persistence</li>
+         * <li>Object Persistence</li>
+         * <li>Logging</li>
          * </ul>
          * <p>
          * With a few exceptions, Sinobu and its APIs are designed to be simple to use and easy to
