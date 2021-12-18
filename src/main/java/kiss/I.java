@@ -626,7 +626,6 @@ public class I {
         // skip when context is empty
         if (contexts == null || contexts.length == 0) return text;
 
-        int off = 0;
         StringBuilder str = new StringBuilder();
 
         // find all expression placeholder
@@ -642,12 +641,12 @@ public class I {
                 continue;
             }
             if (type == '=') {
-                int on = off + matcher.start(2);
-                off = text.indexOf('\n', on) + 1;
+                int on = matcher.start(2);
+                int off = text.indexOf('\n', on) + 1;
 
                 matcher.appendReplacement(str, spaces)
                         .usePattern(compile(text.substring(on, off).replaceFirst("=(.+) (.+)=.+\\R+", "(\\\\s*)\\\\Q$1\\\\E(.+?)\\\\Q$2")))
-                        .reset(text.substring(off));
+                        .reset(text = text.substring(off));
                 continue;
             }
             if (type == '#' || type == '^') path = path.substring(1);
