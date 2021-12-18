@@ -645,9 +645,9 @@ public class I {
                 int on = off + matcher.start(2);
                 off = text.indexOf('\n', on) + 1;
 
-                matcher.appendReplacement(str, spaces);
-                matcher.usePattern(compile(text.substring(on, off).replaceFirst("=(.+) (.+)=.+\\R+", "(\\\\s*)\\\\Q$1\\\\E(.+?)\\\\Q$2")));
-                matcher.reset(text.substring(off));
+                matcher.appendReplacement(str, spaces)
+                        .usePattern(compile(text.substring(on, off).replaceFirst("=(.+) (.+)=.+\\R+", "(\\\\s*)\\\\Q$1\\\\E(.+?)\\\\Q$2")))
+                        .reset(text.substring(off));
                 continue;
             }
             if (type == '#' || type == '^') path = path.substring(1);
