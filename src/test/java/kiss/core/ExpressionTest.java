@@ -473,6 +473,52 @@ class ExpressionTest {
         assert I.express("Ignore {! comment} comment {! comment }", context).equals("Ignore comment");
     }
 
+    @Test
+    void setDelimiter1() {
+        KVS context = $("value", "change delimiter");
+
+        assert I.express("""
+                {={{ }}=}
+                {{value}}
+                """, context).equals("""
+                change delimiter
+                """);
+    }
+
+    @Test
+    void setDelimiter2() {
+        KVS context = $("prev", "original delimiter").$("next", "changed delimiter").$("last", "final delimiter");
+
+        assert I.express("""
+                {prev}
+                {={{ }}=}
+                {{next}}
+                {{={{{ }}}=}}
+                {{{last}}}
+                """, context).equals("""
+                original delimiter
+                changed delimiter
+                final delimiter
+                """);
+    }
+
+    @Test
+    void setDelimiter3() {
+        KVS context = $("prev", "original delimiter").$("next", "changed delimiter").$("last", "final delimiter");
+
+        assert I.express("""
+                {prev}
+                {=<% %>=}
+                <%next%>
+                <%=$$ @=%>
+                $$last@
+                """, context).equals("""
+                original delimiter
+                changed delimiter
+                final delimiter
+                """);
+    }
+
     /** The context stack manager. */
     private static ThreadLocal<Deque<KVS>> context = ThreadLocal.withInitial(ArrayDeque::new);
 

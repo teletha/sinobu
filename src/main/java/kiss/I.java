@@ -10,6 +10,7 @@
 package kiss;
 
 import static java.time.format.DateTimeFormatter.*;
+import static java.util.regex.Pattern.compile;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -226,7 +227,7 @@ public class I {
     private static final Properties env = new Properties();
 
     /** The expression placeholder syntax. */
-    private static final Pattern express = Pattern.compile("([\\r\\n\s]*)\\{(.+?)\\}");
+    private static final Pattern express = Pattern.compile("(\\s*)\\{(.+?)\\}");
 
     /** The reusable http client. */
     private static final HttpClient client = HttpClient.newBuilder()
@@ -625,6 +626,7 @@ public class I {
         // skip when context is empty
         if (contexts == null || contexts.length == 0) return text;
 
+        int off = 0;
         StringBuilder str = new StringBuilder();
 
         // find all expression placeholder
@@ -637,6 +639,15 @@ public class I {
             char type = path.charAt(0);
             if (type == '!') {
                 matcher.appendReplacement(str, "");
+                continue;
+            }
+            if (type == '=') {
+                int on = off + matcher.start(2);
+                off = text.indexOf('\n', on) + 1;
+
+                matcher.appendReplacement(str, spaces);
+                matcher.usePattern(compile(text.substring(on, off).replaceFirst("=(.+) (.+)=.+\\R+", "(\\\\s*)\\\\Q$1\\\\E(.+?)\\\\Q$2")));
+                matcher.reset(text.substring(off));
                 continue;
             }
             if (type == '#' || type == '^') path = path.substring(1);
