@@ -702,20 +702,15 @@ public class I {
 
                 // handle special sections
                 if (type == '#' || type == '^') {
-                    // skip the nested sections
+                    // ================================
+                    // Extract section
+                    // ================================
                     int count = 1;
-                    int end = 0;
                     Matcher tag = Pattern.compile(delimiters[0].concat("([#/^])").concat(path).concat(delimiters[1]))
                             .matcher(text.substring(matcher.end()));
-                    while (tag.find()) {
-                        count += tag.group(1).charAt(0) == '/' ? -1 : 1;
-                        if (count == 0) {
-                            end = matcher.end() + tag.start();
-                            break;
-                        }
+                    while (tag.find() && (tag.group(1).charAt(0) == '/' ? --count : ++count) != 0) {
                     }
-
-                    // extract the target section
+                    int end = matcher.end() + tag.start();
                     String sec = text.substring(matcher.end(), end).trim();
 
                     matcher.appendReplacement(str, "");
@@ -728,7 +723,11 @@ public class I {
                             str.append(spaces).append(I.express(sec, delimiters, new Object[] {o}, resolvers));
                         }
                     }
-                    matcher.reset(text = text.substring(end + 3 + path.length()));
+
+                    // Each delimiter is enclosed in "\Q" and "\E", so the actual length of the
+                    // delimiter is 4 characters shorter. Also, there is always one special
+                    // character for sections, so the result of formula "1-4-4" is -7.
+                    matcher.reset(text = text.substring(end + delimiters[0].length() - 7 + delimiters[1].length() + path.length()));
                 } else {
                     // full expression was evaluated correctly, convert it to string
                     matcher.appendReplacement(str, spaces.concat(I.transform(c, String.class)));

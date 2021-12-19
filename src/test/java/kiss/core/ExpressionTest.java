@@ -520,15 +520,15 @@ class ExpressionTest {
     }
 
     @Test
-    void setDelimiterWithSection() {
+    void setLongDelimiterWithSection() {
         List context = List.of("one", "two", "three");
 
         assert I.express("""
-                {=% %=}
+                {=[LONGDELIMITER] [LONGDELIMITER]=}
                 <ul>
-                    %#this%
-                    <li>%.%</li>
-                    %/this%
+                    [LONGDELIMITER]#this[LONGDELIMITER]
+                    <li>[LONGDELIMITER].[LONGDELIMITER]</li>
+                    [LONGDELIMITER]/this[LONGDELIMITER]
                 </ul>
                 """, context).equals("""
                 <ul>
