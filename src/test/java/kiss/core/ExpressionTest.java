@@ -519,6 +519,26 @@ class ExpressionTest {
                 """);
     }
 
+    @Test
+    void setDelimiterWithSection() {
+        List context = List.of("one", "two", "three");
+
+        assert I.express("""
+                {=% %=}
+                <ul>
+                    %#this%
+                    <li>%.%</li>
+                    %/this%
+                </ul>
+                """, context).equals("""
+                <ul>
+                    <li>one</li>
+                    <li>two</li>
+                    <li>three</li>
+                </ul>
+                """);
+    }
+
     /** The context stack manager. */
     private static ThreadLocal<Deque<KVS>> context = ThreadLocal.withInitial(ArrayDeque::new);
 

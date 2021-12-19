@@ -10,7 +10,6 @@
 package kiss;
 
 import static java.time.format.DateTimeFormatter.*;
-import static java.util.regex.Pattern.compile;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -225,9 +224,6 @@ public class I {
 
     /** The cached environment variables. */
     private static final Properties env = new Properties();
-
-    /** The expression placeholder syntax. */
-    private static final Pattern express = Pattern.compile("(\\s*)\\{(.+?)\\}");
 
     /** The reusable http client. */
     private static final HttpClient client = HttpClient.newBuilder()
@@ -623,33 +619,58 @@ public class I {
      * @return A calculated text.
      */
     public static String express(String text, Object[] contexts, WiseTriFunction<Model, Object, String, Object>... resolvers) {
+        return express(text, new String[] {"\\Q{\\E", "\\Q}\\E"}, contexts, resolvers);
+    }
+
+    /**
+     * It is a very simple template engine that can calculate a string that replaces the path of a
+     * property names enclosed in "{}" with the actual value of the property. Support
+     * <a href="https://mustache.github.io/mustache.5.html">Mustache Syntax</a> partially.
+     * 
+     * @param text A text with the path of the property names enclosed in "{}".
+     * @param contexts A list of context values.
+     * @return A calculated text.
+     */
+    private static String express(String text, String[] delimiters, Object[] contexts, WiseTriFunction<Model, Object, String, Object>[] resolvers) {
         // skip when context is empty
         if (contexts == null || contexts.length == 0) return text;
 
         StringBuilder str = new StringBuilder();
 
         // find all expression placeholder
-        Matcher matcher = express.matcher(text);
+        Matcher matcher = Pattern.compile("(\\s*)".concat(delimiters[0]).concat("(.+?)").concat(delimiters[1])).matcher(text);
 
         nextPlaceholder: while (matcher.find()) {
             // normalize expression (remove all white space) and split it
             String spaces = matcher.group(1);
             String path = matcher.group(2).trim();
             char type = path.charAt(0);
+
+            // ================================
+            // Comment
+            // ================================
             if (type == '!') {
                 matcher.appendReplacement(str, "");
                 continue;
             }
+
+            // ================================
+            // Change Delimiter
+            // ================================
             if (type == '=') {
                 int on = matcher.start(2);
                 int off = text.indexOf('\n', on) + 1;
-
-                matcher.appendReplacement(str, spaces)
-                        .usePattern(compile(text.substring(on, off).replaceFirst("=(.+) (.+)=.+\\R+", "(\\\\s*)\\\\Q$1\\\\E(.+?)\\\\Q$2")))
-                        .reset(text = text.substring(off));
-                continue;
+                String[] values = text.substring(on, off).split("[= ]");
+                delimiters[0] = Pattern.quote(values[1]);
+                delimiters[1] = Pattern.quote(values[2]);
+                return str.append(spaces).append(I.express(text.substring(off), delimiters, contexts, resolvers)).toString();
             }
+
+            // ================================
+            // Normal or Inverted Section
+            // ================================
             if (type == '#' || type == '^') path = path.substring(1);
+
             String[] e = path.split("[\\.\\s　]+");
 
             // evaluate each model (first model has high priority)
@@ -684,9 +705,10 @@ public class I {
                     // skip the nested sections
                     int count = 1;
                     int end = 0;
-                    Matcher tag = Pattern.compile("(\\{[#/^]" + path + "\\})").matcher(text.substring(matcher.end()));
+                    Matcher tag = Pattern.compile(delimiters[0].concat("([#/^])").concat(path).concat(delimiters[1]))
+                            .matcher(text.substring(matcher.end()));
                     while (tag.find()) {
-                        count += tag.group().charAt(1) == '/' ? -1 : 1;
+                        count += tag.group(1).charAt(0) == '/' ? -1 : 1;
                         if (count == 0) {
                             end = matcher.end() + tag.start();
                             break;
@@ -697,11 +719,14 @@ public class I {
                     String sec = text.substring(matcher.end(), end).trim();
 
                     matcher.appendReplacement(str, "");
-                    if ((c == Boolean.TRUE && type == '#') || (type == '^' && (c == Boolean.FALSE || (c instanceof List && ((List) c)
-                            .isEmpty()) || (c instanceof Map && ((Map) c).isEmpty())))) {
-                        str.append(spaces).append(I.express(sec, c, resolvers));
-                    } else if (type == '#') {
-                        m.walk(c, (x, p, o) -> str.append(spaces).append(I.express(sec, new Object[] {o}, resolvers)));
+
+                    if (type == '^' && (c == Boolean.FALSE || (c instanceof List && ((List) c).isEmpty()) || (c instanceof Map && ((Map) c)
+                            .isEmpty()))) {
+                        str.append(spaces).append(I.express(sec, delimiters, new Object[] {c}, resolvers));
+                    } else if (type == '#' && c != Boolean.FALSE) {
+                        for (Object o : c instanceof List ? (List) c : c instanceof Map ? ((Map) c).values() : List.of(c)) {
+                            str.append(spaces).append(I.express(sec, delimiters, new Object[] {o}, resolvers));
+                        }
                     }
                     matcher.reset(text = text.substring(end + 3 + path.length()));
                 } else {
