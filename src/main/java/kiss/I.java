@@ -702,32 +702,29 @@ public class I {
 
                 // handle special sections
                 if (type == '#' || type == '^') {
-                    // ================================
-                    // Extract section
-                    // ================================
-                    int count = 1;
+                    // The following code is very procedural and dirty, but please forgive me.
+                    //
+                    // Now that the section start tag has been found, we find the corresponding
+                    // end tag. We need to calculate the depth in case there is a section with the
+                    // same name in this section.
+                    int depth = 1;
                     Matcher tag = Pattern.compile(delimiters[0].concat("([#/^])").concat(path).concat(delimiters[1]))
                             .matcher(text.substring(matcher.end()));
-                    while (tag.find() && (tag.group(1).charAt(0) == '/' ? --count : ++count) != 0) {
+                    while (tag.find() && (tag.group(1).charAt(0) == '/' ? --depth : ++depth) != 0) {
                     }
-                    int end = matcher.end() + tag.start();
-                    String sec = text.substring(matcher.end(), end).trim();
 
-                    matcher.appendReplacement(str, "");
+                    String sub = text.substring(matcher.end(), matcher.end() + tag.start()).trim();
+
+                    matcher.appendReplacement(str, "").reset(text = text.substring(matcher.end() + tag.end()));
 
                     if (type == '^' && (c == Boolean.FALSE || (c instanceof List && ((List) c).isEmpty()) || (c instanceof Map && ((Map) c)
                             .isEmpty()))) {
-                        str.append(spaces).append(I.express(sec, delimiters, new Object[] {c}, resolvers));
+                        str.append(spaces).append(I.express(sub, delimiters, new Object[] {c}, resolvers));
                     } else if (type == '#' && c != Boolean.FALSE) {
                         for (Object o : c instanceof List ? (List) c : c instanceof Map ? ((Map) c).values() : List.of(c)) {
-                            str.append(spaces).append(I.express(sec, delimiters, new Object[] {o}, resolvers));
+                            str.append(spaces).append(I.express(sub, delimiters, new Object[] {o}, resolvers));
                         }
                     }
-
-                    // Each delimiter is enclosed in "\Q" and "\E", so the actual length of the
-                    // delimiter is 4 characters shorter. Also, there is always one special
-                    // character for sections, so the result of formula "1-4-4" is -7.
-                    matcher.reset(text = text.substring(end + delimiters[0].length() - 7 + delimiters[1].length() + path.length()));
                 } else {
                     // full expression was evaluated correctly, convert it to string
                     matcher.appendReplacement(str, spaces.concat(I.transform(c, String.class)));
