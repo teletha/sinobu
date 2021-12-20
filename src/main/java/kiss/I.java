@@ -9,6 +9,7 @@
  */
 package kiss;
 
+import static java.lang.Boolean.*;
 import static java.time.format.DateTimeFormatter.*;
 
 import java.io.ByteArrayOutputStream;
@@ -676,28 +677,30 @@ public class I {
             // evaluate each model (first model has high priority)
             nextContext: for (int i = 0; i < contexts.length; i++) {
                 Object c = contexts[i];
-                Model m = Model.of(c);
+                if (c != null) {
+                    Model m = Model.of(c);
 
-                // evaluate expression from head
-                for (int j = 0; j < e.length; j++) {
-                    // special keyword for the current context
-                    if (e[j].equals("this")) continue;
+                    // evaluate expression from head
+                    for (int j = 0; j < e.length; j++) {
+                        // special keyword for the current context
+                        if (e[j].equals("this")) continue;
 
-                    // evaluate expression by property named resolver
-                    Object o = m.get(c, m.property(e[j]));
-                    if (o == null) {
-                        // evaluate expression by user defined resolvers
-                        for (int k = 0; k < resolvers.length; k++) {
-                            o = resolvers[k].apply(m, c, e[j]);
-                            if (o != null) break;
+                        // evaluate expression by property named resolver
+                        Object o = m.get(c, m.property(e[j]));
+                        if (o == null) {
+                            // evaluate expression by user defined resolvers
+                            for (int k = 0; k < resolvers.length; k++) {
+                                o = resolvers[k].apply(m, c, e[j]);
+                                if (o != null) break;
+                            }
+
+                            // any resolver can't find suitable value, try to next context
+                            if (o == null) continue nextContext;
                         }
 
-                        // any resolver can't find suitable value, try to next context
-                        if (o == null) continue nextContext;
+                        // step into the next expression
+                        m = Model.of(c = o);
                     }
-
-                    // step into the next expression
-                    m = Model.of(c = o);
                 }
 
                 // handle special sections
@@ -713,28 +716,38 @@ public class I {
                     while (tag.find() && (tag.group(1).charAt(0) == '/' ? --depth : ++depth) != 0) {
                     }
 
-                    String sub = text.substring(matcher.end(), matcher.end() + tag.start()).trim();
+                    // Extracts text inside a section tag (from just after the start tag to just
+                    // before the end tag).
+                    String in = text.substring(matcher.end(), matcher.end() + tag.start()).trim();
 
+                    // Outputs the text up to just before the section start tag. The text inside the
+                    // section tags will be processed later. Also, the text after the section
+                    // end tag will be analyzed, so reconfigure the input text for the regular
+                    // expression engine.
                     matcher.appendReplacement(str, "").reset(text = text.substring(matcher.end() + tag.end()));
 
-                    if (type == '^' && (c == Boolean.FALSE || (c instanceof List && ((List) c).isEmpty()) || (c instanceof Map && ((Map) c)
-                            .isEmpty()))) {
-                        str.append(spaces).append(I.express(sub, delimiters, new Object[] {c}, resolvers));
-                    } else if (type == '#' && c != Boolean.FALSE) {
+                    // Processes the text inside a section tag based on the context object.
+                    if (type == '^') {
+                        if (c == FALSE || (c instanceof List && ((List) c).isEmpty()) || (c instanceof Map && ((Map) c).isEmpty())) {
+                            str.append(spaces).append(I.express(in, delimiters, new Object[] {c}, resolvers));
+                        }
+                    } else if (c != null && c != FALSE) {
                         for (Object o : c instanceof List ? (List) c : c instanceof Map ? ((Map) c).values() : List.of(c)) {
-                            str.append(spaces).append(I.express(sub, delimiters, new Object[] {o}, resolvers));
+                            str.append(spaces).append(I.express(in, delimiters, new Object[] {o}, resolvers));
                         }
                     }
                 } else {
                     // full expression was evaluated correctly, convert it to string
                     matcher.appendReplacement(str, spaces.concat(I.transform(c, String.class)));
                 }
-
                 continue nextPlaceholder;
             }
-
             // any context can't find suitable value, so use empty text
-            matcher.appendReplacement(str, spaces);
+            if (type == '/') {
+                matcher.reset(text = text.substring(matcher.end()));
+            } else {
+                matcher.appendReplacement(str, spaces);
+            }
         }
         matcher.appendTail(str);
 

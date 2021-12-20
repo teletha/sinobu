@@ -370,6 +370,16 @@ class ExpressionTest {
         assert I.express("{#this}The text here will be output.{/this}", context).equals("The text here will be output.");
     }
 
+    @Test
+    void sectionByTrueOnProperty() {
+        @SuppressWarnings("unused")
+        class Context {
+            public boolean value = true;
+        }
+
+        assert I.express("{#value}The text here will be output.{/value}", new Context()).equals("The text here will be output.");
+    }
+
     /**
      * @see I#express(String, Object...)
      */
@@ -378,6 +388,43 @@ class ExpressionTest {
         boolean context = false;
 
         assert I.express("{#this}The text here will not be output.{/this}", context).equals("");
+    }
+
+    @Test
+    void sectionByFalseOnProperty() {
+        @SuppressWarnings("unused")
+        class Context {
+            public boolean value = false;
+        }
+
+        assert I.express("{#value}The text here will not be output.{/value}", new Context()).equals("");
+    }
+
+    @Test
+    void sectionByNull() {
+        Object context = null;
+
+        assert I.express("{#this}The text here will not be output.{/this}", context).equals("");
+    }
+
+    @Test
+    void sectionByNullOnProperty() {
+        @SuppressWarnings("unused")
+        class Context {
+            public String value = null;
+        }
+
+        assert I.express("{#value}The text here will not be output.{/value}", new Context()).equals("");
+    }
+
+    @Test
+    void sectionByProperty() {
+        @SuppressWarnings("unused")
+        class Anime {
+            public Character main = new Character("Lelouch Lamperouge", 17);
+        }
+
+        assert I.express("{#main}{name} is {age} years old.{/main}", new Anime()).equals("Lelouch Lamperouge is 17 years old.");
     }
 
     @Test
@@ -602,5 +649,8 @@ class ExpressionTest {
             deque.removeLast();
             return this;
         }
+    }
+
+    record Character(String name, int age) {
     }
 }
