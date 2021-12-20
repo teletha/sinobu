@@ -135,13 +135,6 @@ class ExpressionTest {
     }
 
     @Test
-    void methodNotFound() {
-        List context = List.of("one", "two", "three");
-
-        assert I.express("unknown method is {ignored}", context).equals("unknown method is ");
-    }
-
-    @Test
     void contexts() {
         Object c1 = $("first context", "will be ignored");
         Object c2 = $("value", "variable");

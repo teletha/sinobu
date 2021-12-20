@@ -641,7 +641,7 @@ public class I {
         // find all expression placeholder
         Matcher matcher = Pattern.compile("(\\s*)".concat(delimiters[0]).concat("(.+?)").concat(delimiters[1])).matcher(text);
 
-        nextPlaceholder: while (matcher.find()) {
+        searchPlaceholder: while (matcher.find()) {
             // normalize expression (remove all white space) and split it
             String spaces = matcher.group(1);
             String path = matcher.group(2).trim();
@@ -672,47 +672,53 @@ public class I {
             // ================================
             if (type == '#' || type == '^') path = path.substring(1);
 
+            // ================================
+            // Resolve Context by Expression
+            // ================================
             String[] e = path.split("[\\.\\s　]+");
 
-            // evaluate each model (first model has high priority)
-            nextContext: for (int i = 0; i < contexts.length; i++) {
+            // evaluate each context (first context has high priority)
+            resolveContext: for (int i = 0; i < contexts.length; i++) {
                 Object c = contexts[i];
                 if (c != null) {
-                    Model m = Model.of(c);
-
                     // evaluate expression from head
                     for (int j = 0; j < e.length; j++) {
                         // special keyword for the current context
                         if (e[j].equals("this")) continue;
 
-                        // evaluate expression by property named resolver
-                        Object o = m.get(c, m.property(e[j]));
-                        if (o == null) {
-                            // evaluate expression by user defined resolvers
+                        // At first, evaluate expression by property resolver
+                        Model model = Model.of(c);
+                        Object object = model.get(c, model.property(e[j]));
+
+                        // If the expression cannot be evaluated by property resolver,
+                        // use the user-defined resolver to try to evaluate the expression.
+                        if (object == null) {
                             for (int k = 0; k < resolvers.length; k++) {
-                                o = resolvers[k].apply(m, c, e[j]);
-                                if (o != null) break;
+                                object = resolvers[k].apply(model, c, e[j]);
+                                if (object != null) break;
                             }
 
-                            // any resolver can't find suitable value, try to next context
-                            if (o == null) {
-                                if ((type == '#' || type == '^') && contexts.length == i + 1) {
-                                    c = o;
+                            // Since all resolvers failed to resolve to a non-null value, we will
+                            // try to resolve again in a different context. If we have already tried
+                            // in all contexts, we have to search for the end tag.
+                            if (object == null) {
+                                if (contexts.length == i + 1) {
+                                    c = null;
                                     break;
                                 } else {
-                                    continue nextContext;
+                                    continue resolveContext;
                                 }
                             }
                         }
-
-                        // step into the next expression
-                        m = Model.of(c = o);
+                        c = object;
                     }
                 }
 
-                // handle special sections
+                // ================================
+                // Handle (Normal or Inverted) Section Block
+                // ================================
                 if (type == '#' || type == '^') {
-                    // The following code is very procedural and dirty, but please forgive me.
+                    // The following code is very procedural and dirty for optimization.
                     //
                     // Now that the section start tag has been found, we find the corresponding
                     // end tag. We need to calculate the depth in case there is a section with the
@@ -746,13 +752,11 @@ public class I {
                     }
                 } else {
                     // full expression was evaluated correctly, convert it to string
-                    matcher.appendReplacement(str, spaces.concat(I.transform(c, String.class)));
+                    matcher.appendReplacement(str, spaces);
+                    if (c != null) str.append(I.transform(c, String.class));
                 }
-                continue nextPlaceholder;
+                continue searchPlaceholder;
             }
-
-            // Any context can't find suitable value, so use empty text.
-            matcher.appendReplacement(str, spaces);
         }
         matcher.appendTail(str);
 
