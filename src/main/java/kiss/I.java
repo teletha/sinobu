@@ -641,7 +641,7 @@ public class I {
         // find all expression placeholder
         Matcher matcher = Pattern.compile("(\\s*)".concat(delimiters[0]).concat("(.+?)").concat(delimiters[1])).matcher(text);
 
-        searchPlaceholder: while (matcher.find()) {
+        while (matcher.find()) {
             // normalize expression (remove all white space) and split it
             String spaces = matcher.group(1);
             String path = matcher.group(2).trim();
@@ -683,7 +683,7 @@ public class I {
                 if ((c = contexts[i]) != null) {
                     // Evaluate expression from head.
                     for (int j = 0; j < e.length; j++) {
-                        // special keyword for the current context
+                        // Special keyword for the current context
                         if (e[j].equals("this")) continue;
 
                         // At first, evaluate expression by property resolver
@@ -694,8 +694,7 @@ public class I {
                         // use the user-defined resolver to try to evaluate the expression.
                         if (object == null) {
                             for (int k = 0; k < resolvers.length; k++) {
-                                object = resolvers[k].apply(model, c, e[j]);
-                                if (object != null) break;
+                                if ((object = resolvers[k].apply(model, c, e[j])) != null) break;
                             }
                         }
 
