@@ -9,7 +9,7 @@
  */
 package kiss;
 
-import static java.lang.Boolean.*;
+import static java.lang.Boolean.FALSE;
 import static java.time.format.DateTimeFormatter.*;
 
 import java.io.ByteArrayOutputStream;
@@ -696,7 +696,7 @@ public class I {
 
                             // any resolver can't find suitable value, try to next context
                             if (o == null) {
-                                if (type == '^' && contexts.length == i + 1) {
+                                if ((type == '#' || type == '^') && contexts.length == i + 1) {
                                     c = o;
                                     break;
                                 } else {
@@ -751,13 +751,8 @@ public class I {
                 continue nextPlaceholder;
             }
 
-            // Any context can't find suitable value, so use empty text. However, if the value of
-            // the section tag is not found, you will have to skip all the internals of the section.
-            if (type == '/') {
-                matcher.reset(text = text.substring(matcher.end()));
-            } else {
-                matcher.appendReplacement(str, spaces);
-            }
+            // Any context can't find suitable value, so use empty text.
+            matcher.appendReplacement(str, spaces);
         }
         matcher.appendTail(str);
 
