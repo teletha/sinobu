@@ -428,6 +428,42 @@ class ExpressionTest {
     }
 
     @Test
+    void sectionByParentProperty() {
+        @SuppressWarnings("unused")
+        class Anime {
+            public String title = "Code Geass";
+
+            public Character main = new Character("Lelouch Lamperouge", 17);
+        }
+
+        assert I.express("{#main}{name} is main character of {title}.{/main}", new Anime())
+                .equals("Lelouch Lamperouge is main character of Code Geass.");
+    }
+
+    @Test
+    void sectionByNestedParentProperty() {
+        @SuppressWarnings("unused")
+        class Anime {
+            public Character main1 = new Character("Lelouch Lamperouge", 17);
+
+            public Character main2 = new Character("枢木 スザク", 17);
+        }
+
+        assert I.express("{#main1}{name} and {main2.name} are childhood friends.{/main1}", new Anime())
+                .equals("Lelouch Lamperouge and 枢木 スザク are childhood friends.");
+    }
+
+    @Test
+    void sectionByParentPropertyWithContextSelf() {
+        @SuppressWarnings("unused")
+        class Anime {
+            public String title = "Code Geass";
+        }
+
+        assert I.express("{#title}{.} is {title}.{/title}", new Anime()).equals("Code Geass is Code Geass.");
+    }
+
+    @Test
     void sectionInvertByList() {
         List context = List.of("one", "two", "three");
 

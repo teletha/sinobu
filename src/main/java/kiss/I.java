@@ -733,7 +733,7 @@ public class I {
                         }
                     } else if (c != null && c != FALSE) {
                         for (Object o : c instanceof List ? (List) c : c instanceof Map ? ((Map) c).values() : List.of(c)) {
-                            str.append(spaces).append(I.express(in, delimiters, new Object[] {o}, resolvers));
+                            str.append(spaces).append(I.express(in, delimiters, I.array(new Object[] {o}, contexts), resolvers));
                         }
                     }
                 } else {
@@ -742,7 +742,9 @@ public class I {
                 }
                 continue nextPlaceholder;
             }
-            // any context can't find suitable value, so use empty text
+
+            // Any context can't find suitable value, so use empty text. However, if the value of
+            // the section tag is not found, you will have to skip all the internals of the section.
             if (type == '/') {
                 matcher.reset(text = text.substring(matcher.end()));
             } else {
