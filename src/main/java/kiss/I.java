@@ -675,13 +675,13 @@ public class I {
             // ================================
             // Resolve Context by Expression
             // ================================
+            Object c = null;
             String[] e = path.split("[\\.\\s　]+");
 
-            // evaluate each context (first context has high priority)
+            // Evaluate each context. (first context has high priority)
             resolveContext: for (int i = 0; i < contexts.length; i++) {
-                Object c = contexts[i];
-                if (c != null) {
-                    // evaluate expression from head
+                if ((c = contexts[i]) != null) {
+                    // Evaluate expression from head.
                     for (int j = 0; j < e.length; j++) {
                         // special keyword for the current context
                         if (e[j].equals("this")) continue;
@@ -697,70 +697,60 @@ public class I {
                                 object = resolvers[k].apply(model, c, e[j]);
                                 if (object != null) break;
                             }
-
-                            // Since all resolvers failed to resolve to a non-null value, we will
-                            // try to resolve again in a different context. If we have already tried
-                            // in all contexts, we have to search for the end tag.
-                            if (object == null) {
-                                if (contexts.length == i + 1) {
-                                    c = null;
-                                    break;
-                                } else {
-                                    continue resolveContext;
-                                }
-                            }
                         }
-                        c = object;
+
+                        // Since all resolvers failed to resolve to a non-null value, we will
+                        // try to resolve again in a different context.
+                        if ((c = object) == null) {
+                            continue resolveContext;
+                        }
                     }
+                    break; // All expression was evaluated correctly, step into next process.
+                }
+            }
+
+            // ================================
+            // Handle (Normal or Inverted) Section Block
+            // ================================
+            if (type == '#' || type == '^') {
+                // The following code is very procedural and dirty for optimization.
+                //
+                // Now that the section start tag has been found, we find the corresponding
+                // end tag. We need to calculate the depth in case there is a section with the
+                // same name in this section.
+                int depth = 1;
+                Matcher tag = Pattern.compile(delimiters[0].concat("([#/^])").concat(path).concat(delimiters[1]))
+                        .matcher(text.substring(matcher.end()));
+                while (tag.find() && (tag.group(1).charAt(0) == '/' ? --depth : ++depth) != 0) {
                 }
 
-                // ================================
-                // Handle (Normal or Inverted) Section Block
-                // ================================
-                if (type == '#' || type == '^') {
-                    // The following code is very procedural and dirty for optimization.
-                    //
-                    // Now that the section start tag has been found, we find the corresponding
-                    // end tag. We need to calculate the depth in case there is a section with the
-                    // same name in this section.
-                    int depth = 1;
-                    Matcher tag = Pattern.compile(delimiters[0].concat("([#/^])").concat(path).concat(delimiters[1]))
-                            .matcher(text.substring(matcher.end()));
-                    while (tag.find() && (tag.group(1).charAt(0) == '/' ? --depth : ++depth) != 0) {
+                // Extracts text inside a section tag (from just after the start tag to just
+                // before the end tag).
+                String in = text.substring(matcher.end(), matcher.end() + tag.start()).trim();
+
+                // Outputs the text up to just before the section start tag. The text inside the
+                // section tags will be processed later. Also, the text after the section
+                // end tag will be analyzed, so reconfigure the input text for the regular
+                // expression engine.
+                matcher.appendReplacement(str, "").reset(text = text.substring(matcher.end() + tag.end()));
+
+                // Processes the text inside a section tag based on the context object.
+                if (type == '^') {
+                    if (c == null || c == FALSE || (c instanceof List && ((List) c).isEmpty()) || (c instanceof Map && ((Map) c)
+                            .isEmpty())) {
+                        str.append(spaces).append(I.express(in, delimiters, I.array(new Object[] {c}, contexts), resolvers));
                     }
-
-                    // Extracts text inside a section tag (from just after the start tag to just
-                    // before the end tag).
-                    String in = text.substring(matcher.end(), matcher.end() + tag.start()).trim();
-
-                    // Outputs the text up to just before the section start tag. The text inside the
-                    // section tags will be processed later. Also, the text after the section
-                    // end tag will be analyzed, so reconfigure the input text for the regular
-                    // expression engine.
-                    matcher.appendReplacement(str, "").reset(text = text.substring(matcher.end() + tag.end()));
-
-                    // Processes the text inside a section tag based on the context object.
-                    if (type == '^') {
-                        if (c == null || c == FALSE || (c instanceof List && ((List) c).isEmpty()) || (c instanceof Map && ((Map) c)
-                                .isEmpty())) {
-                            str.append(spaces).append(I.express(in, delimiters, I.array(new Object[] {c}, contexts), resolvers));
-                        }
-                    } else if (c != null && c != FALSE) {
-                        for (Object o : c instanceof List ? (List) c : c instanceof Map ? ((Map) c).values() : List.of(c)) {
-                            str.append(spaces).append(I.express(in, delimiters, I.array(new Object[] {o}, contexts), resolvers));
-                        }
+                } else if (c != null && c != FALSE) {
+                    for (Object o : c instanceof List ? (List) c : c instanceof Map ? ((Map) c).values() : List.of(c)) {
+                        str.append(spaces).append(I.express(in, delimiters, I.array(new Object[] {o}, contexts), resolvers));
                     }
-                } else {
-                    // full expression was evaluated correctly, convert it to string
-                    matcher.appendReplacement(str, spaces);
-                    if (c != null) str.append(I.transform(c, String.class));
                 }
-                continue searchPlaceholder;
+            } else {
+                matcher.appendReplacement(str, spaces);
+                if (c != null) str.append(I.transform(c, String.class));
             }
         }
-        matcher.appendTail(str);
-
-        return str.toString();
+        return matcher.appendTail(str).toString();
     }
 
     /**
