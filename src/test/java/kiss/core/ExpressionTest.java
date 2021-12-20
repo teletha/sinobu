@@ -464,7 +464,7 @@ class ExpressionTest {
     }
 
     @Test
-    void sectionInvertByList() {
+    void invertedByList() {
         List context = List.of("one", "two", "three");
 
         assert I.express("""
@@ -489,7 +489,7 @@ class ExpressionTest {
      * @see I#express(String, Object...)
      */
     @Test
-    void sectionInvertByEmptyList() {
+    void invertedByEmptyList() {
         List context = Collections.emptyList();
 
         assert I.express("""
@@ -509,7 +509,7 @@ class ExpressionTest {
     }
 
     @Test
-    void sectionInvertByTrue() {
+    void invertedByTrue() {
         boolean context = true;
 
         assert I.express("""
@@ -529,7 +529,7 @@ class ExpressionTest {
     }
 
     @Test
-    void sectionInvertByFalse() {
+    void invertedByFalse() {
         boolean context = false;
 
         assert I.express("""
@@ -546,6 +546,23 @@ class ExpressionTest {
                     <li>No Items</li>
                 </ul>
                 """);
+    }
+
+    @Test
+    void invertedByNull() {
+        Object context = null;
+
+        assert I.express("{#this}The text here will not be output.{/this}", context).equals("");
+    }
+
+    @Test
+    void invertedByNullOnProperty() {
+        @SuppressWarnings("unused")
+        class Context {
+            public String value = null;
+        }
+
+        assert I.express("{^value}The text here will be output.{/value}", new Context()).equals("The text here will be output.");
     }
 
     @Test

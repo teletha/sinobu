@@ -695,7 +695,14 @@ public class I {
                             }
 
                             // any resolver can't find suitable value, try to next context
-                            if (o == null) continue nextContext;
+                            if (o == null) {
+                                if (type == '^' && contexts.length == i + 1) {
+                                    c = o;
+                                    break;
+                                } else {
+                                    continue nextContext;
+                                }
+                            }
                         }
 
                         // step into the next expression
@@ -728,8 +735,9 @@ public class I {
 
                     // Processes the text inside a section tag based on the context object.
                     if (type == '^') {
-                        if (c == FALSE || (c instanceof List && ((List) c).isEmpty()) || (c instanceof Map && ((Map) c).isEmpty())) {
-                            str.append(spaces).append(I.express(in, delimiters, new Object[] {c}, resolvers));
+                        if (c == null || c == FALSE || (c instanceof List && ((List) c).isEmpty()) || (c instanceof Map && ((Map) c)
+                                .isEmpty())) {
+                            str.append(spaces).append(I.express(in, delimiters, I.array(new Object[] {c}, contexts), resolvers));
                         }
                     } else if (c != null && c != FALSE) {
                         for (Object o : c instanceof List ? (List) c : c instanceof Map ? ((Map) c).values() : List.of(c)) {
