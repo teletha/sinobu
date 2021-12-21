@@ -692,6 +692,24 @@ class ExpressionTest {
                 """);
     }
 
+    // @Test
+    // void delimiterInline() {
+    // KVS context = $("value", "change delimiter");
+    //
+    // assert I.express("{=<% %>=}<%value%>", context).equals("change delimiter");
+    // }
+    //
+    // @Test
+    // void delimiterInlineInBlock() {
+    // KVS context = $("value", "change delimiter");
+    //
+    // assert I.express("""
+    // {=<% %>=}<%value%>
+    // """, context).equals("""
+    // change delimiter
+    // """);
+    // }
+
     @Test
     void setDelimiter1() {
         KVS context = $("value", "change delimiter");

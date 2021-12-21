@@ -9,7 +9,7 @@
  */
 package kiss;
 
-import static java.lang.Boolean.*;
+import static java.lang.Boolean.FALSE;
 import static java.time.format.DateTimeFormatter.*;
 
 import java.io.ByteArrayOutputStream;
@@ -651,7 +651,7 @@ public class I {
             // Comment or Plain
             // ================================
             if (type == '!') {
-                matcher.appendReplacement(str, spaces);
+                matcher.appendReplacement(str, spaces.replaceFirst("\\r?\\n\\h*$", ""));
                 if (path.startsWith("!!")) str.append(matcher.group().replaceFirst("!!", ""));
                 continue;
             }
