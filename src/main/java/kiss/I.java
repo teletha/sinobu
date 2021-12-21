@@ -9,7 +9,7 @@
  */
 package kiss;
 
-import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.*;
 import static java.time.format.DateTimeFormatter.*;
 
 import java.io.ByteArrayOutputStream;
@@ -718,14 +718,14 @@ public class I {
                 // end tag. We need to calculate the depth in case there is a section with the
                 // same name in this section.
                 int depth = 1;
-                Matcher tag = Pattern.compile(delimiters[0].concat("([#/^])").concat(path).concat(delimiters[1]))
+                Matcher tag = Pattern.compile("\\r?\\n?\\h*".concat(delimiters[0]).concat("([#/^])").concat(path).concat(delimiters[1]))
                         .matcher(text.substring(matcher.end()));
                 while (tag.find() && (tag.group(1).charAt(0) == '/' ? --depth : ++depth) != 0) {
                 }
 
                 // Extracts text inside a section tag (from just after the start tag to just
                 // before the end tag).
-                String in = text.substring(matcher.end(), matcher.end() + tag.start()).trim();
+                String in = text.substring(matcher.end(), matcher.end() + tag.start());
 
                 // Outputs the text up to just before the section start tag. The text inside the
                 // section tags will be processed later. Also, the text after the section
@@ -737,11 +737,11 @@ public class I {
                 if (type == '^') {
                     if (c == null || c == FALSE || (c instanceof List && ((List) c).isEmpty()) || (c instanceof Map && ((Map) c)
                             .isEmpty())) {
-                        str.append(spaces).append(I.express(in, delimiters, I.array(new Object[] {c}, contexts), resolvers));
+                        str.append(I.express(in, delimiters, I.array(new Object[] {c}, contexts), resolvers));
                     }
                 } else if (c != null && c != FALSE) {
                     for (Object o : c instanceof List ? (List) c : c instanceof Map ? ((Map) c).values() : List.of(c)) {
-                        str.append(spaces).append(I.express(in, delimiters, I.array(new Object[] {o}, contexts), resolvers));
+                        str.append(I.express(in, delimiters, I.array(new Object[] {o}, contexts), resolvers));
                     }
                 }
             } else {

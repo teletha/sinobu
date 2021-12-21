@@ -61,12 +61,66 @@ class ExpressionTest {
     }
 
     @Test
-    void variableDescription() {
+    void whitespaceInside() {
         assert I.express("{ spaceAtHead}", $("spaceAtHead", "ok")).equals("ok");
         assert I.express("{spaceAtTail }", $("spaceAtTail", "ok")).equals("ok");
         assert I.express("{ space }", $("space", "ok")).equals("ok");
         assert I.express("{\t spaceLike　}", $("spaceLike", "ok")).equals("ok");
         assert I.express("{separator . withSpace}", $("separator", () -> $("withSpace", "ok"))).equals("ok");
+    }
+
+    @Test
+    void whitespaceOutside() {
+        assert I.express(" {spaceAtHead}", $("spaceAtHead", "ok")).equals(" ok");
+        assert I.express("{spaceAtTail} ", $("spaceAtTail", "ok")).equals("ok ");
+        assert I.express(" {space} ", $("space", "ok")).equals(" ok ");
+        assert I.express("\t{spaceLike}　", $("spaceLike", "ok")).equals("\tok　");
+    }
+
+    @Test
+    void emptyLine() {
+        assert I.express("""
+
+                {emptyLine}
+
+                """, $("emptyLine", "ok")).equals("""
+
+                ok
+
+                """);
+    }
+
+    @Test
+    void sectionEmptyLine() {
+        assert I.express("""
+                |
+                {#emptyLine}
+
+                {/emptyLine}
+                |
+                """, $("emptyLine", "ok")).equals("""
+                |
+
+                |
+                """);
+    }
+
+    @Test
+    void sectionNoLine() {
+        assert I.express("""
+                |
+                {#noLine}
+                {/noLine}
+                |
+                """, $("noLine", "ok")).equals("""
+                |
+                |
+                """);
+    }
+
+    @Test
+    void escapedLine() {
+        assert I.express("|\r\n{#emptyLine}\r\n{/emptyLine}\r\n|", $("emptyLine", "ok")).equals("|\r\n|");
     }
 
     @Test
@@ -337,6 +391,26 @@ class ExpressionTest {
                     <li>item 2</li>
                 </ul>
                 """);
+    }
+
+    @Test
+    void sectionExpressionWithChain() {
+        @SuppressWarnings("unused")
+        class Anime {
+            public Character main = new Character("Lelouch Lamperouge", 17);
+        }
+
+        assert I.express("{#main.name}{this} has GEASS.{/main.name}", new Anime()).equals("Lelouch Lamperouge has GEASS.");
+    }
+
+    @Test
+    void sectionExpressionWithBrokenChain() {
+        @SuppressWarnings("unused")
+        class Anime {
+            public Character main = new Character(null, 17);
+        }
+
+        assert I.express("{#main.name}{this} has GEASS.{/main.name}", new Anime()).equals("");
     }
 
     /**
