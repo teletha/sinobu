@@ -648,10 +648,11 @@ public class I {
             char type = path.charAt(0);
 
             // ================================
-            // Comment
+            // Comment or Plain
             // ================================
             if (type == '!') {
-                matcher.appendReplacement(str, "");
+                matcher.appendReplacement(str, spaces);
+                if (path.startsWith("!!")) str.append(matcher.group().replaceFirst("!!", ""));
                 continue;
             }
 
@@ -679,7 +680,7 @@ public class I {
             String[] e = path.split("[\\.\\s　]+");
 
             // Evaluate each context. (first context has high priority)
-            resolveContext: for (int i = 0; i < contexts.length; i++) {
+            resolveContext: for (int i = 0; i < contexts.length; i++)
                 if ((c = contexts[i]) != null) {
                     // Evaluate expression from head.
                     for (int j = 0; j < e.length; j++) {
@@ -692,21 +693,15 @@ public class I {
 
                         // If the expression cannot be evaluated by property resolver,
                         // use the user-defined resolver to try to evaluate the expression.
-                        if (object == null) {
-                            for (int k = 0; k < resolvers.length; k++) {
-                                if ((object = resolvers[k].apply(model, c, e[j])) != null) break;
-                            }
-                        }
+                        if (object == null) for (int k = 0; k < resolvers.length; k++)
+                            if ((object = resolvers[k].apply(model, c, e[j])) != null) break;
 
                         // Since all resolvers failed to resolve to a non-null value, we will
                         // try to resolve again in a different context.
-                        if ((c = object) == null) {
-                            continue resolveContext;
-                        }
+                        if ((c = object) == null) continue resolveContext;
                     }
                     break; // All expression was evaluated correctly, step into next process.
                 }
-            }
 
             // ================================
             // Handle (Normal or Inverted) Section Block
@@ -735,15 +730,11 @@ public class I {
 
                 // Processes the text inside a section tag based on the context object.
                 if (type == '^') {
-                    if (c == null || c == FALSE || (c instanceof List && ((List) c).isEmpty()) || (c instanceof Map && ((Map) c)
-                            .isEmpty())) {
+                    if (c == null || c == FALSE || (c instanceof List && ((List) c).isEmpty()) || (c instanceof Map && ((Map) c).isEmpty()))
                         str.append(I.express(in, delimiters, I.array(new Object[] {c}, contexts), resolvers));
-                    }
-                } else if (c != null && c != FALSE) {
-                    for (Object o : c instanceof List ? (List) c : c instanceof Map ? ((Map) c).values() : List.of(c)) {
-                        str.append(I.express(in, delimiters, I.array(new Object[] {o}, contexts), resolvers));
-                    }
-                }
+                } else if (c != null && c != FALSE)
+                    for (Object o : c instanceof List ? (List) c : c instanceof Map ? ((Map) c).values() : List.of(c))
+                    str.append(I.express(in, delimiters, I.array(new Object[] {o}, contexts), resolvers));
             } else {
                 matcher.appendReplacement(str, spaces);
                 if (c != null) str.append(I.transform(c, String.class));
@@ -941,10 +932,9 @@ public class I {
                                 observer.accept(v);
                                 observer.complete();
                                 return;
-                            } else {
+                            } else
                                 e = new HttpRetryException(new String(res.body().readAllBytes(), StandardCharsets.UTF_8), res
                                         .statusCode(), res.uri().toString());
-                            }
                         } catch (Exception x) {
                             e = x; // fall-through to error handling
                         }
@@ -1144,10 +1134,10 @@ public class I {
             // Scan at runtime
             File file = new File(source.toURI());
 
-            if (file.isFile()) {
+            if (file.isFile())
                 // from jar file
                 names = I.signal(new ZipFile(file).entries()::asIterator).map(entry -> entry.getName().replace('/', '.'));
-            } else {
+            else {
                 // from class directory
                 int prefix = file.getPath().length() + 1;
                 names = I.signal(file)
@@ -1167,14 +1157,13 @@ public class I {
         // =======================================
         Disposable disposer = Disposable.empty();
 
-        for (String name : names.toSet()) {
+        for (String name : names.toSet())
             // exclude out of the specified package
             if (name.startsWith(pattern)) try {
                 disposer.add(loadE((Class) loader.loadClass(name)));
             } catch (Throwable e) {
                 // ignore
             }
-        }
         return disposer;
     }
 
@@ -1254,11 +1243,8 @@ public class I {
     static {
         // Clean up all buffered log
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            for (Subscriber s : logs.values()) {
-                if (s.obj != null) {
-                    I.quiet(s.obj);
-                }
-            }
+            for (Subscriber s : logs.values())
+                if (s.obj != null) I.quiet(s.obj);
         }));
     }
 
@@ -1302,129 +1288,122 @@ public class I {
         // ================================================
         // Discard by logger's level
         // ================================================
-        if (log.a[1] <= o || log.a[2] <= o || (log.a[3] <= o && Logger != null)) {
-            synchronized (log) {
-                long ms = System.currentTimeMillis();
+        if (log.a[1] <= o || log.a[2] <= o || (log.a[3] <= o && Logger != null)) synchronized (log) {
+            long ms = System.currentTimeMillis();
 
-                try {
-                    if (log.index <= ms) {
-                        // As a new day begins, we will refresh the data for each day that can be
-                        // reused.
-                        LocalDateTime day = LocalDate.now().atStartOfDay();
+            try {
+                if (log.index <= ms) {
+                    // As a new day begins, we will refresh the data for each day that can be
+                    // reused.
+                    LocalDateTime day = LocalDate.now().atStartOfDay();
 
-                        // Set the next update time.
-                        log.index = (day.atZone(ZoneId.systemDefault()).toEpochSecond() + 3600 * 24) * 1000;
+                    // Set the next update time.
+                    log.index = (day.atZone(ZoneId.systemDefault()).toEpochSecond() + 3600 * 24) * 1000;
 
-                        // Reuse all parts that use the same characters each time. Dates and
-                        // separators are the same throughout the day, so generate them first and
-                        // reuse them thereafter.
-                        log.chars = CharBuffer.allocate(1024 * 24).put(day.format(ISO_LOCAL_DATE_TIME)).put(".000 DEBUG\t");
+                    // Reuse all parts that use the same characters each time. Dates and
+                    // separators are the same throughout the day, so generate them first and
+                    // reuse them thereafter.
+                    log.chars = CharBuffer.allocate(1024 * 24).put(day.format(ISO_LOCAL_DATE_TIME)).put(".000 DEBUG\t");
 
-                        // Replace the output destination file at the timing of the date change.
-                        if (log.a[1] <= o) {
-                            // stop old file
-                            if (log.obj != null) I.quiet(log.obj);
-
-                            // create log directory
-                            File dir = new File(I.env(name.concat(".dir"), I.env("*.dir", ".log")));
-                            dir.mkdirs();
-
-                            // The file output destination will be rotated daily. It will
-                            // always be cached in an open state.
-                            log.obj = new FileWriter(new File(dir, name.concat(day.format(ISO_DATE)).concat(".log")), env(name
-                                    .concat(".append"), env("*.append", true)));
-
-                            // We also tried the following code to see if it would make a difference
-                            // in writing speed, but no significant difference was observed, so no
-                            // buffering is performed in writing. In the implementation of
-                            // OutputStreamWriter, buffering is performed upon character encoding
-                            // conversion, so it is not expected to make a big difference.
-                            //
-                            // new_OutputStreamWriter(new_BufferedOutputStream(new_FileOutputStream(new_File(name))));
-
-                            // Old files should be deleted.
-                            int i = I.env(name.concat(".rotate"), I.env("*.rotate", 30));
-                            while (0 < i && (new File(dir, name.concat(day.minusDays(i++).format(ISO_DATE)).concat(".log"))
-                                    .delete() || i < 60)) {
-                            }
-                        }
-                    }
-
-                    // ================================================
-                    // Format log message
-                    // ================================================
-                    // The date and time part (YYYY-MM-ddTHH:mm:ss.SSS ) is reusable
-                    log.chars.clear().position(30);
-
-                    // Time - If the time is the same as the last time, the previous data will
-                    // be used as is to speed up the process.
-                    if (log.time != ms) {
-                        log.time = ms;
-
-                        // If you use DateTimeFormatter or SimpleDateFormatter, it creates an
-                        // extra instances, so we parse and format the time ourselves to keep it
-                        // garbage-free.
-                        int m, time = (int) (ms - (log.index - 24 * 60 * 60 * 1000));
-
-                        // Hour
-                        log.chars.put(11, (char) ('0' + (m = time / (3600 * 1000)) / 10))
-                                .put(12, (char) ('0' + m % 10))
-
-                                // Minute
-                                .put(14, (char) ('0' + (m = time / (60 * 1000) % 60) / 10))
-                                .put(15, (char) ('0' + m % 10))
-
-                                // Second
-                                .put(17, (char) ('0' + (m = time / 1000 % 60) / 10))
-                                .put(18, (char) ('0' + m % 10))
-
-                                // Millisecond
-                                .put(20, (char) ('0' + time % 1000 / 100))
-                                .put(21, (char) ('0' + time % 100 / 10))
-                                .put(22, (char) ('0' + time % 10));
-
-                        // Since flushing the log to disk every time would overload IO, we decided
-                        // to write the log only when the time changes.
-                        //
-                        // In order to reduce the footprint, we are reusing a variable to determine
-                        // if we need to flush to disk.
-                        ms = 0;
-                    }
-
-                    // Level & Message
-                    log.chars.put(24, L, (o - 1) * 5, 5).put(String.valueOf(msg instanceof Supplier ? ((Supplier) msg).get() : msg));
-
-                    // Caller Location
-                    if (log.a[0] <= o) {
-                        // Since javac (JDK16) doesn't infer it correctly, we'll put the
-                        // toString method out there to make the type explicit, although it
-                        // increases the footprint slightly.
-                        log.chars.put("\tat ").put(StackWalker.getInstance().walk(s -> s.skip(2).findAny().get()).toString());
-                    }
-
-                    // Cause
-                    if (msg instanceof Throwable) {
-                        for (StackTraceElement s : ((Throwable) msg).getStackTrace()) {
-                            log.chars.put("\n\tat ").put(s.toString());
-                        }
-                    }
-
-                    // Line Feed
-                    log.chars.put('\n').flip();
-
-                    // ================================================
-                    // Output log
-                    // ================================================
-
+                    // Replace the output destination file at the timing of the date change.
                     if (log.a[1] <= o) {
-                        log.obj.append(log.chars);
-                        if (ms == 0) log.obj.flush();
+                        // stop old file
+                        if (log.obj != null) I.quiet(log.obj);
+
+                        // create log directory
+                        File dir = new File(I.env(name.concat(".dir"), I.env("*.dir", ".log")));
+                        dir.mkdirs();
+
+                        // The file output destination will be rotated daily. It will
+                        // always be cached in an open state.
+                        log.obj = new FileWriter(new File(dir, name.concat(day.format(ISO_DATE)).concat(".log")), env(name
+                                .concat(".append"), env("*.append", true)));
+
+                        // We also tried the following code to see if it would make a difference
+                        // in writing speed, but no significant difference was observed, so no
+                        // buffering is performed in writing. In the implementation of
+                        // OutputStreamWriter, buffering is performed upon character encoding
+                        // conversion, so it is not expected to make a big difference.
+                        //
+                        // new_OutputStreamWriter(new_BufferedOutputStream(new_FileOutputStream(new_File(name))));
+
+                        // Old files should be deleted.
+                        int i = I.env(name.concat(".rotate"), I.env("*.rotate", 30));
+                        while (0 < i && (new File(dir, name.concat(day.minusDays(i++).format(ISO_DATE)).concat(".log"))
+                                .delete() || i < 60)) {
+                        }
                     }
-                    if (log.a[2] <= o) System.out.print(log.chars);
-                    if (log.a[3] <= o && Logger != null) Logger.ACCEPT(name, Level.values()[o], log.chars);
-                } catch (Throwable x) {
-                    // ignore
                 }
+
+                // ================================================
+                // Format log message
+                // ================================================
+                // The date and time part (YYYY-MM-ddTHH:mm:ss.SSS ) is reusable
+                log.chars.clear().position(30);
+
+                // Time - If the time is the same as the last time, the previous data will
+                // be used as is to speed up the process.
+                if (log.time != ms) {
+                    log.time = ms;
+
+                    // If you use DateTimeFormatter or SimpleDateFormatter, it creates an
+                    // extra instances, so we parse and format the time ourselves to keep it
+                    // garbage-free.
+                    int m, time = (int) (ms - (log.index - 24 * 60 * 60 * 1000));
+
+                    // Hour
+                    log.chars.put(11, (char) ('0' + (m = time / (3600 * 1000)) / 10))
+                            .put(12, (char) ('0' + m % 10))
+
+                            // Minute
+                            .put(14, (char) ('0' + (m = time / (60 * 1000) % 60) / 10))
+                            .put(15, (char) ('0' + m % 10))
+
+                            // Second
+                            .put(17, (char) ('0' + (m = time / 1000 % 60) / 10))
+                            .put(18, (char) ('0' + m % 10))
+
+                            // Millisecond
+                            .put(20, (char) ('0' + time % 1000 / 100))
+                            .put(21, (char) ('0' + time % 100 / 10))
+                            .put(22, (char) ('0' + time % 10));
+
+                    // Since flushing the log to disk every time would overload IO, we decided
+                    // to write the log only when the time changes.
+                    //
+                    // In order to reduce the footprint, we are reusing a variable to determine
+                    // if we need to flush to disk.
+                    ms = 0;
+                }
+
+                // Level & Message
+                log.chars.put(24, L, (o - 1) * 5, 5).put(String.valueOf(msg instanceof Supplier ? ((Supplier) msg).get() : msg));
+
+                // Caller Location
+                if (log.a[0] <= o) // Since javac (JDK16) doesn't infer it correctly, we'll put the
+                    // toString method out there to make the type explicit, although it
+                    // increases the footprint slightly.
+                    log.chars.put("\tat ").put(StackWalker.getInstance().walk(s -> s.skip(2).findAny().get()).toString());
+
+                // Cause
+                if (msg instanceof Throwable) for (StackTraceElement s : ((Throwable) msg).getStackTrace())
+                    log.chars.put("\n\tat ").put(s.toString());
+
+                // Line Feed
+                log.chars.put('\n').flip();
+
+                // ================================================
+                // Output log
+                // ================================================
+
+                if (log.a[1] <= o) {
+                    log.obj.append(log.chars);
+                    if (ms == 0) log.obj.flush();
+                }
+                if (log.a[2] <= o) System.out.print(log.chars);
+                if (log.a[3] <= o && Logger != null) Logger.ACCEPT(name, Level.values()[o], log.chars);
+            } catch (Throwable x) {
+                // ignore
             }
         }
     }
@@ -1482,23 +1461,22 @@ public class I {
 
         if (type instanceof ParameterizedType) type = ((ParameterizedType) type).getRawType();
 
-        if (type == WiseRunnable.class) {
+        if (type == WiseRunnable.class)
             return (F) (WiseRunnable) handler::invoke;
-        } else if (type == WiseSupplier.class) {
+        else if (type == WiseSupplier.class)
             return (F) (WiseSupplier) handler::invoke;
-        } else if (type == WiseConsumer.class) {
+        else if (type == WiseConsumer.class)
             return (F) (WiseConsumer) handler::invoke;
-        } else if (type == WiseFunction.class) {
+        else if (type == WiseFunction.class)
             return (F) (WiseFunction) handler::invoke;
-        } else if (type == WiseBiConsumer.class) {
+        else if (type == WiseBiConsumer.class)
             return (F) (WiseBiConsumer) handler::invoke;
-        } else if (type == WiseBiFunction.class) {
+        else if (type == WiseBiFunction.class)
             return (F) (WiseBiFunction) handler::invoke;
-        } else if (type == WiseTriConsumer.class) {
+        else if (type == WiseTriConsumer.class)
             return (F) (WiseTriConsumer) handler::invoke;
-        } else {
+        else
             return (F) (WiseTriFunction) handler::invoke;
-        }
     }
 
     /**
@@ -1549,16 +1527,15 @@ public class I {
                 Managed managed = modelClass.getAnnotation(Managed.class);
 
                 // Create new lifestyle for the actual model class
-                if (managed == null || managed.value() == Lifestyle.class) {
+                if (managed == null || managed.value() == Lifestyle.class)
                     lifestyle = I.prototype(modelClass);
-                } else {
+                else
                     lifestyle = I.make(managed.value());
-                }
             }
 
-            if (lifestyles.containsKey(modelClass)) {
+            if (lifestyles.containsKey(modelClass))
                 return lifestyles.get(modelClass);
-            } else {
+            else {
                 lifestyles.put(modelClass, lifestyle);
                 return lifestyle;
             }
@@ -1626,18 +1603,16 @@ public class I {
             if (types.length != 0) {
                 params = new Object[types.length];
 
-                for (int i = 0; i < params.length; i++) {
-                    if (types[i] == Lifestyle.class) {
+                for (int i = 0; i < params.length; i++)
+                    if (types[i] == Lifestyle.class)
                         params[i] = I.makeLifestyle((Class) Model
                                 .collectParameters(constructor.getGenericParameterTypes()[i], Lifestyle.class)[0]);
-                    } else if (types[i] == Class.class) {
+                    else if (types[i] == Class.class)
                         params[i] = I.dependencies.get().peekLast();
-                    } else if (types[i].isPrimitive()) {
+                    else if (types[i].isPrimitive())
                         params[i] = Array.get(Array.newInstance(types[i], 1), 0);
-                    } else {
+                    else
                         params[i] = I.make(types[i]);
-                    }
-                }
             }
             // create new instance
             return (M) constructor.newInstance(params);
@@ -1944,16 +1919,14 @@ public class I {
             ScheduledExecutorService exe = scheduler == null || scheduler.length == 0 || scheduler[0] == null ? I.scheduler : scheduler[0];
 
             if (intervalTime <= 0) {
-                if (delay <= 0) {
+                if (delay <= 0)
                     future = CompletableFuture.runAsync(task, Runnable::run);
-                } else {
+                else
                     future = exe.schedule(task, delay, unit);
-                }
-            } else if (fixedRate) {
+            } else if (fixedRate)
                 future = exe.scheduleAtFixedRate(task, delay, intervalTime, unit);
-            } else {
+            else
                 future = exe.scheduleWithFixedDelay(task, delay, intervalTime, unit);
-            }
             return disposer.add(future);
         }).count();
     }
@@ -2121,9 +2094,8 @@ public class I {
      * @return The specified class.
      */
     public static Class type(String fqcn) {
-        if (fqcn.indexOf('.') == -1) for (int i = 0; i < 9; i++) {
+        if (fqcn.indexOf('.') == -1) for (int i = 0; i < 9; i++)
             if (types[i].getName().equals(fqcn)) return types[i];
-        }
 
         try {
             return Class.forName(fqcn, false, ClassLoader.getSystemClassLoader());
@@ -2242,11 +2214,8 @@ public class I {
      * @throws NullPointerException Parameter type is null.
      */
     public static Class wrap(Class type) {
-        if (type.isPrimitive()) { // the specified class is not primitive
-            for (int i = 0; i < 9; i++) {
-                if (types[i] == type) return types[i + 9];
-            }
-        }
+        if (type.isPrimitive()) for (int i = 0; i < 9; i++)
+            if (types[i] == type) return types[i + 9];
         return type;
     }
 
@@ -2370,28 +2339,23 @@ public class I {
     static synchronized XML xml(Document doc, Object xml) {
         try {
             // XML related types
-            if (xml instanceof XML) {
+            if (xml instanceof XML)
                 return (XML) xml;
-            } else if (xml instanceof Node) {
-                return new XML(((Node) xml).getOwnerDocument(), list(xml));
-            }
+            else if (xml instanceof Node) return new XML(((Node) xml).getOwnerDocument(), list(xml));
 
             // byte data types
             byte[] bytes = xml instanceof String ? ((String) xml).getBytes(StandardCharsets.UTF_8) : (byte[]) xml;
-            if (6 < bytes.length && bytes[0] == '<') { // root element is html (starts with <html> )
-                if (bytes[1] == '!' || (bytes[1] == 'h' && bytes[2] == 't' && bytes[3] == 'm' && bytes[4] == 'l' && bytes[5] == '>')) {
+            if (6 < bytes.length && bytes[0] == '<')
+                if (bytes[1] == '!' || (bytes[1] == 'h' && bytes[2] == 't' && bytes[3] == 'm' && bytes[4] == 'l' && bytes[5] == '>'))
                     return new XML(null, null).parse(bytes, StandardCharsets.UTF_8);
-                }
-            }
 
             String value = new String(bytes, StandardCharsets.UTF_8);
 
             if (xmlLiteral.matcher(value).matches()) {
                 doc = dom.parse(new InputSource(new StringReader("<m>".concat(value.replaceAll("<\\?.+\\?>", "")).concat("</m>"))));
                 return new XML(doc, XML.convert(doc.getFirstChild().getChildNodes()));
-            } else {
+            } else
                 return xml(doc != null ? doc.createTextNode(value) : dom.newDocument().createElement(value));
-            }
         } catch (Exception e) {
             throw I.quiet(e);
         }

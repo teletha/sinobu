@@ -633,11 +633,63 @@ class ExpressionTest {
     }
 
     @Test
-    void comment() {
-        String context = "CONTEXT";
+    void commentInline() {
+        assert I.express("Ignore {!Comments begin with a bang and are ignored.} comment", new Object()).equals("Ignore  comment");
+        assert I.express("Ignore {! comment} comment{! comment }", new Object()).equals("Ignore  comment");
+    }
 
-        assert I.express("Ignore {!Comments begin with a bang and are ignored.} comment", context).equals("Ignore comment");
-        assert I.express("Ignore {! comment} comment {! comment }", context).equals("Ignore comment");
+    @Test
+    void commentBlock() {
+        assert I.express("""
+                Start
+                {!comment}
+                End
+                """, new Object()).equals("""
+                Start
+                End
+                """);
+    }
+
+    @Test
+    void commentIndentedBlock() {
+        assert I.express("""
+                Start
+                  {!with head and tail indent}
+                End
+                """, new Object()).equals("""
+                Start
+                End
+                """);
+    }
+
+    @Test
+    void commentBlockInSection() {
+        assert I.express("""
+                Start
+                {#this}
+                {!comment}
+                {/this}
+                End
+                """, new Object()).equals("""
+                Start
+                End
+                """);
+    }
+
+    @Test
+    void plain() {
+        assert I.express("{!!Plain text begin with double bang!!!}", new Object()).equals("{Plain text begin with double bang!!!}");
+        assert I.express("{!! Plain text begin with double bang!!! }", new Object()).equals("{ Plain text begin with double bang!!! }");
+    }
+
+    @Test
+    void plainWithChangedDelimiter() {
+        assert I.express("""
+                {=!! !!=}
+                !!!! Plain text begin with double bang !!
+                """, new Object()).equals("""
+                !! Plain text begin with double bang !!
+                """);
     }
 
     @Test
