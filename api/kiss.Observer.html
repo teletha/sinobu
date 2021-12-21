@@ -9,10 +9,10 @@
 		<script src="mimic.js" type="module"></script>
 		<link href="main.css" rel="stylesheet"/>
 	</head>
-	<body class="O">
-		<header class="i">
-			<h1 class="H" date="2021-12-20" ver="2.10.0"><code>Sinobu</code></h1>
-			<nav class="K"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
+	<body class="L">
+		<header class="U">
+			<h1 class="I" date="2021-12-21" ver="2.10.0"><code>Sinobu</code></h1>
+			<nav class="Z"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#text"/>
 					</svg>Document</a><a href="api/"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#package"/>
@@ -23,7 +23,7 @@
 					</svg>Activity</a><a href="https://github.com//teletha/sinobu" target="_blank"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#github"/>
 					</svg>Repository</a></nav>
-			<div class="R" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
+			<div class="P" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#sun"/>
 					</svg>
 				</a><a id="dark" title="Change to a darker color scheme"><svg class="A svg" viewBox="0 0 24 24">
@@ -31,13 +31,13 @@
 					</svg>
 				</a></div>
 		</header>
-		<main class="k">
-			<nav class="I">
+		<main class="N">
+			<nav class="e">
 				<div></div>
 			</nav>
-			<article class="T" id="Article">
-				<section class="Q"><code class="M">kiss</code>
-					<h2 class="Functional L"><code class="J">Observer</code><code class="P">&#60;<code>V</code>&#62;</code></h2>
+			<article class="X" id="Article">
+				<section class="g"><code class="c">kiss</code>
+					<h2 class="Functional a"><code class="R">Observer</code><code class="d">&#60;<code>V</code>&#62;</code></h2>
 					<ul class="C D">
 						<li><code>V</code><span>The object that provides notification information.</span></li>
 					</ul>
@@ -56,18 +56,18 @@
  closure exactly once.
  </p>
 					</span></section>
-				<section class="Q" id="complete()">
-					<h2 class="d"><i class="DEFAULT"><i class="PUBLIC"></i></i><code class="J">complete</code><code class="P">()</code><i class="f"><code>void</code></i></h2><span class="B"><p>
+				<section class="g" id="complete()">
+					<h2 class="M"><i class="DEFAULT"><i class="PUBLIC"></i></i><code class="R">complete</code><code class="d">()</code><i class="O"><code>void</code></i></h2><span class="B"><p>
  Notifies the observer that the provider has finished sending push-based notifications.
  </p>
  <p>
  The <code><a href="api/kiss.Signal.html">Signal</a></code> will not call this closure if it calls <code><a href="api/kiss.Observer.html#error(java.lang.Throwable)">#error(Throwable)</a></code>.
  </p>
 					</span></section>
-				<section class="Q" id="error(java.lang.Throwable)">
-					<h2 class="d"><i class="DEFAULT"><i class="PUBLIC"></i></i><code class="J">error</code><code class="P">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Throwable.html">Throwable</a></code> <code class="parameterName">e</code>)</code><i class="f"><code>void</code></i></h2>
+				<section class="g" id="error(java.lang.Throwable)">
+					<h2 class="M"><i class="DEFAULT"><i class="PUBLIC"></i></i><code class="R">error</code><code class="d">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Throwable.html">Throwable</a></code> <code class="parameterName">e</code>)</code><i class="O"><code>void</code></i></h2>
 					<table class="h">
-						<tr class="X">
+						<tr class="J">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Throwable.html">Throwable</a></code> <code>e</code></td>
 							<td><span>An object that provides additional information about the error.</span></td>
 						</tr>
@@ -80,12 +80,12 @@
  </p>
 					</span></section>
 			</article>
-			<aside class="a" id="SubNavi">
-				<div class="e">
-					<h5 class="c">Methods</h5>
+			<aside class="b" id="SubNavi">
+				<div class="Q">
+					<h5 class="H">Methods</h5>
 					<ul>
-						<li><i class="DEFAULT"><i class="PUBLIC"></i></i><code><a href="api/kiss.Observer.html#complete()">complete</a></code><code class="P">()</code><i class="W"><code>void</code></i></li>
-						<li><i class="DEFAULT"><i class="PUBLIC"></i></i><code><a href="api/kiss.Observer.html#error(java.lang.Throwable)">error</a></code><code class="P">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Throwable.html">Throwable</a></code> <code class="parameterName">e</code>)</code><i class="W"><code>void</code></i></li>
+						<li><i class="DEFAULT"><i class="PUBLIC"></i></i><code><a href="api/kiss.Observer.html#complete()">complete</a></code><code class="d">()</code><i class="j"><code>void</code></i></li>
+						<li><i class="DEFAULT"><i class="PUBLIC"></i></i><code><a href="api/kiss.Observer.html#error(java.lang.Throwable)">error</a></code><code class="d">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Throwable.html">Throwable</a></code> <code class="parameterName">e</code>)</code><i class="j"><code>void</code></i></li>
 					</ul>
 				</div>
 			</aside>
