@@ -646,6 +646,7 @@ class ExpressionTest {
                 End
                 """, new Object()).equals("""
                 Start
+
                 End
                 """);
     }
@@ -658,6 +659,7 @@ class ExpressionTest {
                 End
                 """, new Object()).equals("""
                 Start
+                \s\s
                 End
                 """);
     }
@@ -672,6 +674,7 @@ class ExpressionTest {
                 End
                 """, new Object()).equals("""
                 Start
+
                 End
                 """);
     }
