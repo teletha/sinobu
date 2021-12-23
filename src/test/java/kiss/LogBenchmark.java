@@ -70,10 +70,10 @@ public class LogBenchmark {
             benchmark.discardSystemOutput();
         }
 
-        // performJUL(benchmark);
-        // performLog4j(benchmark);
-        // performTinyLog(benchmark);
-        // performLogback(benchmark);
+        performJUL(benchmark);
+        performLog4j(benchmark);
+        performTinyLog(benchmark);
+        performLogback(benchmark);
         performSinobu(benchmark);
 
         benchmark.perform();
@@ -91,7 +91,7 @@ public class LogBenchmark {
         }
     }
 
-    private static void performJUL(Benchmark benchmark) throws Exception {
+    static void performJUL(Benchmark benchmark) throws Exception {
         perform((execution, caller) -> {
             if (execution == ExecutionType.Async) {
                 return; // JUL has no async-implementation, ignore it!
@@ -114,7 +114,7 @@ public class LogBenchmark {
     /**
      * Copy from JDK.
      */
-    private static class ModifiableFormatter extends SimpleFormatter {
+    static class ModifiableFormatter extends SimpleFormatter {
         private String format;
 
         private ModifiableFormatter(CallerType caller) {
@@ -151,7 +151,7 @@ public class LogBenchmark {
         }
     }
 
-    private static void performLog4j(Benchmark benchmark) throws Exception {
+    static void performLog4j(Benchmark benchmark) throws Exception {
         ConfigurationBuilder<BuiltConfiguration> builder = ConfigurationBuilderFactory.newConfigurationBuilder();
 
         perform((execution, caller) -> {
@@ -187,7 +187,7 @@ public class LogBenchmark {
         });
     }
 
-    private static void performTinyLog(Benchmark benchmark) throws Exception {
+    static void performTinyLog(Benchmark benchmark) throws Exception {
         ExecutionType mode = execution == ExecutionType.Sync ? ExecutionType.Sync : ExecutionType.Async;
         Configuration.set("writingthread", execution == ExecutionType.Sync ? "false" : "true");
         AtomicInteger id = new AtomicInteger(1);
@@ -226,7 +226,7 @@ public class LogBenchmark {
         });
     }
 
-    private static void performLogback(Benchmark benchmark) throws Exception {
+    static void performLogback(Benchmark benchmark) throws Exception {
         ch.qos.logback.classic.LoggerContext context = new ch.qos.logback.classic.LoggerContext();
 
         perform((execution, caller) -> {
@@ -281,7 +281,7 @@ public class LogBenchmark {
         });
     }
 
-    private static void performSinobu(Benchmark benchmark) throws Exception {
+    static void performSinobu(Benchmark benchmark) throws Exception {
         perform((execution, caller) -> {
             if (execution == ExecutionType.Async) {
                 return; // async logging is not supported

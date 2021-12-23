@@ -48,5 +48,9 @@ public class FileIOBenchmark {
         });
 
         benchmark.perform();
+
+        // cleanup
+        buffered.close();
+        random.close();
     }
 }
