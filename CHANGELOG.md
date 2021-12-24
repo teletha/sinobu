@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.11.0](https://www.github.com/teletha/sinobu/compare/v2.10.0...v2.11.0) (2021-12-23)
+
+
+### Features
+
+* I#express can access the parent context in section. ([ec19054](https://www.github.com/teletha/sinobu/commit/ec19054fe89e26c3d4813b52c1512c875f0617f2))
+* I#express can change the delimiter at runtime. ([26c780a](https://www.github.com/teletha/sinobu/commit/26c780aad39ff43c97f8f6bcf0f7f5c7d98d642c))
+
+
+### Bug Fixes
+
+* Change delimiter must affect globally. ([6d747f4](https://www.github.com/teletha/sinobu/commit/6d747f49eddae581ea4b3c1117b6e7ec4477058e))
+* I#express can't resolve null property well. ([285b59c](https://www.github.com/teletha/sinobu/commit/285b59c5c5901af6915d0976aa76e851f0ba14f0))
+* I#express outputs invalid empty line. ([3f6d680](https://www.github.com/teletha/sinobu/commit/3f6d680777b3523d1964d92648f7d4440b433c21))
+* In I#express, section with long delimiter is broken. ([1358ad1](https://www.github.com/teletha/sinobu/commit/1358ad19aba73c63ec9f44b8d8cbfad117afa1be))
+
 ## [2.10.0](https://www.github.com/teletha/sinobu/compare/v2.9.4...v2.10.0) (2021-11-14)
 
 
