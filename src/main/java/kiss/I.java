@@ -244,13 +244,17 @@ public class I {
             // configure dom builder
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setNamespaceAware(true);
-            factory.setXIncludeAware(false);
+            // factory.setXIncludeAware(false); // default setting is false
             factory.setExpandEntityReferences(false);
-            factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
-            factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
             factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+
+            // Setting disallow-doctype-decl will prevent XXE attacks because any inline DOCTYPE
+            // declarations in the untrusted XML will cause the parser to throw an exception.
+            // So we can commnet out disabling external-general-entities and
+            // external-parameter-entities features.
             factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-            factory.setFeature("http://apache.org/xml/features/validation/schema/augment-psvi", false);
+            // factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            // factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
 
             dom = factory.newDocumentBuilder();
             dom.setErrorHandler(new DefaultHandler());
