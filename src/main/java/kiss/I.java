@@ -9,7 +9,7 @@
  */
 package kiss;
 
-import static java.lang.Boolean.*;
+import static java.lang.Boolean.FALSE;
 import static java.time.format.DateTimeFormatter.*;
 
 import java.io.ByteArrayOutputStream;
@@ -244,6 +244,13 @@ public class I {
             // configure dom builder
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setNamespaceAware(true);
+            factory.setXIncludeAware(false);
+            factory.setExpandEntityReferences(false);
+            factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+            factory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            factory.setFeature("http://apache.org/xml/features/validation/schema/augment-psvi", false);
 
             dom = factory.newDocumentBuilder();
             dom.setErrorHandler(new DefaultHandler());
