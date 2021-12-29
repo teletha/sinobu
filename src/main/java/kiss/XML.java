@@ -45,11 +45,11 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      * Original pattern.
      * </p>
      * <pre>
-     * ([>~+\-, ]*)?((?:(?:\w+|\*)\|)?(?:\w+(?:\\.\w*)*|\*))?(?:#(\w+))?((?:\.\w+(?:\\.\w*)*)*)(?:\[\s?([\w:]+)(?:\s*([=~^$*|])?=\s*["]([^"]*)["])?\s?\])?(?::([\w-]+)(?:\((odd|even|(\d*)(n)?(?:\+(\d+))?|(?:.*))\))?)?
+     * ([>~+\<, ]*)?((?:(?:\w+|\*)\|)?(?:[\w\-]+(?:\\.[\w\-]*)*|\*))?(?:#([\w\-\\]+))?((?:\.[\w\-\\]+)*)(?:\[\s?([\w:]+)(?:\s*([=~^$*|])?=\s*["]([^"]*)["])?\s?\])?(?::([\w-]+)(?:\((odd|even|(\d*)(n)?(?:\+(\d+))?|(?:.*))\))?)?
      * </pre>
      */
     private static final Pattern SELECTOR = Pattern
-            .compile("([>~+\\-, ]*)?((?:(?:\\w+|\\*)\\|)?(?:\\w+(?:\\\\.\\w*)*|\\*))?(?:#(\\w+))?((?:\\.\\w+(?:\\\\.\\w*)*)*)(?:\\[\\s?([\\w:]+)(?:\\s*([=~^$*|])?=\\s*[\"]([^\"]*)[\"])?\\s?\\])?(?::([\\w-]+)(?:\\((odd|even|(\\d*)(n)?(?:\\+(\\d+))?|(?:.*))\\))?)?");
+            .compile("([>~+<, ]*)?((?:(?:\\w+|\\*)\\|)?(?:[\\w\\-]+(?:\\\\.[\\w\\-]*)*|\\*))?(?:#([\\w\\-\\\\]+))?((?:\\.[\\w\\-\\\\]+)*)(?:\\[\\s?([\\w:]+)(?:\\s*([=~^$*|])?=\\s*[\"]([^\"]*)[\"])?\\s?\\])?(?::([\\w-]+)(?:\\((odd|even|(\\d*)(n)?(?:\\+(\\d+))?|(?:.*))\\))?)?");
 
     /** The cache for compiled selectors. */
     private static final Map<String, XPathExpression> selectors = new ConcurrentHashMap();
@@ -544,7 +544,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      * @return A set of previous elements.
      */
     public final XML prev() {
-        return find("-*");
+        return find("<*");
     }
 
     /**
@@ -887,7 +887,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
                         suffix = "[1]";
                         break;
 
-                    case '-': // Adjacent previous sibling combinator (EXTENSION)
+                    case '<': // Adjacent previous sibling combinator (EXTENSION)
                         xpath.append("/preceding-sibling::");
                         suffix = "[1]";
                         break;
@@ -920,7 +920,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
             match = matcher.group(3);
 
             if (match != null) {
-                xpath.append("[@id='").append(match).append("']");
+                xpath.append("[@id='").append(match.replaceAll("\\\\(.)", "$1")).append("']");
             }
 
             // =================================================

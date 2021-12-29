@@ -43,6 +43,14 @@ public class XMLFindTest {
     public void typeWithHyphen() {
         String xml = "<m><E-E/><E--E/></m>";
 
+        assert I.xml(xml).find("E-E").size() == 1;
+        assert I.xml(xml).find("E--E").size() == 1;
+    }
+
+    @Test
+    public void typeWithEscapedHyphen() {
+        String xml = "<m><E-E/><E--E/></m>";
+
         assert I.xml(xml).find("E\\-E").size() == 1;
         assert I.xml(xml).find("E\\-\\-E").size() == 1;
     }
@@ -58,12 +66,20 @@ public class XMLFindTest {
     public void clazzWithHyphen() {
         String xml = "<m><e class='a-b'/><e class='a--b'/><e class='none'/></m>";
 
+        assert I.xml(xml).find(".a-b").size() == 1;
+        assert I.xml(xml).find(".a--b").size() == 1;
+    }
+
+    @Test
+    public void clazzWithEscapedHyphen() {
+        String xml = "<m><e class='a-b'/><e class='a--b'/><e class='none'/></m>";
+
         assert I.xml(xml).find(".a\\-b").size() == 1;
         assert I.xml(xml).find(".a\\-\\-b").size() == 1;
     }
 
     @Test
-    public void clazzWithEscapeDollar() {
+    public void clazzWithEscapedDollar() {
         String xml = "<m><e class='a\\b'/><e class='none'/></m>";
 
         assert I.xml(xml).find(".a\\\\b").size() == 1;
@@ -93,6 +109,22 @@ public class XMLFindTest {
 
         assert I.xml(xml).find("#A").size() == 1;
         assert I.xml(xml).find("#AA").size() == 1;
+    }
+
+    @Test
+    public void idWithHyphen() {
+        String xml = "<m><e id='A-A'/><e id='A--A'/></m>";
+
+        assert I.xml(xml).find("#A-A").size() == 1;
+        assert I.xml(xml).find("#A--A").size() == 1;
+    }
+
+    @Test
+    public void idWithEscapedHyphen() {
+        String xml = "<m><e id='A-A'/><e id='A--A'/></m>";
+
+        assert I.xml(xml).find("#A\\-A").size() == 1;
+        assert I.xml(xml).find("#A\\-\\-A").size() == 1;
     }
 
     @Test
@@ -187,9 +219,9 @@ public class XMLFindTest {
     public void previous() {
         String xml = xml("<m><P><Q/><P/><Q/></P><Q/><Q/><P/></m>");
 
-        assert I.xml(xml).find("P-Q").size() == 2;
-        assert I.xml(xml).find("P - Q").size() == 2;
-        assert I.xml(xml).find("P   -   Q").size() == 2;
+        assert I.xml(xml).find("P<Q").size() == 2;
+        assert I.xml(xml).find("P < Q").size() == 2;
+        assert I.xml(xml).find("P   <   Q").size() == 2;
     }
 
     @Test
