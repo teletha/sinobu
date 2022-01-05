@@ -10,7 +10,7 @@
 package kiss;
 
 import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.NANOSECONDS;
+import static java.util.concurrent.TimeUnit.*;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -31,6 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedTransferQueue;
 import java.util.concurrent.ScheduledExecutorService;
@@ -1672,7 +1673,19 @@ public final class Signal<V> {
      * @return {ChainableAPI}
      */
     public final <R> Signal<R> joinAll(WiseFunction<V, R> function) {
-        return map(function::bind).buffer().flatIterable(v -> I.signal(I.scheduler.invokeAll(v)).map(Future<R>::get).toList());
+        return joinAll(function, null);
+    }
+
+    /**
+     * Returns a new {@link Signal} that invokes the mapper action in parallel thread and waits all
+     * of them until all actions are completed.
+     *
+     * @param function A mapper function.
+     * @return {ChainableAPI}
+     */
+    public final <R> Signal<R> joinAll(WiseFunction<V, R> function, ExecutorService executor) {
+        return map(function::bind).buffer()
+                .flatIterable(v -> I.signal((executor == null ? I.scheduler : executor).invokeAll(v)).map(Future<R>::get).toList());
     }
 
     /**
@@ -1683,7 +1696,18 @@ public final class Signal<V> {
      * @return {ChainableAPI}
      */
     public final <R> Signal<R> joinAny(WiseFunction<V, R> function) {
-        return map(function::bind).buffer().map(I.scheduler::invokeAny);
+        return joinAny(function, null);
+    }
+
+    /**
+     * Returns a new {@link Signal} that invokes the mapper action in parallel thread and waits
+     * until any single action is completed. All other actions will be cancelled.
+     * 
+     * @param function A mapper function.
+     * @return {ChainableAPI}
+     */
+    public final <R> Signal<R> joinAny(WiseFunction<V, R> function, ExecutorService executor) {
+        return map(function::bind).buffer().map((executor == null ? I.scheduler : executor)::invokeAny);
     }
 
     /**

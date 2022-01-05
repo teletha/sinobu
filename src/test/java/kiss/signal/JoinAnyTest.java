@@ -9,6 +9,8 @@
  */
 package kiss.signal;
 
+import java.util.concurrent.Executors;
+
 import org.junit.jupiter.api.Test;
 
 class JoinAnyTest extends SignalTester {
@@ -77,6 +79,54 @@ class JoinAnyTest extends SignalTester {
         }));
 
         assert main.emit(1, 2, 3, Complete).value(3);
+        assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void asyncExecutorService() {
+        monitor(String.class, signal -> signal.joinAny(v -> {
+            if (v == "a") {
+                Thread.sleep(200);
+            }
+            return v.toUpperCase();
+        }));
+
+        assert main.emit("a", "b", "c").value();
+        assert main.emit(Complete).value("B");
+        assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void syncExecutorService() {
+        monitor(String.class, signal -> signal.joinAny(v -> {
+            if (v == "a") {
+                Thread.sleep(200);
+            }
+            return v.toUpperCase();
+        }, Executors.newSingleThreadExecutor()));
+
+        assert main.emit("a", "b", "c").value();
+        assert main.emit(Complete).value("A");
+        assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void nullExecutorService() {
+        monitor(String.class, signal -> signal.joinAny(v -> {
+            if (v == "a") {
+                Thread.sleep(200);
+            }
+            return v.toUpperCase();
+        }, null));
+
+        assert main.emit("a", "b", "c").value();
+        assert main.emit(Complete).value("B");
         assert main.isCompleted();
         assert main.isNotError();
         assert main.isDisposed();
