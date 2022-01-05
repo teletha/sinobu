@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.12.0](https://www.github.com/teletha/sinobu/compare/v2.11.0...v2.12.0) (2022-01-05)
+
+
+### Features
+
+* Single#joinAll and #joinAny accepts ExecutorService. ([dee701f](https://www.github.com/teletha/sinobu/commit/dee701f25ebf597bd00fdc8c88c3daddecb8a61f))
+
+
+### Bug Fixes
+
+* CSS selector accepts element name with hyphen. ([6806c86](https://www.github.com/teletha/sinobu/commit/6806c861b1b3dbcc772c16d6377657e84a028104))
+* CSS selector accepts unescaped hyphen. ([6806c86](https://www.github.com/teletha/sinobu/commit/6806c861b1b3dbcc772c16d6377657e84a028104))
+* Disable external resource access on XML parser. ([4464fe4](https://www.github.com/teletha/sinobu/commit/4464fe489235774dc9d1d9b12ef0339baa740852))
+
 ## [2.11.0](https://www.github.com/teletha/sinobu/compare/v2.10.0...v2.11.0) (2021-12-23)
 
 
