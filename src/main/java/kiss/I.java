@@ -9,7 +9,7 @@
  */
 package kiss;
 
-import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.*;
 import static java.time.format.DateTimeFormatter.*;
 
 import java.io.ByteArrayOutputStream;
@@ -488,9 +488,6 @@ public class I {
      * @param output {@link OutputStream} to which data will be write to.
      * @param close Whether input and output streams will be closed automatically or not.
      * @throws NullPointerException If the input or output is null.
-     * @throws SecurityException If a security manager exists and its
-     *             {@link SecurityManager#checkWrite(String)} method does not allow a file to be
-     *             created.
      */
     public static void copy(InputStream input, OutputStream output, boolean close) {
         try {
