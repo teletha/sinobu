@@ -1,5 +1,12 @@
 # Changelog
 
+### [2.12.1](https://www.github.com/teletha/sinobu/compare/v2.12.0...v2.12.1) (2022-01-07)
+
+
+### Bug Fixes
+
+* Update java to 17. ([6c8c948](https://www.github.com/teletha/sinobu/commit/6c8c9489aa3a5dc968a26941f807f1db978bdb61))
+
 ## [2.12.0](https://www.github.com/teletha/sinobu/compare/v2.11.0...v2.12.0) (2022-01-05)
 
 
