@@ -289,7 +289,7 @@ public class JSON {
     private static final String[] C = {"0", "1", "2", "3", "4"};
 
     /** Reuse text symbol. */
-    private static final Map<Integer, String> SYMBOL = new ConcurrentHashMap();
+    private static final Map<Integer, String> S = new ConcurrentHashMap();
 
     /** The input source. */
     private Reader reader;
@@ -616,10 +616,10 @@ public class JSON {
                 hash = 31 * hash + buffer[i];
             }
 
-            captured = SYMBOL.get(hash);
+            captured = S.get(hash);
             if (captured == null) {
-                if (4096 < SYMBOL.size()) SYMBOL.clear();
-                SYMBOL.put(hash, captured = new String(buffer, captureStart, end - captureStart));
+                if (4096 < S.size()) S.clear();
+                S.put(hash, captured = new String(buffer, captureStart, end - captureStart));
             }
         }
         captureStart = -1;
