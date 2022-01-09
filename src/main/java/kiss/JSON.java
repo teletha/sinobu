@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 
 import kiss.model.Model;
 import kiss.model.Property;
@@ -286,6 +287,9 @@ public class JSON {
 
     /** Reuse array's index to reduce GC execution. */
     private static final String[] C = {"0", "1", "2", "3", "4"};
+
+    /** Reuse text symbol. */
+    private static final Map<Integer, String> SYMBOL = new ConcurrentHashMap();
 
     /** The input source. */
     private Reader reader;
@@ -607,7 +611,16 @@ public class JSON {
             captured = capture.toString();
             capture.setLength(0);
         } else {
-            captured = new String(buffer, captureStart, end - captureStart);
+            int hash = 0;
+            for (int i = captureStart; i < end; i++) {
+                hash = 31 * hash + buffer[i];
+            }
+
+            captured = SYMBOL.get(hash);
+            if (captured == null) {
+                if (4096 < SYMBOL.size()) SYMBOL.clear();
+                SYMBOL.put(hash, captured = new String(buffer, captureStart, end - captureStart));
+            }
         }
         captureStart = -1;
         return captured;
