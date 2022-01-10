@@ -70,11 +70,11 @@ public class LogBenchmark {
             benchmark.discardSystemOutput();
         }
 
-        performJUL(benchmark);
-        performLog4j(benchmark);
+        // performJUL(benchmark);
+        // performLog4j(benchmark);
         performTinyLog(benchmark);
-        performLogback(benchmark);
-        performSinobu(benchmark);
+        // performLogback(benchmark);
+        // performSinobu(benchmark);
 
         benchmark.perform();
     }
@@ -188,33 +188,24 @@ public class LogBenchmark {
     }
 
     static void performTinyLog(Benchmark benchmark) throws Exception {
-        ExecutionType mode = execution == ExecutionType.Sync ? ExecutionType.Sync : ExecutionType.Async;
-        Configuration.set("writingthread", execution == ExecutionType.Sync ? "false" : "true");
         AtomicInteger id = new AtomicInteger(1);
 
         perform((execution, caller) -> {
-            if (mode == execution) {
-                String name = execution + "-" + caller;
-                String writer = "writer" + id.getAndIncrement();
+            String name = execution + "-" + caller;
+            String writer = "writer" + id.getAndIncrement();
 
-                Configuration.set(writer, output == OutputType.File ? "file" : "console");
-                Configuration.set(writer + ".file", ".log/logging-tinylog" + name + ".log");
-                Configuration.set(writer + ".tag", name);
-                Configuration.set(writer + ".format", caller == CallerType.Caller
-                        ? "{date:yyyy-MM-dd HH:mm:ss.SSS} {level} {class} {method} {message}"
-                        : "{date:yyyy-MM-dd HH:mm:ss.SSS} {level} {message}");
-                Configuration.set(writer + ".append", "false");
-            }
+            Configuration.set("writingthread", execution == ExecutionType.Sync ? "false" : "true");
+            Configuration.set(writer, output == OutputType.File ? "file" : "console");
+            Configuration.set(writer + ".file", ".log/logging-tinylog" + name + ".log");
+            Configuration.set(writer + ".tag", name);
+            Configuration.set(writer + ".format", caller == CallerType.Caller
+                    ? "{date:yyyy-MM-dd HH:mm:ss.SSS} {level} {class} {method} {message}"
+                    : "{date:yyyy-MM-dd HH:mm:ss.SSS} {level} {message}");
+            Configuration.set(writer + ".append", "false");
         });
 
         perform((execution, caller) -> {
-            if (execution == ExecutionType.Async && caller == CallerType.NoCaller) {
-                System.out
-                        .println("When you execute logging asynchronously with the caller information, it will not run because Tinylog runs too fast, so it creat a large number of instances and throwing an Out of Memory Error.");
-                return;
-            }
-
-            if (mode == execution) {
+            if (execution == ExecutionType.Sync) {
                 String name = execution + "-" + caller;
 
                 TaggedLogger logger = org.tinylog.Logger.tag(name);
