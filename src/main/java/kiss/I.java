@@ -9,7 +9,7 @@
  */
 package kiss;
 
-import static java.lang.Boolean.*;
+import static java.lang.Boolean.FALSE;
 import static java.time.format.DateTimeFormatter.*;
 
 import java.io.ByteArrayOutputStream;
@@ -535,7 +535,7 @@ public class I {
      * @param msg A message log.
      */
     public static void debug(Object msg) {
-        log("system", msg, 2);
+        log("system", msg, 2, 2);
     }
 
     /**
@@ -545,7 +545,7 @@ public class I {
      * @param msg A message log.
      */
     public static void debug(String name, Object msg) {
-        log(name, msg, 2);
+        log(name, msg, 2, 2);
     }
 
     /**
@@ -592,7 +592,7 @@ public class I {
      * @param msg A message log.
      */
     public static void error(Object msg) {
-        log("system", msg, 5);
+        log("system", msg, 5, 2);
     }
 
     /**
@@ -602,7 +602,7 @@ public class I {
      * @param msg A message log.
      */
     public static void error(String name, Object msg) {
-        log(name, msg, 5);
+        log(name, msg, 5, 2);
     }
 
     /**
@@ -986,7 +986,7 @@ public class I {
      * @param msg A message log.
      */
     public static void info(Object msg) {
-        log("system", msg, 3);
+        log("system", msg, 3, 2);
     }
 
     /**
@@ -996,7 +996,7 @@ public class I {
      * @param msg A message log.
      */
     public static void info(String name, Object msg) {
-        log(name, msg, 3);
+        log(name, msg, 3, 2);
     }
 
     /**
@@ -1263,7 +1263,7 @@ public class I {
      * @param msg The actual log message.
      * @param o The log level. {@link Level#ordinal()}
      */
-    private static void log(String name, Object msg, int o) {
+    static void log(String name, Object msg, int o, int deep) {
         // ================================================
         // Look up logger by name
         // ================================================
@@ -1391,7 +1391,7 @@ public class I {
                 if (log.a[0] <= o) // Since javac (JDK16) doesn't infer it correctly, we'll put the
                     // toString method out there to make the type explicit, although it
                     // increases the footprint slightly.
-                    log.chars.put("\tat ").put(StackWalker.getInstance().walk(s -> s.skip(2).findAny().get()).toString());
+                    log.chars.put("\tat ").put(StackWalker.getInstance().walk(s -> s.skip(deep).findAny().get()).toString());
 
                 // Cause
                 if (msg instanceof Throwable) for (StackTraceElement s : ((Throwable) msg).getStackTrace())
@@ -2002,7 +2002,7 @@ public class I {
      * @param msg A message log.
      */
     public static void trace(Object msg) {
-        log("system", msg, 1);
+        log("system", msg, 1, 2);
     }
 
     /**
@@ -2012,7 +2012,7 @@ public class I {
      * @param msg A message log.
      */
     public static void trace(String name, Object msg) {
-        log(name, msg, 1);
+        log(name, msg, 1, 2);
     }
 
     /**
@@ -2118,7 +2118,7 @@ public class I {
      * @param msg A message log.
      */
     public static void warn(Object msg) {
-        log("system", msg, 4);
+        log("system", msg, 4, 2);
     }
 
     /**
@@ -2128,7 +2128,7 @@ public class I {
      * @param msg A message log.
      */
     public static void warn(String name, Object msg) {
-        log(name, msg, 4);
+        log(name, msg, 4, 2);
     }
 
     /**
