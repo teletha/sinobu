@@ -9,7 +9,7 @@
  */
 package kiss;
 
-import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.*;
 import static java.time.format.DateTimeFormatter.*;
 
 import java.io.ByteArrayOutputStream;
@@ -1394,8 +1394,9 @@ public class I {
                     log.chars.put("\tat ").put(StackWalker.getInstance().walk(s -> s.skip(deep).findAny().get()).toString());
 
                 // Cause
-                if (msg instanceof Throwable) for (StackTraceElement s : ((Throwable) msg).getStackTrace())
+                if (msg instanceof Throwable) for (StackTraceElement s : ((Throwable) msg).getStackTrace()) {
                     log.chars.put("\n\tat ").put(s.toString());
+                }
 
                 // Line Feed
                 log.chars.put('\n').flip();
@@ -1403,7 +1404,6 @@ public class I {
                 // ================================================
                 // Output log
                 // ================================================
-
                 if (log.a[1] <= o) {
                     log.obj.append(log.chars);
                     if (ms == 0) log.obj.flush();
