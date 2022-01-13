@@ -1394,7 +1394,8 @@ public class I {
                 }
 
                 // Level & Message
-                log.chars.put(24, L, (o - 1) * 5, 5).put(String.valueOf(msg instanceof Supplier ? ((Supplier) msg).get() : msg));
+                if (msg instanceof Supplier) msg = ((Supplier) msg).get();
+                log.chars.put(24, L, (o - 1) * 5, 5).put(String.valueOf(msg));
 
                 // Caller Location
                 if (log.a[0] <= o) // Since javac (JDK16) doesn't infer it correctly, we'll put the
