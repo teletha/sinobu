@@ -177,8 +177,12 @@ public class I {
     // yield
     // zip zoom zone
 
-    /** No Operation */
-    public static final WiseRunnable NoOP = new Subscriber()::vandalize;
+    /**
+     * No Operation. The initialization of this field is guaranteed to be performed at the end of
+     * this class, and can also be used as a flag to indicate whether the Sinobu initialization is
+     * complete or not.
+     */
+    public static final WiseRunnable NoOP;
 
     /** The default language in this vm environment. */
     public static final Variable<String> Lang = Variable.of(Locale.getDefault().getLanguage());
@@ -2093,6 +2097,9 @@ public class I {
         // it is not efficient to save the translation results every time you get them, so
         // it is necessary to process them in batches over a period of time.
         translate.expose.debounce(1, TimeUnit.MINUTES).to(Subscriber::store);
+
+        // Must initialize at last
+        NoOP = new Subscriber()::vandalize;
     }
 
     /**
