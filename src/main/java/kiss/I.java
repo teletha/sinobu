@@ -9,7 +9,7 @@
  */
 package kiss;
 
-import static java.lang.Boolean.*;
+import static java.lang.Boolean.FALSE;
 import static java.time.format.DateTimeFormatter.*;
 
 import java.io.ByteArrayOutputStream;
@@ -177,12 +177,8 @@ public class I {
     // yield
     // zip zoom zone
 
-    /**
-     * No Operation. The initialization of this field is guaranteed to be performed at the end of
-     * this class, and can also be used as a flag to indicate whether the Sinobu initialization is
-     * complete or not.
-     */
-    public static final WiseRunnable NoOP;
+    /** No Operation */
+    public static final WiseRunnable NoOP = new Subscriber()::vandalize;
 
     /** The default language in this vm environment. */
     public static final Variable<String> Lang = Variable.of(Locale.getDefault().getLanguage());
@@ -205,11 +201,11 @@ public class I {
     /** The logger manager. */
     static final Map<String, Subscriber> logs = new ConcurrentHashMap<>();
 
-    /** The cache for {@link Lifestyle}. */
-    private static final Map<Class, Lifestyle> lifestyles = new ConcurrentHashMap<>();
+    /** In-memory cache for dynamic bundles. */
+    static final Map<String, Subscriber> bundles = new ConcurrentHashMap();
 
-    /** The definitions of extensions. */
-    private static final Map<Class, Ⅱ> extensions = new ConcurrentHashMap<>();
+    /** Coordinator of bundle save timing */
+    static final Signaling<Subscriber> translate = new Signaling();
 
     /** The parallel task scheduler. */
     static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(5, run -> {
@@ -218,6 +214,12 @@ public class I {
         t.setDaemon(true);
         return t;
     });
+
+    /** The cache for {@link Lifestyle}. */
+    private static final Map<Class, Lifestyle> lifestyles = new ConcurrentHashMap<>();
+
+    /** The definitions of extensions. */
+    private static final Map<Class, Ⅱ> extensions = new ConcurrentHashMap<>();
 
     /** The list of built-in primitive and wrapper classes. */
     private static final Class[] types = {boolean.class, int.class, long.class, float.class, double.class, char.class, byte.class,
@@ -263,6 +265,11 @@ public class I {
             dom = factory.newDocumentBuilder();
             dom.setErrorHandler(new DefaultHandler());
             xpath = XPathFactory.newInstance().newXPath();
+
+            // Automatic translation is often done multiple times in a short period of time, and
+            // it is not efficient to save the translation results every time you get them, so
+            // it is necessary to process them in batches over a period of time.
+            translate.expose.debounce(1, TimeUnit.MINUTES).to(Subscriber::store);
         } catch (Exception e) {
             throw I.quiet(e);
         }
@@ -375,6 +382,12 @@ public class I {
             // ignore
         }
         env.putAll(System.getenv());
+
+        // clean up all buffered log at the end of JVM
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            for (Subscriber s : logs.values())
+                if (s.obj != null) I.quiet(s.obj);
+        }));
     }
 
     /**
@@ -1252,14 +1265,6 @@ public class I {
     /** The display name for log level. */
     private static final char[] L = "TRACEDEBUGINFO WARN ERROR".toCharArray();
 
-    static {
-        // Clean up all buffered log
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            for (Subscriber s : logs.values())
-                if (s.obj != null) I.quiet(s.obj);
-        }));
-    }
-
     /**
      * Generic logging helper.
      * 
@@ -2084,22 +2089,6 @@ public class I {
                     });
         }).startWith(text).to(v -> t.set(I.express(v, I.list(context))));
         return t;
-    }
-
-    /** In-memory cache for dynamic bundles. */
-    static final Map<String, Subscriber> bundles = new ConcurrentHashMap();
-
-    /** Coordinator of bundle save timing */
-    static final Signaling<Subscriber> translate = new Signaling();
-
-    static {
-        // Automatic translation is often done multiple times in a short period of time, and
-        // it is not efficient to save the translation results every time you get them, so
-        // it is necessary to process them in batches over a period of time.
-        translate.expose.debounce(1, TimeUnit.MINUTES).to(Subscriber::store);
-
-        // Must initialize at last
-        NoOP = new Subscriber()::vandalize;
     }
 
     /**
