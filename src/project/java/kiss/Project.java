@@ -9,7 +9,7 @@
  */
 package kiss;
 
-import static bee.api.License.MIT;
+import static bee.api.License.*;
 
 import javax.lang.model.SourceVersion;
 
@@ -47,7 +47,8 @@ public class Project extends bee.api.Project {
                 * Refactoring safety
                 """);
 
-        require(SourceVersion.latest(), SourceVersion.RELEASE_11, SourceVersion.latest());
+        require(SourceVersion.RELEASE_16, SourceVersion.RELEASE_11);
+
         require("com.github.teletha", "antibug").atTest();
         require("com.pgs-soft", "HttpClientMock").atTest();
         require("io.reactivex.rxjava3", "rxjava").atTest();
