@@ -9,7 +9,7 @@
  */
 package kiss;
 
-import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.*;
 import static java.time.format.DateTimeFormatter.*;
 
 import java.io.ByteArrayOutputStream;
@@ -1356,7 +1356,7 @@ public class I {
                 // Format log message
                 // ================================================
                 // The date and time part (YYYY-MM-ddTHH:mm:ss.SSS ) is reusable
-                log.chars.clear().position(30);
+                log.chars.clear().position(24);
 
                 // Time - If the time is the same as the last time, the previous data will
                 // be used as is to speed up the process.
@@ -1395,7 +1395,7 @@ public class I {
 
                 // Level & Message
                 if (msg instanceof Supplier) msg = ((Supplier) msg).get();
-                log.chars.put(24, L, (o - 1) * 5, 5).put(String.valueOf(msg));
+                log.chars.put(L, (o - 1) * 5, 5).position(30).put(String.valueOf(msg));
 
                 // Caller Location
                 if (log.a[0] <= o) // Since javac (JDK16) doesn't infer it correctly, we'll put the
