@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.13.0](https://www.github.com/teletha/sinobu/compare/v2.12.0...v2.13.0) (2022-01-15)
+
+
+### Features
+
+* Expose the low-level logging method for other facade. ([ae9e790](https://www.github.com/teletha/sinobu/commit/ae9e790f987c3b0e2b0aedf974441a8a24f38836))
+* JSON parser uses memory more effectively. ([db68e1a](https://www.github.com/teletha/sinobu/commit/db68e1a66082e2e8d329a552c67462f9c8a37c96))
+* Provide initialization flag. ([192b553](https://www.github.com/teletha/sinobu/commit/192b553727509abea655f6c5c4e78931f42b2b9b))
+
+
+### Bug Fixes
+
+* Support java 11. ([53ff2f9](https://www.github.com/teletha/sinobu/commit/53ff2f9f8abec6808219c8effd2ab6973c892696))
+* Update java to 17. ([6c8c948](https://www.github.com/teletha/sinobu/commit/6c8c9489aa3a5dc968a26941f807f1db978bdb61))
+
 ## [2.12.0](https://www.github.com/teletha/sinobu/compare/v2.11.0...v2.12.0) (2022-01-05)
 
 
