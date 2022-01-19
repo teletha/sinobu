@@ -32,7 +32,7 @@ class EnvTest {
     @Test
     @EnabledIfEnvironmentVariable(named = "TEMP", matches = ".*")
     void known() {
-        assert I.env("TEMP", "default value") != "default value";
+        assert I.env("TEMP", "default value").equals("default value") == false;
     }
 
     /**
@@ -40,16 +40,34 @@ class EnvTest {
      */
     @Test
     void unknown() {
-        assert I.env("unknown", "default value") == "default value";
+        assert I.env("unknown", "default value").equals("default value");
     }
 
     /**
      * @see I#env(String, String)
      */
     @Test
-    void set() {
+    void setValue() {
         assert I.env("unknown_name") == null;
         assert I.env("unknown_name", "set new environment variable") == "set new environment variable";
         assert I.env("unknown_name") == "set new environment variable";
+    }
+
+    @Test
+    void dontOverride() {
+        assert I.env("dont_override", "initial value").equals("initial value");
+        assert I.env("dont_override", "this is ignored").equals("initial value");
+    }
+
+    @Test
+    void primitives() {
+        assert I.env("primitive_int", 10) == 10;
+        assert I.env("primitive_long", 10L) == 10L;
+        assert I.env("primitive_float", 10f) == 10f;
+        assert I.env("primitive_double", 10d) == 10d;
+        assert I.env("primitive_booelan", true) == true;
+        assert I.env("primitive_char", 'c') == 'c';
+        assert I.env("primitive_short", (short) 10) == (short) 10;
+        assert I.env("primitive_byte", (byte) 10) == (byte) 10;
     }
 }
