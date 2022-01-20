@@ -607,8 +607,7 @@ public class JSON {
         int end = current == -1 ? index : index - 1;
         String captured;
         if (capture.length() > 0) {
-            capture.append(buffer, captureStart, end - captureStart);
-            captured = capture.toString();
+            captured = capture.append(buffer, captureStart, end - captureStart).toString();
             capture.setLength(0);
         } else {
             int hash = 0;
