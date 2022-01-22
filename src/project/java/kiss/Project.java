@@ -9,11 +9,9 @@
  */
 package kiss;
 
-import static bee.api.License.*;
+import static bee.api.License.MIT;
 
 import javax.lang.model.SourceVersion;
-
-import bee.task.Jar;
 
 public class Project extends bee.api.Project {
 
@@ -66,9 +64,12 @@ public class Project extends bee.api.Project {
         require("org.slf4j", "slf4j-nop").atTest();
 
         versionControlSystem("https://github.com/teletha/sinobu");
+    }
 
-        // Task Settings
-        Jar.SkipDebugInfo = true;
-        Jar.SkipTraceInfo = false;
+    public static class Jar extends bee.task.Jar {
+        {
+            removeDebugInfo = true;
+            removeTraceInfo = false;
+        }
     }
 }
