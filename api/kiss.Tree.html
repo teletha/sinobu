@@ -5,14 +5,14 @@
 		<title>Sinobu API</title>
 		<base href="../"/>
 		<link href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release/build/styles/zenburn.min.css" media="print" onload="this.media=&#39;all&#39;" rel="stylesheet"/>
-		<script async="true" src="highlight.js"></script>
+		<script async="true" src="highlight.js" type="module"></script>
 		<script src="mimic.js" type="module"></script>
 		<link href="main.css" rel="stylesheet"/>
 	</head>
-	<body class="I">
-		<header class="c">
-			<h1 class="f" date="2022-01-22" ver="2.13.0"><code>Sinobu</code></h1>
-			<nav class="b"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
+	<body class="N">
+		<header class="l">
+			<h1 class="W" date="2022-01-23" ver="2.13.0"><code>Sinobu</code></h1>
+			<nav class="X"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#text"/>
 					</svg>Document</a><a href="api/"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#package"/>
@@ -23,7 +23,7 @@
 					</svg>Activity</a><a href="https://github.com//teletha/sinobu" target="_blank"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#github"/>
 					</svg>Repository</a></nav>
-			<div class="d" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
+			<div class="i" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#sun"/>
 					</svg>
 				</a><a id="dark" title="Change to a darker color scheme"><svg class="A svg" viewBox="0 0 24 24">
@@ -31,530 +31,645 @@
 					</svg>
 				</a></div>
 		</header>
-		<main class="N">
-			<nav class="K">
+		<main class="P">
+			<nav class="Z">
 				<div></div>
 			</nav>
-			<article class="U" id="Article">
-				<section class="O"><code class="h">kiss</code>
-					<h2 class="AbstractClass e"><code class="T">Tree</code><code class="i">&#60;<code>Name</code>, <code>Node</code>&#62;</code></h2>
-					<ul class="C D">
-						<li><code>Name</code></li>
-						<li><code>Node</code><code class="extends"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></code></li>
-					</ul><span class="B">The skeleton of DSL for tree structure.</span></section>
-				<section class="O" id="root">
-					<h2 class="Y"><i class="FINAL"><i class="PUBLIC"></i></i><code class="T">root</code><i class="g"><code class="return"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html">List</a><code class="parameters"><code>Node</code></code></code></i></h2><span class="B">The anonymous root nodes.</span></section>
-				<section class="O" id="Tree(kiss.WiseTriFunction,java.util.function.IntUnaryOperator)">
-					<h2 class="Y"><i class="PROTECTED"></i><code class="T">Tree</code><code class="i">(<code><a href="api/kiss.WiseTriFunction.html">WiseTriFunction</a><code class="parameters"><code>Name</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html">Integer</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code>, <code>Node</code></code></code> <code class="parameterName">namedNodeBuilder</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/IntUnaryOperator.html">IntUnaryOperator</a></code> <code class="parameterName">uniqueKeyBuilder</code>)</code></h2>
+			<article class="R" id="Article">
+				<section class="c"><code class="j">kiss</code>
+					<h2 class="AbstractClass e"><code class="k">Tree</code><code class="I">&#60;<code>Name</code>, <code>Node</code>&#62;</code></h2>
+					<div class="V">
+						<ul class="C D">
+							<li><code>Name</code></li>
+							<li><code>Node</code><code class="extends"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></code></li>
+						</ul>
+					</div><span class="B"><p>The skeleton of DSL for tree structure.</p>
+					</span></section>
+				<section class="c" id="root">
+					<h2 class="L"><i class="FINAL"><i class="PUBLIC"></i></i><code class="k">root</code><i class="h"><code class="return"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html">List</a><code class="parameters"><code>Node</code></code></code></i></h2><span class="B"><p>The anonymous root nodes.</p>
+					</span></section>
+				<section class="c" id="Tree(kiss.WiseTriFunction,java.util.function.IntUnaryOperator)">
+					<h2 class="L"><i class="PROTECTED"></i><code class="k">Tree</code><code class="I">(<code><a href="api/kiss.WiseTriFunction.html">WiseTriFunction</a><code class="parameters"><code>Name</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html">Integer</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code>, <code>Node</code></code></code> <code class="parameterName">namedNodeBuilder</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/IntUnaryOperator.html">IntUnaryOperator</a></code> <code class="parameterName">uniqueKeyBuilder</code>)</code></h2>
 					<table class="H">
-						<tr class="Z">
+						<tr class="Q">
 							<td><code><a href="api/kiss.WiseTriFunction.html">WiseTriFunction</a><code class="parameters"><code>Name</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html">Integer</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code>, <code>Node</code></code></code> <code>namedNodeBuilder</code></td>
-							<td><span>A builder for special named node. <code><a href="api/kiss.Tree.html">Tree</a></code> provides name and
-            unique id.</span></td>
+							<td><span><p>A builder for special named node. <code><a href="api/kiss.Tree.html">Tree</a></code> provides name and
+            unique id.</p>
+								</span></td>
 						</tr>
-						<tr class="Z">
+						<tr class="Q">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/IntUnaryOperator.html">IntUnaryOperator</a></code> <code>uniqueKeyBuilder</code></td>
-							<td><span>A builder for identical key.</span></td>
+							<td><span><p>A builder for identical key.</p>
+								</span></td>
 						</tr>
-					</table><span class="B">Create tree structure DSL.</span></section>
-				<section class="O" id="Tree(kiss.WiseTriFunction,java.util.function.IntUnaryOperator,java.util.function.BiConsumer)">
-					<h2 class="Y"><i class="PROTECTED"></i><code class="T">Tree</code><code class="i">(<code><a href="api/kiss.WiseTriFunction.html">WiseTriFunction</a><code class="parameters"><code>Name</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html">Integer</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code>, <code>Node</code></code></code> <code class="parameterName">namedNodeBuilder</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/IntUnaryOperator.html">IntUnaryOperator</a></code> <code class="parameterName">uniqueKeyBuilder</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/BiConsumer.html">BiConsumer</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code>, <code>Node</code></code></code> <code class="parameterName">followerBuilder</code>)</code></h2>
+					</table><span class="B"><p>Create tree structure DSL.</p>
+					</span></section>
+				<section class="c" id="Tree(kiss.WiseTriFunction,java.util.function.IntUnaryOperator,java.util.function.BiConsumer)">
+					<h2 class="L"><i class="PROTECTED"></i><code class="k">Tree</code><code class="I">(<code><a href="api/kiss.WiseTriFunction.html">WiseTriFunction</a><code class="parameters"><code>Name</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html">Integer</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code>, <code>Node</code></code></code> <code class="parameterName">namedNodeBuilder</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/IntUnaryOperator.html">IntUnaryOperator</a></code> <code class="parameterName">uniqueKeyBuilder</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/BiConsumer.html">BiConsumer</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code>, <code>Node</code></code></code> <code class="parameterName">followerBuilder</code>)</code></h2>
 					<table class="H">
-						<tr class="Z">
+						<tr class="Q">
 							<td><code><a href="api/kiss.WiseTriFunction.html">WiseTriFunction</a><code class="parameters"><code>Name</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html">Integer</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code>, <code>Node</code></code></code> <code>namedNodeBuilder</code></td>
-							<td><span>A builder for special named node. <code><a href="api/kiss.Tree.html">Tree</a></code> provides name and
-            unique id.</span></td>
+							<td><span><p>A builder for special named node. <code><a href="api/kiss.Tree.html">Tree</a></code> provides name and
+            unique id.</p>
+								</span></td>
 						</tr>
-						<tr class="Z">
+						<tr class="Q">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/IntUnaryOperator.html">IntUnaryOperator</a></code> <code>uniqueKeyBuilder</code></td>
-							<td><span>A builder for identical key.</span></td>
+							<td><span><p>A builder for identical key.</p>
+								</span></td>
 						</tr>
-						<tr class="Z">
+						<tr class="Q">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/BiConsumer.html">BiConsumer</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code>, <code>Node</code></code></code> <code>followerBuilder</code></td>
 							<td></td>
 						</tr>
-					</table><span class="B">Create tree structure DSL.</span></section>
-				<section class="O" id="$(java.util.function.Consumer...)">
-					<h2 class="Y"><i class="FINAL"><i class="PROTECTED"></i></i><code class="T">$</code><code class="i">(<code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">nodes</code>)</code><i class="g"><code>void</code></i></h2>
+					</table><span class="B"><p>Create tree structure DSL.</p>
+					</span></section>
+				<section class="c" id="$(java.util.function.Consumer...)">
+					<h2 class="L"><i class="FINAL"><i class="PROTECTED"></i></i><code class="k">$</code><code class="I">(<code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">nodes</code>)</code><i class="h"><code>void</code></i></h2>
 					<table class="H">
-						<tr class="Z">
+						<tr class="Q">
 							<td><code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code>nodes</code></td>
-							<td><span>A list of following <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a></code> node.</span></td>
+							<td><span><p>A list of following <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a></code> node.</p>
+								</span></td>
 						</tr>
-					</table><span class="B">Declare nodes.</span></section>
-				<section class="O" id="$(java.lang.Object,kiss.WiseRunnable)">
-					<h2 class="Y"><i class="FINAL"><i class="PROTECTED"></i></i><code class="T">$</code><code class="i">(<code>Name</code> <code class="parameterName">name</code>, <code><a href="api/kiss.WiseRunnable.html">WiseRunnable</a></code> <code class="parameterName">writer</code>)</code><i class="g"><code>void</code></i></h2>
-					<table class="H">
-						<tr class="Z">
-							<td><code>Name</code> <code>name</code></td>
-							<td><span>A name of new node.</span></td>
-						</tr>
-						<tr class="Z">
-							<td><code><a href="api/kiss.WiseRunnable.html">WiseRunnable</a></code> <code>writer</code></td>
-							<td><span>A content writer that lambda expression make us readable on nested structure.</span></td>
-						</tr>
-					</table><span class="B">Declare node with name.
- <p>
- Generic named node builder because named node is frequently used in tree structure.</p>
+					</table><span class="B"><p>Declare nodes.</p>
 					</span></section>
-				<section class="O" id="$(java.lang.Object,java.util.function.Consumer,kiss.WiseRunnable)">
-					<h2 class="Y"><i class="FINAL"><i class="PROTECTED"></i></i><code class="T">$</code><code class="i">(<code>Name</code> <code class="parameterName">name</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">one</code>, <code><a href="api/kiss.WiseRunnable.html">WiseRunnable</a></code> <code class="parameterName">writer</code>)</code><i class="g"><code>void</code></i></h2>
+				<section class="c" id="$(java.lang.Object,kiss.WiseRunnable)">
+					<h2 class="L"><i class="FINAL"><i class="PROTECTED"></i></i><code class="k">$</code><code class="I">(<code>Name</code> <code class="parameterName">name</code>, <code><a href="api/kiss.WiseRunnable.html">WiseRunnable</a></code> <code class="parameterName">writer</code>)</code><i class="h"><code>void</code></i></h2>
 					<table class="H">
-						<tr class="Z">
+						<tr class="Q">
 							<td><code>Name</code> <code>name</code></td>
-							<td><span>A name of new node.</span></td>
+							<td><span><p>A name of new node.</p>
+								</span></td>
 						</tr>
-						<tr class="Z">
-							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code>one</code></td>
-							<td><span>A following node.</span></td>
-						</tr>
-						<tr class="Z">
+						<tr class="Q">
 							<td><code><a href="api/kiss.WiseRunnable.html">WiseRunnable</a></code> <code>writer</code></td>
-							<td><span>A content writer that lambda expression make us readable on nested structure.</span></td>
+							<td><span><p>A content writer that lambda expression make us readable on nested structure.</p>
+								</span></td>
 						</tr>
-					</table><span class="B">Declare node with name.
- <p>
+					</table><span class="B"><p>Declare node with name.
+ 
+							<p>
  Generic named node builder because named node is frequently used in tree structure.</p>
+						</p>
 					</span></section>
-				<section class="O" id="$(java.lang.Object,java.util.function.Consumer,java.util.function.Consumer,kiss.WiseRunnable)">
-					<h2 class="Y"><i class="FINAL"><i class="PROTECTED"></i></i><code class="T">$</code><code class="i">(<code>Name</code> <code class="parameterName">name</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">one</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">two</code>, <code><a href="api/kiss.WiseRunnable.html">WiseRunnable</a></code> <code class="parameterName">writer</code>)</code><i class="g"><code>void</code></i></h2>
+				<section class="c" id="$(java.lang.Object,java.util.function.Consumer,kiss.WiseRunnable)">
+					<h2 class="L"><i class="FINAL"><i class="PROTECTED"></i></i><code class="k">$</code><code class="I">(<code>Name</code> <code class="parameterName">name</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">one</code>, <code><a href="api/kiss.WiseRunnable.html">WiseRunnable</a></code> <code class="parameterName">writer</code>)</code><i class="h"><code>void</code></i></h2>
 					<table class="H">
-						<tr class="Z">
+						<tr class="Q">
 							<td><code>Name</code> <code>name</code></td>
-							<td><span>A name of new node.</span></td>
+							<td><span><p>A name of new node.</p>
+								</span></td>
 						</tr>
-						<tr class="Z">
+						<tr class="Q">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code>one</code></td>
-							<td><span>A following node.</span></td>
+							<td><span><p>A following node.</p>
+								</span></td>
 						</tr>
-						<tr class="Z">
+						<tr class="Q">
+							<td><code><a href="api/kiss.WiseRunnable.html">WiseRunnable</a></code> <code>writer</code></td>
+							<td><span><p>A content writer that lambda expression make us readable on nested structure.</p>
+								</span></td>
+						</tr>
+					</table><span class="B"><p>Declare node with name.
+ 
+							<p>
+ Generic named node builder because named node is frequently used in tree structure.</p>
+						</p>
+					</span></section>
+				<section class="c" id="$(java.lang.Object,java.util.function.Consumer,java.util.function.Consumer,kiss.WiseRunnable)">
+					<h2 class="L"><i class="FINAL"><i class="PROTECTED"></i></i><code class="k">$</code><code class="I">(<code>Name</code> <code class="parameterName">name</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">one</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">two</code>, <code><a href="api/kiss.WiseRunnable.html">WiseRunnable</a></code> <code class="parameterName">writer</code>)</code><i class="h"><code>void</code></i></h2>
+					<table class="H">
+						<tr class="Q">
+							<td><code>Name</code> <code>name</code></td>
+							<td><span><p>A name of new node.</p>
+								</span></td>
+						</tr>
+						<tr class="Q">
+							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code>one</code></td>
+							<td><span><p>A following node.</p>
+								</span></td>
+						</tr>
+						<tr class="Q">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code>two</code></td>
-							<td><span>A following node.</span></td>
+							<td><span><p>A following node.</p>
+								</span></td>
 						</tr>
-						<tr class="Z">
+						<tr class="Q">
 							<td><code><a href="api/kiss.WiseRunnable.html">WiseRunnable</a></code> <code>writer</code></td>
-							<td><span>A content writer that lambda expression make us readable on nested structure.</span></td>
+							<td><span><p>A content writer that lambda expression make us readable on nested structure.</p>
+								</span></td>
 						</tr>
-					</table><span class="B">Declare node with name.
- <p>
+					</table><span class="B"><p>Declare node with name.
+ 
+							<p>
  Generic named node builder because named node is frequently used in tree structure.</p>
+						</p>
 					</span></section>
-				<section class="O" id="$(java.lang.Object,java.util.function.Consumer,java.util.function.Consumer,java.util.function.Consumer,kiss.WiseRunnable)">
-					<h2 class="Y"><i class="FINAL"><i class="PROTECTED"></i></i><code class="T">$</code><code class="i">(<code>Name</code> <code class="parameterName">name</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">one</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">two</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">three</code>, <code><a href="api/kiss.WiseRunnable.html">WiseRunnable</a></code> <code class="parameterName">writer</code>)</code><i class="g"><code>void</code></i></h2>
+				<section class="c" id="$(java.lang.Object,java.util.function.Consumer,java.util.function.Consumer,java.util.function.Consumer,kiss.WiseRunnable)">
+					<h2 class="L"><i class="FINAL"><i class="PROTECTED"></i></i><code class="k">$</code><code class="I">(<code>Name</code> <code class="parameterName">name</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">one</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">two</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">three</code>, <code><a href="api/kiss.WiseRunnable.html">WiseRunnable</a></code> <code class="parameterName">writer</code>)</code><i class="h"><code>void</code></i></h2>
 					<table class="H">
-						<tr class="Z">
+						<tr class="Q">
 							<td><code>Name</code> <code>name</code></td>
-							<td><span>A name of new node.</span></td>
+							<td><span><p>A name of new node.</p>
+								</span></td>
 						</tr>
-						<tr class="Z">
+						<tr class="Q">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code>one</code></td>
-							<td><span>A following node.</span></td>
+							<td><span><p>A following node.</p>
+								</span></td>
 						</tr>
-						<tr class="Z">
+						<tr class="Q">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code>two</code></td>
-							<td><span>A following node.</span></td>
+							<td><span><p>A following node.</p>
+								</span></td>
 						</tr>
-						<tr class="Z">
+						<tr class="Q">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code>three</code></td>
-							<td><span>A following node.</span></td>
+							<td><span><p>A following node.</p>
+								</span></td>
 						</tr>
-						<tr class="Z">
+						<tr class="Q">
 							<td><code><a href="api/kiss.WiseRunnable.html">WiseRunnable</a></code> <code>writer</code></td>
-							<td><span>A content writer that lambda expression make us readable on nested structure.</span></td>
+							<td><span><p>A content writer that lambda expression make us readable on nested structure.</p>
+								</span></td>
 						</tr>
-					</table><span class="B">Declare node with name.
- <p>
+					</table><span class="B"><p>Declare node with name.
+ 
+							<p>
  Generic named node builder because named node is frequently used in tree structure.</p>
+						</p>
 					</span></section>
-				<section class="O" id="$(java.lang.Object,java.util.function.Consumer,java.util.function.Consumer,java.util.function.Consumer,java.util.function.Consumer,kiss.WiseRunnable)">
-					<h2 class="Y"><i class="FINAL"><i class="PROTECTED"></i></i><code class="T">$</code><code class="i">(<code>Name</code> <code class="parameterName">name</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">one</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">two</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">three</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">four</code>, <code><a href="api/kiss.WiseRunnable.html">WiseRunnable</a></code> <code class="parameterName">writer</code>)</code><i class="g"><code>void</code></i></h2>
+				<section class="c" id="$(java.lang.Object,java.util.function.Consumer,java.util.function.Consumer,java.util.function.Consumer,java.util.function.Consumer,kiss.WiseRunnable)">
+					<h2 class="L"><i class="FINAL"><i class="PROTECTED"></i></i><code class="k">$</code><code class="I">(<code>Name</code> <code class="parameterName">name</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">one</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">two</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">three</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">four</code>, <code><a href="api/kiss.WiseRunnable.html">WiseRunnable</a></code> <code class="parameterName">writer</code>)</code><i class="h"><code>void</code></i></h2>
 					<table class="H">
-						<tr class="Z">
+						<tr class="Q">
 							<td><code>Name</code> <code>name</code></td>
-							<td><span>A name of new node.</span></td>
+							<td><span><p>A name of new node.</p>
+								</span></td>
 						</tr>
-						<tr class="Z">
+						<tr class="Q">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code>one</code></td>
-							<td><span>A following node.</span></td>
+							<td><span><p>A following node.</p>
+								</span></td>
 						</tr>
-						<tr class="Z">
+						<tr class="Q">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code>two</code></td>
-							<td><span>A following node.</span></td>
+							<td><span><p>A following node.</p>
+								</span></td>
 						</tr>
-						<tr class="Z">
+						<tr class="Q">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code>three</code></td>
-							<td><span>A following node.</span></td>
+							<td><span><p>A following node.</p>
+								</span></td>
 						</tr>
-						<tr class="Z">
+						<tr class="Q">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code>four</code></td>
-							<td><span>A following node.</span></td>
+							<td><span><p>A following node.</p>
+								</span></td>
 						</tr>
-						<tr class="Z">
+						<tr class="Q">
 							<td><code><a href="api/kiss.WiseRunnable.html">WiseRunnable</a></code> <code>writer</code></td>
-							<td><span>A content writer that lambda expression make us readable on nested structure.</span></td>
+							<td><span><p>A content writer that lambda expression make us readable on nested structure.</p>
+								</span></td>
 						</tr>
-					</table><span class="B">Declare node with name.
- <p>
+					</table><span class="B"><p>Declare node with name.
+ 
+							<p>
  Generic named node builder because named node is frequently used in tree structure.</p>
+						</p>
 					</span></section>
-				<section class="O" id="$(java.lang.Object,java.util.function.Consumer...)">
-					<h2 class="Y"><i class="FINAL"><i class="PROTECTED"></i></i><code class="T">$</code><code class="i">(<code>Name</code> <code class="parameterName">name</code>, <code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">nodes</code>)</code><i class="g"><code>void</code></i></h2>
+				<section class="c" id="$(java.lang.Object,java.util.function.Consumer...)">
+					<h2 class="L"><i class="FINAL"><i class="PROTECTED"></i></i><code class="k">$</code><code class="I">(<code>Name</code> <code class="parameterName">name</code>, <code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">nodes</code>)</code><i class="h"><code>void</code></i></h2>
 					<table class="H">
-						<tr class="Z">
+						<tr class="Q">
 							<td><code>Name</code> <code>name</code></td>
-							<td><span>A name of new node.</span></td>
+							<td><span><p>A name of new node.</p>
+								</span></td>
 						</tr>
-						<tr class="Z">
+						<tr class="Q">
 							<td><code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code>nodes</code></td>
-							<td><span>A list of following <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a></code> node.</span></td>
+							<td><span><p>A list of following <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a></code> node.</p>
+								</span></td>
 						</tr>
-					</table><span class="B">Declare node with name.
- <p>
+					</table><span class="B"><p>Declare node with name.
+ 
+							<p>
  Generic named node builder because named node is frequently used in tree structure.</p>
+						</p>
 					</span></section>
-				<section class="O" id="foŕ(int,java.util.function.Consumer)">
-					<h2 class="Y"><i class="FINAL"><i class="PROTECTED"></i></i><code class="T">foŕ</code><code class="i">(<code>int</code> <code class="parameterName">size</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html">Integer</a></code></code></code> <code class="parameterName">writer</code>)</code><i class="g"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></h2>
+				<section class="c" id="foŕ(int,java.util.function.Consumer)">
+					<h2 class="L"><i class="FINAL"><i class="PROTECTED"></i></i><code class="k">foŕ</code><code class="I">(<code>int</code> <code class="parameterName">size</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html">Integer</a></code></code></code> <code class="parameterName">writer</code>)</code><i class="h"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></h2>
 					<table class="H">
-						<tr class="Z">
+						<tr class="Q">
 							<td><code>int</code> <code>size</code></td>
-							<td><span>An exclusive upper bound.</span></td>
+							<td><span><p>An exclusive upper bound.</p>
+								</span></td>
 						</tr>
-						<tr class="Z">
+						<tr class="Q">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html">Integer</a></code></code></code> <code>writer</code></td>
-							<td><span>A content writer.</span></td>
+							<td><span><p>A content writer.</p>
+								</span></td>
 						</tr>
-						<tr class="k">
+						<tr class="K">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></td>
-							<td><span>A declaration of contents.</span></td>
+							<td><span><p>A declaration of contents.</p>
+								</span></td>
 						</tr>
-					</table><span class="B">Nest-like range writer.
- <p>
+					</table><span class="B"><p>Nest-like range writer.
+ 
+							<p>
  Each item is identified by id and its object, you can receive them on node builder.</p>
+						</p>
 					</span></section>
-				<section class="O" id="foŕ(int,int,java.util.function.Consumer)">
-					<h2 class="Y"><i class="FINAL"><i class="PROTECTED"></i></i><code class="T">foŕ</code><code class="i">(<code>int</code> <code class="parameterName">startInclusive</code>, <code>int</code> <code class="parameterName">endExclusive</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html">Integer</a></code></code></code> <code class="parameterName">writer</code>)</code><i class="g"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></h2>
+				<section class="c" id="foŕ(int,int,java.util.function.Consumer)">
+					<h2 class="L"><i class="FINAL"><i class="PROTECTED"></i></i><code class="k">foŕ</code><code class="I">(<code>int</code> <code class="parameterName">startInclusive</code>, <code>int</code> <code class="parameterName">endExclusive</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html">Integer</a></code></code></code> <code class="parameterName">writer</code>)</code><i class="h"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></h2>
 					<table class="H">
-						<tr class="Z">
+						<tr class="Q">
 							<td><code>int</code> <code>startInclusive</code></td>
-							<td><span>An inclusive initial value</span></td>
+							<td><span><p>An inclusive initial value</p>
+								</span></td>
 						</tr>
-						<tr class="Z">
+						<tr class="Q">
 							<td><code>int</code> <code>endExclusive</code></td>
-							<td><span>An exclusive upper bound.</span></td>
+							<td><span><p>An exclusive upper bound.</p>
+								</span></td>
 						</tr>
-						<tr class="Z">
+						<tr class="Q">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html">Integer</a></code></code></code> <code>writer</code></td>
-							<td><span>A content writer.</span></td>
+							<td><span><p>A content writer.</p>
+								</span></td>
 						</tr>
-						<tr class="k">
+						<tr class="K">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></td>
-							<td><span>A declaration of contents.</span></td>
+							<td><span><p>A declaration of contents.</p>
+								</span></td>
 						</tr>
-					</table><span class="B">Nest-like range writer.
- <p>
+					</table><span class="B"><p>Nest-like range writer.
+ 
+							<p>
  Each item is identified by id and its object, you can receive them on node builder.</p>
+						</p>
 					</span></section>
-				<section class="O" id="foŕ(java.lang.Class,java.util.function.Consumer)">
-					<h2 class="Y"><i class="FINAL"><i class="PROTECTED"></i></i><code class="T">foŕ</code><code class="i">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>E</code></code></code> <code class="parameterName">type</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>E</code></code></code> <code class="parameterName">writer</code>)</code><i class="g"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></h2>
+				<section class="c" id="foŕ(java.lang.Class,java.util.function.Consumer)">
+					<h2 class="L"><i class="FINAL"><i class="PROTECTED"></i></i><code class="k">foŕ</code><code class="I">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>E</code></code></code> <code class="parameterName">type</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>E</code></code></code> <code class="parameterName">writer</code>)</code><i class="h"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></h2>
 					<table class="H">
-						<tr class="a">
+						<tr class="f">
 							<td><code>E</code><code class="extends"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Enum.html">Enum</a></code></code></td>
 							<td></td>
 						</tr>
-						<tr class="Z">
+						<tr class="Q">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>E</code></code></code> <code>type</code></td>
-							<td><span>A type of <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Enum.html">Enum</a></code> contents.</span></td>
+							<td><span><p>A type of <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Enum.html">Enum</a></code> contents.</p>
+								</span></td>
 						</tr>
-						<tr class="Z">
+						<tr class="Q">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>E</code></code></code> <code>writer</code></td>
-							<td><span>A content writer.</span></td>
+							<td><span><p>A content writer.</p>
+								</span></td>
 						</tr>
-						<tr class="k">
+						<tr class="K">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></td>
-							<td><span>A declaration of contents.</span></td>
+							<td><span><p>A declaration of contents.</p>
+								</span></td>
 						</tr>
-					</table><span class="B">Nest-like collection writer.
- <p>
+					</table><span class="B"><p>Nest-like collection writer.
+ 
+							<p>
  Each item is identified by id and its object, you can receive them on node builder.</p>
+						</p>
 					</span></section>
-				<section class="O" id="foŕ(java.lang.Class,java.util.function.Function)">
-					<h2 class="Y"><i class="FINAL"><i class="PROTECTED"></i></i><code class="T">foŕ</code><code class="i">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>E</code></code></code> <code class="parameterName">type</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html">Function</a><code class="parameters"><code>E</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></code></code> <code class="parameterName">writer</code>)</code><i class="g"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></h2>
+				<section class="c" id="foŕ(java.lang.Class,java.util.function.Function)">
+					<h2 class="L"><i class="FINAL"><i class="PROTECTED"></i></i><code class="k">foŕ</code><code class="I">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>E</code></code></code> <code class="parameterName">type</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html">Function</a><code class="parameters"><code>E</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></code></code> <code class="parameterName">writer</code>)</code><i class="h"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></h2>
 					<table class="H">
-						<tr class="a">
+						<tr class="f">
 							<td><code>E</code><code class="extends"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Enum.html">Enum</a></code></code></td>
 							<td></td>
 						</tr>
-						<tr class="Z">
+						<tr class="Q">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>E</code></code></code> <code>type</code></td>
-							<td><span>A type of <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Enum.html">Enum</a></code> contents.</span></td>
+							<td><span><p>A type of <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Enum.html">Enum</a></code> contents.</p>
+								</span></td>
 						</tr>
-						<tr class="Z">
+						<tr class="Q">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html">Function</a><code class="parameters"><code>E</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></code></code> <code>writer</code></td>
-							<td><span>A content writer.</span></td>
+							<td><span><p>A content writer.</p>
+								</span></td>
 						</tr>
-						<tr class="k">
+						<tr class="K">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></td>
-							<td><span>A declaration of contents.</span></td>
+							<td><span><p>A declaration of contents.</p>
+								</span></td>
 						</tr>
-					</table><span class="B">Nest-like collection writer.
- <p>
+					</table><span class="B"><p>Nest-like collection writer.
+ 
+							<p>
  Each item is identified by id and its object, you can receive them on node builder.</p>
+						</p>
 					</span></section>
-				<section class="O" id="foŕ(java.lang.Object[],java.util.function.Consumer)">
-					<h2 class="Y"><i class="FINAL"><i class="PROTECTED"></i></i><code class="T">foŕ</code><code class="i">(<code array="fix">C</code> <code class="parameterName">contents</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>C</code></code></code> <code class="parameterName">writer</code>)</code><i class="g"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></h2>
+				<section class="c" id="foŕ(java.lang.Object[],java.util.function.Consumer)">
+					<h2 class="L"><i class="FINAL"><i class="PROTECTED"></i></i><code class="k">foŕ</code><code class="I">(<code array="fix">C</code> <code class="parameterName">contents</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>C</code></code></code> <code class="parameterName">writer</code>)</code><i class="h"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></h2>
 					<table class="H">
-						<tr class="a">
+						<tr class="f">
 							<td><code>C</code></td>
 							<td></td>
 						</tr>
-						<tr class="Z">
+						<tr class="Q">
 							<td><code array="fix">C</code> <code>contents</code></td>
-							<td><span>A list of child contents.</span></td>
+							<td><span><p>A list of child contents.</p>
+								</span></td>
 						</tr>
-						<tr class="Z">
+						<tr class="Q">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>C</code></code></code> <code>writer</code></td>
-							<td><span>A content writer.</span></td>
+							<td><span><p>A content writer.</p>
+								</span></td>
 						</tr>
-						<tr class="k">
+						<tr class="K">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></td>
-							<td><span>A declaration of contents.</span></td>
+							<td><span><p>A declaration of contents.</p>
+								</span></td>
 						</tr>
-					</table><span class="B">Nest-like collection writer.
- <p>
+					</table><span class="B"><p>Nest-like collection writer.
+ 
+							<p>
  Each item is identified by id and its object, you can receive them on node builder.</p>
+						</p>
 					</span></section>
-				<section class="O" id="foŕ(java.lang.Object[],java.util.function.Function)">
-					<h2 class="Y"><i class="FINAL"><i class="PROTECTED"></i></i><code class="T">foŕ</code><code class="i">(<code array="fix">C</code> <code class="parameterName">contents</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html">Function</a><code class="parameters"><code>C</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></code></code> <code class="parameterName">writer</code>)</code><i class="g"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></h2>
+				<section class="c" id="foŕ(java.lang.Object[],java.util.function.Function)">
+					<h2 class="L"><i class="FINAL"><i class="PROTECTED"></i></i><code class="k">foŕ</code><code class="I">(<code array="fix">C</code> <code class="parameterName">contents</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html">Function</a><code class="parameters"><code>C</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></code></code> <code class="parameterName">writer</code>)</code><i class="h"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></h2>
 					<table class="H">
-						<tr class="a">
+						<tr class="f">
 							<td><code>C</code></td>
 							<td></td>
 						</tr>
-						<tr class="Z">
+						<tr class="Q">
 							<td><code array="fix">C</code> <code>contents</code></td>
-							<td><span>A list of child contents.</span></td>
+							<td><span><p>A list of child contents.</p>
+								</span></td>
 						</tr>
-						<tr class="Z">
+						<tr class="Q">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html">Function</a><code class="parameters"><code>C</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></code></code> <code>writer</code></td>
-							<td><span>A content writer.</span></td>
+							<td><span><p>A content writer.</p>
+								</span></td>
 						</tr>
-						<tr class="k">
+						<tr class="K">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></td>
-							<td><span>A declaration of contents.</span></td>
+							<td><span><p>A declaration of contents.</p>
+								</span></td>
 						</tr>
-					</table><span class="B">Nest-like collection writer.
- <p>
+					</table><span class="B"><p>Nest-like collection writer.
+ 
+							<p>
  Each item is identified by id and its object, you can receive them on node builder.</p>
+						</p>
 					</span></section>
-				<section class="O" id="foŕ(java.lang.Iterable,java.util.function.Consumer)">
-					<h2 class="Y"><i class="FINAL"><i class="PROTECTED"></i></i><code class="T">foŕ</code><code class="i">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html">Iterable</a><code class="parameters"><code>C</code></code></code> <code class="parameterName">contents</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>C</code></code></code> <code class="parameterName">writer</code>)</code><i class="g"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></h2>
+				<section class="c" id="foŕ(java.lang.Iterable,java.util.function.Consumer)">
+					<h2 class="L"><i class="FINAL"><i class="PROTECTED"></i></i><code class="k">foŕ</code><code class="I">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html">Iterable</a><code class="parameters"><code>C</code></code></code> <code class="parameterName">contents</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>C</code></code></code> <code class="parameterName">writer</code>)</code><i class="h"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></h2>
 					<table class="H">
-						<tr class="a">
+						<tr class="f">
 							<td><code>C</code></td>
 							<td></td>
 						</tr>
-						<tr class="Z">
+						<tr class="Q">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html">Iterable</a><code class="parameters"><code>C</code></code></code> <code>contents</code></td>
-							<td><span>A list of child contents.</span></td>
+							<td><span><p>A list of child contents.</p>
+								</span></td>
 						</tr>
-						<tr class="Z">
+						<tr class="Q">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>C</code></code></code> <code>writer</code></td>
-							<td><span>A content writer.</span></td>
+							<td><span><p>A content writer.</p>
+								</span></td>
 						</tr>
-						<tr class="k">
+						<tr class="K">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></td>
-							<td><span>A declaration of contents.</span></td>
+							<td><span><p>A declaration of contents.</p>
+								</span></td>
 						</tr>
-					</table><span class="B">Nest-like collection writer.
- <p>
+					</table><span class="B"><p>Nest-like collection writer.
+ 
+							<p>
  Each item is identified by id and its object, you can receive them on node builder.</p>
+						</p>
 					</span></section>
-				<section class="O" id="foŕ(java.lang.Iterable,java.util.function.Function)">
-					<h2 class="Y"><i class="FINAL"><i class="PROTECTED"></i></i><code class="T">foŕ</code><code class="i">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html">Iterable</a><code class="parameters"><code>C</code></code></code> <code class="parameterName">contents</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html">Function</a><code class="parameters"><code>C</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></code></code> <code class="parameterName">writer</code>)</code><i class="g"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></h2>
+				<section class="c" id="foŕ(java.lang.Iterable,java.util.function.Function)">
+					<h2 class="L"><i class="FINAL"><i class="PROTECTED"></i></i><code class="k">foŕ</code><code class="I">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html">Iterable</a><code class="parameters"><code>C</code></code></code> <code class="parameterName">contents</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html">Function</a><code class="parameters"><code>C</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></code></code> <code class="parameterName">writer</code>)</code><i class="h"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></h2>
 					<table class="H">
-						<tr class="a">
+						<tr class="f">
 							<td><code>C</code></td>
 							<td></td>
 						</tr>
-						<tr class="Z">
+						<tr class="Q">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html">Iterable</a><code class="parameters"><code>C</code></code></code> <code>contents</code></td>
-							<td><span>A list of child contents.</span></td>
+							<td><span><p>A list of child contents.</p>
+								</span></td>
 						</tr>
-						<tr class="Z">
+						<tr class="Q">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html">Function</a><code class="parameters"><code>C</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></code></code> <code>writer</code></td>
-							<td><span>A content writer.</span></td>
+							<td><span><p>A content writer.</p>
+								</span></td>
 						</tr>
-						<tr class="k">
+						<tr class="K">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></td>
-							<td><span>A declaration of contents.</span></td>
+							<td><span><p>A declaration of contents.</p>
+								</span></td>
 						</tr>
-					</table><span class="B">Nest-like collection writer.
- <p>
+					</table><span class="B"><p>Nest-like collection writer.
+ 
+							<p>
  Each item is identified by id and its object, you can receive them on node builder.</p>
+						</p>
 					</span></section>
-				<section class="O" id="foŕ(java.lang.Iterable,java.util.function.BiConsumer)">
-					<h2 class="Y"><i class="FINAL"><i class="PROTECTED"></i></i><code class="T">foŕ</code><code class="i">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html">Iterable</a><code class="parameters"><code>C</code></code></code> <code class="parameterName">contents</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/BiConsumer.html">BiConsumer</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html">Integer</a></code>, <code>C</code></code></code> <code class="parameterName">writer</code>)</code><i class="g"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></h2>
+				<section class="c" id="foŕ(java.lang.Iterable,java.util.function.BiConsumer)">
+					<h2 class="L"><i class="FINAL"><i class="PROTECTED"></i></i><code class="k">foŕ</code><code class="I">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html">Iterable</a><code class="parameters"><code>C</code></code></code> <code class="parameterName">contents</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/BiConsumer.html">BiConsumer</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html">Integer</a></code>, <code>C</code></code></code> <code class="parameterName">writer</code>)</code><i class="h"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></h2>
 					<table class="H">
-						<tr class="a">
+						<tr class="f">
 							<td><code>C</code></td>
 							<td></td>
 						</tr>
-						<tr class="Z">
+						<tr class="Q">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html">Iterable</a><code class="parameters"><code>C</code></code></code> <code>contents</code></td>
-							<td><span>A list of child contents.</span></td>
+							<td><span><p>A list of child contents.</p>
+								</span></td>
 						</tr>
-						<tr class="Z">
+						<tr class="Q">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/BiConsumer.html">BiConsumer</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html">Integer</a></code>, <code>C</code></code></code> <code>writer</code></td>
-							<td><span>A content writer.</span></td>
+							<td><span><p>A content writer.</p>
+								</span></td>
 						</tr>
-						<tr class="k">
+						<tr class="K">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></td>
-							<td><span>A declaration of contents.</span></td>
+							<td><span><p>A declaration of contents.</p>
+								</span></td>
 						</tr>
-					</table><span class="B">Nest-like collection writer.
- <p>
+					</table><span class="B"><p>Nest-like collection writer.
+ 
+							<p>
  Each item is identified by id and its object, you can receive them on node builder.</p>
+						</p>
 					</span></section>
-				<section class="O" id="foŕ(java.lang.Iterable,java.util.function.BiFunction)">
-					<h2 class="Y"><i class="FINAL"><i class="PROTECTED"></i></i><code class="T">foŕ</code><code class="i">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html">Iterable</a><code class="parameters"><code>C</code></code></code> <code class="parameterName">contents</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/BiFunction.html">BiFunction</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html">Integer</a></code>, <code>C</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></code></code> <code class="parameterName">writer</code>)</code><i class="g"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></h2>
+				<section class="c" id="foŕ(java.lang.Iterable,java.util.function.BiFunction)">
+					<h2 class="L"><i class="FINAL"><i class="PROTECTED"></i></i><code class="k">foŕ</code><code class="I">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html">Iterable</a><code class="parameters"><code>C</code></code></code> <code class="parameterName">contents</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/BiFunction.html">BiFunction</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html">Integer</a></code>, <code>C</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></code></code> <code class="parameterName">writer</code>)</code><i class="h"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></h2>
 					<table class="H">
-						<tr class="a">
+						<tr class="f">
 							<td><code>C</code></td>
 							<td></td>
 						</tr>
-						<tr class="Z">
+						<tr class="Q">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html">Iterable</a><code class="parameters"><code>C</code></code></code> <code>contents</code></td>
-							<td><span>A list of child contents.</span></td>
+							<td><span><p>A list of child contents.</p>
+								</span></td>
 						</tr>
-						<tr class="Z">
+						<tr class="Q">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/BiFunction.html">BiFunction</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html">Integer</a></code>, <code>C</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></code></code> <code>writer</code></td>
-							<td><span>A content writer.</span></td>
+							<td><span><p>A content writer.</p>
+								</span></td>
 						</tr>
-						<tr class="k">
+						<tr class="K">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></td>
-							<td><span>A declaration of contents.</span></td>
+							<td><span><p>A declaration of contents.</p>
+								</span></td>
 						</tr>
-					</table><span class="B">Nest-like collection writer.
- <p>
+					</table><span class="B"><p>Nest-like collection writer.
+ 
+							<p>
  Each item is identified by id and its object, you can receive them on node builder.</p>
+						</p>
 					</span></section>
-				<section class="O" id="iｆ(java.util.function.Supplier,java.util.function.Consumer...)">
-					<h2 class="Y"><i class="FINAL"><i class="PROTECTED"></i></i><code class="T">iｆ</code><code class="i">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html">Boolean</a></code></code></code> <code class="parameterName">condition</code>, <code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">then</code>)</code><i class="g"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></h2>
+				<section class="c" id="iｆ(java.util.function.Supplier,java.util.function.Consumer...)">
+					<h2 class="L"><i class="FINAL"><i class="PROTECTED"></i></i><code class="k">iｆ</code><code class="I">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html">Boolean</a></code></code></code> <code class="parameterName">condition</code>, <code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">then</code>)</code><i class="h"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></h2>
 					<table class="H">
-						<tr class="Z">
+						<tr class="Q">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html">Boolean</a></code></code></code> <code>condition</code></td>
-							<td><span>A conditional expression.</span></td>
+							<td><span><p>A conditional expression.</p>
+								</span></td>
 						</tr>
-						<tr class="Z">
+						<tr class="Q">
 							<td><code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code>then</code></td>
-							<td><span>If the condition is true, it will execute the given node under the current parent
-            node.</span></td>
+							<td><span><p>If the condition is true, it will execute the given node under the current parent
+            node.</p>
+								</span></td>
 						</tr>
-						<tr class="k">
+						<tr class="K">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></td>
-							<td><span>Node that performs the equivalent of an &#39;if&#39; statement.</span></td>
+							<td><span><p>Node that performs the equivalent of an &#39;if&#39; statement.</p>
+								</span></td>
 						</tr>
-					</table><span class="B">Represents an &#39;if&#39; statement. If the condition is true, then the &#39;then&#39; clause will be
- executed.</span></section>
-				<section class="O" id="iｆ(boolean,java.util.function.Consumer...)">
-					<h2 class="Y"><i class="FINAL"><i class="PROTECTED"></i></i><code class="T">iｆ</code><code class="i">(<code>boolean</code> <code class="parameterName">condition</code>, <code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">then</code>)</code><i class="g"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></h2>
+					</table><span class="B"><p>Represents an &#39;if&#39; statement. If the condition is true, then the &#39;then&#39; clause will be
+ executed.</p>
+					</span></section>
+				<section class="c" id="iｆ(boolean,java.util.function.Consumer...)">
+					<h2 class="L"><i class="FINAL"><i class="PROTECTED"></i></i><code class="k">iｆ</code><code class="I">(<code>boolean</code> <code class="parameterName">condition</code>, <code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">then</code>)</code><i class="h"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></h2>
 					<table class="H">
-						<tr class="Z">
+						<tr class="Q">
 							<td><code>boolean</code> <code>condition</code></td>
-							<td><span>A condition.</span></td>
+							<td><span><p>A condition.</p>
+								</span></td>
 						</tr>
-						<tr class="Z">
+						<tr class="Q">
 							<td><code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code>then</code></td>
-							<td><span>If the condition is true, it will execute the given node under the current parent
-            node.</span></td>
+							<td><span><p>If the condition is true, it will execute the given node under the current parent
+            node.</p>
+								</span></td>
 						</tr>
-						<tr class="k">
+						<tr class="K">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></td>
-							<td><span>Node that performs the equivalent of an &#39;if&#39; statement.</span></td>
+							<td><span><p>Node that performs the equivalent of an &#39;if&#39; statement.</p>
+								</span></td>
 						</tr>
-					</table><span class="B">Represents an &#39;if&#39; statement. If the condition is true, then the &#39;then&#39; clause will be
- executed.</span></section>
-				<section class="O" id="either(java.util.function.Supplier,java.util.function.Consumer,java.util.function.Consumer)">
-					<h2 class="Y"><i class="FINAL"><i class="PROTECTED"></i></i><code class="T">either</code><code class="i">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html">Boolean</a></code></code></code> <code class="parameterName">condition</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">then</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">elze</code>)</code><i class="g"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></h2>
+					</table><span class="B"><p>Represents an &#39;if&#39; statement. If the condition is true, then the &#39;then&#39; clause will be
+ executed.</p>
+					</span></section>
+				<section class="c" id="either(java.util.function.Supplier,java.util.function.Consumer,java.util.function.Consumer)">
+					<h2 class="L"><i class="FINAL"><i class="PROTECTED"></i></i><code class="k">either</code><code class="I">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html">Boolean</a></code></code></code> <code class="parameterName">condition</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">then</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">elze</code>)</code><i class="h"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></h2>
 					<table class="H">
-						<tr class="Z">
+						<tr class="Q">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html">Boolean</a></code></code></code> <code>condition</code></td>
-							<td><span>A conditional expression.</span></td>
+							<td><span><p>A conditional expression.</p>
+								</span></td>
 						</tr>
-						<tr class="Z">
+						<tr class="Q">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code>then</code></td>
-							<td><span>If the condition is true, it will execute the given node under the current parent
-            node.</span></td>
+							<td><span><p>If the condition is true, it will execute the given node under the current parent
+            node.</p>
+								</span></td>
 						</tr>
-						<tr class="Z">
+						<tr class="Q">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code>elze</code></td>
-							<td><span>If the condition is false, it will execute the given node under the current
-            parent node.</span></td>
+							<td><span><p>If the condition is false, it will execute the given node under the current
+            parent node.</p>
+								</span></td>
 						</tr>
-						<tr class="k">
+						<tr class="K">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></td>
-							<td><span>Node that performs the equivalent of an &#39;if-else&#39; statement.</span></td>
+							<td><span><p>Node that performs the equivalent of an &#39;if-else&#39; statement.</p>
+								</span></td>
 						</tr>
-					</table><span class="B">Represents an &#39;if-else&#39; statement. If the condition is true, then the &#39;then&#39; clause will be
- executed. If the condition is false, then the &#39;else&#39; clause will be executed.</span></section>
-				<section class="O" id="either(boolean,java.util.function.Consumer,java.util.function.Consumer)">
-					<h2 class="Y"><i class="FINAL"><i class="PROTECTED"></i></i><code class="T">either</code><code class="i">(<code>boolean</code> <code class="parameterName">condition</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">then</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">elze</code>)</code><i class="g"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></h2>
+					</table><span class="B"><p>Represents an &#39;if-else&#39; statement. If the condition is true, then the &#39;then&#39; clause will be
+ executed. If the condition is false, then the &#39;else&#39; clause will be executed.</p>
+					</span></section>
+				<section class="c" id="either(boolean,java.util.function.Consumer,java.util.function.Consumer)">
+					<h2 class="L"><i class="FINAL"><i class="PROTECTED"></i></i><code class="k">either</code><code class="I">(<code>boolean</code> <code class="parameterName">condition</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">then</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">elze</code>)</code><i class="h"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></h2>
 					<table class="H">
-						<tr class="Z">
+						<tr class="Q">
 							<td><code>boolean</code> <code>condition</code></td>
-							<td><span>A condition.</span></td>
+							<td><span><p>A condition.</p>
+								</span></td>
 						</tr>
-						<tr class="Z">
+						<tr class="Q">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code>then</code></td>
-							<td><span>If the condition is true, it will execute the given node under the current parent
-            node.</span></td>
+							<td><span><p>If the condition is true, it will execute the given node under the current parent
+            node.</p>
+								</span></td>
 						</tr>
-						<tr class="Z">
+						<tr class="Q">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code>elze</code></td>
-							<td><span>If the condition is false, it will execute the given node under the current
-            parent node.</span></td>
+							<td><span><p>If the condition is false, it will execute the given node under the current
+            parent node.</p>
+								</span></td>
 						</tr>
-						<tr class="k">
+						<tr class="K">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></td>
-							<td><span>Node that performs the equivalent of an &#39;if-else&#39; statement.</span></td>
+							<td><span><p>Node that performs the equivalent of an &#39;if-else&#39; statement.</p>
+								</span></td>
 						</tr>
-					</table><span class="B">Represents an &#39;if-else&#39; statement. If the condition is true, then the &#39;then&#39; clause will be
- executed. If the condition is false, then the &#39;else&#39; clause will be executed.</span></section>
+					</table><span class="B"><p>Represents an &#39;if-else&#39; statement. If the condition is true, then the &#39;then&#39; clause will be
+ executed. If the condition is false, then the &#39;else&#39; clause will be executed.</p>
+					</span></section>
 			</article>
-			<aside class="P" id="SubNavi">
-				<div class="Q">
-					<h5 class="V">Constructors</h5>
+			<aside class="O" id="SubNavi">
+				<div class="a">
+					<h5 class="b">Constructors</h5>
 					<ul>
-						<li><i class="PROTECTED"></i><code><a href="api/kiss.Tree.html#Tree(kiss.WiseTriFunction,java.util.function.IntUnaryOperator)">Tree</a></code><code class="i">(<code><a href="api/kiss.WiseTriFunction.html">WiseTriFunction</a><code class="parameters"><code>Name</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html">Integer</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code>, <code>Node</code></code></code> <code class="parameterName">namedNodeBuilder</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/IntUnaryOperator.html">IntUnaryOperator</a></code> <code class="parameterName">uniqueKeyBuilder</code>)</code></li>
-						<li><i class="PROTECTED"></i><code><a href="api/kiss.Tree.html#Tree(kiss.WiseTriFunction,java.util.function.IntUnaryOperator,java.util.function.BiConsumer)">Tree</a></code><code class="i">(<code><a href="api/kiss.WiseTriFunction.html">WiseTriFunction</a><code class="parameters"><code>Name</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html">Integer</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code>, <code>Node</code></code></code> <code class="parameterName">namedNodeBuilder</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/IntUnaryOperator.html">IntUnaryOperator</a></code> <code class="parameterName">uniqueKeyBuilder</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/BiConsumer.html">BiConsumer</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code>, <code>Node</code></code></code> <code class="parameterName">followerBuilder</code>)</code></li>
+						<li><i class="PROTECTED"></i><code><a href="api/kiss.Tree.html#Tree(kiss.WiseTriFunction,java.util.function.IntUnaryOperator)">Tree</a></code><code class="I">(<code><a href="api/kiss.WiseTriFunction.html">WiseTriFunction</a><code class="parameters"><code>Name</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html">Integer</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code>, <code>Node</code></code></code> <code class="parameterName">namedNodeBuilder</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/IntUnaryOperator.html">IntUnaryOperator</a></code> <code class="parameterName">uniqueKeyBuilder</code>)</code></li>
+						<li><i class="PROTECTED"></i><code><a href="api/kiss.Tree.html#Tree(kiss.WiseTriFunction,java.util.function.IntUnaryOperator,java.util.function.BiConsumer)">Tree</a></code><code class="I">(<code><a href="api/kiss.WiseTriFunction.html">WiseTriFunction</a><code class="parameters"><code>Name</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html">Integer</a></code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html">Object</a></code>, <code>Node</code></code></code> <code class="parameterName">namedNodeBuilder</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/IntUnaryOperator.html">IntUnaryOperator</a></code> <code class="parameterName">uniqueKeyBuilder</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/BiConsumer.html">BiConsumer</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code>, <code>Node</code></code></code> <code class="parameterName">followerBuilder</code>)</code></li>
 					</ul>
-					<h5 class="V">Fields</h5>
+					<h5 class="b">Fields</h5>
 					<ul>
-						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Tree.html#root">root</a></code><i class="X"><code class="return"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html">List</a><code class="parameters"><code>Node</code></code></code></i></li>
+						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Tree.html#root">root</a></code><i class="S"><code class="return"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html">List</a><code class="parameters"><code>Node</code></code></code></i></li>
 					</ul>
-					<h5 class="V">Methods</h5>
+					<h5 class="b">Methods</h5>
 					<ul>
-						<li><i class="FINAL"><i class="PROTECTED"></i></i><code><a href="api/kiss.Tree.html#$(java.util.function.Consumer...)">$</a></code><code class="i">(<code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">nodes</code>)</code><i class="X"><code>void</code></i></li>
-						<li><i class="FINAL"><i class="PROTECTED"></i></i><code><a href="api/kiss.Tree.html#$(java.lang.Object,kiss.WiseRunnable)">$</a></code><code class="i">(<code>Name</code> <code class="parameterName">name</code>, <code><a href="api/kiss.WiseRunnable.html">WiseRunnable</a></code> <code class="parameterName">writer</code>)</code><i class="X"><code>void</code></i></li>
-						<li><i class="FINAL"><i class="PROTECTED"></i></i><code><a href="api/kiss.Tree.html#$(java.lang.Object,java.util.function.Consumer,kiss.WiseRunnable)">$</a></code><code class="i">(<code>Name</code> <code class="parameterName">name</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">one</code>, <code><a href="api/kiss.WiseRunnable.html">WiseRunnable</a></code> <code class="parameterName">writer</code>)</code><i class="X"><code>void</code></i></li>
-						<li><i class="FINAL"><i class="PROTECTED"></i></i><code><a href="api/kiss.Tree.html#$(java.lang.Object,java.util.function.Consumer,java.util.function.Consumer,kiss.WiseRunnable)">$</a></code><code class="i">(<code>Name</code> <code class="parameterName">name</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">one</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">two</code>, <code><a href="api/kiss.WiseRunnable.html">WiseRunnable</a></code> <code class="parameterName">writer</code>)</code><i class="X"><code>void</code></i></li>
-						<li><i class="FINAL"><i class="PROTECTED"></i></i><code><a href="api/kiss.Tree.html#$(java.lang.Object,java.util.function.Consumer,java.util.function.Consumer,java.util.function.Consumer,kiss.WiseRunnable)">$</a></code><code class="i">(<code>Name</code> <code class="parameterName">name</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">one</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">two</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">three</code>, <code><a href="api/kiss.WiseRunnable.html">WiseRunnable</a></code> <code class="parameterName">writer</code>)</code><i class="X"><code>void</code></i></li>
-						<li><i class="FINAL"><i class="PROTECTED"></i></i><code><a href="api/kiss.Tree.html#$(java.lang.Object,java.util.function.Consumer,java.util.function.Consumer,java.util.function.Consumer,java.util.function.Consumer,kiss.WiseRunnable)">$</a></code><code class="i">(<code>Name</code> <code class="parameterName">name</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">one</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">two</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">three</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">four</code>, <code><a href="api/kiss.WiseRunnable.html">WiseRunnable</a></code> <code class="parameterName">writer</code>)</code><i class="X"><code>void</code></i></li>
-						<li><i class="FINAL"><i class="PROTECTED"></i></i><code><a href="api/kiss.Tree.html#$(java.lang.Object,java.util.function.Consumer...)">$</a></code><code class="i">(<code>Name</code> <code class="parameterName">name</code>, <code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">nodes</code>)</code><i class="X"><code>void</code></i></li>
-						<li><i class="FINAL"><i class="PROTECTED"></i></i><code><a href="api/kiss.Tree.html#foŕ(int,java.util.function.Consumer)">foŕ</a></code><code class="i">(<code>int</code> <code class="parameterName">size</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html">Integer</a></code></code></code> <code class="parameterName">writer</code>)</code><i class="X"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></li>
-						<li><i class="FINAL"><i class="PROTECTED"></i></i><code><a href="api/kiss.Tree.html#foŕ(int,int,java.util.function.Consumer)">foŕ</a></code><code class="i">(<code>int</code> <code class="parameterName">startInclusive</code>, <code>int</code> <code class="parameterName">endExclusive</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html">Integer</a></code></code></code> <code class="parameterName">writer</code>)</code><i class="X"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></li>
-						<li><i class="FINAL"><i class="PROTECTED"></i></i><code><a href="api/kiss.Tree.html#foŕ(java.lang.Class,java.util.function.Consumer)">foŕ</a></code><code class="i">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>E</code></code></code> <code class="parameterName">type</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>E</code></code></code> <code class="parameterName">writer</code>)</code><i class="X"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></li>
-						<li><i class="FINAL"><i class="PROTECTED"></i></i><code><a href="api/kiss.Tree.html#foŕ(java.lang.Class,java.util.function.Function)">foŕ</a></code><code class="i">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>E</code></code></code> <code class="parameterName">type</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html">Function</a><code class="parameters"><code>E</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></code></code> <code class="parameterName">writer</code>)</code><i class="X"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></li>
-						<li><i class="FINAL"><i class="PROTECTED"></i></i><code><a href="api/kiss.Tree.html#foŕ(java.lang.Object[],java.util.function.Consumer)">foŕ</a></code><code class="i">(<code array="fix">C</code> <code class="parameterName">contents</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>C</code></code></code> <code class="parameterName">writer</code>)</code><i class="X"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></li>
-						<li><i class="FINAL"><i class="PROTECTED"></i></i><code><a href="api/kiss.Tree.html#foŕ(java.lang.Object[],java.util.function.Function)">foŕ</a></code><code class="i">(<code array="fix">C</code> <code class="parameterName">contents</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html">Function</a><code class="parameters"><code>C</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></code></code> <code class="parameterName">writer</code>)</code><i class="X"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></li>
-						<li><i class="FINAL"><i class="PROTECTED"></i></i><code><a href="api/kiss.Tree.html#foŕ(java.lang.Iterable,java.util.function.Consumer)">foŕ</a></code><code class="i">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html">Iterable</a><code class="parameters"><code>C</code></code></code> <code class="parameterName">contents</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>C</code></code></code> <code class="parameterName">writer</code>)</code><i class="X"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></li>
-						<li><i class="FINAL"><i class="PROTECTED"></i></i><code><a href="api/kiss.Tree.html#foŕ(java.lang.Iterable,java.util.function.Function)">foŕ</a></code><code class="i">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html">Iterable</a><code class="parameters"><code>C</code></code></code> <code class="parameterName">contents</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html">Function</a><code class="parameters"><code>C</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></code></code> <code class="parameterName">writer</code>)</code><i class="X"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></li>
-						<li><i class="FINAL"><i class="PROTECTED"></i></i><code><a href="api/kiss.Tree.html#foŕ(java.lang.Iterable,java.util.function.BiConsumer)">foŕ</a></code><code class="i">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html">Iterable</a><code class="parameters"><code>C</code></code></code> <code class="parameterName">contents</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/BiConsumer.html">BiConsumer</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html">Integer</a></code>, <code>C</code></code></code> <code class="parameterName">writer</code>)</code><i class="X"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></li>
-						<li><i class="FINAL"><i class="PROTECTED"></i></i><code><a href="api/kiss.Tree.html#foŕ(java.lang.Iterable,java.util.function.BiFunction)">foŕ</a></code><code class="i">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html">Iterable</a><code class="parameters"><code>C</code></code></code> <code class="parameterName">contents</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/BiFunction.html">BiFunction</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html">Integer</a></code>, <code>C</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></code></code> <code class="parameterName">writer</code>)</code><i class="X"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></li>
-						<li><i class="FINAL"><i class="PROTECTED"></i></i><code><a href="api/kiss.Tree.html#iｆ(java.util.function.Supplier,java.util.function.Consumer...)">iｆ</a></code><code class="i">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html">Boolean</a></code></code></code> <code class="parameterName">condition</code>, <code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">then</code>)</code><i class="X"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></li>
-						<li><i class="FINAL"><i class="PROTECTED"></i></i><code><a href="api/kiss.Tree.html#iｆ(boolean,java.util.function.Consumer...)">iｆ</a></code><code class="i">(<code>boolean</code> <code class="parameterName">condition</code>, <code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">then</code>)</code><i class="X"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></li>
-						<li><i class="FINAL"><i class="PROTECTED"></i></i><code><a href="api/kiss.Tree.html#either(java.util.function.Supplier,java.util.function.Consumer,java.util.function.Consumer)">either</a></code><code class="i">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html">Boolean</a></code></code></code> <code class="parameterName">condition</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">then</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">elze</code>)</code><i class="X"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></li>
-						<li><i class="FINAL"><i class="PROTECTED"></i></i><code><a href="api/kiss.Tree.html#either(boolean,java.util.function.Consumer,java.util.function.Consumer)">either</a></code><code class="i">(<code>boolean</code> <code class="parameterName">condition</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">then</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">elze</code>)</code><i class="X"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></li>
+						<li><i class="FINAL"><i class="PROTECTED"></i></i><code><a href="api/kiss.Tree.html#$(java.util.function.Consumer...)">$</a></code><code class="I">(<code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">nodes</code>)</code><i class="S"><code>void</code></i></li>
+						<li><i class="FINAL"><i class="PROTECTED"></i></i><code><a href="api/kiss.Tree.html#$(java.lang.Object,kiss.WiseRunnable)">$</a></code><code class="I">(<code>Name</code> <code class="parameterName">name</code>, <code><a href="api/kiss.WiseRunnable.html">WiseRunnable</a></code> <code class="parameterName">writer</code>)</code><i class="S"><code>void</code></i></li>
+						<li><i class="FINAL"><i class="PROTECTED"></i></i><code><a href="api/kiss.Tree.html#$(java.lang.Object,java.util.function.Consumer,kiss.WiseRunnable)">$</a></code><code class="I">(<code>Name</code> <code class="parameterName">name</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">one</code>, <code><a href="api/kiss.WiseRunnable.html">WiseRunnable</a></code> <code class="parameterName">writer</code>)</code><i class="S"><code>void</code></i></li>
+						<li><i class="FINAL"><i class="PROTECTED"></i></i><code><a href="api/kiss.Tree.html#$(java.lang.Object,java.util.function.Consumer,java.util.function.Consumer,kiss.WiseRunnable)">$</a></code><code class="I">(<code>Name</code> <code class="parameterName">name</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">one</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">two</code>, <code><a href="api/kiss.WiseRunnable.html">WiseRunnable</a></code> <code class="parameterName">writer</code>)</code><i class="S"><code>void</code></i></li>
+						<li><i class="FINAL"><i class="PROTECTED"></i></i><code><a href="api/kiss.Tree.html#$(java.lang.Object,java.util.function.Consumer,java.util.function.Consumer,java.util.function.Consumer,kiss.WiseRunnable)">$</a></code><code class="I">(<code>Name</code> <code class="parameterName">name</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">one</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">two</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">three</code>, <code><a href="api/kiss.WiseRunnable.html">WiseRunnable</a></code> <code class="parameterName">writer</code>)</code><i class="S"><code>void</code></i></li>
+						<li><i class="FINAL"><i class="PROTECTED"></i></i><code><a href="api/kiss.Tree.html#$(java.lang.Object,java.util.function.Consumer,java.util.function.Consumer,java.util.function.Consumer,java.util.function.Consumer,kiss.WiseRunnable)">$</a></code><code class="I">(<code>Name</code> <code class="parameterName">name</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">one</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">two</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">three</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">four</code>, <code><a href="api/kiss.WiseRunnable.html">WiseRunnable</a></code> <code class="parameterName">writer</code>)</code><i class="S"><code>void</code></i></li>
+						<li><i class="FINAL"><i class="PROTECTED"></i></i><code><a href="api/kiss.Tree.html#$(java.lang.Object,java.util.function.Consumer...)">$</a></code><code class="I">(<code>Name</code> <code class="parameterName">name</code>, <code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">nodes</code>)</code><i class="S"><code>void</code></i></li>
+						<li><i class="FINAL"><i class="PROTECTED"></i></i><code><a href="api/kiss.Tree.html#foŕ(int,java.util.function.Consumer)">foŕ</a></code><code class="I">(<code>int</code> <code class="parameterName">size</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html">Integer</a></code></code></code> <code class="parameterName">writer</code>)</code><i class="S"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></li>
+						<li><i class="FINAL"><i class="PROTECTED"></i></i><code><a href="api/kiss.Tree.html#foŕ(int,int,java.util.function.Consumer)">foŕ</a></code><code class="I">(<code>int</code> <code class="parameterName">startInclusive</code>, <code>int</code> <code class="parameterName">endExclusive</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html">Integer</a></code></code></code> <code class="parameterName">writer</code>)</code><i class="S"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></li>
+						<li><i class="FINAL"><i class="PROTECTED"></i></i><code><a href="api/kiss.Tree.html#foŕ(java.lang.Class,java.util.function.Consumer)">foŕ</a></code><code class="I">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>E</code></code></code> <code class="parameterName">type</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>E</code></code></code> <code class="parameterName">writer</code>)</code><i class="S"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></li>
+						<li><i class="FINAL"><i class="PROTECTED"></i></i><code><a href="api/kiss.Tree.html#foŕ(java.lang.Class,java.util.function.Function)">foŕ</a></code><code class="I">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>E</code></code></code> <code class="parameterName">type</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html">Function</a><code class="parameters"><code>E</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></code></code> <code class="parameterName">writer</code>)</code><i class="S"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></li>
+						<li><i class="FINAL"><i class="PROTECTED"></i></i><code><a href="api/kiss.Tree.html#foŕ(java.lang.Object[],java.util.function.Consumer)">foŕ</a></code><code class="I">(<code array="fix">C</code> <code class="parameterName">contents</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>C</code></code></code> <code class="parameterName">writer</code>)</code><i class="S"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></li>
+						<li><i class="FINAL"><i class="PROTECTED"></i></i><code><a href="api/kiss.Tree.html#foŕ(java.lang.Object[],java.util.function.Function)">foŕ</a></code><code class="I">(<code array="fix">C</code> <code class="parameterName">contents</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html">Function</a><code class="parameters"><code>C</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></code></code> <code class="parameterName">writer</code>)</code><i class="S"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></li>
+						<li><i class="FINAL"><i class="PROTECTED"></i></i><code><a href="api/kiss.Tree.html#foŕ(java.lang.Iterable,java.util.function.Consumer)">foŕ</a></code><code class="I">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html">Iterable</a><code class="parameters"><code>C</code></code></code> <code class="parameterName">contents</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>C</code></code></code> <code class="parameterName">writer</code>)</code><i class="S"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></li>
+						<li><i class="FINAL"><i class="PROTECTED"></i></i><code><a href="api/kiss.Tree.html#foŕ(java.lang.Iterable,java.util.function.Function)">foŕ</a></code><code class="I">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html">Iterable</a><code class="parameters"><code>C</code></code></code> <code class="parameterName">contents</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Function.html">Function</a><code class="parameters"><code>C</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></code></code> <code class="parameterName">writer</code>)</code><i class="S"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></li>
+						<li><i class="FINAL"><i class="PROTECTED"></i></i><code><a href="api/kiss.Tree.html#foŕ(java.lang.Iterable,java.util.function.BiConsumer)">foŕ</a></code><code class="I">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html">Iterable</a><code class="parameters"><code>C</code></code></code> <code class="parameterName">contents</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/BiConsumer.html">BiConsumer</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html">Integer</a></code>, <code>C</code></code></code> <code class="parameterName">writer</code>)</code><i class="S"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></li>
+						<li><i class="FINAL"><i class="PROTECTED"></i></i><code><a href="api/kiss.Tree.html#foŕ(java.lang.Iterable,java.util.function.BiFunction)">foŕ</a></code><code class="I">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Iterable.html">Iterable</a><code class="parameters"><code>C</code></code></code> <code class="parameterName">contents</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/BiFunction.html">BiFunction</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Integer.html">Integer</a></code>, <code>C</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></code></code> <code class="parameterName">writer</code>)</code><i class="S"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></li>
+						<li><i class="FINAL"><i class="PROTECTED"></i></i><code><a href="api/kiss.Tree.html#iｆ(java.util.function.Supplier,java.util.function.Consumer...)">iｆ</a></code><code class="I">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html">Boolean</a></code></code></code> <code class="parameterName">condition</code>, <code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">then</code>)</code><i class="S"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></li>
+						<li><i class="FINAL"><i class="PROTECTED"></i></i><code><a href="api/kiss.Tree.html#iｆ(boolean,java.util.function.Consumer...)">iｆ</a></code><code class="I">(<code>boolean</code> <code class="parameterName">condition</code>, <code array="var"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">then</code>)</code><i class="S"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></li>
+						<li><i class="FINAL"><i class="PROTECTED"></i></i><code><a href="api/kiss.Tree.html#either(java.util.function.Supplier,java.util.function.Consumer,java.util.function.Consumer)">either</a></code><code class="I">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Boolean.html">Boolean</a></code></code></code> <code class="parameterName">condition</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">then</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">elze</code>)</code><i class="S"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></li>
+						<li><i class="FINAL"><i class="PROTECTED"></i></i><code><a href="api/kiss.Tree.html#either(boolean,java.util.function.Consumer,java.util.function.Consumer)">either</a></code><code class="I">(<code>boolean</code> <code class="parameterName">condition</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">then</code>, <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code> <code class="parameterName">elze</code>)</code><i class="S"><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>Node</code></code></code></i></li>
 					</ul>
 				</div>
 			</aside>
