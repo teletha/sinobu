@@ -385,8 +385,9 @@ public class I {
 
         // clean up all buffered log at the end of JVM
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            for (Subscriber s : logs.values())
+            for (Subscriber s : logs.values()) {
                 if (s.obj != null) I.quiet(s.obj);
+            }
         }));
     }
 
@@ -467,10 +468,12 @@ public class I {
             Object result = null;
 
             if (items != null) for (Object fun : items)
-                if (fun != null) try {
-                    result = method.invoke(fun, args);
-                } catch (InvocationTargetException e) {
-                    throw e.getCause();
+                if (fun != null) {
+                    try {
+                        result = method.invoke(fun, args);
+                    } catch (InvocationTargetException e) {
+                        throw e.getCause();
+                    }
                 }
             return result;
         });
@@ -718,8 +721,9 @@ public class I {
 
                         // If the expression cannot be evaluated by property resolver,
                         // use the user-defined resolver to try to evaluate the expression.
-                        if (object == null) for (int k = 0; k < resolvers.length; k++)
+                        if (object == null) for (int k = 0; k < resolvers.length; k++) {
                             if ((object = resolvers[k].apply(model, c, e[j])) != null) break;
+                        }
 
                         // Since all resolvers failed to resolve to a non-null value, we will
                         // try to resolve again in a different context.
@@ -940,9 +944,8 @@ public class I {
                                 // Decoding Phase
                                 // =============================================
                                 List<String> encodings = res.headers().allValues("Content-Encoding");
-                                if (encodings.contains("gzip"))
-                                    in = new GZIPInputStream(in);
-                                else if (encodings.contains("deflate")) in = new InflaterInputStream(in);
+                                if (encodings.contains("gzip")) in = new GZIPInputStream(in);
+                                if (encodings.contains("deflate")) in = new InflaterInputStream(in);
 
                                 // =============================================
                                 // Materializing Phase
@@ -957,9 +960,10 @@ public class I {
                                 observer.accept(v);
                                 observer.complete();
                                 return;
-                            } else
+                            } else {
                                 e = new HttpRetryException(new String(res.body().readAllBytes(), StandardCharsets.UTF_8), res
                                         .statusCode(), res.uri().toString());
+                            }
                         } catch (Exception x) {
                             e = x; // fall-through to error handling
                         }
@@ -1184,10 +1188,12 @@ public class I {
 
         for (String name : names.toSet())
             // exclude out of the specified package
-            if (name.startsWith(pattern)) try {
-                disposer.add(loadE((Class) loader.loadClass(name)));
-            } catch (Throwable e) {
-                // ignore
+            if (name.startsWith(pattern)) {
+                try {
+                    disposer.add(loadE((Class) loader.loadClass(name)));
+                } catch (Throwable e) {
+                    // ignore
+                }
             }
         return disposer;
     }
@@ -1398,10 +1404,12 @@ public class I {
                 log.chars.put(L, (o - 1) * 5, 5).position(30).put(String.valueOf(msg));
 
                 // Caller Location
-                if (log.a[0] <= o) // Since javac (JDK16) doesn't infer it correctly, we'll put the
+                if (log.a[0] <= o) {
+                    // Since javac (JDK16) doesn't infer it correctly, we'll put the
                     // toString method out there to make the type explicit, although it
                     // increases the footprint slightly.
                     log.chars.put("\tat ").put(StackWalker.getInstance().walk(s -> s.skip(deep).findAny().get()).toString());
+                }
 
                 // Cause
                 if (msg instanceof Throwable) for (StackTraceElement s : ((Throwable) msg).getStackTrace()) {
@@ -1479,22 +1487,23 @@ public class I {
 
         if (type instanceof ParameterizedType) type = ((ParameterizedType) type).getRawType();
 
-        if (type == WiseRunnable.class)
+        if (type == WiseRunnable.class) {
             return (F) (WiseRunnable) handler::invoke;
-        else if (type == WiseSupplier.class)
+        } else if (type == WiseSupplier.class) {
             return (F) (WiseSupplier) handler::invoke;
-        else if (type == WiseConsumer.class)
+        } else if (type == WiseConsumer.class) {
             return (F) (WiseConsumer) handler::invoke;
-        else if (type == WiseFunction.class)
+        } else if (type == WiseFunction.class) {
             return (F) (WiseFunction) handler::invoke;
-        else if (type == WiseBiConsumer.class)
+        } else if (type == WiseBiConsumer.class) {
             return (F) (WiseBiConsumer) handler::invoke;
-        else if (type == WiseBiFunction.class)
+        } else if (type == WiseBiFunction.class) {
             return (F) (WiseBiFunction) handler::invoke;
-        else if (type == WiseTriConsumer.class)
+        } else if (type == WiseTriConsumer.class) {
             return (F) (WiseTriConsumer) handler::invoke;
-        else
+        } else {
             return (F) (WiseTriFunction) handler::invoke;
+        }
     }
 
     /**
@@ -1545,15 +1554,12 @@ public class I {
                 Managed managed = modelClass.getAnnotation(Managed.class);
 
                 // Create new lifestyle for the actual model class
-                if (managed == null || managed.value() == Lifestyle.class)
-                    lifestyle = I.prototype(modelClass);
-                else
-                    lifestyle = I.make(managed.value());
+                lifestyle = managed == null || managed.value() == Lifestyle.class ? I.prototype(modelClass) : I.make(managed.value());
             }
 
-            if (lifestyles.containsKey(modelClass))
+            if (lifestyles.containsKey(modelClass)) {
                 return lifestyles.get(modelClass);
-            else {
+            } else {
                 lifestyles.put(modelClass, lifestyle);
                 return lifestyle;
             }
@@ -1621,16 +1627,18 @@ public class I {
             if (types.length != 0) {
                 params = new Object[types.length];
 
-                for (int i = 0; i < params.length; i++)
-                    if (types[i] == Lifestyle.class)
+                for (int i = 0; i < params.length; i++) {
+                    if (types[i] == Lifestyle.class) {
                         params[i] = I.makeLifestyle((Class) Model
                                 .collectParameters(constructor.getGenericParameterTypes()[i], Lifestyle.class)[0]);
-                    else if (types[i] == Class.class)
+                    } else if (types[i] == Class.class) {
                         params[i] = I.dependencies.get().peekLast();
-                    else if (types[i].isPrimitive())
+                    } else if (types[i].isPrimitive()) {
                         params[i] = Array.get(Array.newInstance(types[i], 1), 0);
-                    else
+                    } else {
                         params[i] = I.make(types[i]);
+                    }
+                }
             }
             // create new instance
             return (M) constructor.newInstance(params);
@@ -1703,10 +1711,12 @@ public class I {
             return I.<RuntimeException> quiet(throwable);
         }
 
-        if (object instanceof AutoCloseable) try {
-            ((AutoCloseable) object).close();
-        } catch (Exception e) {
-            throw quiet(e);
+        if (object instanceof AutoCloseable) {
+            try {
+                ((AutoCloseable) object).close();
+            } catch (Exception e) {
+                throw quiet(e);
+            }
         }
 
         // API definition
@@ -1911,8 +1921,9 @@ public class I {
         return schedule(() -> {
             long now = System.currentTimeMillis();
             long start = now / 86400000 * 86400000 + time.toNanoOfDay() / 1000000;
-            while (start < now)
+            while (start < now) {
                 start += unit.toMillis(interval);
+            }
             return start - now;
         }, unit.toMillis(interval), TimeUnit.MILLISECONDS, true, scheduler);
     }
@@ -1937,14 +1948,12 @@ public class I {
             ScheduledExecutorService exe = scheduler == null || scheduler.length == 0 || scheduler[0] == null ? I.scheduler : scheduler[0];
 
             if (intervalTime <= 0) {
-                if (delay <= 0)
-                    future = CompletableFuture.runAsync(task, Runnable::run);
-                else
-                    future = exe.schedule(task, delay, unit);
-            } else if (fixedRate)
+                future = delay <= 0 ? CompletableFuture.runAsync(task, Runnable::run) : exe.schedule(task, delay, unit);
+            } else if (fixedRate) {
                 future = exe.scheduleAtFixedRate(task, delay, intervalTime, unit);
-            else
+            } else {
                 future = exe.scheduleWithFixedDelay(task, delay, intervalTime, unit);
+            }
             return disposer.add(future);
         }).count();
     }
@@ -2099,13 +2108,14 @@ public class I {
      * @return The specified class.
      */
     public static Class type(String fqcn) {
-        if (fqcn.indexOf('.') == -1) for (int i = 0; i < 9; i++)
+        if (fqcn.indexOf('.') == -1) for (int i = 0; i < 9; i++) {
             if (types[i].getName().equals(fqcn)) return types[i];
+        }
 
         try {
             return Class.forName(fqcn, false, ClassLoader.getSystemClassLoader());
         } catch (ClassNotFoundException e) {
-            throw quiet(e);
+            throw I.quiet(e);
         }
     }
 
@@ -2219,8 +2229,9 @@ public class I {
      * @throws NullPointerException Parameter type is null.
      */
     public static Class wrap(Class type) {
-        if (type.isPrimitive()) for (int i = 0; i < 9; i++)
+        if (type.isPrimitive()) for (int i = 0; i < 9; i++) {
             if (types[i] == type) return types[i + 9];
+        }
         return type;
     }
 
@@ -2344,23 +2355,25 @@ public class I {
     static synchronized XML xml(Document doc, Object xml) {
         try {
             // XML related types
-            if (xml instanceof XML)
-                return (XML) xml;
-            else if (xml instanceof Node) return new XML(((Node) xml).getOwnerDocument(), list(xml));
+            if (xml instanceof XML) return (XML) xml;
+            if (xml instanceof Node) return new XML(((Node) xml).getOwnerDocument(), list(xml));
 
             // byte data types
             byte[] bytes = xml instanceof String ? ((String) xml).getBytes(StandardCharsets.UTF_8) : (byte[]) xml;
-            if (6 < bytes.length && bytes[0] == '<')
-                if (bytes[1] == '!' || (bytes[1] == 'h' && bytes[2] == 't' && bytes[3] == 'm' && bytes[4] == 'l' && bytes[5] == '>'))
+            if (6 < bytes.length && bytes[0] == '<') {
+                if (bytes[1] == '!' || (bytes[1] == 'h' && bytes[2] == 't' && bytes[3] == 'm' && bytes[4] == 'l' && bytes[5] == '>')) {
                     return new XML(null, null).parse(bytes, StandardCharsets.UTF_8);
+                }
+            }
 
             String value = new String(bytes, StandardCharsets.UTF_8);
 
             if (xmlLiteral.matcher(value).matches()) {
                 doc = dom.parse(new InputSource(new StringReader("<m>".concat(value.replaceAll("<\\?.+\\?>", "")).concat("</m>"))));
                 return new XML(doc, XML.convert(doc.getFirstChild().getChildNodes()));
-            } else
+            } else {
                 return xml(doc != null ? doc.createTextNode(value) : dom.newDocument().createElement(value));
+            }
         } catch (Exception e) {
             throw I.quiet(e);
         }
