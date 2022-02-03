@@ -118,7 +118,7 @@ public final class Signal<V> {
     /**
      * The subscriber.
      */
-    private final BiFunction<Observer<? super V>, Disposable, Disposable> subscriber;
+    private final BiFunction<Observer<V>, Disposable, Disposable> subscriber;
 
     /**
      * <p>
@@ -133,7 +133,7 @@ public final class Signal<V> {
      */
     public Signal(Collection<Observer<V>> observers) {
         this((observer, disposer) -> {
-            observers.add((Observer<V>) observer);
+            observers.add(observer);
 
             return disposer.add(() -> {
                 observers.remove(observer);
@@ -150,7 +150,7 @@ public final class Signal<V> {
      * @see #to(Consumer, Consumer)
      * @see #to(Consumer, Consumer, Runnable)
      */
-    public Signal(BiFunction<Observer<? super V>, Disposable, Disposable> subscriber) {
+    public Signal(BiFunction<Observer<V>, Disposable, Disposable> subscriber) {
         this.subscriber = subscriber;
     }
 
@@ -264,7 +264,7 @@ public final class Signal<V> {
      * @param observer A value observer of this {@link Signal}.
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
-    public final Disposable to(Observer<? super V> observer, Disposable disposer) {
+    public final Disposable to(Observer<V> observer, Disposable disposer) {
         try {
             return subscriber.apply(observer, disposer);
         } catch (Throwable e) {
