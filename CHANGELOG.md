@@ -1,5 +1,12 @@
 # Changelog
 
+### [2.13.1](https://www.github.com/teletha/sinobu/compare/v2.13.0...v2.13.1) (2022-02-03)
+
+
+### Bug Fixes
+
+* Reduce code size by formatting. ([c90e29c](https://www.github.com/teletha/sinobu/commit/c90e29cca416696a2c5d2a31f386c4eb2513cfd6))
+
 ## [2.13.0](https://www.github.com/teletha/sinobu/compare/v2.12.0...v2.13.0) (2022-01-15)
 
 
