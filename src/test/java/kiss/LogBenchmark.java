@@ -70,11 +70,11 @@ public class LogBenchmark {
             benchmark.discardSystemOutput();
         }
 
-        // performJUL(benchmark);
-        // performLog4j(benchmark);
+        performJUL(benchmark);
+        performLog4j(benchmark);
         performTinyLog(benchmark);
-        // performLogback(benchmark);
-        // performSinobu(benchmark);
+        performLogback(benchmark);
+        performSinobu(benchmark);
 
         benchmark.perform();
     }
