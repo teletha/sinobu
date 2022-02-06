@@ -70,7 +70,7 @@ public class LogBenchmark {
             benchmark.discardSystemOutput();
         }
 
-        performJUL(benchmark);
+        // performJUL(benchmark);
         performLog4j(benchmark);
         performTinyLog(benchmark);
         performLogback(benchmark);
@@ -205,7 +205,7 @@ public class LogBenchmark {
         });
 
         perform((execution, caller) -> {
-            if (execution == ExecutionType.Sync) {
+            if (caller == CallerType.Caller) {
                 String name = execution + "-" + caller;
 
                 TaggedLogger logger = org.tinylog.Logger.tag(name);
