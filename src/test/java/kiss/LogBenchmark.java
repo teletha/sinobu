@@ -278,13 +278,14 @@ public class LogBenchmark {
                 return; // async logging is not supported
             }
 
-            String name = execution + "-" + caller;
+            String type = execution + "-" + caller;
+            String name = "logging-sinobu-" + type;
             I.env(name + ".append", false);
             I.env(name + ".caller", caller == CallerType.Caller ? Level.ALL : Level.OFF);
             I.env(name + ".file", output == OutputType.File ? Level.ALL : Level.OFF);
             I.env(name + ".console", output == OutputType.Console ? Level.ALL : Level.OFF);
 
-            benchmark.measure("Sinobu " + name, () -> {
+            benchmark.measure("Sinobu " + type, () -> {
                 I.info(name, message);
                 return -1;
             });
