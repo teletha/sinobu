@@ -612,6 +612,58 @@ public class JSON {
         return captured;
     }
 
+    // private static Map<String, String> map = new ConcurrentHashMap();
+    //
+    // /**
+    // * Stop text capturing.
+    // */
+    // private String endCapture() {
+    // int end = current == -1 ? index : index - 1;
+    // String captured;
+    // if (capture.length() > 0) {
+    // captured = capture.append(buffer, captureStart, end - captureStart).toString();
+    // capture.setLength(0);
+    // } else {
+    // captured = new String(buffer, captureStart, end - captureStart);
+    // String ref = map.get(captured);
+    // if (ref == null) {
+    // if (map.size() > 1024) map.clear();
+    // map.put(captured, captured);
+    // } else {
+    // captured = ref;
+    // }
+    // }
+    // captureStart = -1;
+    // return captured;
+    // }
+
+    // private static Map<String, SoftReference<String>> map = new WeakHashMap();
+    //
+    // /**
+    // * Stop text capturing.
+    // */
+    // private String endCapture() {
+    // int end = current == -1 ? index : index - 1;
+    // String captured;
+    // if (capture.length() > 0) {
+    // captured = capture.append(buffer, captureStart, end - captureStart).toString();
+    // capture.setLength(0);
+    // } else {
+    // captured = new String(buffer, captureStart, end - captureStart);
+    // SoftReference<String> ref = map.get(captured);
+    // if (ref != null) {
+    // String v = ref.get();
+    // if (v != null) {
+    // captureStart = -1;
+    // return v;
+    // }
+    // }
+    // map.put(captured, new SoftReference(captured));
+    // }
+    // captureStart = -1;
+    // return captured;
+    // }
+
     /**
      * Throw parsing error.
      * 
