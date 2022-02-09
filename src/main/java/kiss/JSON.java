@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ConcurrentHashMap;
 
 import kiss.model.Model;
 import kiss.model.Property;
@@ -288,9 +287,6 @@ public class JSON {
     /** Reuse array's index to reduce GC execution. */
     private static final String[] C = {"0", "1", "2", "3", "4"};
 
-    /** Reuse text symbol. */
-    private static final Map<Integer, String> S = new ConcurrentHashMap();
-
     /** The input source. */
     private Reader reader;
 
@@ -320,7 +316,7 @@ public class JSON {
      */
     JSON(Reader reader) throws IOException {
         char[] b = P.poll();
-        this.buffer = b == null ? new char[256] : b;
+        this.buffer = b == null ? new char[512] : b;
         this.reader = reader;
         this.captureStart = -1;
         this.capture = new StringBuilder();
@@ -608,23 +604,9 @@ public class JSON {
         String captured;
         if (capture.length() > 0) {
             captured = capture.append(buffer, captureStart, end - captureStart).toString();
-            System.out.println(captured + "   " + cache);
             capture.setLength(0);
         } else {
-            if (cache) {
-                int hash = 0;
-                for (int i = captureStart; i < end; i++) {
-                    hash = 31 * hash + buffer[i];
-                }
-
-                captured = S.get(hash);
-                if (captured == null || captured.length() != end - captureStart) {
-                    if (1024 < S.size()) S.clear();
-                    S.put(hash, captured = new String(buffer, captureStart, end - captureStart));
-                }
-            } else {
-                captured = new String(buffer, captureStart, end - captureStart);
-            }
+            captured = new String(buffer, captureStart, end - captureStart);
         }
         captureStart = -1;
         return captured;
