@@ -349,7 +349,7 @@ public class JSON {
 
         // string
         case '"':
-            return string();
+            return string(false);
 
         // array
         case '[':
@@ -379,7 +379,7 @@ public class JSON {
             }
             do {
                 space();
-                String name = string();
+                String name = string(true);
                 space();
                 token(':');
                 space();
@@ -422,7 +422,7 @@ public class JSON {
                 }
                 digit();
             }
-            return endCapture();
+            return endCapture(false);
 
         // invalid token
         default:
@@ -483,7 +483,7 @@ public class JSON {
      * @return A parsed string.
      * @throws IOException
      */
-    private String string() throws IOException {
+    private String string(boolean cache) throws IOException {
         token('"');
         // start capture
         captureStart = index - 1;
@@ -534,7 +534,7 @@ public class JSON {
                 read();
             }
         }
-        String string = endCapture();
+        String string = endCapture(cache);
         read();
         return string;
     }
@@ -603,22 +603,27 @@ public class JSON {
     /**
      * Stop text capturing.
      */
-    private String endCapture() {
+    private String endCapture(boolean cache) {
         int end = current == -1 ? index : index - 1;
         String captured;
         if (capture.length() > 0) {
             captured = capture.append(buffer, captureStart, end - captureStart).toString();
+            System.out.println(captured + "   " + cache);
             capture.setLength(0);
         } else {
-            int hash = 0;
-            for (int i = captureStart; i < end; i++) {
-                hash = 31 * hash + buffer[i];
-            }
+            if (cache) {
+                int hash = 0;
+                for (int i = captureStart; i < end; i++) {
+                    hash = 31 * hash + buffer[i];
+                }
 
-            captured = S.get(hash);
-            if (captured == null) {
-                if (4096 < S.size()) S.clear();
-                S.put(hash, captured = new String(buffer, captureStart, end - captureStart));
+                captured = S.get(hash);
+                if (captured == null || captured.length() != end - captureStart) {
+                    if (1024 < S.size()) S.clear();
+                    S.put(hash, captured = new String(buffer, captureStart, end - captureStart));
+                }
+            } else {
+                captured = new String(buffer, captureStart, end - captureStart);
             }
         }
         captureStart = -1;
