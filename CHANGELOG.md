@@ -1,5 +1,13 @@
 # Changelog
 
+### [2.13.2](https://www.github.com/teletha/sinobu/compare/v2.13.1...v2.13.2) (2022-02-09)
+
+
+### Bug Fixes
+
+* JSON's symbol table is broken. ([b2b0bac](https://www.github.com/teletha/sinobu/commit/b2b0bacdde48ba3d7e313329fd09f28537ddb5e8))
+* Reduce code size. ([01ef807](https://www.github.com/teletha/sinobu/commit/01ef807c24b0f51d2510e5e3cc14982711b06e34))
+
 ### [2.13.1](https://www.github.com/teletha/sinobu/compare/v2.13.0...v2.13.1) (2022-02-03)
 
 
