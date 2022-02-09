@@ -345,7 +345,7 @@ public class JSON {
 
         // string
         case '"':
-            return string(false);
+            return string();
 
         // array
         case '[':
@@ -375,7 +375,7 @@ public class JSON {
             }
             do {
                 space();
-                String name = string(true);
+                String name = string();
                 space();
                 token(':');
                 space();
@@ -418,7 +418,7 @@ public class JSON {
                 }
                 digit();
             }
-            return endCapture(false);
+            return endCapture();
 
         // invalid token
         default:
@@ -479,7 +479,7 @@ public class JSON {
      * @return A parsed string.
      * @throws IOException
      */
-    private String string(boolean cache) throws IOException {
+    private String string() throws IOException {
         token('"');
         // start capture
         captureStart = index - 1;
@@ -530,7 +530,7 @@ public class JSON {
                 read();
             }
         }
-        String string = endCapture(cache);
+        String string = endCapture();
         read();
         return string;
     }
@@ -599,7 +599,7 @@ public class JSON {
     /**
      * Stop text capturing.
      */
-    private String endCapture(boolean cache) {
+    private String endCapture() {
         int end = current == -1 ? index : index - 1;
         String captured;
         if (capture.length() > 0) {
