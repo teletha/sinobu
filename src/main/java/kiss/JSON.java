@@ -286,7 +286,7 @@ public class JSON {
     private static final ArrayBlockingQueue<char[]> P = new ArrayBlockingQueue(16);
 
     /** Reuse array's index to reduce GC execution. */
-    private static final String[] C = {"0", "1", "2", "3", "4"};
+    private static final String[] C = "0123456789".split("");
 
     /** Reuse text symbol. */
     private static final Ⅱ<String, char[]>[] S = new Ⅱ[65536];
@@ -363,7 +363,7 @@ public class JSON {
             int count = -1;
             do {
                 space();
-                array.put(++count <= 4 ? C[count] : Integer.toString(count), value());
+                array.put(++count <= 9 ? C[count] : Integer.toString(count), value());
                 space();
             } while (read(','));
             token(']');
