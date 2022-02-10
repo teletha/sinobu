@@ -616,7 +616,7 @@ public class JSON {
             }
 
             Ⅱ<String, char[]> cache = S[hash & 65535];
-            if (cache != null && Arrays.equals(buffer, captureStart, end, cache.ⅱ, 0, end - captureStart)) {
+            if (cache != null && Arrays.equals(buffer, captureStart, end, cache.ⅱ, 0, cache.ⅱ.length)) {
                 captured = cache.ⅰ;
             } else {
                 S[hash & 65535] = I.pair(captured = new String(buffer, captureStart, end - captureStart), captured.toCharArray());
