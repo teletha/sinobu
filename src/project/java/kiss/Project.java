@@ -56,6 +56,9 @@ public class Project extends bee.api.Project {
         require("com.google.code.gson", "gson").atTest();
         require("com.alibaba", "fastjson").atTest();
 
+        // For XML benchmark
+        require("org.jsoup", "jsoup").atTest();
+
         // For logging benchmark
         require("org.apache.logging.log4j", "log4j-core").atTest();
         require("com.lmax", "disruptor", "3.4.4").atTest();
