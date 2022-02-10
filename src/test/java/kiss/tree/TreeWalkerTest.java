@@ -17,13 +17,10 @@ import kiss.I;
 import kiss.Signal;
 import kiss.XML;
 
-/**
- * @version 2017/04/18 21:05:51
- */
-public class TreeWalkerTest {
+class TreeWalkerTest {
 
     @Test
-    public void walk() throws Exception {
+    void walk() {
         HTML html = new HTML() {
             {
                 $("html", () -> {
@@ -43,14 +40,14 @@ public class TreeWalkerTest {
 
         List<String> elements = parse(html).map(XML::name).toList();
         assert elements.size() == 8;
-        assert elements.get(0) == "html";
-        assert elements.get(1) == "body";
-        assert elements.get(2) == "h1";
-        assert elements.get(3) == "h2";
-        assert elements.get(4) == "h3";
-        assert elements.get(5) == "span";
-        assert elements.get(6) == "span";
-        assert elements.get(7) == "div";
+        assert elements.get(0).equals("html");
+        assert elements.get(1).equals("body");
+        assert elements.get(2).equals("h1");
+        assert elements.get(3).equals("h2");
+        assert elements.get(4).equals("h3");
+        assert elements.get(5).equals("span");
+        assert elements.get(6).equals("span");
+        assert elements.get(7).equals("div");
     }
 
     private Signal<XML> parse(HTML html) {

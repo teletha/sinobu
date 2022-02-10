@@ -14,9 +14,6 @@ import org.junit.jupiter.api.Test;
 import kiss.I;
 import kiss.XML;
 
-/**
- * @version 2017/03/31 18:57:46
- */
 class XMLParserTest {
 
     @Test

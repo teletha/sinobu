@@ -9,7 +9,7 @@
  */
 package kiss;
 
-import static java.lang.Boolean.*;
+import static java.lang.Boolean.FALSE;
 import static java.time.format.DateTimeFormatter.*;
 
 import java.io.ByteArrayOutputStream;
