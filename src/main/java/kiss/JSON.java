@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -286,6 +287,9 @@ public class JSON {
 
     /** Reuse array's index to reduce GC execution. */
     private static final String[] C = {"0", "1", "2", "3", "4"};
+
+    /** Reuse text symbol. */
+    private static final Ⅱ<String, char[]>[] S = new Ⅱ[65536];
 
     /** The input source. */
     private Reader reader;
@@ -606,63 +610,21 @@ public class JSON {
             captured = capture.append(buffer, captureStart, end - captureStart).toString();
             capture.setLength(0);
         } else {
-            captured = new String(buffer, captureStart, end - captureStart);
+            int hash = 0;
+            for (int i = captureStart; i < end; i++) {
+                hash = 31 * hash + buffer[i];
+            }
+
+            Ⅱ<String, char[]> cache = S[hash & 65535];
+            if (cache != null && Arrays.equals(buffer, captureStart, end, cache.ⅱ, 0, end - captureStart)) {
+                captured = cache.ⅰ;
+            } else {
+                S[hash & 65535] = I.pair(captured = new String(buffer, captureStart, end - captureStart), captured.toCharArray());
+            }
         }
         captureStart = -1;
         return captured;
     }
-
-    // private static Map<String, String> map = new ConcurrentHashMap();
-    //
-    // /**
-    // * Stop text capturing.
-    // */
-    // private String endCapture() {
-    // int end = current == -1 ? index : index - 1;
-    // String captured;
-    // if (capture.length() > 0) {
-    // captured = capture.append(buffer, captureStart, end - captureStart).toString();
-    // capture.setLength(0);
-    // } else {
-    // captured = new String(buffer, captureStart, end - captureStart);
-    // String ref = map.get(captured);
-    // if (ref == null) {
-    // if (map.size() > 1024) map.clear();
-    // map.put(captured, captured);
-    // } else {
-    // captured = ref;
-    // }
-    // }
-    // captureStart = -1;
-    // return captured;
-    // }
-
-    // private static Map<String, SoftReference<String>> map = new WeakHashMap();
-    //
-    // /**
-    // * Stop text capturing.
-    // */
-    // private String endCapture() {
-    // int end = current == -1 ? index : index - 1;
-    // String captured;
-    // if (capture.length() > 0) {
-    // captured = capture.append(buffer, captureStart, end - captureStart).toString();
-    // capture.setLength(0);
-    // } else {
-    // captured = new String(buffer, captureStart, end - captureStart);
-    // SoftReference<String> ref = map.get(captured);
-    // if (ref != null) {
-    // String v = ref.get();
-    // if (v != null) {
-    // captureStart = -1;
-    // return v;
-    // }
-    // }
-    // map.put(captured, new SoftReference(captured));
-    // }
-    // captureStart = -1;
-    // return captured;
-    // }
 
     /**
      * Throw parsing error.
