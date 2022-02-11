@@ -9,7 +9,7 @@
  */
 package kiss;
 
-import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.*;
 import static java.time.format.DateTimeFormatter.*;
 
 import java.io.ByteArrayOutputStream;
@@ -1351,7 +1351,7 @@ public class I {
                         // new_OutputStreamWriter(new_BufferedOutputStream(new_FileOutputStream(new_File(name))));
 
                         // Old files should be deleted.
-                        int i = I.env(name.concat(".rotate"), I.env("*.rotate", 30));
+                        int i = I.env(name.concat(".rotate"), I.env("*.rotate", 90));
                         while (0 < i && (new File(dir, name.concat(day.minusDays(i++).format(ISO_DATE)).concat(".log"))
                                 .delete() || i < 60)) {
                         }
