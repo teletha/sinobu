@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.14.0](https://www.github.com/teletha/sinobu/compare/v2.13.1...v2.14.0) (2022-02-10)
+
+
+### Features
+
+* Greatly improved the speed of HTML parsing. ([e35ab6e](https://www.github.com/teletha/sinobu/commit/e35ab6e2e25f2a806bc489a30c45f5c2be083adf))
+* JSON parser enables symbol table. ([57daa85](https://www.github.com/teletha/sinobu/commit/57daa85cd18db1ec3b724a12195ce7aab6037753))
+
+
+### Bug Fixes
+
+* Improve performance of XML#child. ([6b3894b](https://www.github.com/teletha/sinobu/commit/6b3894b13d8a30a65f84ae34fbd020c2061f6035))
+* JSON's symbol table is broken. ([b2b0bac](https://www.github.com/teletha/sinobu/commit/b2b0bacdde48ba3d7e313329fd09f28537ddb5e8))
+* Reduce code size and enlarge the interned index. ([a335b8e](https://www.github.com/teletha/sinobu/commit/a335b8e9d23928da1bed2a08652d065c5dcfb81f))
+* Reduce code size. ([01ef807](https://www.github.com/teletha/sinobu/commit/01ef807c24b0f51d2510e5e3cc14982711b06e34))
+
 ### [2.13.1](https://www.github.com/teletha/sinobu/compare/v2.13.0...v2.13.1) (2022-02-03)
 
 
