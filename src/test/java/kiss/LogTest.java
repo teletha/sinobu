@@ -314,7 +314,7 @@ class LogTest {
         String loggerName = "rotate-log";
 
         // generate old log files
-        List<Path> olds = IntStream.range(1, 40)
+        List<Path> olds = IntStream.range(1, 100)
                 .mapToObj(i -> room.locateFile(loggerName + LocalDate.now().minusDays(i).format(DateTimeFormatter.ISO_DATE) + ".log"))
                 .collect(Collectors.toList());
 
@@ -330,10 +330,10 @@ class LogTest {
         I.info(loggerName, "Create new log file and delete old files.");
 
         // check old log files
-        for (Path old : olds.subList(0, 29)) {
+        for (Path old : olds.subList(0, 89)) {
             assert Files.exists(old);
         }
-        for (Path old : olds.subList(30, 39)) {
+        for (Path old : olds.subList(90, 99)) {
             assert Files.notExists(old);
         }
     }
@@ -343,7 +343,7 @@ class LogTest {
         String loggerName = "rotate-sparse-log";
 
         // generate old log files
-        List<Path> olds = IntStream.range(1, 40)
+        List<Path> olds = IntStream.range(1, 100)
                 .mapToObj(i -> room.locateFile(loggerName + LocalDate.now().minusDays(i).format(DateTimeFormatter.ISO_DATE) + ".log"))
                 .collect(Collectors.toList());
 
@@ -352,9 +352,9 @@ class LogTest {
         }
 
         // decimate log files
-        Files.delete(olds.get(33));
-        Files.delete(olds.get(36));
-        Files.delete(olds.get(37));
+        Files.delete(olds.get(93));
+        Files.delete(olds.get(96));
+        Files.delete(olds.get(97));
 
         // use file logger
         I.env(loggerName + ".file", Level.ALL);
@@ -364,10 +364,10 @@ class LogTest {
         I.info(loggerName, "Create new log file and delete old files.");
 
         // check old log files
-        for (Path old : olds.subList(0, 29)) {
+        for (Path old : olds.subList(0, 89)) {
             assert Files.exists(old);
         }
-        for (Path old : olds.subList(30, 39)) {
+        for (Path old : olds.subList(90, 99)) {
             assert Files.notExists(old);
         }
     }
