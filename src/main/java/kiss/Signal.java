@@ -439,8 +439,19 @@ public final class Signal<V> {
     }
 
     /**
+     * <p>
      * Indicates each value of an {@link Signal} sequence into consecutive non-overlapping buffers
      * which are produced based on value count information.
+     * </p>
+     * <pre class="marble-diagram" style="font-family: 'Yu Gothic';">
+     * ───①───②───③──┼
+     *    ↓   ↓   ↓  ↓
+     *  ┌─────────────┐
+     *   buffer (all)
+     *  └─────────────┘
+     *               ↓
+     * ──────────────[❶❷❸]┼
+     * </pre>
      *
      * @return {ChainableAPI}
      */
@@ -1747,9 +1758,9 @@ public final class Signal<V> {
      * Returns an {@link Signal} that applies the given function to each value emitted by an
      * {@link Signal} and emits the result.
      * </p>
-     * <pre class="marble-diagram">
+     * <pre class="marble-diagram" style="font-family: 'Yu Gothic';">
      * ───①───②───③───④───⑤──┼
-     *    ↓   ↓   ↓   ↓   ↓
+     *    ↓   ↓   ↓   ↓   ↓  ↓
      *  ┌────────────────────┐
      *   map ○→●
      *  └────────────────────┘
@@ -1769,7 +1780,7 @@ public final class Signal<V> {
      * <p>
      * {@link #map(WiseFunction)} preassign context.
      * </p>
-     * <pre class="marble-diagram">
+     * <pre class="marble-diagram" style="font-family: 'Yu Gothic';">
      * ───①───②───③───④───⑤──┼
      *    ↓   ↓   ↓   ↓   ↓
      *  ┌────────────────────┐
@@ -1812,7 +1823,7 @@ public final class Signal<V> {
      * Flattens a sequence of {@link Signal} emitted by an {@link Signal} into one {@link Signal},
      * preassignout any transformation.
      * </p>
-     * <pre class="marble-diagram">
+     * <pre class="marble-diagram" style="font-family: 'Yu Gothic';">
      * ───①───②───③───④───⑤──┼
      *    ↓   ↓   ↓   ↓   ↓
      * ─────❶────❷────❸────┼
@@ -1877,7 +1888,7 @@ public final class Signal<V> {
      * <p>
      * Switch event stream context.
      * </p>
-     * <pre class="marble">
+     * <pre class="marble-diagram" style="font-family: 'Yu Gothic';">
     * ───①───②───③───④───⑤──┼
     *    ↓   ↓   ↓   ↓   ↓
     *  ┌────────────────────┐
