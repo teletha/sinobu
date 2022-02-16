@@ -10,7 +10,7 @@
 package kiss;
 
 import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.*;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -454,6 +454,7 @@ public final class Signal<V> {
      * </pre>
      *
      * @return {ChainableAPI}
+     * @see <a href="https://reactivex.io/documentation/operators/buffer.html">ReactiveX buffer</a>
      */
     public final Signal<List<V>> buffer() {
         return buffer(never());
@@ -477,6 +478,7 @@ public final class Signal<V> {
      *
      * @param size A length of each buffer.
      * @return {ChainableAPI}
+     * @see <a href="https://reactivex.io/documentation/operators/buffer.html">ReactiveX buffer</a>
      */
     public final Signal<List<V>> buffer(int size) {
         return buffer(size, size);
@@ -503,6 +505,7 @@ public final class Signal<V> {
      * @param interval A number of values to skip between creation of consecutive buffers. Zero or
      *            negative number are treated exactly the same way as 1.
      * @return {ChainableAPI}
+     * @see <a href="https://reactivex.io/documentation/operators/buffer.html">ReactiveX buffer</a>
      */
     public final Signal<List<V>> buffer(int size, int interval) {
         int creationSize = 0 < size ? size : 1;
@@ -564,6 +567,7 @@ public final class Signal<V> {
      *            instruction.
      * @param scheduler An event scheduler.
      * @return {ChainableAPI}
+     * @see <a href="https://reactivex.io/documentation/operators/buffer.html">ReactiveX buffer</a>
      */
     public final Signal<List<V>> buffer(long time, TimeUnit unit, ScheduledExecutorService... scheduler) {
         return buffer(I.schedule(time, time, unit, true, scheduler));
@@ -589,6 +593,7 @@ public final class Signal<V> {
      * 
      * @param timing A timing {@link Signal}.
      * @return {ChainableAPI}
+     * @see <a href="https://reactivex.io/documentation/operators/buffer.html">ReactiveX buffer</a>
      */
     public final Signal<List<V>> buffer(Signal<?> timing) {
         return buffer(timing, (Supplier<List<V>>) ArrayList::new, List<V>::add).skip(List::isEmpty);
@@ -616,6 +621,7 @@ public final class Signal<V> {
      *            as the buffer.
      * @param assigner A operation function that assigns a value to the buffer.
      * @return {ChainableAPI}
+     * @see <a href="https://reactivex.io/documentation/operators/buffer.html">ReactiveX buffer</a>
      */
     public final <B> Signal<B> buffer(Signal<?> timing, Supplier<B> supplier, BiConsumer<B, V> assigner) {
         return buffer(timing, supplier, assigner, false);
@@ -646,9 +652,8 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Returns an {@link Signal} that emits the results of a function of your choosing applied to
-     * combinations of two items emitted, in sequence, by this {@link Signal} and the other
-     * specified {@link Signal}.
+     * Combine the elements that flow to the current signal and the elements that flow to the
+     * specified signal one by one, and flow that pair.
      * </p>
      * <pre class="marble-diagram" style="font-family: 'Yu Gothic';">
      * ───①②──────③─────④⑤──╂ signal
@@ -665,6 +670,7 @@ public final class Signal<V> {
      * @param other An other {@link Signal} to combine.
      * @return A {@link Signal} that emits items that are the result of combining the items emitted
      *         by source {@link Signal} by means of the given aggregation function.
+     * @see <a href="https://reactivex.io/documentation/operators/zip.html">ReactiveX zip</a>
      */
     public final <O> Signal<Ⅱ<V, O>> combine(Signal<O> other) {
         return combine(other, I::pair);
@@ -679,6 +685,7 @@ public final class Signal<V> {
      * @param another An another {@link Signal} to combine.
      * @return A {@link Signal} that emits items that are the result of combining the items emitted
      *         by source {@link Signal} by means of the given aggregation function.
+     * @see <a href="https://reactivex.io/documentation/operators/zip.html">ReactiveX zip</a>
      */
     public final <O, A> Signal<Ⅲ<V, O, A>> combine(Signal<O> other, Signal<A> another) {
         return combine(other, I::<V, O> pair).combine(another, Ⅱ<V, O>::<A> ⅲ);
@@ -694,6 +701,7 @@ public final class Signal<V> {
      *            {@link Signal}.
      * @return A {@link Signal} that emits items that are the result of combining the items emitted
      *         by source {@link Signal} by means of the given aggregation function.
+     * @see <a href="https://reactivex.io/documentation/operators/zip.html">ReactiveX zip</a>
      */
     public final <O, R> Signal<R> combine(Signal<O> other, BiFunction<V, O, R> combiner) {
         return new Signal<>((observer, disposer) -> {
@@ -744,6 +752,7 @@ public final class Signal<V> {
      *            {@link Signal}.
      * @return A {@link Signal} that emits items that are the result of combining the items emitted
      *         by source {@link Signal} by means of the given aggregation function.
+     * @see <a href="https://reactivex.io/documentation/operators/zip.html">ReactiveX zip</a>
      */
     public final Signal<V> combine(Signal<V>[] others, BinaryOperator<V> operator) {
         Signal<V> base = this;
