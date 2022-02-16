@@ -918,7 +918,7 @@ public final class Signal<V> {
      *   combineLatest (others, A & B)
      *  └─────────────────┘
      *      ↓   ↓  ↓  ↓↓
-     * ─────⓶───❷──❸──③④─╂
+     * ─────⓶───❷──❸──③④──╂
      * </pre>
      *
      * @param others Other {@link Signal} to combine.
@@ -939,11 +939,24 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns an {@link Signal} that emits the items emitted by {@link Signal}s, one after the
-     * other, preassignout interleaving them.
+     * <p>
+     * Start the specified signal after the current signal is completed.
+     * </p>
+     * <pre class="marble-diagram" style="font: 11px/1.2 'Yu Gothic';">
+     * ───①②──③──╂ signal
+     *    ↓↓  ↓  ↓
+     *           ─④───⑤⑥─╂ other
+     *            ↓   ↓↓       ↓
+     *  ┌─────────────────┐
+     *   concat (other)
+     *  └─────────────────┘
+     *    ↓↓  ↓   ↓   ↓↓
+     * ───①②──③───④───⑤⑥─╂
+     * </pre>
      * 
      * @param others A sequence of {@link Signal}s to concat.
      * @return {ChainableAPI}
+     * @see <a href="https://reactivex.io/documentation/operators/concat.html">ReeactiveX concat</a>
      */
     public final Signal<V> concat(Signal<? extends V>... others) {
         // ignore invalid parameters
@@ -954,11 +967,24 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns an {@link Signal} that emits the items emitted by {@link Signal}s, one after the
-     * other, preassignout interleaving them.
+     * <p>
+     * Start the specified signal after the current signal is completed.
+     * </p>
+     * <pre class="marble-diagram" style="font: 11px/1.2 'Yu Gothic';">
+     * ───①②──③──╂ signal
+     *    ↓↓  ↓  ↓
+     *           ─④───⑤⑥─╂ other
+     *            ↓   ↓↓       ↓
+     *  ┌─────────────────┐
+     *   concat (other)
+     *  └─────────────────┘
+     *    ↓↓  ↓   ↓   ↓↓
+     * ───①②──③───④───⑤⑥─╂
+     * </pre>
      * 
      * @param others A sequence of {@link Signal}s to concat.
      * @return {ChainableAPI}
+     * @see <a href="https://reactivex.io/documentation/operators/concat.html">ReeactiveX concat</a>
      */
     public final Signal<V> concat(Iterable<Signal<? extends V>> others) {
         // ignore invalid parameters
