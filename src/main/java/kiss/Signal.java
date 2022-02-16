@@ -443,7 +443,7 @@ public final class Signal<V> {
      * It accumulates all the elements and flows them together as {@link List} buffer upon
      * completion.
      * </p>
-     * <pre class="marble-diagram" style="font-family: 'Yu Gothic';">
+     * <pre class="marble-diagram" style="font: 11px/1.2 'Yu Gothic';">
      * ───①───②───③──╂
      *    ↓   ↓   ↓  ↓
      *  ┌─────────────┐
@@ -466,7 +466,7 @@ public final class Signal<V> {
      * as {@link List} buffer. Note that if the elements have not accumulated to the specified size
      * at the time of completion, they will all be discarded.
      * </p>
-     * <pre class="marble-diagram" style="font-family: 'Yu Gothic';">
+     * <pre class="marble-diagram" style="font: 11px/1.2 'Yu Gothic';">
      * ───①─②─③─④─⑤─⑥─⑦╂
      *    ↓ ↓ ↓ ↓ ↓ ↓ ↓
      *  ┌──────────────┐
@@ -490,7 +490,7 @@ public final class Signal<V> {
      * size, it flows them together as {@link List} buffer. Note that if the elements have not
      * accumulated to the specified size at the time of completion, they will all be discarded.
      * </p>
-     * <pre class="marble-diagram" style="font-family: 'Yu Gothic';">
+     * <pre class="marble-diagram" style="font: 11px/1.2 'Yu Gothic';">
      * ───①───②───③───④───⑤─╂
      *    ↓   ↓   ↓   ↓   ↓
      *  ┌───────────────────┐
@@ -552,7 +552,7 @@ public final class Signal<V> {
      * period of time elapses. Note that all unflowed accumulated elements at the time of completion
      * will be discarded.
      * </p>
-     * <pre class="marble-diagram" style="font-family: 'Yu Gothic';">
+     * <pre class="marble-diagram" style="font: 11px/1.2 'Yu Gothic';">
      * ───①──②────③────────④⑤─────╂
      *    ↓  ↓    ↓        ↓↓
      *  ┌─────────────────────────┐
@@ -579,7 +579,7 @@ public final class Signal<V> {
      * timing. Note that all unflowed accumulated elements at the time of completion will be
      * discarded.
      * </p>
-     * <pre class="marble-diagram" style="font-family: 'Yu Gothic';">
+     * <pre class="marble-diagram" style="font: 11px/1.2 'Yu Gothic';">
      * ────────▽──────────▽─╂ timing
      *         ↓          ↓
      * ───①──②────③────④⑤───╂ signal
@@ -604,7 +604,7 @@ public final class Signal<V> {
      * It accumulates elements and flows them together as buffer at each specified timing. Note that
      * all unflowed accumulated elements at the time of completion will be discarded.
      * </p>
-     * <pre class="marble-diagram" style="font-family: 'Yu Gothic';">
+     * <pre class="marble-diagram" style="font: 11px/1.2 'Yu Gothic';">
      * ────────▽──────────▽─╂ timing
      *         ↓          ↓
      * ───①──②────③────④⑤───╂ signal
@@ -655,7 +655,7 @@ public final class Signal<V> {
      * It flows the pair of each elements coming from all signals. In order to flow a new pair,
      * there must be at least one or more unflowed elements in every signals.
      * </p>
-     * <pre class="marble-diagram" style="font-family: 'Yu Gothic';">
+     * <pre class="marble-diagram" style="font: 11px/1.2 'Yu Gothic';">
      * ───①②──────③─────④⑤──╂ signal
      *    ↓↓      ↓     ↓↓
      * ─────❶───❷──❸──❹─────╂ other
@@ -681,7 +681,7 @@ public final class Signal<V> {
      * It flows the pair of each elements coming from all signals. In order to flow a new pair,
      * there must be at least one or more unflowed elements in every signals.
      * </p>
-     * <pre class="marble-diagram" style="font-family: 'Yu Gothic';">
+     * <pre class="marble-diagram" style="font: 11px/1.2 'Yu Gothic';">
      * ───①②──────③─────④⑤──╂ signal
      *    ↓↓      ↓     ↓↓
      * ─────❶───❷──❸──❹─────╂ other
@@ -710,7 +710,7 @@ public final class Signal<V> {
      * It flows the pair of each elements coming from all signals. In order to flow a new pair,
      * there must be at least one or more unflowed elements in every signals.
      * </p>
-     * <pre class="marble-diagram" style="font-family: 'Yu Gothic';">
+     * <pre class="marble-diagram" style="font: 11px/1.2 'Yu Gothic';">
      * ───①②──────③─────④⑤─╂ signal
      *    ↓↓      ↓     ↓↓
      * ─────○───●──◎──●────╂ other
@@ -772,20 +772,16 @@ public final class Signal<V> {
      * It flows the pair of each elements coming from all signals. In order to flow a new pair,
      * there must be at least one or more unflowed elements in every signals.
      * </p>
-     * <pre class="marble-diagram" style="font-family: 'Yu Gothic';">
-     * ───①②──────③─────④⑤──╂ SignalA
+     * <pre class="marble-diagram" style="font: 11px/1.2 'Yu Gothic';">
+     * ───①②──────③─────④⑤─╂ signal
      *    ↓↓      ↓     ↓↓
-     * ─────○───●──◎──●─────╂ SignalB
+     * ─────○───●──◎──●────╂ other
      *      ↓   ↓  ↓  ↓
-     * ──<span style="color:#009bbf">Blue</span>──────<span style=
-    "color:#f62e36">Red</span>──────<span style="color:#009944">Green</span>─╂ SignalC
-     *   ↓       ↓        ↓
-     *  ┌───────────────────┐
-     *   combine (others, A & B & C)
-     *  └───────────────────┘
-     *      ↓    ↓        ↓
-     * ─────<span style="color:#009bbf">①</span>────<span style=
-    "color:#f62e36">❷</span>────────<span style="color:#009944">⓷</span>─╂
+     *  ┌──────────────────┐
+     *   combine (other, a & b)
+     *  └──────────────────┘
+     *      ↓   ↓  ↓    ↓
+     * ─────①───❷──⓷────❹──╂
      * </pre>
      *
      * @param others Other {@link Signal} to combine.
@@ -808,22 +804,21 @@ public final class Signal<V> {
     }
 
     /**
-     * Combines two source {@link Signal} by emitting an item that aggregates the latest values of
-     * each of the source {@link Signal} each time an item is received from either of the source
-     * {@link Signal}, where this aggregation is defined by a specified function.
-     *
-     * @param other An other constant {@link Signal} to combine.
-     * @return An {@link Signal} that emits items that are the result of combining the items emitted
-     *         by the source {@link Signal} by means of the given aggregation function
-     */
-    public final <O> Signal<Ⅱ<V, O>> combineLatest(O other) {
-        return combineLatest(I.signal(other));
-    }
-
-    /**
-     * Combines two source {@link Signal} by emitting an item that aggregates the latest values of
-     * each of the source {@link Signal} each time an item is received from either of the source
-     * {@link Signal}, where this aggregation is defined by a specified function.
+     * <p>
+     * It flows the pair of each latest elements coming from all signals. In order to flow a new
+     * pair, there must be at least one or more unflowed elements in any signal.
+     * </p>
+     * <pre class="marble-diagram" style="font: 11px/1.2 'Yu Gothic';">
+     * ───①②───────③───④──╂ signal
+     *    ↓↓       ↓   ↓
+     * ─────❶───❷─────────╂ other
+     *      ↓   ↓
+     *  ┌─────────────────┐
+     *   combineLatest (other)
+     *  └─────────────────┘
+     *      ↓   ↓  ↓   ↓
+     * ────[②❶]─[②❷]─[③❷]─[④❷]──╂
+     * </pre>
      *
      * @param other An other {@link Signal} to combine.
      * @return An {@link Signal} that emits items that are the result of combining the items emitted
@@ -1885,7 +1880,7 @@ public final class Signal<V> {
      * Returns an {@link Signal} that applies the given function to each value emitted by an
      * {@link Signal} and emits the result.
      * </p>
-     * <pre class="marble-diagram" style="font-family: 'Yu Gothic';">
+     * <pre class="marble-diagram" style="font: 11px/1.2 'Yu Gothic';">
      * ───①───②───③───④───⑤──┼
      *    ↓   ↓   ↓   ↓   ↓  ↓
      *  ┌────────────────────┐
@@ -1907,7 +1902,7 @@ public final class Signal<V> {
      * <p>
      * {@link #map(WiseFunction)} preassign context.
      * </p>
-     * <pre class="marble-diagram" style="font-family: 'Yu Gothic';">
+     * <pre class="marble-diagram" style="font: 11px/1.2 'Yu Gothic';">
      * ───①───②───③───④───⑤──┼
      *    ↓   ↓   ↓   ↓   ↓
      *  ┌────────────────────┐
@@ -1950,7 +1945,7 @@ public final class Signal<V> {
      * Flattens a sequence of {@link Signal} emitted by an {@link Signal} into one {@link Signal},
      * preassignout any transformation.
      * </p>
-     * <pre class="marble-diagram" style="font-family: 'Yu Gothic';">
+     * <pre class="marble-diagram" style="font: 11px/1.2 'Yu Gothic';">
      * ───①───②───③───④───⑤──┼
      *    ↓   ↓   ↓   ↓   ↓
      * ─────❶────❷────❸────┼
@@ -2015,7 +2010,7 @@ public final class Signal<V> {
      * <p>
      * Switch event stream context.
      * </p>
-     * <pre class="marble-diagram" style="font-family: 'Yu Gothic';">
+     * <pre class="marble-diagram" style="font: 11px/1.2 'Yu Gothic';">
     * ───①───②───③───④───⑤──┼
     *    ↓   ↓   ↓   ↓   ↓
     *  ┌────────────────────┐
