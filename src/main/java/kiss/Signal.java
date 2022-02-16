@@ -829,9 +829,23 @@ public final class Signal<V> {
     }
 
     /**
-     * Combines two source {@link Signal} by emitting an item that aggregates the latest values of
-     * each of the source {@link Signal} each time an item is received from either of the source
-     * {@link Signal}, where this aggregation is defined by a specified function.
+     * <p>
+     * It flows the pair of each latest elements coming from all signals. In order to flow a new
+     * pair, there must be at least one or more unflowed elements in any signal.
+     * </p>
+     * <pre class="marble-diagram" style="font: 11px/1.2 'Yu Gothic';">
+     * ───①②─────────③──────╂ signal
+     *    ↓↓         ↓   
+     * ─────❶────❷──────────╂ other
+     *      ↓    ↓      
+     * ──Ⓐ────────────────Ⓑ─╂ another
+     *   ↓                ↓
+     *  ┌───────────────────┐
+     *   combineLatest (other, another)
+     *  └───────────────────┘
+     *      ↓    ↓   ↓    ↓
+     * ────[②❶Ⓐ]─[②❷Ⓐ]─[③❷Ⓐ]─[③❷Ⓑ]╂
+     * </pre>
      *
      * @param other An other {@link Signal} to combine.
      * @param another An another {@link Signal} to combine.
@@ -843,9 +857,21 @@ public final class Signal<V> {
     }
 
     /**
-     * Combines two source {@link Signal} by emitting an item that aggregates the latest values of
-     * each of the source {@link Signal} each time an item is received from either of the source
-     * {@link Signal}, where this aggregation is defined by a specified function.
+     * <p>
+     * It flows the pair of each latest elements coming from all signals. In order to flow a new
+     * pair, there must be at least one or more unflowed elements in any signal.
+     * </p>
+     * <pre class="marble-diagram" style="font: 11px/1.2 'Yu Gothic';">
+     * ───①②───────③───④──╂ signal
+     *    ↓↓       ↓   ↓
+     * ─────◎───●─────○───╂ other
+     *      ↓   ↓     ↓
+     *  ┌─────────────────┐
+     *   combineLatest (other, A & B)
+     *  └─────────────────┘
+     *      ↓   ↓  ↓  ↓↓
+     * ─────⓶───❷──❸──③④─╂
+     * </pre>
      *
      * @param other An other {@link Signal} to combine.
      * @param function An aggregation function used to combine the items emitted by the source
@@ -879,9 +905,21 @@ public final class Signal<V> {
     }
 
     /**
-     * Combines several source {@link Signal} by emitting an item that aggregates the latest values
-     * of each of the source {@link Signal} each time an item is received from either of the source
-     * {@link Signal}, where this aggregation is defined by a specified function.
+     * <p>
+     * It flows the pair of each latest elements coming from all signals. In order to flow a new
+     * pair, there must be at least one or more unflowed elements in any signal.
+     * </p>
+     * <pre class="marble-diagram" style="font: 11px/1.2 'Yu Gothic';">
+     * ───①②───────③───④──╂ signal
+     *    ↓↓       ↓   ↓
+     * ─────◎───●─────○───╂ other
+     *      ↓   ↓     ↓
+     *  ┌─────────────────┐
+     *   combineLatest (others, A & B)
+     *  └─────────────────┘
+     *      ↓   ↓  ↓  ↓↓
+     * ─────⓶───❷──❸──③④─╂
+     * </pre>
      *
      * @param others Other {@link Signal} to combine.
      * @param operator An aggregation function used to combine the items emitted by the source
