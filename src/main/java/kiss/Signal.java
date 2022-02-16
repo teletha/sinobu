@@ -440,17 +440,17 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Indicates each value of an {@link Signal} sequence into consecutive non-overlapping buffers
-     * which are produced based on value count information.
+     * It accumulates all the elements and flows them together as {@link List} buffer upon
+     * completion.
      * </p>
      * <pre class="marble-diagram" style="font-family: 'Yu Gothic';">
-     * ───①───②───③──┼
+     * ───①───②───③──╂
      *    ↓   ↓   ↓  ↓
      *  ┌─────────────┐
      *   buffer (all)
      *  └─────────────┘
      *               ↓
-     * ──────────────[❶❷❸]┼
+     * ────────────[①②③]╂
      * </pre>
      *
      * @return {ChainableAPI}
@@ -460,8 +460,20 @@ public final class Signal<V> {
     }
 
     /**
-     * Indicates each value of an {@link Signal} sequence into consecutive non-overlapping buffers
-     * which are produced based on value count information.
+     * <p>
+     * It accumulates elements, and whenever it reaches the specified size, it flows them together
+     * as {@link List} buffer. Note that if the elements have not accumulated to the specified size
+     * at the time of completion, they will all be discarded.
+     * </p>
+     * <pre class="marble-diagram" style="font-family: 'Yu Gothic';">
+     * ───①─②─③─④─⑤─⑥─⑦╂
+     *    ↓ ↓ ↓ ↓ ↓ ↓ ↓
+     *  ┌──────────────┐
+     *   buffer (3)
+     *  └──────────────┘
+     *        ↓     ↓
+     * ──────[①②③]──[④⑤⑥]─╂
+     * </pre>
      *
      * @param size A length of each buffer.
      * @return {ChainableAPI}
@@ -471,8 +483,20 @@ public final class Signal<V> {
     }
 
     /**
-     * Indicates each values of an {@link Signal} sequence into zero or more buffers which are
-     * produced based on value count information.
+     * <p>
+     * It accumulates elements at the specified intervals, and whenever it reaches the specified
+     * size, it flows them together as {@link List} buffer. Note that if the elements have not
+     * accumulated to the specified size at the time of completion, they will all be discarded.
+     * </p>
+     * <pre class="marble-diagram" style="font-family: 'Yu Gothic';">
+     * ───①───②───③───④───⑤─╂
+     *    ↓   ↓   ↓   ↓   ↓
+     *  ┌───────────────────┐
+     *   buffer (2, 1)
+     *  └───────────────────┘
+     *        ↓   ↓   ↓   ↓
+     * ───────[①②]─[②③]─[③④]─[④⑤]─╂
+     * </pre>
      *
      * @param size A length of each buffer. Zero or negative number are treated exactly the same way
      *            as 1.
@@ -520,8 +544,20 @@ public final class Signal<V> {
     }
 
     /**
-     * Indicates each values of an {@link Signal} sequence into zero or more buffers which are
-     * produced based on time count information.
+     * <p>
+     * It accumulates elements and flows them together as {@link List} buffer whenever the specified
+     * period of time elapses. Note that all unflowed accumulated elements at the time of completion
+     * will be discarded.
+     * </p>
+     * <pre class="marble-diagram" style="font-family: 'Yu Gothic';">
+     * ───①──②────③────────④⑤─────╂
+     *    ↓  ↓    ↓        ↓↓
+     *  ┌─────────────────────────┐
+     *   buffer (1, minute)
+     *  └─────────────────────────┘
+     *       ↓     ↓     ↓     ↓
+     * ─────[①②]────[③]──────────[④⑤]╂
+     * </pre>
      *
      * @param time Time to collect values. Zero or negative number will ignore this instruction.
      * @param unit A unit of time for the specified timeout. <code>null</code> will ignore this
@@ -534,42 +570,69 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns an {@link Signal} that emits non-overlapping buffered items from the source
-     * {@link Signal} each time the specified boundary {@link Signal} emits an item.
+     * <p>
+     * It accumulates elements and flows them together as {@link List} buffer at each specified
+     * timing. Note that all unflowed accumulated elements at the time of completion will be
+     * discarded.
+     * </p>
+     * <pre class="marble-diagram" style="font-family: 'Yu Gothic';">
+     * ────────▽──────────▽─╂ timing
+     *         ↓          ↓
+     * ───①──②────③────④⑤───╂ signal
+     *    ↓  ↓    ↓    ↓↓
+     *  ┌───────────────────┐
+     *   buffer (timing)
+     *  └───────────────────┘
+     *         ↓          ↓
+     * ───────[①②]────────[③④⑤]╂
+     * </pre>
      * 
-     * @param boundary A boundary {@link Signal}.
+     * @param timing A timing {@link Signal}.
      * @return {ChainableAPI}
      */
-    public final Signal<List<V>> buffer(Signal<?> boundary) {
-        return buffer(boundary, (Supplier<List<V>>) ArrayList::new, List<V>::add).skip(List::isEmpty);
+    public final Signal<List<V>> buffer(Signal<?> timing) {
+        return buffer(timing, (Supplier<List<V>>) ArrayList::new, List<V>::add).skip(List::isEmpty);
     }
 
     /**
-     * Returns an {@link Signal} that emits non-overlapping buffered items from the source
-     * {@link Signal} each time the specified boundary {@link Signal} emits an item.
+     * <p>
+     * It accumulates elements and flows them together as buffer at each specified timing. Note that
+     * all unflowed accumulated elements at the time of completion will be discarded.
+     * </p>
+     * <pre class="marble-diagram" style="font-family: 'Yu Gothic';">
+     * ────────▽──────────▽─╂ timing
+     *         ↓          ↓
+     * ───①──②────③────④⑤───╂ signal
+     *    ↓  ↓    ↓    ↓↓
+     *  ┌───────────────────┐
+     *   buffer (timing)
+     *  └───────────────────┘
+     *         ↓          ↓
+     * ───────[①②]────────[③④⑤]╂
+     * </pre>
      * 
-     * @param boundary A boundary {@link Signal}.
+     * @param timing A timing {@link Signal}.
      * @param supplier A factory function that returns a container instance to be used and returned
      *            as the buffer.
      * @param assigner A operation function that assigns a value to the buffer.
      * @return {ChainableAPI}
      */
-    public final <B> Signal<B> buffer(Signal<?> boundary, Supplier<B> supplier, BiConsumer<B, V> assigner) {
-        return buffer(boundary, supplier, assigner, false);
+    public final <B> Signal<B> buffer(Signal<?> timing, Supplier<B> supplier, BiConsumer<B, V> assigner) {
+        return buffer(timing, supplier, assigner, false);
     }
 
     /**
      * Returns an {@link Signal} that emits non-overlapping buffered items from the source
-     * {@link Signal} each time the specified boundary {@link Signal} emits an item.
+     * {@link Signal} each time the specified timing {@link Signal} emits an item.
      * 
-     * @param boundary A boundary {@link Signal}.
+     * @param timing A timing {@link Signal}.
      * @param supplier A factory function that returns an instance of the collection subclass to be
      *            used and returned as the buffer.
      * @param assigner A operation function that assigns a value to the buffer.
      * @param ignoreRemaining A flag whether completion event emits the remaining values or not.
      * @return {ChainableAPI}
      */
-    private <B> Signal<B> buffer(Signal<?> boundary, Supplier<B> supplier, BiConsumer<B, V> assigner, boolean ignoreRemaining) {
+    private <B> Signal<B> buffer(Signal<?> timing, Supplier<B> supplier, BiConsumer<B, V> assigner, boolean ignoreRemaining) {
         return new Signal<>((observer, disposer) -> {
             AtomicReference<B> buffer = new AtomicReference(supplier.get());
 
@@ -577,7 +640,7 @@ public final class Signal<V> {
             WiseRunnable completer = ignoreRemaining ? observer::complete : I.bundle(transfer, observer::complete);
 
             return to(v -> assigner.accept(buffer.get(), v), observer::error, completer, disposer, false)
-                    .add(boundary.to(transfer, observer::error, completer));
+                    .add(timing.to(transfer, observer::error, completer));
         });
     }
 
