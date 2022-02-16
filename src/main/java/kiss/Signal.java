@@ -711,13 +711,13 @@ public final class Signal<V> {
      * there must be at least one or more unflowed elements in every signals.
      * </p>
      * <pre class="marble-diagram" style="font-family: 'Yu Gothic';">
-     * ───①②──────③─────④⑤──╂ signal
+     * ───①②──────③─────④⑤─╂ signal
      *    ↓↓      ↓     ↓↓
-     * ─────○───●──◎──●─────╂ other
+     * ─────○───●──◎──●────╂ other
      *      ↓   ↓  ↓  ↓
-     *  ┌───────────────────┐
+     *  ┌──────────────────┐
      *   combine (other, a & b)
-     *  └───────────────────┘
+     *  └──────────────────┘
      *      ↓   ↓  ↓    ↓
      * ─────①───❷──⓷────❹──╂
      * </pre>
