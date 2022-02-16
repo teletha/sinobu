@@ -645,9 +645,22 @@ public final class Signal<V> {
     }
 
     /**
+     * <p>
      * Returns an {@link Signal} that emits the results of a function of your choosing applied to
      * combinations of two items emitted, in sequence, by this {@link Signal} and the other
      * specified {@link Signal}.
+     * </p>
+     * <pre class="marble-diagram" style="font-family: 'Yu Gothic';">
+     * ───①②──────③─────④⑤──╂ signal
+     *    ↓↓      ↓     ↓↓
+     * ─────❶───❷──❸──❹─────╂ other
+     *      ↓   ↓  ↓  ↓
+     *  ┌───────────────────┐
+     *   combine (other)
+     *  └───────────────────┘
+     *      ↓   ↓  ↓    ↓
+     * ─────[①❶]─[②❷]─[③❸]──[④❹]──╂
+     * </pre>
      *
      * @param other An other {@link Signal} to combine.
      * @return A {@link Signal} that emits items that are the result of combining the items emitted
