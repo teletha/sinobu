@@ -1,5 +1,13 @@
 # Changelog
 
+### [2.14.1](https://www.github.com/teletha/sinobu/compare/v2.14.0...v2.14.1) (2022-02-16)
+
+
+### Bug Fixes
+
+* Change default number of days to keep log from 30 days to 90 days. ([7a7eb77](https://www.github.com/teletha/sinobu/commit/7a7eb77e907967d9245f482638ca29657da260a9))
+* Drop Signal#combineLatest(constnat). ([75932f5](https://www.github.com/teletha/sinobu/commit/75932f55bae1c6f818ee3ea29dc62e707e2f1f77))
+
 ## [2.14.0](https://www.github.com/teletha/sinobu/compare/v2.13.1...v2.14.0) (2022-02-10)
 
 
