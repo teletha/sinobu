@@ -10,7 +10,7 @@
 package kiss;
 
 import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.NANOSECONDS;
+import static java.util.concurrent.TimeUnit.*;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -652,8 +652,8 @@ public final class Signal<V> {
 
     /**
      * <p>
-     * Combine the elements that flow to the current signal and the elements that flow to the
-     * specified signal one by one, and flow that pair.
+     * It flows the pair of each elements coming from all signals. In order to flow a new pair,
+     * there must be at least one or more unflowed elements in every signals.
      * </p>
      * <pre class="marble-diagram" style="font-family: 'Yu Gothic';">
      * ───①②──────③─────④⑤──╂ signal
@@ -677,9 +677,23 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns an {@link Signal} that emits the results of a function of your choosing applied to
-     * combinations of two items emitted, in sequence, by this {@link Signal} and the other
-     * specified {@link Signal}.
+     * <p>
+     * It flows the pair of each elements coming from all signals. In order to flow a new pair,
+     * there must be at least one or more unflowed elements in every signals.
+     * </p>
+     * <pre class="marble-diagram" style="font-family: 'Yu Gothic';">
+     * ───①②──────③─────④⑤──╂ signal
+     *    ↓↓      ↓     ↓↓
+     * ─────❶───❷──❸──❹─────╂ other
+     *      ↓   ↓  ↓  ↓
+     * ──Ⓐ───────Ⓑ────────Ⓒ─╂ another
+     *   ↓       ↓        ↓
+     *  ┌───────────────────┐
+     *   combine (other, another)
+     *  └───────────────────┘
+     *      ↓    ↓        ↓
+     * ────[①❶Ⓐ]─[②❷Ⓑ]─────[③❸Ⓒ]─╂
+     * </pre>
      *
      * @param other An other {@link Signal} to combine.
      * @param another An another {@link Signal} to combine.
@@ -692,9 +706,21 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns an {@link Signal} that emits the results of a function of your choosing applied to
-     * combinations of two items emitted, in sequence, by this {@link Signal} and the other
-     * specified {@link Signal}.
+     * <p>
+     * It flows the pair of each elements coming from all signals. In order to flow a new pair,
+     * there must be at least one or more unflowed elements in every signals.
+     * </p>
+     * <pre class="marble-diagram" style="font-family: 'Yu Gothic';">
+     * ───①②──────③─────④⑤──╂ signal
+     *    ↓↓      ↓     ↓↓
+     * ─────○───●──◎──●─────╂ other
+     *      ↓   ↓  ↓  ↓
+     *  ┌───────────────────┐
+     *   combine (other, a & b)
+     *  └───────────────────┘
+     *      ↓   ↓  ↓    ↓
+     * ─────①───❷──⓷────❹──╂
+     * </pre>
      *
      * @param other An other {@link Signal} to combine.
      * @param combiner An aggregation function used to combine the items emitted by the source
@@ -742,9 +768,25 @@ public final class Signal<V> {
     }
 
     /**
-     * Returns an {@link Signal} that emits the results of a function of your choosing applied to
-     * combinations of several items emitted, in sequence, by this {@link Signal} and the other
-     * specified {@link Signal}.
+     * <p>
+     * It flows the pair of each elements coming from all signals. In order to flow a new pair,
+     * there must be at least one or more unflowed elements in every signals.
+     * </p>
+     * <pre class="marble-diagram" style="font-family: 'Yu Gothic';">
+     * ───①②──────③─────④⑤──╂ SignalA
+     *    ↓↓      ↓     ↓↓
+     * ─────○───●──◎──●─────╂ SignalB
+     *      ↓   ↓  ↓  ↓
+     * ──<span style="color:#009bbf">Blue</span>──────<span style=
+    "color:#f62e36">Red</span>──────<span style="color:#009944">Green</span>─╂ SignalC
+     *   ↓       ↓        ↓
+     *  ┌───────────────────┐
+     *   combine (others, A & B & C)
+     *  └───────────────────┘
+     *      ↓    ↓        ↓
+     * ─────<span style="color:#009bbf">①</span>────<span style=
+    "color:#f62e36">❷</span>────────<span style="color:#009944">⓷</span>─╂
+     * </pre>
      *
      * @param others Other {@link Signal} to combine.
      * @param operator A function that, when applied to an item emitted by each of the source
