@@ -10,7 +10,7 @@
 package kiss;
 
 import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.*;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -1070,7 +1070,22 @@ public final class Signal<V> {
      * @return {ChainableAPI}
      */
     public final Signal<V> debounce(long time, TimeUnit unit, ScheduledExecutorService... scheduler) {
-        return debounceAll(time, unit, scheduler).flatMap(list -> I.signal(list).last());
+        return debounce(time, unit, false, scheduler);
+    }
+
+    /**
+     * Drops values that are followed by newer values before a timeout. The timer resets on each
+     * value emission.
+     *
+     * @param time A time value. Zero or negative number will ignore this instruction.
+     * @param unit A time unit. <code>null</code> will ignore this instruction.
+     * @param acceptFirst Determines whether to pass the first element or not. It is useful to get
+     *            the beginning and end of a sequence of events.
+     * @param scheduler
+     * @return {ChainableAPI}
+     */
+    public final Signal<V> debounce(long time, TimeUnit unit, boolean acceptFirst, ScheduledExecutorService... scheduler) {
+        return debounceX(time, unit, acceptFirst, scheduler).flatMap(v -> I.signal(v).last());
     }
 
     /**
@@ -1083,6 +1098,19 @@ public final class Signal<V> {
      * @return {ChainableAPI}
      */
     public final Signal<List<V>> debounceAll(long time, TimeUnit unit, ScheduledExecutorService... scheduler) {
+        return debounceX(time, unit, false, scheduler);
+    }
+
+    /**
+     * Collect values that are followed by newer values before a timeout. The timer resets on each
+     * value emission.
+     *
+     * @param time A time value. Zero or negative number will ignore this instruction.
+     * @param unit A time unit. <code>null</code> will ignore this instruction.
+     * @param scheduler
+     * @return {ChainableAPI}
+     */
+    private Signal<List<V>> debounceX(long time, TimeUnit unit, boolean acceptFirst, ScheduledExecutorService... scheduler) {
         // ignore invalid parameters
         if (time <= 0 || unit == null) {
             return map(List::of);
@@ -1093,7 +1121,12 @@ public final class Signal<V> {
             AtomicReference<List<V>> list = new AtomicReference(new ArrayList());
 
             return to(value -> {
-                list.get().add(value);
+                List<V> q = list.get();
+                if (acceptFirst && q.isEmpty()) {
+                    observer.accept(List.of(value));
+                }
+                q.add(value);
+
                 Disposable d = latest.get();
 
                 if (d != null) {

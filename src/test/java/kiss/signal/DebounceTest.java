@@ -22,6 +22,15 @@ class DebounceTest extends SignalTester {
         assert main.value("accepted");
     }
 
+    @Test
+    void debounceWithFirst() {
+        monitor(signal -> signal.debounce(delay, ms, true, scheduler));
+
+        assert main.emit("first", "and", "last events", "will be", "accepted").value("first");
+        scheduler.await();
+        assert main.value("accepted");
+    }
+
     void debounceWithoutValue() {
         monitor(signal -> signal.debounce(delay, ms, scheduler));
 
