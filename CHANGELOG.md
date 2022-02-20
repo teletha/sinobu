@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.15.0](https://www.github.com/teletha/sinobu/compare/v2.14.0...v2.15.0) (2022-02-20)
+
+
+### Features
+
+* Add Signal#debounce(time, unit, first, scheduler). ([b5a0854](https://www.github.com/teletha/sinobu/commit/b5a0854a8dd7de28486426219a7ae11de3fb924d))
+
+
+### Bug Fixes
+
+* Change default number of days to keep log from 30 days to 90 days. ([7a7eb77](https://www.github.com/teletha/sinobu/commit/7a7eb77e907967d9245f482638ca29657da260a9))
+* Drop Signal#combineLatest(constnat). ([75932f5](https://www.github.com/teletha/sinobu/commit/75932f55bae1c6f818ee3ea29dc62e707e2f1f77))
+
 ## [2.14.0](https://www.github.com/teletha/sinobu/compare/v2.13.1...v2.14.0) (2022-02-10)
 
 
