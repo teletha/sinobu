@@ -335,6 +335,18 @@ class XMLManipulationTest {
     }
 
     @Test
+    void childMultiple() {
+        XML e = I.xml("<root><Q/><Q/><Q/></root>");
+
+        assert e.find("child").size() == 0;
+        XML children = e.find("Q").child("child");
+        assert e.find("child").size() == 3;
+
+        children.child("nest");
+        assert e.find("nest").size() == 3;
+    }
+
+    @Test
     void effect() {
         XML e = I.xml("<Q/>");
 
