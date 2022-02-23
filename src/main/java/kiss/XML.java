@@ -488,7 +488,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
     public final XML child(String name) {
         // don't use the following codes because of building xml performance
         // return append("<" + name + "/>").lastChild();
-        List list = new CopyOnWriteArrayList();
+        List list = new ArrayList();
 
         for (Node node : nodes) {
             list.add(node.appendChild(doc.createElement(name)));
