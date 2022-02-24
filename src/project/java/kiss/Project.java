@@ -59,6 +59,10 @@ public class Project extends bee.api.Project {
         // For XML benchmark
         require("org.jsoup", "jsoup").atTest();
 
+        // For Mustache benchmark
+        require("com.github.spullara.mustache.java", "compiler").atTest();
+        require("com.samskivert", "jmustache").atTest();
+
         // For logging benchmark
         require("org.apache.logging.log4j", "log4j-core").atTest();
         require("com.lmax", "disruptor", "3.4.4").atTest();
