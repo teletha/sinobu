@@ -210,6 +210,30 @@ class TraverseTest {
     }
 
     @Test
+    void wildcardAndReversed() {
+        JSON json = json("""
+                [
+                    [
+                        {'firstName': 'Jill'},
+                        {'firstName': 'Bell'}
+                    ],
+                    [
+                        {'firstName': 'Alice'},
+                        {'firstName': 'Kayle'}
+                    ]
+                ]
+                """);
+
+        List<Person> values = json.find(Person.class, "*", "$");
+        assert values.size() == 4;
+        System.out.println(values.stream().map(x -> x.getFirstName()).toList());
+        assert values.get(0).getFirstName().equals("Kayle");
+        assert values.get(1).getFirstName().equals("Alice");
+        assert values.get(2).getFirstName().equals("Bell");
+        assert values.get(3).getFirstName().equals("Jill");
+    }
+
+    @Test
     void emptyPath() {
         // @formatter:off
         JSON json = json(

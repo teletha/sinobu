@@ -241,28 +241,35 @@ public class JSON {
      * @throws NullPointerException If type or path is null.
      */
     public <T> List<T> find(Class<T> type, String... path) {
-        List items = new ArrayList();
+        List items = new ArrayList(4);
         items.add(root);
 
         for (int i = 0; i < path.length; i++) {
-            List next = new ArrayList();
+            int mode = path[i].equals("*") ? -1 : path[i].equals("$") ? -2 : 0;
 
-            for (Object item : items) {
+            for (int j = 0; j < items.size();) {
+                Object item = items.get(j);
+
                 if (item instanceof Map) {
-                    if (path[i].equals("*")) {
-                        next.addAll(((Map) item).values());
-                    } else if (path[i].equals("$")) {
-                        next.addAll(((Map) item).values());
-                        Collections.reverse(next);
+                    Map m = (Map) item;
+                    if (mode != 0) {
+                        items.remove(j);
+                        items.addAll(j, m.values());
+                        j += m.size();
                     } else {
-                        Object value = ((Map) item).get(path[i]);
+                        Object value = m.get(path[i]);
                         if (value != null) {
-                            next.add(value);
+                            items.set(j++, value);
+                        } else {
+                            items.remove(j);
                         }
                     }
                 }
             }
-            items = next;
+
+            if (mode == -2) {
+                Collections.reverse(items);
+            }
         }
 
         for (int i = 0; i < items.size(); i++) {
