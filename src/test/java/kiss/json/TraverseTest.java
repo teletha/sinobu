@@ -226,11 +226,27 @@ class TraverseTest {
 
         List<Person> values = json.find(Person.class, "*", "$");
         assert values.size() == 4;
-        System.out.println(values.stream().map(x -> x.getFirstName()).toList());
         assert values.get(0).getFirstName().equals("Kayle");
         assert values.get(1).getFirstName().equals("Alice");
         assert values.get(2).getFirstName().equals("Bell");
         assert values.get(3).getFirstName().equals("Jill");
+    }
+
+    @Test
+    void wildcardAttributes() {
+        JSON json = json("""
+                {
+                    '1': 'Jill',
+                    '2': 'Bell',
+                    '3': 'Holo'
+                }
+                """);
+
+        List<String> values = json.find(String.class, "*");
+        assert values.size() == 3;
+        assert values.get(0).equals("Jill");
+        assert values.get(1).equals("Bell");
+        assert values.get(2).equals("Holo");
     }
 
     @Test
