@@ -233,7 +233,7 @@ class TraverseTest {
     }
 
     @Test
-    void wildcardAttributes() {
+    void wildcardAttribute() {
         JSON json = json("""
                 {
                     '1': 'Jill',
@@ -241,12 +241,41 @@ class TraverseTest {
                     '3': 'Holo'
                 }
                 """);
-
+    
         List<String> values = json.find(String.class, "*");
         assert values.size() == 3;
         assert values.get(0).equals("Jill");
         assert values.get(1).equals("Bell");
         assert values.get(2).equals("Holo");
+    }
+
+    @Test
+    void wildcardMixed() {
+        JSON json = json("""
+                {
+                     "data": {
+                          "delete": [
+                             {
+                                   "test": "3001.00"
+                             }
+                          ],
+                          "update": [
+                             {
+                                   "test": "2999.00"
+                             }
+                          ],
+                          "insert": [
+                             {
+                                   "test": "2998.00"
+                             }
+                          ],
+                          "illegal": 0
+                     }
+                }
+                """);
+
+        List<JSON> values = json.find("data", "*", "*");
+        assert values.size() == 4;
     }
 
     @Test

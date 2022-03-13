@@ -264,6 +264,8 @@ public class JSON {
                             items.remove(j);
                         }
                     }
+                } else {
+                    j++;
                 }
             }
 
