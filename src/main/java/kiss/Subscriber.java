@@ -166,7 +166,7 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
      */
     @Override
     public void onOpen(WebSocket web) {
-        web.request(8);
+        web.request(Long.MAX_VALUE);
         next.accept((T) web);
     }
 
@@ -175,8 +175,6 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
      */
     @Override
     public CompletionStage<?> onText(WebSocket web, CharSequence data, boolean last) {
-        web.request(1);
-
         if (last) {
             // If there is a pre-buffered string, it must be concatenated.
             // If not, we can stringify directly to avoid unnecessary bytes copying.
@@ -197,8 +195,6 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
      */
     @Override
     public CompletionStage<?> onBinary(WebSocket web, ByteBuffer data, boolean last) {
-        web.request(1);
-
         try {
             byte[] b = new byte[data.remaining()];
             data.get(b);
