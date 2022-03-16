@@ -298,10 +298,7 @@ public class JSON {
     private static final String[] C = "0123456789".split("");
 
     /** Reuse text symbol. */
-    private static final String[] S = new String[65536];
-
-    /** Reuse text hash. */
-    private static final char[][] A = new char[65536][];
+    private static final Ⅱ<String, char[]>[] S = new Ⅱ[65536];
 
     /** The input source. */
     private Reader reader;
@@ -627,12 +624,18 @@ public class JSON {
                 hash = 31 * hash + buffer[i];
             }
 
-            int i = hash & 65535;
-            if (A[i] != null && Arrays.equals(buffer, captureStart, end, A[i], 0, A[i].length)) {
-                captured = S[i];
+            // Caching each String and char[] in a separate array without using tuples would reduce
+            // memory usage and footprint. However, that method is NO LONGER thread-safe: the time
+            // difference between a char[] reference and a String reference allows another thread to
+            // rewrite the String cache.
+            // So the char[] reference and the String reference must be obtained completely
+            // atomically. However, using the usual syncronize block will sacrifice speed.
+            // By using tuples, we can ensure atomicity in obtaining both references.
+            Ⅱ<String, char[]> cache = S[hash & 65535];
+            if (cache != null && Arrays.equals(buffer, captureStart, end, cache.ⅱ, 0, cache.ⅱ.length)) {
+                captured = cache.ⅰ;
             } else {
-                S[i] = captured = new String(buffer, captureStart, end - captureStart);
-                A[i] = captured.toCharArray();
+                S[hash & 65535] = I.pair(captured = new String(buffer, captureStart, end - captureStart), captured.toCharArray());
             }
         }
         captureStart = -1;
