@@ -298,7 +298,10 @@ public class JSON {
     private static final String[] C = "0123456789".split("");
 
     /** Reuse text symbol. */
-    private static final Ⅱ<String, char[]>[] S = new Ⅱ[65536];
+    private static final String[] S = new String[32768];
+
+    /** Reuse text hash. */
+    private static final char[][] H = new char[32768][];
 
     /** The input source. */
     private Reader reader;
@@ -624,11 +627,12 @@ public class JSON {
                 hash = 31 * hash + buffer[i];
             }
 
-            Ⅱ<String, char[]> cache = S[hash & 65535];
-            if (cache != null && Arrays.equals(buffer, captureStart, end, cache.ⅱ, 0, cache.ⅱ.length)) {
-                captured = cache.ⅰ;
+            int i = hash & 32767;
+            if (H[i] != null && Arrays.equals(buffer, captureStart, end, H[i], 0, H[i].length)) {
+                captured = S[i];
             } else {
-                S[hash & 65535] = I.pair(captured = new String(buffer, captureStart, end - captureStart), captured.toCharArray());
+                S[i] = captured = new String(buffer, captureStart, end - captureStart);
+                H[i] = captured.toCharArray();
             }
         }
         captureStart = -1;
