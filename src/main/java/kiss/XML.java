@@ -491,7 +491,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
         List list = new ArrayList();
 
         for (Node node : nodes) {
-            list.add(node.appendChild(doc.createElement(name)));
+            list.add(node.appendChild(doc.createElementNS(null, name)));
         }
         return new XML(doc, list);
     }

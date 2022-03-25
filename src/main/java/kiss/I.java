@@ -9,7 +9,7 @@
  */
 package kiss;
 
-import static java.lang.Boolean.*;
+import static java.lang.Boolean.FALSE;
 import static java.time.format.DateTimeFormatter.*;
 
 import java.io.ByteArrayOutputStream;
@@ -2372,7 +2372,7 @@ public class I {
                 doc = dom.parse(new InputSource(new StringReader("<m>".concat(value.replaceAll("<\\?.+\\?>", "")).concat("</m>"))));
                 return new XML(doc, XML.convert(doc.getFirstChild().getChildNodes()));
             } else {
-                return xml(doc != null ? doc.createTextNode(value) : dom.newDocument().createElement(value));
+                return xml(doc != null ? doc.createTextNode(value) : dom.newDocument().createElementNS(null, value));
             }
         } catch (Exception e) {
             throw I.quiet(e);
