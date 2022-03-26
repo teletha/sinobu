@@ -10,6 +10,7 @@
 package kiss.xml;
 
 import org.junit.jupiter.api.Test;
+import org.w3c.dom.Node;
 
 import kiss.I;
 import kiss.XML;
@@ -269,5 +270,12 @@ class XMLParserTest {
         XML xml = I.xml("<html><Q/><Q/><Q><p/><Q><p/></html>");
 
         assert xml.children().size() == 3;
+    }
+
+    @Test
+    void parserCreateElementNS() {
+        Node e = I.xml("<Q/>").to();
+        assert e.getLocalName().equals("Q");
+        assert e.getNodeName().equals("Q");
     }
 }

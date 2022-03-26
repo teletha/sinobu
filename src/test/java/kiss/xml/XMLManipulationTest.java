@@ -11,6 +11,7 @@ package kiss.xml;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.w3c.dom.Node;
 
 import kiss.I;
 import kiss.XML;
@@ -344,6 +345,13 @@ class XMLManipulationTest {
 
         children.child("nest");
         assert e.find("nest").size() == 3;
+    }
+
+    @Test
+    void childCreateElementNS() {
+        Node e = I.xml("<Q/>").child("child").to();
+        assert e.getLocalName().equals("child");
+        assert e.getNodeName().equals("child");
     }
 
     @Test
