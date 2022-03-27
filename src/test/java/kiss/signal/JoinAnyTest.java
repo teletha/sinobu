@@ -87,8 +87,8 @@ class JoinAnyTest extends SignalTester {
     @Test
     void asyncExecutorService() {
         monitor(String.class, signal -> signal.joinAny(v -> {
-            if (v == "a") {
-                Thread.sleep(200);
+            if (v == "a" || v == "c") {
+                Thread.sleep(300);
             }
             return v.toUpperCase();
         }));
