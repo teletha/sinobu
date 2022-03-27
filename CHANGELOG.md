@@ -1,5 +1,18 @@
 # Changelog
 
+### [2.15.1](https://www.github.com/teletha/sinobu/compare/v2.15.0...v2.15.1) (2022-03-27)
+
+
+### Bug Fixes
+
+* Increase symbol cache size. ([0bd568a](https://www.github.com/teletha/sinobu/commit/0bd568a80debd22a71c3d779227f2cd125ae3be5))
+* JSON's reversed wildcard was broken. ([c4c485f](https://www.github.com/teletha/sinobu/commit/c4c485f54f68b9462fe3bf969e67a77a3db8b88e))
+* JSON#find loops infinitely when attribute value is mixed. ([e74773e](https://www.github.com/teletha/sinobu/commit/e74773e7f8d3f5cfae1fada76de147414fe453e9))
+* Reduce code size. ([0446e83](https://www.github.com/teletha/sinobu/commit/0446e834ba46b2880d311229cb0754fa8316804e))
+* Reduce memory usage and footprint. ([a4246f8](https://www.github.com/teletha/sinobu/commit/a4246f888223788daf53fa65b375133173e40851))
+* XML builder uses the qualified element name. ([1693ef0](https://www.github.com/teletha/sinobu/commit/1693ef0f9d1ffe754eb3c50c7fde428442d21909))
+* XML#child returns the compounded XML. ([7fc6f0a](https://www.github.com/teletha/sinobu/commit/7fc6f0aa5fe7d6a72bd5f029a5f30fbcdd1e7166))
+
 ## [2.15.0](https://www.github.com/teletha/sinobu/compare/v2.14.0...v2.15.0) (2022-02-20)
 
 
