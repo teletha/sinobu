@@ -9,9 +9,6 @@
  */
 package kiss;
 
-/**
- * @version 2018/04/02 8:35:09
- */
 public interface WiseTriConsumer<Param1, Param2, Param3>
         extends Narrow<WiseBiConsumer<Param2, Param3>, Param1, WiseBiConsumer<Param1, Param2>, Param3> {
 
