@@ -469,6 +469,20 @@ const root = {
 		{
 			"modifiers": {
 				"#": "java.util.Collections$UnmodifiableSet",},
+			"name": "WiseQuadConsumer",
+			"packageName": "kiss",
+			"type": "Functional"
+		},
+		{
+			"modifiers": {
+				"#": "java.util.Collections$UnmodifiableSet",},
+			"name": "WiseQuadFunction",
+			"packageName": "kiss",
+			"type": "Functional"
+		},
+		{
+			"modifiers": {
+				"#": "java.util.Collections$UnmodifiableSet",},
 			"name": "WiseRunnable",
 			"packageName": "kiss",
 			"type": "Functional"

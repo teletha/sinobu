@@ -301,7 +301,7 @@ e["after:highlightBlock"](Object.assign({block:t.el},t))})})(e),s.push(e)}
 }),e.debugMode=()=>{o=!1},e.safeMode=()=>{o=!0
 },e.versionString="11.4.0",e.regex={concat:f,lookahead:d,either:p,optional:h,
 anyNumberOfTimes:u};for(const e in M)"object"==typeof M[e]&&n(M[e])
-;return Object.assign(e,M),e})({});export{J as default};/*! `java` grammar compiled for Highlight.js 11.5.0 */
+;return Object.assign(e,M),e})({});export{J as default};/*! `java` grammar compiled for Highlight.js 11.5.1 */
 var hljsGrammar=(()=>{"use strict"
 ;var e="\\.([0-9](_*[0-9])*)",a="[0-9a-fA-F](_*[0-9a-fA-F])*",n={
 className:"number",variants:[{
@@ -338,7 +338,7 @@ begin:["(?:"+r+"\\s+)",e.UNDERSCORE_IDENT_RE,/\s*(?=\()/],className:{
 end:/\)/,keywords:i,relevance:0,
 contains:[l,e.APOS_STRING_MODE,e.QUOTE_STRING_MODE,n,e.C_BLOCK_COMMENT_MODE]
 },e.C_LINE_COMMENT_MODE,e.C_BLOCK_COMMENT_MODE]},n,l]}}})()
-;J.registerLanguage('java', hljsGrammar);/*! `xml` grammar compiled for Highlight.js 11.5.0 */
+;J.registerLanguage('java', hljsGrammar);/*! `xml` grammar compiled for Highlight.js 11.5.1 */
 var hljsGrammar=(()=>{"use strict";return e=>{
 const a=e.regex,n=a.concat(/[A-Z_]/,a.optional(/[A-Z0-9_.-]*:/),/[A-Z0-9_.-]*/),s={
 className:"symbol",begin:/&[a-z]+;|&#[0-9]+;|&#x[a-f0-9]+;/},t={begin:/\s/,
