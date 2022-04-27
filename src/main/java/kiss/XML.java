@@ -1027,11 +1027,11 @@ public class XML implements Iterable<XML>, Consumer<XML> {
             if (match != null) {
                 switch (match.hashCode()) {
                 case -947996741: // only-child
-                    xpath.append("[count(../*) = 1]");
+                    xpath.append("[count(parent::*/*)=1]");
                     break;
 
                 case 1455900751: // only-of-type
-                    xpath.append("[count(../").append(matcher.group(2)).append(")=1]");
+                    xpath.append("[count(parent::*/").append(matcher.group(2)).append(")=1]");
                     break;
 
                 case 96634189: // empty
@@ -1056,7 +1056,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
                     break;
 
                 case -995424086: // parent
-                    xpath.append("/..");
+                    xpath.append("/parent::*");
                     break;
 
                 case 3506402: // root
