@@ -14,7 +14,6 @@ import static java.nio.file.StandardOpenOption.*;
 import static java.util.concurrent.TimeUnit.*;
 
 import java.nio.channels.FileChannel;
-import java.nio.channels.FileLock;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.Function;
@@ -55,8 +54,8 @@ public interface Storable<Self> {
                 Path file = Path.of(locate());
                 Path tmp = Files.createTempFile(Files.createDirectories(file.getParent()), file.getFileName().toString(), null);
 
-                try (FileLock lock = FileChannel.open(file.resolveSibling(file.getFileName() + ".lock"), CREATE, WRITE, DELETE_ON_CLOSE)
-                        .lock()) {
+                try (FileChannel c = FileChannel.open(file.resolveSibling(file.getFileName() + ".lock"), CREATE, WRITE, DELETE_ON_CLOSE)) {
+                    c.lock();
                     I.write(this, Files.newBufferedWriter(tmp));
                     Files.move(tmp, file, ATOMIC_MOVE);
                 }
