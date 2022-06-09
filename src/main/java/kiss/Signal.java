@@ -10,7 +10,7 @@
 package kiss;
 
 import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.NANOSECONDS;
+import static java.util.concurrent.TimeUnit.*;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -2178,11 +2178,20 @@ public final class Signal<V> {
      * This is a utility method for propagating a value along with the previous value. You can
      * propagate a value from the first time by providing an initial value.
      * 
-     * @param init A list of initial values.
      * @return A chained {@link Signal}.
      */
-    public final Signal<List<V>> pair(V... init) {
-        return startWith(init).buffer(2, 1);
+    public final Signal<Ⅱ<V, V>> pair() {
+        return pair(null);
+    }
+
+    /**
+     * This is a utility method for propagating a value along with the previous value. You can
+     * propagate a value from the first time by providing an initial value.
+     * 
+     * @return A chained {@link Signal}.
+     */
+    public final Signal<Ⅱ<V, V>> pair(V initial) {
+        return map(() -> new AtomicReference<V>(initial), (a, v) -> I.pair(a.getAndSet(v), v));
     }
 
     /**

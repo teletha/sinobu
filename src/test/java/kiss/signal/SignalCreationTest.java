@@ -137,7 +137,7 @@ class SignalCreationTest extends SignalTester {
         monitor(() -> I.schedule(0, 30, ms, false, scheduler)
                 .take(4)
                 .map(e -> System.currentTimeMillis())
-                .pair()
+                .buffer(2, 1)
                 .map(values -> 30 <= values.get(1) - values.get(0)));
 
         assert main.isNotCompleted();

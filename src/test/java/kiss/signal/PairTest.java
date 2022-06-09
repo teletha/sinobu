@@ -9,22 +9,20 @@
  */
 package kiss.signal;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.junit.jupiter.api.Test;
 
 import kiss.WiseFunction;
+import kiss.Ⅱ;
 
 class PairTest extends SignalTester {
 
-    private final WiseFunction<List<String>, String> composer = v -> v.stream().collect(Collectors.joining());
+    private final WiseFunction<Ⅱ<String, String>, String> composer = v -> v.ⅰ + v.ⅱ;
 
     @Test
     void pair() {
         monitor(String.class, signal -> signal.pair().map(composer));
 
-        assert main.emit("A").value();
+        assert main.emit("A").value("nullA");
         assert main.emit("B").value("AB");
         assert main.emit("C").value("BC");
         assert main.emit("D").value("CD");
@@ -36,17 +34,6 @@ class PairTest extends SignalTester {
         monitor(String.class, signal -> signal.pair("Z").map(composer));
 
         assert main.emit("A").value("ZA");
-        assert main.emit("B").value("AB");
-        assert main.emit("C").value("BC");
-        assert main.emit("D").value("CD");
-        assert main.emit("E", "F", "G").value("DE", "EF", "FG");
-    }
-
-    @Test
-    void initialValues() {
-        monitor(String.class, signal -> signal.pair("Y", "Z").map(composer));
-
-        assert main.emit("A").value("YZ", "ZA");
         assert main.emit("B").value("AB");
         assert main.emit("C").value("BC");
         assert main.emit("D").value("CD");
