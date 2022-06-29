@@ -9,7 +9,7 @@
  */
 package kiss.model;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Comparator;
 import java.util.List;
@@ -470,6 +470,34 @@ class ModelTest {
      * @version 2009/07/15 12:49:55
      */
     private static class MapBean extends GenericBean<Map<String, Integer>> {
+    }
+
+    @Test
+    void outerGenericTypeAppliesToInnerGenericType() {
+        Model model = Model.of(Root.class);
+        assert model != null;
+
+        Property property = model.property("outer");
+        assert property != null;
+        assert Outer.class == property.model.type;
+
+        property = property.model.property("inner");
+        assert property != null;
+        assert List.class == property.model.type;
+
+        property = property.model.property("0");
+        assert property != null;
+        assert Object.class == property.model.type; // holy xxx
+    }
+
+    @SuppressWarnings("unused")
+    private static class Root {
+        public Outer<String> outer;
+    }
+
+    @SuppressWarnings("unused")
+    private static class Outer<O> {
+        public List<O> inner;
     }
 
     @Test
