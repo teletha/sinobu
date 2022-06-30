@@ -1295,7 +1295,7 @@ public class I {
                     (byte) I.env(key.concat(".caller"), I.env("*.caller", Level.OFF)).ordinal(),
 
                     // Determines the level at which the file output is used.
-                    (byte) I.env(key.concat(".file"), I.env("*.file", Level.ALL)).ordinal(),
+                    (byte) I.env(key.concat(".file"), I.env("*.file", Level.INFO)).ordinal(),
 
                     // Determines the level at which the console output is used.
                     (byte) I.env(key.concat(".console"), I.env("*.console", Level.INFO)).ordinal(),
