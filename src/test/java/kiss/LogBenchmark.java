@@ -64,7 +64,7 @@ public class LogBenchmark {
     private static final String message = "Message";
 
     public static void main(String[] args) throws Exception {
-        Benchmark benchmark = new Benchmark();
+        Benchmark benchmark = new Benchmark().trial(3);
 
         if (output == OutputType.Console) {
             benchmark.discardSystemOutput();
