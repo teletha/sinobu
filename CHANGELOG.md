@@ -1,5 +1,28 @@
 # Changelog
 
+## [2.16.0](https://www.github.com/teletha/sinobu/compare/v2.15.0...v2.16.0) (2022-06-29)
+
+
+### Features
+
+* Add WiseQuad consumer and function. ([ae155ea](https://www.github.com/teletha/sinobu/commit/ae155ea72bb035d57bf2998d848f560e205df255))
+
+
+### Bug Fixes
+
+* Delete the lock file on close. ([a499a2c](https://www.github.com/teletha/sinobu/commit/a499a2c1923d993ad7779f5c60f2a401ddbae32d))
+* Increase symbol cache size. ([0bd568a](https://www.github.com/teletha/sinobu/commit/0bd568a80debd22a71c3d779227f2cd125ae3be5))
+* JSON's reversed wildcard was broken. ([c4c485f](https://www.github.com/teletha/sinobu/commit/c4c485f54f68b9462fe3bf969e67a77a3db8b88e))
+* JSON#find loops infinitely when attribute value is mixed. ([e74773e](https://www.github.com/teletha/sinobu/commit/e74773e7f8d3f5cfae1fada76de147414fe453e9))
+* Reduce code size. ([0446e83](https://www.github.com/teletha/sinobu/commit/0446e834ba46b2880d311229cb0754fa8316804e))
+* Reduce memory usage and footprint. ([a4246f8](https://www.github.com/teletha/sinobu/commit/a4246f888223788daf53fa65b375133173e40851))
+* remove quad functions ([649ac7a](https://www.github.com/teletha/sinobu/commit/649ac7abe721402146fd03ae2fbe970aa5364461))
+* Signal#pair emits values immediately. ([b9a34ae](https://www.github.com/teletha/sinobu/commit/b9a34ae7e5845d3e51215b0a7742ea1d61d102e8))
+* Storable write data more safely. ([10b008f](https://www.github.com/teletha/sinobu/commit/10b008f90eb94ede68ef20f2a72445c62d4b83fd))
+* XML builder uses the qualified element name. ([1693ef0](https://www.github.com/teletha/sinobu/commit/1693ef0f9d1ffe754eb3c50c7fde428442d21909))
+* XML#child returns the compounded XML. ([7fc6f0a](https://www.github.com/teletha/sinobu/commit/7fc6f0aa5fe7d6a72bd5f029a5f30fbcdd1e7166))
+* XPath which indicates parent node "../" is not supported. ([dd0978d](https://www.github.com/teletha/sinobu/commit/dd0978da9f4760b02067c2b834a3c5ca91357325))
+
 ## [2.15.0](https://www.github.com/teletha/sinobu/compare/v2.14.0...v2.15.0) (2022-02-20)
 
 
