@@ -301,7 +301,7 @@ e["after:highlightBlock"](Object.assign({block:t.el},t))})})(e),s.push(e)}
 }),e.debugMode=()=>{o=!1},e.safeMode=()=>{o=!0
 },e.versionString="11.4.0",e.regex={concat:f,lookahead:d,either:p,optional:h,
 anyNumberOfTimes:u};for(const e in M)"object"==typeof M[e]&&n(M[e])
-;return Object.assign(e,M),e})({});export{J as default};/*! `java` grammar compiled for Highlight.js 11.5.1 */
+;return Object.assign(e,M),e})({});export{J as default};/*! `java` grammar compiled for Highlight.js 11.6.0 */
 var hljsGrammar=(()=>{"use strict"
 ;var e="\\.([0-9](_*[0-9])*)",a="[0-9a-fA-F](_*[0-9a-fA-F])*",n={
 className:"number",variants:[{
@@ -329,7 +329,7 @@ className:"string",contains:[e.BACKSLASH_ESCAPE]
 },e.APOS_STRING_MODE,e.QUOTE_STRING_MODE,{
 match:[/\b(?:class|interface|enum|extends|implements|new)/,/\s+/,t],className:{
 1:"keyword",3:"title.class"}},{match:/non-sealed/,scope:"keyword"},{
-begin:[a.concat(/(?!else)/,t),/\s+/,t,/\s+/,/=/],className:{1:"type",
+begin:[a.concat(/(?!else)/,t),/\s+/,t,/\s+/,/=(?!=)/],className:{1:"type",
 3:"variable",5:"operator"}},{begin:[/record/,/\s+/,t],className:{1:"keyword",
 3:"title.class"},contains:[c,e.C_LINE_COMMENT_MODE,e.C_BLOCK_COMMENT_MODE]},{
 beginKeywords:"new throw return else",relevance:0},{
@@ -338,30 +338,30 @@ begin:["(?:"+r+"\\s+)",e.UNDERSCORE_IDENT_RE,/\s*(?=\()/],className:{
 end:/\)/,keywords:i,relevance:0,
 contains:[l,e.APOS_STRING_MODE,e.QUOTE_STRING_MODE,n,e.C_BLOCK_COMMENT_MODE]
 },e.C_LINE_COMMENT_MODE,e.C_BLOCK_COMMENT_MODE]},n,l]}}})()
-;J.registerLanguage('java', hljsGrammar);/*! `xml` grammar compiled for Highlight.js 11.5.1 */
+;J.registerLanguage('java', hljsGrammar);/*! `xml` grammar compiled for Highlight.js 11.6.0 */
 var hljsGrammar=(()=>{"use strict";return e=>{
-const a=e.regex,n=a.concat(/[A-Z_]/,a.optional(/[A-Z0-9_.-]*:/),/[A-Z0-9_.-]*/),s={
+const a=e.regex,n=a.concat(/[\p{L}_]/u,a.optional(/[\p{L}0-9_.-]*:/u),/[\p{L}0-9_.-]*/u),s={
 className:"symbol",begin:/&[a-z]+;|&#[0-9]+;|&#x[a-f0-9]+;/},t={begin:/\s/,
 contains:[{className:"keyword",begin:/#?[a-z_][a-z1-9_-]+/,illegal:/\n/}]
 },i=e.inherit(t,{begin:/\(/,end:/\)/}),c=e.inherit(e.APOS_STRING_MODE,{
 className:"string"}),l=e.inherit(e.QUOTE_STRING_MODE,{className:"string"}),r={
 endsWithParent:!0,illegal:/</,relevance:0,contains:[{className:"attr",
-begin:/[A-Za-z0-9._:-]+/,relevance:0},{begin:/=\s*/,relevance:0,contains:[{
+begin:/[\p{L}0-9._:-]+/u,relevance:0},{begin:/=\s*/,relevance:0,contains:[{
 className:"string",endsParent:!0,variants:[{begin:/"/,end:/"/,contains:[s]},{
 begin:/'/,end:/'/,contains:[s]},{begin:/[^\s"'=<>`]+/}]}]}]};return{
 name:"HTML, XML",
 aliases:["html","xhtml","rss","atom","xjb","xsd","xsl","plist","wsf","svg"],
-case_insensitive:!0,contains:[{className:"meta",begin:/<![a-z]/,end:/>/,
-relevance:10,contains:[t,l,c,i,{begin:/\[/,end:/\]/,contains:[{className:"meta",
-begin:/<![a-z]/,end:/>/,contains:[t,i,l,c]}]}]},e.COMMENT(/<!--/,/-->/,{
-relevance:10}),{begin:/<!\[CDATA\[/,end:/\]\]>/,relevance:10},s,{
-className:"meta",end:/\?>/,variants:[{begin:/<\?xml/,relevance:10,contains:[l]
-},{begin:/<\?[a-z][a-z0-9]+/}]},{className:"tag",begin:/<style(?=\s|>)/,end:/>/,
-keywords:{name:"style"},contains:[r],starts:{end:/<\/style>/,returnEnd:!0,
-subLanguage:["css","xml"]}},{className:"tag",begin:/<script(?=\s|>)/,end:/>/,
-keywords:{name:"script"},contains:[r],starts:{end:/<\/script>/,returnEnd:!0,
-subLanguage:["javascript","handlebars","xml"]}},{className:"tag",begin:/<>|<\/>/
-},{className:"tag",
+case_insensitive:!0,unicodeRegex:!0,contains:[{className:"meta",begin:/<![a-z]/,
+end:/>/,relevance:10,contains:[t,l,c,i,{begin:/\[/,end:/\]/,contains:[{
+className:"meta",begin:/<![a-z]/,end:/>/,contains:[t,i,l,c]}]}]
+},e.COMMENT(/<!--/,/-->/,{relevance:10}),{begin:/<!\[CDATA\[/,end:/\]\]>/,
+relevance:10},s,{className:"meta",end:/\?>/,variants:[{begin:/<\?xml/,
+relevance:10,contains:[l]},{begin:/<\?[a-z][a-z0-9]+/}]},{className:"tag",
+begin:/<style(?=\s|>)/,end:/>/,keywords:{name:"style"},contains:[r],starts:{
+end:/<\/style>/,returnEnd:!0,subLanguage:["css","xml"]}},{className:"tag",
+begin:/<script(?=\s|>)/,end:/>/,keywords:{name:"script"},contains:[r],starts:{
+end:/<\/script>/,returnEnd:!0,subLanguage:["javascript","handlebars","xml"]}},{
+className:"tag",begin:/<>|<\/>/},{className:"tag",
 begin:a.concat(/</,a.lookahead(a.concat(n,a.either(/\/>/,/>/,/\s/)))),
 end:/\/?>/,contains:[{className:"name",begin:n,relevance:0,starts:r}]},{
 className:"tag",begin:a.concat(/<\//,a.lookahead(a.concat(n,/>/))),contains:[{
