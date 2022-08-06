@@ -1,5 +1,12 @@
 # Changelog
 
+### [2.16.1](https://www.github.com/teletha/sinobu/compare/v2.16.0...v2.16.1) (2022-08-06)
+
+
+### Bug Fixes
+
+* Upgrade the default file log level to INFO. ([7dfeaa7](https://www.github.com/teletha/sinobu/commit/7dfeaa76f121c378fd8d7f657bb16528422e9dc8))
+
 ## [2.16.0](https://www.github.com/teletha/sinobu/compare/v2.15.0...v2.16.0) (2022-06-29)
 
 
