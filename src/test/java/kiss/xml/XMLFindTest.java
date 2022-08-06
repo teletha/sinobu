@@ -136,14 +136,34 @@ public class XMLFindTest {
     }
 
     @Test
+    public void attributeNS() {
+        String xml = "<m xmlns:p='p'><e p:A='A' B='B'/><e A='B' p:B='A'/></m>";
+
+        assert I.xml(xml).find("[p:A]").size() == 1;
+        assert I.xml(xml).find("[p:B]").size() == 1;
+        assert I.xml(xml).find("[A]").size() == 1;
+        assert I.xml(xml).find("[B]").size() == 1;
+    }
+
+    @Test
     public void attributeValue() {
-        String xml = "<m><e A='A'/></m>";
+        String xml = "<m><e A='A'/><e A='B'/></m>";
 
         // variants for white space
         assert I.xml(xml).find("[A=\"A\"]").size() == 1;
         assert I.xml(xml).find("[A = \"A\"]").size() == 1;
         assert I.xml(xml).find("[A       =    \"A\"]").size() == 1;
         assert I.xml(xml).find("[ A = \"A\" ]").size() == 1;
+    }
+
+    @Test
+    public void attributeValueNS() {
+        String xml = "<m xmlns:p='p'><p:e p:A='A'/><e A='A'/><e p:A='B'/></m>";
+
+        // variants for white space
+        assert I.xml(xml).find("[p:A=\"A\"]").size() == 1;
+        assert I.xml(xml).find("p|e[p:A=\"A\"]").size() == 1;
+        assert I.xml(xml).find("p|e[p|A=\"A\"]").size() == 1;
     }
 
     @Test
