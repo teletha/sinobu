@@ -229,6 +229,9 @@ public class I {
     /** XML literal pattern. */
     private static final Pattern xmlLiteral = Pattern.compile("^\\s*<.+>\\s*$", Pattern.DOTALL);
 
+    /** Mustache delimiter pattern. */
+    private static final Map<List, Pattern> Mustache = new ConcurrentHashMap();
+
     /** The cached environment variables. */
     private static final Properties env = new Properties();
 
@@ -648,7 +651,7 @@ public class I {
      * @return A calculated text.
      */
     public static String express(String text, Object[] contexts, WiseTriFunction<Model, Object, String, Object>... resolvers) {
-        return express(text, new String[] {"\\Q{\\E", "\\Q}\\E"}, contexts, resolvers);
+        return express(text, List.of("\\Q{\\E", "\\Q}\\E"), contexts, resolvers);
     }
 
     /**
@@ -660,19 +663,21 @@ public class I {
      * @param contexts A list of context values.
      * @return A calculated text.
      */
-    private static String express(String text, String[] delimiters, Object[] contexts, WiseTriFunction<Model, Object, String, Object>[] resolvers) {
+    private static String express(String text, List<String> delimiters, Object[] contexts, WiseTriFunction<Model, Object, String, Object>[] resolvers) {
         // skip when context is empty
         if (contexts == null || contexts.length == 0) return text;
 
         StringBuilder str = new StringBuilder();
 
         // find all expression placeholder
-        Matcher matcher = Pattern.compile("(\\s*)".concat(delimiters[0]).concat("(.+?)").concat(delimiters[1])).matcher(text);
+        Matcher matcher = Mustache.computeIfAbsent(delimiters, d -> {
+            return Pattern.compile("(\\s*)".concat(delimiters.get(0)).concat("(.+?)").concat(delimiters.get(1)));
+        }).matcher(text);
 
         while (matcher.find()) {
             // normalize expression (remove all white space) and split it
             String spaces = matcher.group(1);
-            String path = matcher.group(2).trim();
+            String path = matcher.group(2).strip();
             char type = path.charAt(0);
 
             // ================================
@@ -691,9 +696,10 @@ public class I {
                 int on = matcher.start(2);
                 int off = text.indexOf('\n', on) + 1;
                 String[] values = text.substring(on, off).split("[= ]");
-                delimiters[0] = Pattern.quote(values[1]);
-                delimiters[1] = Pattern.quote(values[2]);
-                return str.append(spaces).append(I.express(text.substring(off), delimiters, contexts, resolvers)).toString();
+                return str.append(spaces)
+                        .append(I.express(text.substring(off), List
+                                .of(Pattern.quote(values[1]), Pattern.quote(values[2])), contexts, resolvers))
+                        .toString();
             }
 
             // ================================
@@ -705,7 +711,10 @@ public class I {
             // Resolve Context by Expression
             // ================================
             Object c = null;
-            String[] e = path.split("[\\.\\s　]+");
+
+            // Optimization : In the case of single-pass, the regular expression-based segmentation
+            // process is skipped to speed up the process.
+            String[] e = path.contains(".") ? path.split("[\\.\\s　]+") : new String[] {path};
 
             // Evaluate each context. (first context has high priority)
             resolveContext: for (int i = 0; i < contexts.length; i++)
@@ -742,7 +751,8 @@ public class I {
                 // end tag. We need to calculate the depth in case there is a section with the
                 // same name in this section.
                 int depth = 1;
-                Matcher tag = Pattern.compile("\\r?\\n?\\h*".concat(delimiters[0]).concat("([#/^])").concat(path).concat(delimiters[1]))
+                Matcher tag = Pattern
+                        .compile("\\r?\\n?\\h*".concat(delimiters.get(0)).concat("([#/^])").concat(path).concat(delimiters.get(1)))
                         .matcher(text.substring(matcher.end()));
                 while (tag.find() && (tag.group(1).charAt(0) == '/' ? --depth : ++depth) != 0) {
                 }
