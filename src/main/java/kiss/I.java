@@ -229,9 +229,6 @@ public class I {
     /** XML literal pattern. */
     private static final Pattern xmlLiteral = Pattern.compile("^\\s*<.+>\\s*$", Pattern.DOTALL);
 
-    /** Mustache default delimiter pattern. */
-    private static final Pattern mustache = Pattern.compile("(\\s*)\\{(.+?)\\}");
-
     /** The cached environment variables. */
     private static final Properties env = new Properties();
 
@@ -651,7 +648,7 @@ public class I {
      * @return A calculated text.
      */
     public static String express(String text, Object[] contexts, WiseTriFunction<Model, Object, String, Object>... resolvers) {
-        return express(text, mustache, "\\{", "\\}", contexts, resolvers);
+        return express(text, "{", "}", contexts, resolvers);
     }
 
     /**
@@ -663,123 +660,142 @@ public class I {
      * @param contexts A list of context values.
      * @return A calculated text.
      */
-    private static String express(String text, Pattern pattern, String start, String end, Object[] contexts, WiseTriFunction<Model, Object, String, Object>[] resolvers) {
+    private static String express(String text, String start, String end, Object[] contexts, WiseTriFunction<Model, Object, String, Object>[] resolvers) {
         // skip when context is empty
         if (contexts == null || contexts.length == 0) return text;
 
-        StringBuilder str = new StringBuilder();
+        StringBuilder builder = new StringBuilder();
+        int expOpenStart = 0;
+        int expOpenEnd = 0;
+        int expCloseStart = 0;
+        int expCloseEnd = 0;
 
-        // find all expression placeholder
-        Matcher matcher = pattern.matcher(text);
+        while ((expOpenStart = text.indexOf(start, expCloseEnd)) != -1) {
+            expOpenEnd = expOpenStart + start.length();
+            expCloseStart = text.indexOf(end, expOpenEnd + 1);
 
-        while (matcher.find()) {
-            // normalize expression (remove all white space) and split it
-            String spaces = matcher.group(1);
-            String path = matcher.group(2).strip();
-            char type = path.charAt(0);
-
-            // ================================
-            // Comment or Plain
-            // ================================
-            if (type == '!') {
-                matcher.appendReplacement(str, spaces);
-                if (path.startsWith("!!")) str.append(matcher.group().replaceFirst("!!", ""));
-                continue;
-            }
-
-            // ================================
-            // Change Delimiter
-            // ================================
-            if (type == '=') {
-                int on = matcher.start(2);
-                int off = text.indexOf('\n', on) + 1;
-                String[] values = text.substring(on, off).split("[= ]");
-                start = Pattern.quote(values[1]);
-                end = Pattern.quote(values[2]);
-
-                return str.append(spaces)
-                        .append(I.express(text.substring(off), Pattern
-                                .compile("(\\s*)".concat(start).concat("(.+?)").concat(end)), start, end, contexts, resolvers))
-                        .toString();
-            }
-
-            // ================================
-            // Normal or Inverted Section
-            // ================================
-            if (type == '#' || type == '^') path = path.substring(1);
-
-            // ================================
-            // Resolve Context by Expression
-            // ================================
-            Object c = null;
-
-            // Optimization : In the case of single-pass, the regular expression-based segmentation
-            // process is skipped to speed up the process.
-            String[] e = path.indexOf('.') != -1 ? path.split("[\\.\\s　]+") : new String[] {path};
-
-            // Evaluate each context. (first context has high priority)
-            resolveContext: for (int i = 0; i < contexts.length; i++)
-                if ((c = contexts[i]) != null) {
-                    // Evaluate expression from head.
-                    for (int j = 0; j < e.length; j++) {
-                        // Special keyword for the current context
-                        if (e[j].equals("this")) continue;
-
-                        // At first, evaluate expression by property resolver
-                        Model model = Model.of(c);
-                        Object object = model.get(c, model.property(e[j]));
-
-                        // If the expression cannot be evaluated by property resolver,
-                        // use the user-defined resolver to try to evaluate the expression.
-                        if (object == null) for (int k = 0; k < resolvers.length; k++) {
-                            if ((object = resolvers[k].apply(model, c, e[j])) != null) break;
-                        }
-
-                        // Since all resolvers failed to resolve to a non-null value, we will
-                        // try to resolve again in a different context.
-                        if ((c = object) == null) continue resolveContext;
-                    }
-                    break; // All expression was evaluated correctly, step into next process.
-                }
-
-            // ================================
-            // Handle (Normal or Inverted) Section Block
-            // ================================
-            if (type == '#' || type == '^') {
-                // The following code is very procedural and dirty for optimization.
-                //
-                // Now that the section start tag has been found, we find the corresponding
-                // end tag. We need to calculate the depth in case there is a section with the
-                // same name in this section.
-                int depth = 1;
-                Matcher tag = Pattern.compile("\\r?\\n?\\h*".concat(start).concat("([#/^])").concat(path).concat(end))
-                        .matcher(text.substring(matcher.end()));
-                while (tag.find() && (tag.group(1).charAt(0) == '/' ? --depth : ++depth) != 0) {
-                }
-
-                // Extracts text inside a section tag (from just after the start tag to just
-                // before the end tag).
-                String in = text.substring(matcher.end(), matcher.end() + tag.start());
-
-                // Outputs the text up to just before the section start tag. The text inside the
-                // section tags will be processed later. Also, the text after the section
-                // end tag will be analyzed, so reconfigure the input text for the regular
-                // expression engine.
-                matcher.appendReplacement(str, "").reset(text = text.substring(matcher.end() + tag.end()));
-
-                // Processes the text inside a section tag based on the context object.
-                if (type == '^') {
-                    if (c == null || c == FALSE || (c instanceof List && ((List) c).isEmpty()) || (c instanceof Map && ((Map) c).isEmpty()))
-                        str.append(I.express(in, pattern, start, end, I.array(new Object[] {c}, contexts), resolvers));
-                } else if (c != null && c != FALSE)
-                    for (Object o : c instanceof List ? (List) c : c instanceof Map ? ((Map) c).values() : List.of(c))
-                    str.append(I.express(in, pattern, start, end, I.array(new Object[] {o}, contexts), resolvers));
+            if (expCloseStart == -1) {
+                throw new Error();
             } else {
-                matcher.appendReplacement(str, spaces);
-                if (c != null) str.append(I.transform(c, String.class));
+                int whiteStart = expOpenStart;
+                while (0 < whiteStart && Character.isWhitespace(text.charAt(whiteStart - 1))) {
+                    whiteStart--;
+                }
+                builder.append(text, expCloseEnd, whiteStart);
+
+                expCloseEnd = expCloseStart + end.length();
+
+                // normalize expression (remove all white space) and split it
+                String space = text.substring(whiteStart, expOpenStart);
+                String path = text.substring(expOpenEnd, expCloseStart).strip();
+                char type = path.charAt(0);
+
+                // ================================
+                // Comment or Plain
+                // ================================
+                if (type == '!') {
+                    builder.append(space);
+                    if (path.startsWith("!!")) builder.append(start).append(text, expOpenEnd + 2, expCloseStart).append(end);
+                    continue;
+                }
+
+                // ================================
+                // Change Delimiter
+                // ================================
+                if (type == '=') {
+                    int on = expOpenEnd;
+                    int off = text.indexOf('\n', on) + 1;
+                    String[] values = text.substring(on, off).split("[= ]");
+                    return builder.append(space)
+                            .append(I.express(text.substring(off), values[1], values[2], contexts, resolvers))
+                            .toString();
+                }
+
+                // ================================
+                // Normal or Inverted Section
+                // ================================
+                if (type == '#' || type == '^') path = path.substring(1);
+
+                // ================================
+                // Resolve Context by Expression
+                // ================================
+                Object c = null;
+
+                // Optimization : In the case of single-pass, the regular expression-based
+                // segmentation
+                // process is skipped to speed up the process.
+                String[] e = path.indexOf('.') != -1 ? path.split("[\\.\\s　]+") : new String[] {path};
+
+                // Evaluate each context. (first context has high priority)
+                resolveContext: for (int p = 0; p < contexts.length; p++)
+                    if ((c = contexts[p]) != null) {
+                        // Evaluate expression from head.
+                        for (int j = 0; j < e.length; j++) {
+                            // Special keyword for the current context
+                            if (e[j].equals("this")) continue;
+
+                            // At first, evaluate expression by property resolver
+                            Model model = Model.of(c);
+                            Object object = model.get(c, model.property(e[j]));
+
+                            // If the expression cannot be evaluated by property resolver,
+                            // use the user-defined resolver to try to evaluate the
+                            // expression.
+                            if (object == null) for (int k = 0; k < resolvers.length; k++) {
+                                if ((object = resolvers[k].apply(model, c, e[j])) != null) break;
+                            }
+
+                            // Since all resolvers failed to resolve to a non-null value, we
+                            // will
+                            // try to resolve again in a different context.
+                            if ((c = object) == null) continue resolveContext;
+                        }
+                        break; // All expression was evaluated correctly, step into next
+                               // process.
+                    }
+
+                // ================================
+                // Handle (Normal or Inverted) Section Block
+                // ================================
+                if (type == '#' || type == '^') {
+                    // The following code is very procedural and dirty for optimization.
+                    //
+                    // Now that the section start tag has been found, we find the corresponding
+                    // end tag. We need to calculate the depth in case there is a section with
+                    // the same name in this section.
+                    int depth = 1;
+                    Matcher tag = Pattern
+                            .compile("\\r?\\n?\\h*".concat(Pattern.quote(start)).concat("([#/^])").concat(path).concat(Pattern.quote(end)))
+                            .matcher(text.substring(expCloseEnd));
+                    while (tag.find() && (tag.group(1).charAt(0) == '/' ? --depth : ++depth) != 0) {
+                    }
+
+                    // Extracts text inside a section tag (from just after the start tag to just
+                    // before the end tag).
+                    String in = text.substring(expCloseEnd, expCloseEnd + tag.start());
+
+                    // Outputs the text up to just before the section start tag. The text inside
+                    // the section tags will be processed later. Also, the text after the section
+                    // end tag will be analyzed, so reconfigure the input text for the regular
+                    // expression engine.
+                    expCloseEnd = expCloseEnd + tag.end();
+
+                    // Processes the text inside a section tag based on the context object.
+                    if (type == '^') {
+                        if (c == null || c == FALSE || (c instanceof List && ((List) c).isEmpty()) || (c instanceof Map && ((Map) c)
+                                .isEmpty()))
+                            builder.append(I.express(in, start, end, I.array(new Object[] {c}, contexts), resolvers));
+                    } else if (c != null && c != FALSE)
+                        for (Object o : c instanceof List ? (List) c : c instanceof Map ? ((Map) c).values() : List.of(c))
+                        builder.append(I.express(in, start, end, I.array(new Object[] {o}, contexts), resolvers));
+                } else {
+                    builder.append(space);
+                    if (c != null) builder.append(I.transform(c, String.class));
+                }
             }
         }
-        return matcher.appendTail(str).toString();
+
+        return builder.append(text, expCloseEnd, text.length()).toString();
     }
 
     /**

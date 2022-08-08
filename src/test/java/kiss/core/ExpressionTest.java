@@ -28,6 +28,13 @@ import kiss.sample.bean.StringMap;
  */
 class ExpressionTest {
 
+    @Test
+    void text() {
+        KVS context = $("lang", "the minimum language");
+
+        assert I.express("I want plain text.", context).equals("I want plain text.");
+    }
+
     /**
      * @see I#express(String, Object...)
      */
