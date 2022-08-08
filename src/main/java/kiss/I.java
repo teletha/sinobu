@@ -660,42 +660,41 @@ public class I {
      * @param contexts A list of context values.
      * @return A calculated text.
      */
-    private static String express(String text, String start, String end, Object[] contexts, WiseTriFunction<Model, Object, String, Object>[] resolvers) {
+    private static String express(String text, String open, String close, Object[] contexts, WiseTriFunction<Model, Object, String, Object>[] resolvers) {
         // skip when context is empty
         if (contexts == null || contexts.length == 0) return text;
 
         StringBuilder builder = new StringBuilder();
-        int expOpenStart = 0;
-        int expOpenEnd = 0;
-        int expCloseStart = 0;
-        int expCloseEnd = 0;
+        int openStart = 0;
+        int openEnd = 0;
+        int closeStart = 0;
+        int closeEnd = 0;
 
-        while ((expOpenStart = text.indexOf(start, expCloseEnd)) != -1) {
-            expOpenEnd = expOpenStart + start.length();
-            expCloseStart = text.indexOf(end, expOpenEnd + 1);
+        while ((openStart = text.indexOf(open, closeEnd)) != -1) {
+            openEnd = openStart + open.length();
+            closeStart = text.indexOf(close, openEnd + 1);
 
-            if (expCloseStart == -1) {
+            if (closeStart == -1) {
                 throw new Error();
             } else {
-                int whiteStart = expOpenStart;
-                while (0 < whiteStart && Character.isWhitespace(text.charAt(whiteStart - 1))) {
-                    whiteStart--;
+                int whiteSpaceStart = openStart;
+                while (0 < whiteSpaceStart && Character.isWhitespace(text.charAt(whiteSpaceStart - 1))) {
+                    whiteSpaceStart--;
                 }
-                builder.append(text, expCloseEnd, whiteStart);
+                builder.append(text, closeEnd, whiteSpaceStart);
 
-                expCloseEnd = expCloseStart + end.length();
+                closeEnd = closeStart + close.length();
 
                 // normalize expression (remove all white space) and split it
-                String space = text.substring(whiteStart, expOpenStart);
-                String path = text.substring(expOpenEnd, expCloseStart).strip();
+                String path = text.substring(openEnd, closeStart).strip();
                 char type = path.charAt(0);
 
                 // ================================
                 // Comment or Plain
                 // ================================
                 if (type == '!') {
-                    builder.append(space);
-                    if (path.startsWith("!!")) builder.append(start).append(text, expOpenEnd + 2, expCloseStart).append(end);
+                    builder.append(text, whiteSpaceStart, openStart);
+                    if (path.startsWith("!!")) builder.append(open).append(text, openEnd + 2, closeStart).append(close);
                     continue;
                 }
 
@@ -703,10 +702,10 @@ public class I {
                 // Change Delimiter
                 // ================================
                 if (type == '=') {
-                    int on = expOpenEnd;
+                    int on = openEnd;
                     int off = text.indexOf('\n', on) + 1;
                     String[] values = text.substring(on, off).split("[= ]");
-                    return builder.append(space)
+                    return builder.append(text, whiteSpaceStart, openStart)
                             .append(I.express(text.substring(off), values[1], values[2], contexts, resolvers))
                             .toString();
                 }
@@ -765,37 +764,37 @@ public class I {
                     // the same name in this section.
                     int depth = 1;
                     Matcher tag = Pattern
-                            .compile("\\r?\\n?\\h*".concat(Pattern.quote(start)).concat("([#/^])").concat(path).concat(Pattern.quote(end)))
-                            .matcher(text.substring(expCloseEnd));
+                            .compile("\\r?\\n?\\h*".concat(Pattern.quote(open)).concat("([#/^])").concat(path).concat(Pattern.quote(close)))
+                            .matcher(text.substring(closeEnd));
                     while (tag.find() && (tag.group(1).charAt(0) == '/' ? --depth : ++depth) != 0) {
                     }
 
                     // Extracts text inside a section tag (from just after the start tag to just
                     // before the end tag).
-                    String in = text.substring(expCloseEnd, expCloseEnd + tag.start());
+                    String in = text.substring(closeEnd, closeEnd + tag.start());
 
                     // Outputs the text up to just before the section start tag. The text inside
                     // the section tags will be processed later. Also, the text after the section
                     // end tag will be analyzed, so reconfigure the input text for the regular
                     // expression engine.
-                    expCloseEnd = expCloseEnd + tag.end();
+                    closeEnd = closeEnd + tag.end();
 
                     // Processes the text inside a section tag based on the context object.
                     if (type == '^') {
                         if (c == null || c == FALSE || (c instanceof List && ((List) c).isEmpty()) || (c instanceof Map && ((Map) c)
                                 .isEmpty()))
-                            builder.append(I.express(in, start, end, I.array(new Object[] {c}, contexts), resolvers));
+                            builder.append(I.express(in, open, close, I.array(new Object[] {c}, contexts), resolvers));
                     } else if (c != null && c != FALSE)
                         for (Object o : c instanceof List ? (List) c : c instanceof Map ? ((Map) c).values() : List.of(c))
-                        builder.append(I.express(in, start, end, I.array(new Object[] {o}, contexts), resolvers));
+                        builder.append(I.express(in, open, close, I.array(new Object[] {o}, contexts), resolvers));
                 } else {
-                    builder.append(space);
+                    builder.append(text, whiteSpaceStart, openStart);
                     if (c != null) builder.append(I.transform(c, String.class));
                 }
             }
         }
 
-        return builder.append(text, expCloseEnd, text.length()).toString();
+        return builder.append(text, closeEnd, text.length()).toString();
     }
 
     /**
