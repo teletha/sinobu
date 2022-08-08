@@ -133,8 +133,8 @@ class ExpressionTest {
     @Test
     void contextNull() {
         assert I.express("null context is {ignored}", Collections.singletonList(null)).equals("null context is ");
-        assert I.express("null context is {ignored}", (Object[]) null).equals("null context is {ignored}");
-        assert I.express("null context is {ignored}", new Object[0]).equals("null context is {ignored}");
+        assert I.express("null context is {ignored}", (Object[]) null).equals("null context is ");
+        assert I.express("null context is {ignored}", new Object[0]).equals("null context is ");
     }
 
     @Test

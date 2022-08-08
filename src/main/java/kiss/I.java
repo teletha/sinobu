@@ -9,7 +9,7 @@
  */
 package kiss;
 
-import static java.lang.Boolean.*;
+import static java.lang.Boolean.FALSE;
 import static java.time.format.DateTimeFormatter.*;
 
 import java.io.ByteArrayOutputStream;
@@ -661,9 +661,6 @@ public class I {
      * @return A calculated text.
      */
     private static String express(String text, String open, String close, Object[] contexts, WiseTriFunction<Model, Object, String, Object>[] resolvers) {
-        // skip when context is empty
-        if (contexts == null || contexts.length == 0) return text;
-
         StringBuilder builder = new StringBuilder();
         int openStart = 0;
         int openEnd = 0;
@@ -725,29 +722,34 @@ public class I {
                 String[] e = path.indexOf('.') != -1 ? path.split("[\\.\\s　]+") : new String[] {path};
 
                 // Evaluate each context. (first context has high priority)
-                resolveContext: for (int i = 0; i < contexts.length; i++)
-                    if ((c = contexts[i]) != null) {
-                        // Evaluate expression from head.
-                        for (int j = 0; j < e.length; j++) {
-                            // Special keyword for the current context
-                            if (e[j].equals("this")) continue;
+                if (contexts != null) {
+                    resolveContext: for (int i = 0; i < contexts.length; i++) {
+                        if ((c = contexts[i]) != null) {
+                            // Evaluate expression from head.
+                            for (int j = 0; j < e.length; j++) {
+                                // Special keyword for the current context
+                                if (e[j].equals("this")) continue;
 
-                            // At first, evaluate expression by property resolver
-                            Model model = Model.of(c);
-                            Object object = model.get(c, model.property(e[j]));
+                                // At first, evaluate expression by property resolver
+                                Model model = Model.of(c);
+                                Object object = model.get(c, model.property(e[j]));
 
-                            // If the expression cannot be evaluated by property resolver,
-                            // use the user-defined resolver to try to evaluate the expression.
-                            if (object == null && resolvers != null) for (int k = 0; k < resolvers.length; k++) {
-                                if ((object = resolvers[k].apply(model, c, e[j])) != null) break;
+                                // If the expression cannot be evaluated by property resolver,
+                                // use the user-defined resolver to try to evaluate the expression.
+                                if (object == null && resolvers != null) for (int k = 0; k < resolvers.length; k++) {
+                                    if ((object = resolvers[k].apply(model, c, e[j])) != null) break;
+                                }
+
+                                // Since all resolvers failed to resolve to a non-null value, we
+                                // will try to resolve again in a different context.
+                                if ((c = object) == null) continue resolveContext;
                             }
 
-                            // Since all resolvers failed to resolve to a non-null value, we
-                            // will try to resolve again in a different context.
-                            if ((c = object) == null) continue resolveContext;
+                            // All expression was evaluated correctly, step into next process.
+                            break;
                         }
-                        break; // All expression was evaluated correctly, step into next process.
                     }
+                }
 
                 // ================================
                 // Handle (Normal or Inverted) Section Block
@@ -780,9 +782,11 @@ public class I {
                         if (c == null || c == FALSE || (c instanceof List && ((List) c).isEmpty()) || (c instanceof Map && ((Map) c)
                                 .isEmpty()))
                             builder.append(I.express(in, open, close, I.array(new Object[] {c}, contexts), resolvers));
-                    } else if (c != null && c != FALSE)
-                        for (Object o : c instanceof List ? (List) c : c instanceof Map ? ((Map) c).values() : List.of(c))
-                        builder.append(I.express(in, open, close, I.array(new Object[] {o}, contexts), resolvers));
+                    } else if (c != null && c != FALSE) {
+                        for (Object o : c instanceof List ? (List) c : c instanceof Map ? ((Map) c).values() : List.of(c)) {
+                            builder.append(I.express(in, open, close, I.array(new Object[] {o}, contexts), resolvers));
+                        }
+                    }
                 } else {
                     builder.append(text, whiteSpaceStart, openStart);
                     if (c != null) builder.append(I.transform(c, String.class));
