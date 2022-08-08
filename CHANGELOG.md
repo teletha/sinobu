@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.17.0](https://www.github.com/teletha/sinobu/compare/v2.16.0...v2.17.0) (2022-08-08)
+
+
+### Features
+
+* Make I#express 60% faster . ([cccda4a](https://www.github.com/teletha/sinobu/commit/cccda4a3f29e8afca281eed1a7b657e76e14db50))
+* Make I#express 90% faster by replacing full-scratched parser. ([7731d8d](https://www.github.com/teletha/sinobu/commit/7731d8dd23af10b498709714ce114c2e91a35299))
+
+
+### Bug Fixes
+
+* Make I#express more faster. ([dba2428](https://www.github.com/teletha/sinobu/commit/dba2428da41ee6de6208efe12cbddb1c9b749969))
+* reduce code size ([6fec517](https://www.github.com/teletha/sinobu/commit/6fec517e3f76aaa3c083182eedaaa7edad95be1a))
+* reduce code size ([7d5f38b](https://www.github.com/teletha/sinobu/commit/7d5f38b613d3a0c3ad5ab33e6b5d3759665128db))
+* Upgrade the default file log level to INFO. ([7dfeaa7](https://www.github.com/teletha/sinobu/commit/7dfeaa76f121c378fd8d7f657bb16528422e9dc8))
+
 ## [2.16.0](https://www.github.com/teletha/sinobu/compare/v2.15.0...v2.16.0) (2022-06-29)
 
 
