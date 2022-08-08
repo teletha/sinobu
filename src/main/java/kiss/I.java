@@ -674,11 +674,7 @@ public class I {
             if (closeStart == -1) {
                 throw new Error();
             } else {
-                int whiteSpaceStart = openStart;
-                while (0 < whiteSpaceStart && Character.isWhitespace(text.charAt(whiteSpaceStart - 1))) {
-                    whiteSpaceStart--;
-                }
-                builder.append(text, closeEnd, whiteSpaceStart);
+                builder.append(text, closeEnd, openStart);
 
                 closeEnd = closeStart + close.length();
 
@@ -690,7 +686,6 @@ public class I {
                 // Comment or Plain
                 // ================================
                 if (type == '!') {
-                    builder.append(text, whiteSpaceStart, openStart);
                     if (path.charAt(1) == '!') builder.append(open).append(text, openEnd + 2, closeStart).append(close);
                     continue;
                 }
@@ -702,9 +697,7 @@ public class I {
                     int on = openEnd;
                     int off = text.indexOf('\n', on) + 1;
                     String[] values = text.substring(on, off).split("[= ]");
-                    return builder.append(text, whiteSpaceStart, openStart)
-                            .append(I.express(text.substring(off), values[1], values[2], contexts, resolvers))
-                            .toString();
+                    return builder.append(I.express(text.substring(off), values[1], values[2], contexts, resolvers)).toString();
                 }
 
                 // ================================
@@ -755,6 +748,14 @@ public class I {
                 // Handle (Normal or Inverted) Section Block
                 // ================================
                 if (type == '#' || type == '^') {
+                    // Trim heading whitespaces. Deletions are combined into a single operation for
+                    // performance considerations.
+                    int count = 0;
+                    while (0 < --openStart && Character.isWhitespace(text.charAt(openStart))) {
+                        count++;
+                    }
+                    builder.delete(builder.length() - count, builder.length());
+
                     // The following code is very procedural and dirty for optimization.
                     //
                     // Now that the section start tag has been found, we find the corresponding
@@ -788,7 +789,6 @@ public class I {
                         }
                     }
                 } else {
-                    builder.append(text, whiteSpaceStart, openStart);
                     if (c != null) builder.append(I.transform(c, String.class));
                 }
             }
