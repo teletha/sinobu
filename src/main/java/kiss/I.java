@@ -229,6 +229,9 @@ public class I {
     /** XML literal pattern. */
     private static final Pattern xmlLiteral = Pattern.compile("^\\s*<.+>\\s*$", Pattern.DOTALL);
 
+    /** Mustache default delimiter pattern. */
+    private static final Pattern mustache = Pattern.compile("(\\s*)\\{(.+?)\\}");
+
     /** The cached environment variables. */
     private static final Properties env = new Properties();
 
@@ -638,8 +641,6 @@ public class I {
         return express(text, contexts, new WiseTriFunction[0]);
     }
 
-    private static final Pattern Mustache = Pattern.compile("(\\s*)\\{(.+?)\\}");
-
     /**
      * It is a very simple template engine that can calculate a string that replaces the path of a
      * property names enclosed in "{}" with the actual value of the property. Support
@@ -650,7 +651,7 @@ public class I {
      * @return A calculated text.
      */
     public static String express(String text, Object[] contexts, WiseTriFunction<Model, Object, String, Object>... resolvers) {
-        return express(text, Mustache, "\\{", "\\}", contexts, resolvers);
+        return express(text, mustache, "\\{", "\\}", contexts, resolvers);
     }
 
     /**
