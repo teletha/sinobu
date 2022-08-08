@@ -9,7 +9,7 @@
  */
 package kiss;
 
-import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.*;
 import static java.time.format.DateTimeFormatter.*;
 
 import java.io.ByteArrayOutputStream;
@@ -670,9 +670,12 @@ public class I {
         StringBuilder str = new StringBuilder();
 
         // find all expression placeholder
-        Matcher matcher = Mustache.computeIfAbsent(delimiters, d -> {
-            return Pattern.compile("(\\s*)".concat(delimiters.get(0)).concat("(.+?)").concat(delimiters.get(1)));
-        }).matcher(text);
+        Pattern pattern = Mustache.get(delimiters);
+        if (pattern == null) {
+            pattern = Pattern.compile("(\\s*)".concat(delimiters.get(0)).concat("(.+?)").concat(delimiters.get(1)));
+            Mustache.put(delimiters, pattern);
+        }
+        Matcher matcher = pattern.matcher(text);
 
         while (matcher.find()) {
             // normalize expression (remove all white space) and split it
