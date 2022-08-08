@@ -675,7 +675,6 @@ public class I {
                 throw new Error();
             } else {
                 builder.append(text, closeEnd, openStart);
-
                 closeEnd = closeStart + close.length();
 
                 // normalize expression (remove all white space) and split it
@@ -763,7 +762,7 @@ public class I {
                     // the same name in this section.
                     int depth = 1;
                     Matcher tag = Pattern
-                            .compile("\\r?\\n?\\h*".concat(Pattern.quote(open)).concat("([#/^])").concat(path).concat(Pattern.quote(close)))
+                            .compile("\\r?\\n?\\h*\\Q".concat(open).concat("\\E([#/^])\\Q").concat(path).concat(close).concat("\\E"))
                             .matcher(text.substring(closeEnd));
                     while (tag.find() && (tag.group(1).charAt(0) == '/' ? --depth : ++depth) != 0) {
                     }
