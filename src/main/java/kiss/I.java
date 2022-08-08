@@ -229,9 +229,6 @@ public class I {
     /** XML literal pattern. */
     private static final Pattern xmlLiteral = Pattern.compile("^\\s*<.+>\\s*$", Pattern.DOTALL);
 
-    /** Mustache delimiter pattern. */
-    private static final Map<List, Pattern> Mustache = new ConcurrentHashMap();
-
     /** The cached environment variables. */
     private static final Properties env = new Properties();
 
@@ -641,6 +638,8 @@ public class I {
         return express(text, contexts, new WiseTriFunction[0]);
     }
 
+    private static final Pattern Mustache = Pattern.compile("(\\s*)\\{(.+?)\\}");
+
     /**
      * It is a very simple template engine that can calculate a string that replaces the path of a
      * property names enclosed in "{}" with the actual value of the property. Support
@@ -651,7 +650,7 @@ public class I {
      * @return A calculated text.
      */
     public static String express(String text, Object[] contexts, WiseTriFunction<Model, Object, String, Object>... resolvers) {
-        return express(text, List.of("\\Q{\\E", "\\Q}\\E"), contexts, resolvers);
+        return express(text, Mustache, "\\{", "\\}", contexts, resolvers);
     }
 
     /**
@@ -663,18 +662,13 @@ public class I {
      * @param contexts A list of context values.
      * @return A calculated text.
      */
-    private static String express(String text, List<String> delimiters, Object[] contexts, WiseTriFunction<Model, Object, String, Object>[] resolvers) {
+    private static String express(String text, Pattern pattern, String start, String end, Object[] contexts, WiseTriFunction<Model, Object, String, Object>[] resolvers) {
         // skip when context is empty
         if (contexts == null || contexts.length == 0) return text;
 
         StringBuilder str = new StringBuilder();
 
         // find all expression placeholder
-        Pattern pattern = Mustache.get(delimiters);
-        if (pattern == null) {
-            pattern = Pattern.compile("(\\s*)".concat(delimiters.get(0)).concat("(.+?)").concat(delimiters.get(1)));
-            Mustache.put(delimiters, pattern);
-        }
         Matcher matcher = pattern.matcher(text);
 
         while (matcher.find()) {
@@ -699,9 +693,12 @@ public class I {
                 int on = matcher.start(2);
                 int off = text.indexOf('\n', on) + 1;
                 String[] values = text.substring(on, off).split("[= ]");
+                start = Pattern.quote(values[1]);
+                end = Pattern.quote(values[2]);
+
                 return str.append(spaces)
-                        .append(I.express(text.substring(off), List
-                                .of(Pattern.quote(values[1]), Pattern.quote(values[2])), contexts, resolvers))
+                        .append(I.express(text.substring(off), Pattern
+                                .compile("(\\s*)".concat(start).concat("(.+?)").concat(end)), start, end, contexts, resolvers))
                         .toString();
             }
 
@@ -754,8 +751,7 @@ public class I {
                 // end tag. We need to calculate the depth in case there is a section with the
                 // same name in this section.
                 int depth = 1;
-                Matcher tag = Pattern
-                        .compile("\\r?\\n?\\h*".concat(delimiters.get(0)).concat("([#/^])").concat(path).concat(delimiters.get(1)))
+                Matcher tag = Pattern.compile("\\r?\\n?\\h*".concat(start).concat("([#/^])").concat(path).concat(end))
                         .matcher(text.substring(matcher.end()));
                 while (tag.find() && (tag.group(1).charAt(0) == '/' ? --depth : ++depth) != 0) {
                 }
@@ -773,10 +769,10 @@ public class I {
                 // Processes the text inside a section tag based on the context object.
                 if (type == '^') {
                     if (c == null || c == FALSE || (c instanceof List && ((List) c).isEmpty()) || (c instanceof Map && ((Map) c).isEmpty()))
-                        str.append(I.express(in, delimiters, I.array(new Object[] {c}, contexts), resolvers));
+                        str.append(I.express(in, pattern, start, end, I.array(new Object[] {c}, contexts), resolvers));
                 } else if (c != null && c != FALSE)
                     for (Object o : c instanceof List ? (List) c : c instanceof Map ? ((Map) c).values() : List.of(c))
-                    str.append(I.express(in, delimiters, I.array(new Object[] {o}, contexts), resolvers));
+                    str.append(I.express(in, pattern, start, end, I.array(new Object[] {o}, contexts), resolvers));
             } else {
                 matcher.appendReplacement(str, spaces);
                 if (c != null) str.append(I.transform(c, String.class));
