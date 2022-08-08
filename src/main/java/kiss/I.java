@@ -694,7 +694,7 @@ public class I {
                 // ================================
                 if (type == '!') {
                     builder.append(text, whiteSpaceStart, openStart);
-                    if (path.startsWith("!!")) builder.append(open).append(text, openEnd + 2, closeStart).append(close);
+                    if (path.charAt(1) == '!') builder.append(open).append(text, openEnd + 2, closeStart).append(close);
                     continue;
                 }
 
