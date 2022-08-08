@@ -721,13 +721,12 @@ public class I {
                 Object c = null;
 
                 // Optimization : In the case of single-pass, the regular expression-based
-                // segmentation
-                // process is skipped to speed up the process.
+                // segmentation process is skipped to speed up the process.
                 String[] e = path.indexOf('.') != -1 ? path.split("[\\.\\s　]+") : new String[] {path};
 
                 // Evaluate each context. (first context has high priority)
-                resolveContext: for (int p = 0; p < contexts.length; p++)
-                    if ((c = contexts[p]) != null) {
+                resolveContext: for (int i = 0; i < contexts.length; i++)
+                    if ((c = contexts[i]) != null) {
                         // Evaluate expression from head.
                         for (int j = 0; j < e.length; j++) {
                             // Special keyword for the current context
@@ -738,19 +737,16 @@ public class I {
                             Object object = model.get(c, model.property(e[j]));
 
                             // If the expression cannot be evaluated by property resolver,
-                            // use the user-defined resolver to try to evaluate the
-                            // expression.
+                            // use the user-defined resolver to try to evaluate the expression.
                             if (object == null) for (int k = 0; k < resolvers.length; k++) {
                                 if ((object = resolvers[k].apply(model, c, e[j])) != null) break;
                             }
 
                             // Since all resolvers failed to resolve to a non-null value, we
-                            // will
-                            // try to resolve again in a different context.
+                            // will try to resolve again in a different context.
                             if ((c = object) == null) continue resolveContext;
                         }
-                        break; // All expression was evaluated correctly, step into next
-                               // process.
+                        break; // All expression was evaluated correctly, step into next process.
                     }
 
                 // ================================
@@ -793,7 +789,6 @@ public class I {
                 }
             }
         }
-
         return builder.append(text, closeEnd, text.length()).toString();
     }
 
