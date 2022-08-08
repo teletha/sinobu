@@ -1,5 +1,12 @@
 # Changelog
 
+### [2.17.1](https://www.github.com/teletha/sinobu/compare/v2.17.0...v2.17.1) (2022-08-08)
+
+
+### Bug Fixes
+
+* Speed up I#express. ([c51f1a7](https://www.github.com/teletha/sinobu/commit/c51f1a7cb5e35c5def84f79f923d29b2cf9b175c))
+
 ## [2.17.0](https://www.github.com/teletha/sinobu/compare/v2.16.0...v2.17.0) (2022-08-08)
 
 
