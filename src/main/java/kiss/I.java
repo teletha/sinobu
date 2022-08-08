@@ -635,7 +635,7 @@ public class I {
      * @return A calculated text.
      */
     public static String express(String text, Object... contexts) {
-        return express(text, contexts, new WiseTriFunction[0]);
+        return express(text, "{", "}", contexts, (WiseTriFunction[]) null);
     }
 
     /**
@@ -738,7 +738,7 @@ public class I {
 
                             // If the expression cannot be evaluated by property resolver,
                             // use the user-defined resolver to try to evaluate the expression.
-                            if (object == null) for (int k = 0; k < resolvers.length; k++) {
+                            if (object == null && resolvers != null) for (int k = 0; k < resolvers.length; k++) {
                                 if ((object = resolvers[k].apply(model, c, e[j])) != null) break;
                             }
 
