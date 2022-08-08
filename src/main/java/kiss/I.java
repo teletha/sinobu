@@ -714,7 +714,7 @@ public class I {
 
             // Optimization : In the case of single-pass, the regular expression-based segmentation
             // process is skipped to speed up the process.
-            String[] e = path.contains(".") ? path.split("[\\.\\s　]+") : new String[] {path};
+            String[] e = path.indexOf('.') != -1 ? path.split("[\\.\\s　]+") : new String[] {path};
 
             // Evaluate each context. (first context has high priority)
             resolveContext: for (int i = 0; i < contexts.length; i++)
