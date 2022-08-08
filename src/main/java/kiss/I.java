@@ -770,11 +770,6 @@ public class I {
                     // Extracts text inside a section tag (from just after the start tag to just
                     // before the end tag).
                     String in = text.substring(closeEnd, closeEnd + tag.start());
-
-                    // Outputs the text up to just before the section start tag. The text inside
-                    // the section tags will be processed later. Also, the text after the section
-                    // end tag will be analyzed, so reconfigure the input text for the regular
-                    // expression engine.
                     closeEnd = closeEnd + tag.end();
 
                     // Processes the text inside a section tag based on the context object.

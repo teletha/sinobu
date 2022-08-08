@@ -41,7 +41,7 @@ public class ExpressionBenchmark {
         MustacheFactory mf = new DefaultMustacheFactory();
         Mustache mustache = mf.compile(new StringReader(text2), "test");
         benchmark.measure("mustache.java", () -> {
-            return mustache.execute(new StringWriter(), person);
+            return mustache.execute(new StringWriter(), person).toString();
         });
 
         Template template = com.samskivert.mustache.Mustache.compiler().compile(text2);
