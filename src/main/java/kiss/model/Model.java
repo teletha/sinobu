@@ -50,6 +50,9 @@ import kiss.WiseTriConsumer;
  */
 public class Model<M> {
 
+    /** Reusable variable arguments. */
+    private static final Object[] NoARG = new Object[0];
+
     /** The model repository. */
     static final Map<Class, Model> models = new ConcurrentHashMap();
 
@@ -157,7 +160,7 @@ public class Model<M> {
 
                                 // this property is valid
                                 Property property = new Property(model, entry.getKey(), null);
-                                property.getter = m -> methods[0].invoke(m);
+                                property.getter = m -> methods[0].invoke(m, NoARG);
                                 property.setter = (m, v) -> {
                                     methods[1].invoke(m, v);
                                     return m;
@@ -256,14 +259,12 @@ public class Model<M> {
      * @return A suitable property or <code>null</code>.
      */
     public Property property(String name) {
-        // check whether this model is attribute or not.
-        for (Property property : properties) {
+        for (int i = properties.size() - 1; 0 <= i; --i) {
+            Property property = properties.get(i);
             if (property.name.equals(name)) {
                 return property;
             }
         }
-
-        // API definition
         return null;
     }
 
@@ -379,19 +380,19 @@ public class Model<M> {
      */
     public static <M> Model<M> of(Class<? super M> modelClass) {
         // check cache
-        Model model;
-
-        // create new model
-        if (List.class.isAssignableFrom(modelClass)) {
-            model = new ListModel(modelClass, Model.collectParameters(modelClass, List.class), List.class);
-        } else if (Map.class.isAssignableFrom(modelClass)) {
-            model = new MapModel(modelClass, Model.collectParameters(modelClass, Map.class), Map.class);
-        } else {
-            model = models.computeIfAbsent(modelClass, Model::new);
-            model.init();
+        Model model = models.get(modelClass);
+        if (model == null) {
+            if (List.class.isAssignableFrom(modelClass)) {
+                model = new ListModel(modelClass, Model.collectParameters(modelClass, List.class), List.class);
+            } else if (Map.class.isAssignableFrom(modelClass)) {
+                model = new MapModel(modelClass, Model.collectParameters(modelClass, Map.class), Map.class);
+            } else {
+                // To resolve cyclic reference, try to retrive from cache.
+                model = models.computeIfAbsent(modelClass, Model::new);
+                model.init();
+            }
+            models.put(modelClass, model);
         }
-
-        // API definition
         return model;
     }
 
