@@ -38,45 +38,36 @@ With a few exceptions, Sinobu and its APIs are designed to be simple to use and 
 ## Usage
 Create instance.
 ```java
-        class Some {
-        }
+class Some {
+}
 
-        Some prototype1 = I.make(Some.class);
-        Some prototype2 = I.make(Some.class);
-        assert prototype1 != prototype2;
-
+assert I.make(Some.class) != I.make(Some.class);;
 ```
 
 Create singleton instance. (managed lifestyle)
 ```java
-        @Managed(Singleton.class)
-        class Some {
-        }
+@Managed(Singleton.class)
+class Some {
+}
 
-        Some singleton1 = I.make(Some.class);
-        Some singleton2 = I.make(Some.class);
-
-        assert singleton1 == singleton2;
-
+assert I.make(Some.class) == I.make(Some.class);
 ```
 
-Dependency injection. (No configuration)
+Enable dependency injection without configuration. (constructor injection)
 ```java
-        class Injected {
-        }
+class Injected {
+}
 
-        class Injectable {
-            Injected injected;
+class Injectable {
+    Injected injected;
 
-            Injectable(Injected injected) {
-                this.injected = injected;
-            }
-        }
+    Injectable(Injected injected) {
+        this.injected = injected;
+    }
+}
 
-        Injectable Injected = I.make(Injectable.class);
-
-        assert Injected.injected != null;
-
+Injectable Injectable = I.make(Injectable.class);
+assert Injectable.injected != null;
 ```
 
 <p align="right"><a href="#top">back to top</a></p>
@@ -175,6 +166,7 @@ Sinobu depends on the following products on runtime.
 
 Sinobu depends on the following products on test.
 * [HttpClientMock-1.0.0](https://mvnrepository.com/artifact/com.pgs-soft/HttpClientMock/1.0.0)
+* [activation-1.1](https://mvnrepository.com/artifact/javax.activation/activation/1.1)
 * [animal-sniffer-annotations-1.18](https://mvnrepository.com/artifact/org.codehaus.mojo/animal-sniffer-annotations/1.18)
 * [antibug-1.3.0](https://mvnrepository.com/artifact/com.github.teletha/antibug/1.3.0)
 * [apiguardian-api-1.1.2](https://mvnrepository.com/artifact/org.apiguardian/apiguardian-api/1.1.2)
@@ -190,6 +182,8 @@ Sinobu depends on the following products on test.
 * [jackson-annotations-2.13.3](https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations/2.13.3)
 * [jackson-core-2.13.3](https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core/2.13.3)
 * [jackson-databind-2.13.3](https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind/2.13.3)
+* [javaee-api-8.0.1](https://mvnrepository.com/artifact/javax/javaee-api/8.0.1)
+* [javax.mail-1.6.2](https://mvnrepository.com/artifact/com.sun.mail/javax.mail/1.6.2)
 * [jmustache-1.15](https://mvnrepository.com/artifact/com.samskivert/jmustache/1.15)
 * [jsoup-1.15.2](https://mvnrepository.com/artifact/org.jsoup/jsoup/1.15.2)
 * [junit-jupiter-api-5.9.0-M1](https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api/5.9.0-M1)

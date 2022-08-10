@@ -21,9 +21,7 @@ class UsageTest {
         class Some {
         }
 
-        Some prototype1 = I.make(Some.class);
-        Some prototype2 = I.make(Some.class);
-        assert prototype1 != prototype2;
+        assert I.make(Some.class) != I.make(Some.class);;
     }
 
     /**
@@ -35,18 +33,15 @@ class UsageTest {
         class Some {
         }
 
-        Some singleton1 = I.make(Some.class);
-        Some singleton2 = I.make(Some.class);
-
-        assert singleton1 == singleton2;
+        assert I.make(Some.class) == I.make(Some.class);
     }
 
     /**
-     * Dependency injection. (No configuration)
+     * Enable dependency injection without configuration. (constructor injection)
      */
     @Test
     @SuppressWarnings("unused")
-    void dependencyInjection() {
+    void constructorInjection() {
         class Injected {
         }
 
@@ -58,8 +53,7 @@ class UsageTest {
             }
         }
 
-        Injectable Injected = I.make(Injectable.class);
-
-        assert Injected.injected != null;
+        Injectable Injectable = I.make(Injectable.class);
+        assert Injectable.injected != null;
     }
 }
