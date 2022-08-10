@@ -145,16 +145,4 @@ class ReadMeUsageTest {
 
         assert I.express("Hello {name}!", person).equals("Hello 忍!");
     }
-
-    /**
-     * Use logging.
-     */
-    @Test
-    void logging() {
-        I.trace("message");
-        I.debug("message");
-        I.info("message");
-        I.warn("message");
-        I.error("message");
-    }
 }
