@@ -143,11 +143,11 @@ assert I.express("Hello {name}!", person).equals("Hello 忍!");
 
 Use logging.
 ```java
-I.trace("message");
-I.debug("message");
-I.info("message");
-I.warn("message");
-I.error("message");
+I.info("Default logging level");
+
+I.error("your.logger.name", "Use logger name.");
+
+I.debug("system", "[system] is default logger name.");
 ```
 
 <p align="right"><a href="#top">back to top</a></p>
