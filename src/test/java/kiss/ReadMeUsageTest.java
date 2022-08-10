@@ -13,7 +13,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.lang.System.Logger.Level;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,7 +30,7 @@ class ReadMeUsageTest {
         class Some {
         }
 
-        assert I.make(Some.class) != I.make(Some.class);;
+        assert I.make(Some.class) != I.make(Some.class);
     }
 
     /**
@@ -104,7 +104,7 @@ class ReadMeUsageTest {
     }
 
     /**
-     * Parse XML/HTML.
+     * Parse XML/HTML. (accept tag soup)
      */
     @Test
     void parseXML() {
@@ -112,14 +112,14 @@ class ReadMeUsageTest {
                 <html>
                     <body>
                         <h1>Heading</h1>
-                        <div class="date">2022/08/10</div>
+                        <div class="age">598</div>
                         <p>contents</p>
                         <div class="author">忍</p>
                     </body>
                 </html>
                 """);
 
-        // select the element by CSS selector and read its text
+        // select the element by CSS selector and read its text content
         assert html.find("p").text().equals("contents");
         assert html.find(".author").text().equals("忍");
     }
@@ -129,32 +129,36 @@ class ReadMeUsageTest {
      */
     @Test
     void reactive() {
-        List<String> results = I.signal("This", "is", "reactive", "stream").map(String::toUpperCase).toList();
+        String result = I.signal("This", "is", "reactive", "stream")
+                .skip(2)
+                .map(String::toUpperCase)
+                .scan(Collectors.joining(" "))
+                .to()
+                .exact();
 
-        assert results.get(0).equals("THIS");
-        assert results.get(1).equals("IS");
-        assert results.get(2).equals("REACTIVE");
-        assert results.get(3).equals("STREAM");
+        assert result.equals("REACTIVE STREAM");
     }
 
     /**
-     * Use template engine. (Mustache)
+     * Evaluate expression language. (Mustache-like syntax)
      */
     @Test
-    @SuppressWarnings("unused")
     void templateEngine() {
-        class Person {
-            public String name;
-        }
-
         Person person = new Person();
         person.name = "忍";
+        person.age = 598;
 
-        assert I.express("Hello {name}!", person).equals("Hello 忍!");
+        assert I.express("{name} is {age} years old.", person).equals("忍 is 598 years old.");
+    }
+
+    class Person {
+        public String name;
+
+        public int age;
     }
 
     /**
-     * Use logging.
+     * Write log message on console, file and user-defined appender.
      */
     @Test
     void logging() {
@@ -200,5 +204,10 @@ class ReadMeUsageTest {
         @Override
         public void print(Object obj) {
         }
+    }
+
+    @Test
+    void testName() {
+
     }
 }

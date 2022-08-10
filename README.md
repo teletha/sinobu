@@ -41,7 +41,7 @@ Create instance.
 class Some {
 }
 
-assert I.make(Some.class) != I.make(Some.class);;
+assert I.make(Some.class) != I.make(Some.class);
 ```
 
 Create singleton instance. (managed lifestyle)
@@ -101,53 +101,57 @@ assert json.text("name").equals("忍");
 assert json.get("age").as(int.class) == 598;
 ```
 
-Parse XML/HTML.
+Parse XML/HTML. (accept tag soup)
 ```java
 XML html = I.xml("""
         <html>
             <body>
                 <h1>Heading</h1>
-                <div class="date">2022/08/10</div>
+                <div class="age">598</div>
                 <p>contents</p>
                 <div class="author">忍</p>
             </body>
         </html>
         """);
 
-// select the element by CSS selector and read its text
+// select the element by CSS selector and read its text content
 assert html.find("p").text().equals("contents");
 assert html.find(".author").text().equals("忍");
 ```
 
 Reactive stream. (Rx)
 ```java
-List<String> results = I.signal("This", "is", "reactive", "stream").map(String::toUpperCase).toList();
+String result = I.signal("This", "is", "reactive", "stream")
+        .skip(2)
+        .map(String::toUpperCase)
+        .scan(Collectors.joining(" "))
+        .to()
+        .exact();
 
-assert results.get(0).equals("THIS");
-assert results.get(1).equals("IS");
-assert results.get(2).equals("REACTIVE");
-assert results.get(3).equals("STREAM");
+assert result.equals("REACTIVE STREAM");
 ```
 
-Use template engine. (Mustache)
+Evaluate expression language. (Mustache-like syntax)
 ```java
-class Person {
-    public String name;
-}
-
 Person person = new Person();
 person.name = "忍";
+person.age = 598;
 
-assert I.express("Hello {name}!", person).equals("Hello 忍!");
+assert I.express("{name} is {age} years old.", person).equals("忍 is 598 years old.");
 ```
 
-Use logging.
+Write log message on console, file and user-defined appender.
 ```java
 I.info("Default logging level");
 
 I.error("your.logger.name", "Use logger name.");
 
 I.debug("system", "[system] is default logger name.");
+```
+
+
+```java
+
 ```
 
 <p align="right"><a href="#top">back to top</a></p>
