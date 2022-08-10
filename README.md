@@ -70,6 +70,37 @@ Injectable Injectable = I.make(Injectable.class);
 assert Injectable.injected != null;
 ```
 
+Read contents from HTTP.
+```java
+I.http("https://httpstat.us/200", String.class).to(text -> {
+    // read as text
+});
+
+I.http("https://httpstat.us/200", JSON.class).to(json -> {
+    // read as JSON
+});
+
+I.http("https://httpstat.us/200", XML.class).to(xml -> {
+    // read as XML
+});
+```
+
+Parse JSON.
+```java
+JSON json = I.json("""
+        {
+            "name": "忍",
+            "age": 598
+        }
+        """);
+
+// read value as String (shorthand)
+assert json.text("name").equals("忍");
+
+// read value as int
+assert json.get("age").as(int.class) == 598;
+```
+
 <p align="right"><a href="#top">back to top</a></p>
 
 
@@ -190,7 +221,7 @@ Sinobu depends on the following products on test.
 * [junit-jupiter-engine-5.9.0-M1](https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine/5.9.0-M1)
 * [junit-jupiter-params-5.9.0-M1](https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-params/5.9.0-M1)
 * [junit-platform-commons-1.9.0-M1](https://mvnrepository.com/artifact/org.junit.platform/junit-platform-commons/1.9.0-M1)
-* [junit-platform-engine-1.9.0-M1](https://mvnrepository.com/artifact/org.junit.platform/junit-platform-engine/1.9.0-M1)
+* [junit-platform-engine-1.9.0](https://mvnrepository.com/artifact/org.junit.platform/junit-platform-engine/1.9.0)
 * [junit-platform-launcher-1.9.0](https://mvnrepository.com/artifact/org.junit.platform/junit-platform-launcher/1.9.0)
 * [log4j-api-2.18.0](https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api/2.18.0)
 * [log4j-core-2.18.0](https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core/2.18.0)

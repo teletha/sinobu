@@ -11,7 +11,7 @@ package kiss;
 
 import org.junit.jupiter.api.Test;
 
-class UsageTest {
+class ReadMeUsageTest {
 
     /**
      * Create instance.
@@ -55,5 +55,42 @@ class UsageTest {
 
         Injectable Injectable = I.make(Injectable.class);
         assert Injectable.injected != null;
+    }
+
+    /**
+     * Read contents from HTTP.
+     */
+    @Test
+    void http() {
+        I.http("https://httpstat.us/200", String.class).to(text -> {
+            // read as text
+        });
+
+        I.http("https://httpstat.us/200", JSON.class).to(json -> {
+            // read as JSON
+        });
+
+        I.http("https://httpstat.us/200", XML.class).to(xml -> {
+            // read as XML
+        });
+    }
+
+    /**
+     * Parse JSON.
+     */
+    @Test
+    void parseJSON() {
+        JSON json = I.json("""
+                {
+                    "name": "忍",
+                    "age": 598
+                }
+                """);
+
+        // read value as String (shorthand)
+        assert json.text("name").equals("忍");
+
+        // read value as int
+        assert json.get("age").as(int.class) == 598;
     }
 }
