@@ -13,6 +13,9 @@ import org.junit.jupiter.api.Test;
 
 class UsageTest {
 
+    /**
+     * Create instance.
+     */
     @Test
     void createInstance() {
         class PrototypeClass {
@@ -23,6 +26,9 @@ class UsageTest {
         assert prototype1 != prototype2;
     }
 
+    /**
+     * Create singleton instance. (managed lifestyle)
+     */
     @Test
     void createSingleton() {
         @Managed(Singleton.class)
