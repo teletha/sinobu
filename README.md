@@ -38,24 +38,45 @@ With a few exceptions, Sinobu and its APIs are designed to be simple to use and 
 ## Usage
 Create instance.
 ```java
-class PrototypeClass {
-}
+        class Some {
+        }
 
-PrototypeClass prototype1 = I.make(PrototypeClass.class);
-PrototypeClass prototype2 = I.make(PrototypeClass.class);
-assert prototype1 != prototype2;
+        Some prototype1 = I.make(Some.class);
+        Some prototype2 = I.make(Some.class);
+        assert prototype1 != prototype2;
+
 ```
 
 Create singleton instance. (managed lifestyle)
 ```java
-@Managed(Singleton.class)
-class SingletonClass {
-}
+        @Managed(Singleton.class)
+        class Some {
+        }
 
-SingletonClass singleton1 = I.make(SingletonClass.class);
-SingletonClass singleton2 = I.make(SingletonClass.class);
+        Some singleton1 = I.make(Some.class);
+        Some singleton2 = I.make(Some.class);
 
-assert singleton1 == singleton2;
+        assert singleton1 == singleton2;
+
+```
+
+Dependency injection. (No configuration)
+```java
+        class Injected {
+        }
+
+        class Injectable {
+            Injected injected;
+
+            Injectable(Injected injected) {
+                this.injected = injected;
+            }
+        }
+
+        Injectable Injected = I.make(Injectable.class);
+
+        assert Injected.injected != null;
+
 ```
 
 <p align="right"><a href="#top">back to top</a></p>
@@ -175,7 +196,7 @@ Sinobu depends on the following products on test.
 * [junit-jupiter-engine-5.9.0-M1](https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine/5.9.0-M1)
 * [junit-jupiter-params-5.9.0-M1](https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-params/5.9.0-M1)
 * [junit-platform-commons-1.9.0-M1](https://mvnrepository.com/artifact/org.junit.platform/junit-platform-commons/1.9.0-M1)
-* [junit-platform-engine-1.9.0](https://mvnrepository.com/artifact/org.junit.platform/junit-platform-engine/1.9.0)
+* [junit-platform-engine-1.9.0-M1](https://mvnrepository.com/artifact/org.junit.platform/junit-platform-engine/1.9.0-M1)
 * [junit-platform-launcher-1.9.0](https://mvnrepository.com/artifact/org.junit.platform/junit-platform-launcher/1.9.0)
 * [log4j-api-2.18.0](https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api/2.18.0)
 * [log4j-core-2.18.0](https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core/2.18.0)

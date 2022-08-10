@@ -18,11 +18,11 @@ class UsageTest {
      */
     @Test
     void createInstance() {
-        class PrototypeClass {
+        class Some {
         }
 
-        PrototypeClass prototype1 = I.make(PrototypeClass.class);
-        PrototypeClass prototype2 = I.make(PrototypeClass.class);
+        Some prototype1 = I.make(Some.class);
+        Some prototype2 = I.make(Some.class);
         assert prototype1 != prototype2;
     }
 
@@ -32,12 +32,34 @@ class UsageTest {
     @Test
     void createSingleton() {
         @Managed(Singleton.class)
-        class SingletonClass {
+        class Some {
         }
 
-        SingletonClass singleton1 = I.make(SingletonClass.class);
-        SingletonClass singleton2 = I.make(SingletonClass.class);
+        Some singleton1 = I.make(Some.class);
+        Some singleton2 = I.make(Some.class);
 
         assert singleton1 == singleton2;
+    }
+
+    /**
+     * Dependency injection. (No configuration)
+     */
+    @Test
+    @SuppressWarnings("unused")
+    void dependencyInjection() {
+        class Injected {
+        }
+
+        class Injectable {
+            Injected injected;
+
+            Injectable(Injected injected) {
+                this.injected = injected;
+            }
+        }
+
+        Injectable Injected = I.make(Injectable.class);
+
+        assert Injected.injected != null;
     }
 }
