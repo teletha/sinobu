@@ -9,6 +9,8 @@
  */
 package kiss;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 class ReadMeUsageTest {
@@ -92,5 +94,67 @@ class ReadMeUsageTest {
 
         // read value as int
         assert json.get("age").as(int.class) == 598;
+    }
+
+    /**
+     * Parse XML/HTML.
+     */
+    @Test
+    void parseXML() {
+        XML html = I.xml("""
+                <html>
+                    <body>
+                        <h1>Heading</h1>
+                        <div class="date">2022/08/10</div>
+                        <p>contents</p>
+                        <div class="author">忍</p>
+                    </body>
+                </html>
+                """);
+
+        // select the element by CSS selector and read its text
+        assert html.find("p").text().equals("contents");
+        assert html.find(".author").text().equals("忍");
+    }
+
+    /**
+     * Reactive stream. (Rx)
+     */
+    @Test
+    void reactive() {
+        List<String> results = I.signal("This", "is", "reactive", "stream").map(String::toUpperCase).toList();
+
+        assert results.get(0).equals("THIS");
+        assert results.get(1).equals("IS");
+        assert results.get(2).equals("REACTIVE");
+        assert results.get(3).equals("STREAM");
+    }
+
+    /**
+     * Use template engine. (Mustache)
+     */
+    @Test
+    @SuppressWarnings("unused")
+    void templateEngine() {
+        class Person {
+            public String name;
+        }
+
+        Person person = new Person();
+        person.name = "忍";
+
+        assert I.express("Hello {name}!", person).equals("Hello 忍!");
+    }
+
+    /**
+     * Use logging.
+     */
+    @Test
+    void logging() {
+        I.trace("message");
+        I.debug("message");
+        I.info("message");
+        I.warn("message");
+        I.error("message");
     }
 }

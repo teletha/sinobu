@@ -101,6 +101,55 @@ assert json.text("name").equals("忍");
 assert json.get("age").as(int.class) == 598;
 ```
 
+Parse XML/HTML.
+```java
+XML html = I.xml("""
+        <html>
+            <body>
+                <h1>Heading</h1>
+                <div class="date">2022/08/10</div>
+                <p>contents</p>
+                <div class="author">忍</p>
+            </body>
+        </html>
+        """);
+
+// select the element by CSS selector and read its text
+assert html.find("p").text().equals("contents");
+assert html.find(".author").text().equals("忍");
+```
+
+Reactive stream. (Rx)
+```java
+List<String> results = I.signal("This", "is", "reactive", "stream").map(String::toUpperCase).toList();
+
+assert results.get(0).equals("THIS");
+assert results.get(1).equals("IS");
+assert results.get(2).equals("REACTIVE");
+assert results.get(3).equals("STREAM");
+```
+
+Use template engine. (Mustache)
+```java
+class Person {
+    public String name;
+}
+
+Person person = new Person();
+person.name = "忍";
+
+assert I.express("Hello {name}!", person).equals("Hello 忍!");
+```
+
+Use logging.
+```java
+I.trace("message");
+I.debug("message");
+I.info("message");
+I.warn("message");
+I.error("message");
+```
+
 <p align="right"><a href="#top">back to top</a></p>
 
 
@@ -221,7 +270,7 @@ Sinobu depends on the following products on test.
 * [junit-jupiter-engine-5.9.0-M1](https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine/5.9.0-M1)
 * [junit-jupiter-params-5.9.0-M1](https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-params/5.9.0-M1)
 * [junit-platform-commons-1.9.0-M1](https://mvnrepository.com/artifact/org.junit.platform/junit-platform-commons/1.9.0-M1)
-* [junit-platform-engine-1.9.0](https://mvnrepository.com/artifact/org.junit.platform/junit-platform-engine/1.9.0)
+* [junit-platform-engine-1.9.0-M1](https://mvnrepository.com/artifact/org.junit.platform/junit-platform-engine/1.9.0-M1)
 * [junit-platform-launcher-1.9.0](https://mvnrepository.com/artifact/org.junit.platform/junit-platform-launcher/1.9.0)
 * [log4j-api-2.18.0](https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api/2.18.0)
 * [log4j-core-2.18.0](https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core/2.18.0)
