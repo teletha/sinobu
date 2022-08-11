@@ -9,7 +9,7 @@
  */
 package kiss;
 
-import static bee.api.License.*;
+import static bee.api.License.MIT;
 
 import javax.lang.model.SourceVersion;
 
@@ -43,6 +43,8 @@ public class Project extends bee.api.Project {
                 * Less is more
                 * Type safety
                 * Refactoring safety
+
+                Sinobu is extremely lightweight at approximately 111 KB without relying on other libraries, and its various operations are designed to run as fast as other competing libraries.
                 """);
 
         require(SourceVersion.RELEASE_16, SourceVersion.RELEASE_11);
