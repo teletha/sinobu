@@ -32,11 +32,13 @@ With a few exceptions, Sinobu and its APIs are designed to be simple to use and 
 * Less is more
 * Type safety
 * Refactoring safety
+
+Sinobu is extremely lightweight at approximately 111 KB without relying on other libraries, and its various operations are designed to run as fast as other competing libraries.
 <p align="right"><a href="#top">back to top</a></p>
 
 
 ## Usage
-Create instance.
+Create instant from type.
 ```java
 class Some {
 }
@@ -189,7 +191,7 @@ Add it into in the dependencies element like so:
 <dependency>
     <groupId>com.github.teletha</groupId>
     <artifactId>sinobu</artifactId>
-    <version>2.17.0</version>
+    <version>2.18.0</version>
 </dependency>
 ```
 #### [Gradle](https://gradle.org/)
@@ -200,7 +202,7 @@ repositories } url "https://jitpack.io" }
 ```
 Add it into the dependencies section like so:
 ```gradle
-dependencies :sinobu:2.17.0'
+dependencies :sinobu:2.18.0'
 }
 ```
 #### [SBT](https://www.scala-sbt.org/)
@@ -210,7 +212,7 @@ resolvers += "jitpack" at "https://jitpack.io"
 ```
 Add it into the libraryDependencies section like so:
 ```scala
-libraryDependencies += "com.github.teletha" % "sinobu" % "2.17.0"
+libraryDependencies += "com.github.teletha" % "sinobu" % "2.18.0"
 ```
 #### [Leiningen](https://leiningen.org/)
 Add JitPack repository at the end of repositories in your project.clj:
@@ -219,12 +221,12 @@ Add JitPack repository at the end of repositories in your project.clj:
 ```
 Add it into the dependencies section like so:
 ```clj
-:dependencies [[com.github.teletha/sinobu "2.17.0"]]
+:dependencies [[com.github.teletha/sinobu "2.18.0"]]
 ```
 #### [Bee](https://teletha.github.io/bee)
 Add it into your project definition class like so:
 ```java
-require("com.github.teletha", "sinobu", "2.17.0");
+require("com.github.teletha", "sinobu", "2.18.0");
 ```
 <p align="right"><a href="#top">back to top</a></p>
 

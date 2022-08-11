@@ -24,7 +24,7 @@ import org.junit.jupiter.api.TestInfo;
 class ReadMeUsageTest {
 
     /**
-     * Create instance.
+     * Create instant from type.
      */
     @Test
     void createInstance() {
