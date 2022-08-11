@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.18.0](https://github.com/teletha/sinobu/compare/v2.17.0...v2.18.0) (2022-08-11)
+
+
+### Features
+
+* Model uses full-typed cache. ([a9f5cc3](https://github.com/teletha/sinobu/commit/a9f5cc3a61f6b897e75576bb239ea5b3b147491d))
+
+
+### Bug Fixes
+
+* Speed up I#express. ([c51f1a7](https://github.com/teletha/sinobu/commit/c51f1a7cb5e35c5def84f79f923d29b2cf9b175c))
+
 ## [2.17.0](https://www.github.com/teletha/sinobu/compare/v2.16.0...v2.17.0) (2022-08-08)
 
 
