@@ -9,6 +9,7 @@
 
 ## Summary
 Sinobu is not obsolete framework but utility, which can manipulate objects as a extremely-condensed facade.
+This is extremely lightweight at approximately 111 KB without relying on other libraries, and its various operations are designed to run as fast as other competing libraries.
 
 This library aims to simplify and highly condense the functions related to domains that are frequently encountered in real-world development projects, making them easier to use.
 * Dependency Injection
@@ -32,8 +33,6 @@ With a few exceptions, Sinobu and its APIs are designed to be simple to use and 
 * Less is more
 * Type safety
 * Refactoring safety
-
-Sinobu is extremely lightweight at approximately 111 KB without relying on other libraries, and its various operations are designed to run as fast as other competing libraries.
 <p align="right"><a href="#top">back to top</a></p>
 
 
@@ -282,7 +281,7 @@ Sinobu depends on the following products on test.
 * [junit-jupiter-engine-5.9.0-M1](https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine/5.9.0-M1)
 * [junit-jupiter-params-5.9.0-M1](https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-params/5.9.0-M1)
 * [junit-platform-commons-1.9.0-M1](https://mvnrepository.com/artifact/org.junit.platform/junit-platform-commons/1.9.0-M1)
-* [junit-platform-engine-1.9.0-M1](https://mvnrepository.com/artifact/org.junit.platform/junit-platform-engine/1.9.0-M1)
+* [junit-platform-engine-1.9.0](https://mvnrepository.com/artifact/org.junit.platform/junit-platform-engine/1.9.0)
 * [junit-platform-launcher-1.9.0](https://mvnrepository.com/artifact/org.junit.platform/junit-platform-launcher/1.9.0)
 * [log4j-api-2.18.0](https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api/2.18.0)
 * [log4j-core-2.18.0](https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core/2.18.0)
