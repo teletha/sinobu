@@ -13,6 +13,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.lang.System.Logger.Level;
 import java.nio.charset.StandardCharsets;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.AfterEach;
@@ -162,11 +163,22 @@ class ReadMeUsageTest {
      */
     @Test
     void logging() {
-        I.info("Default logging level");
+        I.trace("Default logging level is INFO.");
 
-        I.error("your.logger.name", "Use logger name.");
+        I.debug("your.logger.name", "Different logger names can be used for different output settings.");
 
-        I.debug("system", "[system] is default logger name.");
+        I.info("system", "The default logger name is [system].");
+
+        I.warn("""
+                The following settings can be changed for each logger:
+                    * log level
+                    * displying caller location
+                    * output directory of log file
+                    * whether the log file is overwritten or appended
+                    * the number of days the log file is kept
+                """);
+
+        I.error((Supplier) () -> "Use a lambda expression to delay message building.");
     }
 
     private PrintStream original;
@@ -204,10 +216,5 @@ class ReadMeUsageTest {
         @Override
         public void print(Object obj) {
         }
-    }
-
-    @Test
-    void testName() {
-
     }
 }

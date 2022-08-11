@@ -611,7 +611,7 @@ public class I {
      * 
      * @param msg A message log.
      */
-    public static void error(Object msg) {
+    public static <X extends Object & Supplier<String>> void error(Object msg) {
         log("system", msg, 5, 2);
     }
 
