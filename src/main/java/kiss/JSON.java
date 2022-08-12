@@ -329,7 +329,7 @@ public class JSON {
      */
     JSON(Reader reader) throws IOException {
         char[] b = P.poll();
-        this.buffer = b == null ? new char[512] : b;
+        this.buffer = b == null ? new char[1024 * 4] : b;
         this.reader = reader;
         this.captureStart = -1;
         this.capture = new StringBuilder();

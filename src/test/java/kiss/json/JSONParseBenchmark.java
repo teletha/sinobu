@@ -27,6 +27,10 @@ public class JSONParseBenchmark {
             return I.json(json);
         });
 
+        benchmark.measure("FastJson", () -> {
+            return com.alibaba.fastjson.JSON.parseObject(json, JSONObject.class);
+        });
+
         Gson gson = new Gson();
         benchmark.measure("Gson", () -> {
             return gson.fromJson(json, JSONObject.class);
@@ -35,10 +39,6 @@ public class JSONParseBenchmark {
         ObjectMapper mapper = new ObjectMapper();
         benchmark.measure("Jackson", () -> {
             return mapper.readTree(json);
-        });
-
-        benchmark.measure("FastJson", () -> {
-            return com.alibaba.fastjson.JSON.parseObject(json, JSONObject.class);
         });
 
         benchmark.perform();
