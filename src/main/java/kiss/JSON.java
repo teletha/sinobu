@@ -498,7 +498,11 @@ public class JSON {
         captureStart = index - 1;
         while (current != '"') {
             if (current == '\\') {
-                pauseCapture();
+                // pause capture
+                int end = current == -1 ? index : index - 1;
+                capture.append(buffer, captureStart, end - captureStart);
+                captureStart = -1;
+
                 // escape
                 read();
                 switch (current) {
@@ -598,15 +602,6 @@ public class JSON {
         } else {
             expected(c);
         }
-    }
-
-    /**
-     * Pause text capturing.
-     */
-    private void pauseCapture() {
-        int end = current == -1 ? index : index - 1;
-        capture.append(buffer, captureStart, end - captureStart);
-        captureStart = -1;
     }
 
     /**
