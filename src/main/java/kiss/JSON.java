@@ -334,9 +334,8 @@ public class JSON {
         this.captureStart = -1;
         this.capture = new StringBuilder();
 
-        read();
+        readS();
         if (fill != -1) {
-            space();
             root = value();
         }
     }
@@ -363,39 +362,34 @@ public class JSON {
         // array
         case '[':
             Map array = new LinkedHashMap();
-            read();
-            space();
-            if (read(']')) {
+            readS();
+            if (current == ']') {
+                readS();
                 return array;
             }
 
             int count = -1;
             do {
-                space();
                 array.put(++count <= 9 ? C[count] : Integer.toString(count), value());
                 space();
-            } while (read(','));
-            token(']');
+            } while (readS(','));
+            tokenS(']');
             return array;
 
         // object
         case '{':
             Map object = new HashMap();
-            read();
-            space();
-            if (read('}')) {
+            readS();
+            if (current == '}') {
                 return object;
             }
             do {
-                space();
                 String name = string();
-                space();
-                token(':');
-                space();
+                tokenS(':');
                 object.put(name, value());
                 space();
-            } while (read(','));
-            token('}');
+            } while (readS(','));
+            tokenS('}');
             return object;
 
         // number
@@ -476,12 +470,12 @@ public class JSON {
      * @throws IOException
      */
     private Object keyword(Object keyword) throws IOException {
-        read();
+        readS();
 
         String value = String.valueOf(keyword);
 
         for (int i = 1; i < value.length(); i++) {
-            token(value.charAt(i));
+            tokenS(value.charAt(i));
         }
         return keyword;
     }
@@ -548,7 +542,7 @@ public class JSON {
             }
         }
         String string = endCapture();
-        read();
+        readS();
         return string;
     }
 
@@ -575,6 +569,30 @@ public class JSON {
     }
 
     /**
+     * Read the next character.
+     * 
+     * @throws IOException
+     */
+    private void readS() throws IOException {
+        do {
+            if (index == fill) {
+                if (captureStart != -1) {
+                    capture.append(buffer, captureStart, fill - captureStart);
+                    captureStart = 0;
+                }
+                fill = reader.read(buffer, 0, buffer.length);
+                index = 0;
+                if (fill == -1) {
+                    current = -1;
+                    P.offer(buffer);
+                    return;
+                }
+            }
+            current = buffer[index++];
+        } while (current == ' ' || current == '\t' || current == '\n' || current == '\r');
+    }
+
+    /**
      * Read the specified character.
      * 
      * @param c The character to be red.
@@ -591,6 +609,22 @@ public class JSON {
     }
 
     /**
+     * Read the specified character.
+     * 
+     * @param c The character to be red.
+     * @return A result.
+     * @throws IOException
+     */
+    private boolean readS(char c) throws IOException {
+        if (current == c) {
+            readS();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * Read the specified character surely.
      * 
      * @param c The character to be red.
@@ -599,6 +633,20 @@ public class JSON {
     private void token(char c) throws IOException {
         if (current == c) {
             read();
+        } else {
+            expected(c);
+        }
+    }
+
+    /**
+     * Read the specified character surely.
+     * 
+     * @param c The character to be red.
+     * @throws IOException
+     */
+    private void tokenS(char c) throws IOException {
+        if (current == c) {
+            readS();
         } else {
             expected(c);
         }
