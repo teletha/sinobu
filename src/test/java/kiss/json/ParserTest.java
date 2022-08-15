@@ -9,7 +9,7 @@
  */
 package kiss.json;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.Reader;
 import java.io.StringReader;
@@ -35,11 +35,11 @@ class ParserTest {
 
     @Test
     void space() {
-        // @formatter:off
-        parse("  {  ",
-        "   ' s p a c e '  :   null    ",
-        "  }  ");
-        // @formatter:on
+        parseRaw("""
+                {
+                    " s p a c e " : null
+                }
+                """);
     }
 
     @Test
@@ -71,34 +71,61 @@ class ParserTest {
     @Test
     void invalidTailSeparator() {
         assertThrows(IllegalStateException.class, () -> {
-            // @formatter:off
-            parse("{",
-            "  'true': true,",
-            "  'false': false,",
-            "}");
-            // @formatter:on
+            parseRaw("""
+                    {
+                        "true": true,
+                        "false": false,
+                    }
+                    """);
         });
     }
 
     @Test
-    void primitives() {
-        // @formatter:off
-        parse("{",
-        "  'true': true,",
-        "  'false': false,",
-        "  'null': null",
-        "}");
-        // @formatter:on
+    void primitiveTrue() {
+        parseRaw("""
+                {
+                    "name": true
+                }
+                """);
+    }
+
+    @Test
+    void primitiveFalse() {
+        parseRaw("""
+                {
+                    "name": false
+                }
+                """);
+    }
+
+    @Test
+    void primitiveNull() {
+        parseRaw("""
+                {
+                    "name": null
+                }
+                """);
     }
 
     @Test
     void invalidPrimitives() {
         assertThrows(IllegalStateException.class, () -> {
-            // @formatter:off
-            parse("{",
-            "  'name': undefined",
-            "}");
-            // @formatter:on 
+            parseRaw("""
+                    {
+                        "name": undefined
+                    }
+                    """);
+        });
+    }
+
+    @Test
+    void invalidPrimitiveName1() {
+        assertThrows(IllegalStateException.class, () -> {
+            parseRaw("""
+                    {
+                        "name": nulll
+                    }
+                    """);
         });
     }
 
@@ -126,74 +153,81 @@ class ParserTest {
 
     @Test
     void string() {
-        // @formatter:off
-        parse("{",
-        "  'name': 'value',",
-        "  'escepe': '\\b \\f \\n \\r \\t \\\" \\\\ \\/',",
-        "  'unicode': '\\u004Do\\u006E',",
-        "  'non-ascii': 'あいうえお',",
-        "  'empty': ''",
-        "}");
-        // @formatter:on
+        parseRaw("""
+                {
+                  "name": "the value",
+                  "escepe": "\\b \\f \\n \\r \\t \\\" \\\\ \\/",
+                  "unicode": "\\u004Do\\u006E",
+                  "non-ascii": "あいうえお",
+                  "empty": "",
+                  "blank": "    "
+                }
+                """);
     }
 
     @Test
     void escapedQuote1() {
-        // @formatter:off
-        parse("{",
-        "  'valid': '\\\"'", // \"
-        "}");
-        // @formatter:on
+        // \"
+        parseRaw("""
+                {
+                    "valid": "\\\""
+                }
+                """);
     }
 
     @Test
     void escapedQuote2() {
+        // \\"
         assertThrows(IllegalStateException.class, () -> {
-            // @formatter:off
-            parse("{",
-            "  'invalid': '\\\\\"'", // \\"
-            "}");
-            // @formatter:on
+            parseRaw("""
+                    {
+                        "valid": "\\\\\""
+                    }
+                    """);
         });
     }
 
     @Test
     void escapedQuote3() {
-        // @formatter:off
-        parse("{",
-        "  'valid': '\\\\\\\"'", // \\\"
-        "}");
-        // @formatter:on
+        // \\\"
+        parseRaw("""
+                {
+                    "valid": "\\\\\\\""
+                }
+                """);
     }
 
     @Test
     void escapedQuote4() {
+        // \\\\"
         assertThrows(IllegalStateException.class, () -> {
-            // @formatter:off
-            parse("{",
-            "  'invalid': '\\\\\\\\\"'", // \\\\"
-            "}");
-            // @formatter:on
+            parseRaw("""
+                    {
+                        "valid": "\\\\\\\\\""
+                    }
+                    """);
         });
     }
 
     @Test
     void escapedQuote5() {
-        // @formatter:off
-        parse("{",
-        "  'valid': '\\\\\\\\\\\"'", // \\\\\"
-        "}");
-        // @formatter:on
+        // \\\\\"
+        parseRaw("""
+                {
+                    "valid": "\\\\\\\\\\\""
+                }
+                """);
     }
 
     @Test
     void escapedQuote6() {
+        // \\\\\\"
         assertThrows(IllegalStateException.class, () -> {
-            // @formatter:off
-            parse("{",
-            "  'invalid': '\\\\\\\\\\\\\"'", // \\\\\\"
-            "}");
-            // @formatter:on
+            parseRaw("""
+                    {
+                        "valid": "\\\\\\\\\\\\\""
+                    }
+                    """);
         });
     }
 
@@ -365,6 +399,16 @@ class ParserTest {
             Constructor<?> c = Class.forName("kiss.JSON").getDeclaredConstructor(Reader.class);
             c.setAccessible(true);
             c.newInstance(new StringReader(joiner.toString()));
+        } catch (Exception e) {
+            throw I.quiet(e);
+        }
+    }
+
+    private void parseRaw(String text) {
+        try {
+            Constructor<?> c = Class.forName("kiss.JSON").getDeclaredConstructor(Reader.class);
+            c.setAccessible(true);
+            c.newInstance(new StringReader(text));
         } catch (Exception e) {
             throw I.quiet(e);
         }

@@ -535,7 +535,8 @@ public class JSON {
 
                 // start capture
                 captureStart = index - 1;
-            } else if (current < 0x20) {
+            } else if (current < ' ') {
+                System.out.println("(" + current + ")" + index);
                 expected("string character");
             } else {
                 read();
