@@ -334,7 +334,7 @@ public class JSON {
         this.captureStart = -1;
         this.capture = new StringBuilder();
 
-        readS();
+        readUnspace();
         if (fill != -1) {
             root = value();
         }
@@ -362,34 +362,31 @@ public class JSON {
         // array
         case '[':
             Map array = new LinkedHashMap();
-            readS();
+            readUnspace();
             if (current == ']') {
-                readS();
+                readUnspace();
                 return array;
             }
 
             int count = -1;
             do {
                 array.put(++count <= 9 ? C[count] : Integer.toString(count), value());
-                space();
-            } while (readS(','));
-            tokenS(']');
+            } while (readSeparator(']'));
             return array;
 
         // object
         case '{':
             Map object = new HashMap();
-            readS();
+            readUnspace();
             if (current == '}') {
                 return object;
             }
             do {
                 String name = string();
-                tokenS(':');
+                if (current != ':') expected(":");
+                readUnspace();
                 object.put(name, value());
-                space();
-            } while (readS(','));
-            tokenS('}');
+            } while (readSeparator('}'));
             return object;
 
         // number
@@ -433,17 +430,6 @@ public class JSON {
     }
 
     /**
-     * Read the sequence of white spaces
-     * 
-     * @throws IOException
-     */
-    private void space() throws IOException {
-        while (current == ' ' || current == '\t' || current == '\n' || current == '\r') {
-            read();
-        }
-    }
-
-    /**
      * Read the sequence of digit.
      * 
      * @throws IOException
@@ -472,7 +458,8 @@ public class JSON {
         String value = String.valueOf(keyword);
 
         for (int i = 0; i < value.length(); i++) {
-            token(value.charAt(i));
+            if (current != value.charAt(i)) expected(value);
+            read();
         }
         return keyword;
     }
@@ -484,7 +471,9 @@ public class JSON {
      * @throws IOException
      */
     private String string() throws IOException {
-        token('"');
+        if (current != '"') expected(":");
+        read();
+
         // start capture
         captureStart = index - 1;
         while (current != '"') {
@@ -540,7 +529,7 @@ public class JSON {
             }
         }
         String string = endCapture();
-        readS();
+        readUnspace();
         return string;
     }
 
@@ -571,7 +560,7 @@ public class JSON {
      * 
      * @throws IOException
      */
-    private void readS() throws IOException {
+    private void readUnspace() throws IOException {
         do {
             if (index == fill) {
                 if (captureStart != -1) {
@@ -593,44 +582,33 @@ public class JSON {
     /**
      * Read the specified character.
      * 
-     * @param c The character to be red.
+     * @param end The ending character.
      * @return A result.
      * @throws IOException
      */
-    private boolean readS(char c) throws IOException {
-        if (current == c) {
-            readS();
+    private boolean readSeparator(char end) throws IOException {
+        switch (current) {
+        case ',':
+            readUnspace();
             return true;
-        } else {
+
+        case ' ':
+        case '\t':
+        case '\r':
+        case '\n':
+            readUnspace();
+            if (current == ',') {
+                readUnspace();
+                return true;
+            }
+
+        default:
+            if (current == end) {
+                readUnspace();
+            } else {
+                expected(end);
+            }
             return false;
-        }
-    }
-
-    /**
-     * Read the specified character surely.
-     * 
-     * @param c The character to be red.
-     * @throws IOException
-     */
-    private void token(char c) throws IOException {
-        if (current == c) {
-            read();
-        } else {
-            expected(c);
-        }
-    }
-
-    /**
-     * Read the specified character surely.
-     * 
-     * @param c The character to be red.
-     * @throws IOException
-     */
-    private void tokenS(char c) throws IOException {
-        if (current == c) {
-            readS();
-        } else {
-            expected(c);
         }
     }
 
