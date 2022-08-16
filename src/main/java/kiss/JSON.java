@@ -406,7 +406,7 @@ public class JSON {
         case '9':
             // start capture
             captureStart = index - 1;
-            read('-');
+            if (current == '-') read();
             if (current == '0') {
                 read();
             } else {
@@ -414,19 +414,18 @@ public class JSON {
             }
 
             // fraction
-            if (read('.')) {
+            if (current == '.') {
+                read();
                 digit();
             }
 
             // exponent
-            if (read('e') || read('E')) {
-                if (!read('+')) {
-                    read('-');
-                }
+            if (current == 'e' || current == 'E') {
+                read();
+                if (current == '+' || current == '-') read();
                 digit();
             }
             return endCapture();
-
         // invalid token
         default:
             return expected("value");
@@ -470,12 +469,10 @@ public class JSON {
      * @throws IOException
      */
     private Object keyword(Object keyword) throws IOException {
-        readS();
-
         String value = String.valueOf(keyword);
 
-        for (int i = 1; i < value.length(); i++) {
-            tokenS(value.charAt(i));
+        for (int i = 0; i < value.length(); i++) {
+            token(value.charAt(i));
         }
         return keyword;
     }
@@ -591,22 +588,6 @@ public class JSON {
             }
             current = buffer[index++];
         } while (current == ' ' || current == '\t' || current == '\n' || current == '\r');
-    }
-
-    /**
-     * Read the specified character.
-     * 
-     * @param c The character to be red.
-     * @return A result.
-     * @throws IOException
-     */
-    private boolean read(char c) throws IOException {
-        if (current == c) {
-            read();
-            return true;
-        } else {
-            return false;
-        }
     }
 
     /**

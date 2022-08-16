@@ -59,12 +59,12 @@ class ParserTest {
     @Test
     void invalidNoSeparator() {
         assertThrows(IllegalStateException.class, () -> {
-            // @formatter:off
-            parse("{",
-            "  'true': true",
-            "  'false': false",
-            "}");
-            // @formatter:on
+            parseRaw("""
+                    {
+                        "true": true
+                        "false": false
+                    }
+                    """);
         });
     }
 
