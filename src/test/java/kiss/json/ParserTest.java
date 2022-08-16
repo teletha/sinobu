@@ -9,7 +9,7 @@
  */
 package kiss.json;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.Reader;
 import java.io.StringReader;
@@ -130,14 +130,30 @@ class ParserTest {
     }
 
     @Test
-    void array() {
-        // @formatter:off
-        parse("{",
-        "  'value': ['a', true, false, null, 1, -1, 0.2, 3e+1],",
-        "  'space': [' ',''   ,\t'with tab'],",
-        "  'empty': []",
-        "}");
-        // @formatter:on
+    void array1() {
+        parseRaw("""
+                {
+                    "name" : ["string", true, false, null, 1, -1, 0.2, 3e+1]
+                }
+                """);
+    }
+
+    @Test
+    void array2() {
+        parseRaw("""
+                {
+                    "name" : [" ", ""  ,\t"with tab"]
+                }
+                """);
+    }
+
+    @Test
+    void array3() {
+        parseRaw("""
+                {
+                    "empty" : []
+                }
+                """);
     }
 
     @Test
