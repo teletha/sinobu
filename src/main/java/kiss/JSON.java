@@ -597,10 +597,7 @@ public class JSON {
         case '\r':
         case '\n':
             readUnspace();
-            if (current == ',') {
-                readUnspace();
-                return true;
-            }
+            return readSeparator(end);
 
         default:
             if (current == end) {
