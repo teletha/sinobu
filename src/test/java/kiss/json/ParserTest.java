@@ -17,24 +17,61 @@ import java.lang.reflect.Constructor;
 import java.util.StringJoiner;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
 import kiss.I;
 
+@Execution(ExecutionMode.SAME_THREAD)
 class ParserTest {
 
     @Test
     void empty() {
-        parse("{}");
-        parse("{ }");
-        parse("{\t}");
-        parse("{\r}");
-        parse("{\n}");
-        parse(" { } ");
-        parse("");
+        parseRaw("{}");
     }
 
     @Test
-    void space() {
+    void emptySpace() {
+        parseRaw("{ }");
+    }
+
+    @Test
+    void emptySpaceOutside() {
+        parseRaw(" { } ");
+    }
+
+    @Test
+    void emptyTab() {
+        parseRaw("{\t}");
+    }
+
+    @Test
+    void emptyCarrigeReturn() {
+        parseRaw("{\r}");
+    }
+
+    @Test
+    void emptyLineFeed() {
+        parseRaw("{\n}");
+    }
+
+    @Test
+    void none() {
+        parseRaw("");
+    }
+
+    @Test
+    void noneSpace() {
+        parseRaw(" ");
+    }
+
+    @Test
+    void noneTab() {
+        parseRaw("\t");
+    }
+
+    @Test
+    void keyWithSpace() {
         parseRaw("""
                 {
                     " s p a c e " : null
@@ -45,14 +82,14 @@ class ParserTest {
     @Test
     void invalidEndBrace() {
         assertThrows(IllegalStateException.class, () -> {
-            parse("{");
+            parseRaw("{");
         });
     }
 
     @Test
     void invalidStartBrace() {
         assertThrows(IllegalStateException.class, () -> {
-            parse("}");
+            parseRaw("}");
         });
     }
 
@@ -108,6 +145,31 @@ class ParserTest {
     }
 
     @Test
+    void primitiveNullSpace() {
+        parseRaw("""
+                {
+                    "name": null
+                }
+                """);
+    }
+
+    @Test
+    void primitiveNullTab() {
+        parseRaw("""
+                {
+                    "name": null\t
+                }
+                """);
+    }
+
+    @Test
+    void primitiveNullNoSpace() {
+        parseRaw("""
+                {"name":null}
+                """);
+    }
+
+    @Test
     void invalidPrimitives() {
         assertThrows(IllegalStateException.class, () -> {
             parseRaw("""
@@ -142,7 +204,7 @@ class ParserTest {
     void array2() {
         parseRaw("""
                 {
-                    "name" : [" ", ""  ,\t"with tab"]
+                    "name" : [""," ",\t"withtab"]
                 }
                 """);
     }
@@ -420,13 +482,31 @@ class ParserTest {
         }
     }
 
+    /**
+     * Try to paser json.
+     * 
+     * @param text
+     */
     private void parseRaw(String text) {
+        parse(text, "Normal");
+        parse(text.replaceAll("[ ]", "    "), "Multi Spaces");
+        parse(text.replaceAll("[ ]", "\t\t"), "Multi Tabs");
+        parse(text.replaceAll("[ ]", ""), "No Space");
+        parse(text.replaceAll("[\\r\\n]", ""), "No Break and LineFeed");
+        parse(text.replaceAll("[ \\t\\r\\n]", ""), "No Whitespace Like");
+    }
+
+    /**
+     * Try to parse json.
+     * 
+     * @param json
+     * @param type
+     */
+    private void parse(String json, String type) {
         try {
-            Constructor<?> c = Class.forName("kiss.JSON").getDeclaredConstructor(Reader.class);
-            c.setAccessible(true);
-            c.newInstance(new StringReader(text));
-        } catch (Exception e) {
-            throw I.quiet(e);
+            I.json(json);
+        } catch (Throwable e) {
+            throw new IllegalStateException("Fail to parse json :" + type + "\r\n" + json, e);
         }
     }
 }
