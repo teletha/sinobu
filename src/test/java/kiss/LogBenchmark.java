@@ -55,26 +55,26 @@ public class LogBenchmark {
 
     private static final boolean flush = false;
 
-    private static final OutputType output = OutputType.File;
+    private static final OutputType output = OutputType.Console;
 
     private static final ExecutionType execution = ExecutionType.Both;
 
     private static final CallerType caller = CallerType.Both;
 
-    private static final String message = "Message";
+    private static final String message = "Write your message! This is comparison of  logging libraries";
 
     public static void main(String[] args) throws Exception {
-        Benchmark benchmark = new Benchmark().trial(3);
+        Benchmark benchmark = new Benchmark().limit(500000);
 
         if (output == OutputType.Console) {
             benchmark.discardSystemOutput();
         }
 
-        // performJUL(benchmark);
+        performJUL(benchmark);
+        performSinobu(benchmark);
         performLog4j(benchmark);
         performTinyLog(benchmark);
         performLogback(benchmark);
-        performSinobu(benchmark);
 
         benchmark.perform();
     }
@@ -180,7 +180,7 @@ public class LogBenchmark {
             String name = execution + "-" + caller;
 
             org.apache.logging.log4j.Logger logger = context.getLogger(name);
-            benchmark.measure("Log4j " + name, () -> {
+            benchmark.measure("Log4j2 " + name, () -> {
                 logger.info(message);
                 return -1;
             });
@@ -205,15 +205,13 @@ public class LogBenchmark {
         });
 
         perform((execution, caller) -> {
-            if (caller == CallerType.Caller) {
-                String name = execution + "-" + caller;
+            String name = execution + "-" + caller;
 
-                TaggedLogger logger = org.tinylog.Logger.tag(name);
-                benchmark.measure("TinyLog " + name, () -> {
-                    logger.info(message);
-                    return -1;
-                });
-            }
+            TaggedLogger logger = org.tinylog.Logger.tag(name);
+            benchmark.measure("TinyLog " + name, () -> {
+                logger.info(message);
+                return -1;
+            });
         });
     }
 
@@ -273,6 +271,7 @@ public class LogBenchmark {
     }
 
     static void performSinobu(Benchmark benchmark) throws Exception {
+
         perform((execution, caller) -> {
             if (execution == ExecutionType.Async) {
                 return; // async logging is not supported
