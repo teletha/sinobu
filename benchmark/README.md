@@ -1,2 +1,2 @@
-JSON Parsing
-<img src="/benchmark/JSONParseBenchmark.svg" width="300">
+### JSON Parsing
+<img src="/benchmark/JSONParseBenchmark.svg" width="700">
