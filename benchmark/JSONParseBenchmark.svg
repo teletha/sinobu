@@ -19,15 +19,21 @@
       }
 
       .call {
-          fill: #FFAB7B;
+          fill: #4886CD;
           stroke-linejoin: round;
           height: 14px;
       }
 
       .gc {
-          fill: #BA95EB;
+          fill: #4FB84B;
           stroke-linejoin: round;
           height: 14px;
+      }
+
+      @media (prefers-color-scheme: dark) {
+          text {
+              fill: #F8F8F8;
+          }
       }
   </style>
   <g>
@@ -48,31 +54,31 @@
     <text x="405" y="232">GC</text>
    </g>
   <g>
-    <rect x="175" y="20" width="207.435149" rx="2" ry="2" class="call"/>
-    <rect x="175" y="34" width="46.875000" rx="2" ry="2" class="gc"/>
+    <rect x="175" y="20" width="213.756808" rx="2" ry="2" class="call"/>
+    <rect x="175" y="34" width="45.394737" rx="2" ry="2" class="gc"/>
     <text x="160" y="37" text-anchor="end">Sinobu</text>
-    <text x="392.435149" y="32" font-size="10" fill="#666">9139 ns</text>
-    <text x="231.875000" y="46" font-size="10" fill="#666">5 times</text>
+    <text x="398.756808" y="32" font-size="10" fill="#666">9980 ns</text>
+    <text x="230.394737" y="46" font-size="10" fill="#666">4 times</text>
   </g>
   <g>
-    <rect x="175" y="68" width="245.680934" rx="2" ry="2" class="call"/>
+    <rect x="175" y="68" width="246.248700" rx="2" ry="2" class="call"/>
     <rect x="175" y="82" width="150.000000" rx="2" ry="2" class="gc"/>
     <text x="160" y="85" text-anchor="end">FastJson</text>
-    <text x="430.680934" y="80" font-size="10" fill="#666">10824 ns</text>
-    <text x="335.000000" y="94" font-size="10" fill="#666">16 times</text>
+    <text x="431.248700" y="80" font-size="10" fill="#666">11497 ns</text>
+    <text x="335.000000" y="94" font-size="10" fill="#666">15 times</text>
   </g>
   <g>
-    <rect x="175" y="116" width="285.424773" rx="2" ry="2" class="call"/>
-    <rect x="175" y="130" width="84.375000" rx="2" ry="2" class="gc"/>
+    <rect x="175" y="116" width="283.281317" rx="2" ry="2" class="call"/>
+    <rect x="175" y="130" width="84.868421" rx="2" ry="2" class="gc"/>
     <text x="160" y="133" text-anchor="end">Jackson</text>
-    <text x="470.424773" y="128" font-size="10" fill="#666">12575 ns</text>
-    <text x="269.375000" y="142" font-size="10" fill="#666">9 times</text>
+    <text x="468.281317" y="128" font-size="10" fill="#666">13226 ns</text>
+    <text x="269.868421" y="142" font-size="10" fill="#666">8 times</text>
   </g>
   <g>
     <rect x="175" y="164" width="350.000000" rx="2" ry="2" class="call"/>
-    <rect x="175" y="178" width="110.625000" rx="2" ry="2" class="gc"/>
+    <rect x="175" y="178" width="108.552632" rx="2" ry="2" class="gc"/>
     <text x="160" y="181" text-anchor="end">Gson</text>
-    <text x="535.000000" y="176" font-size="10" fill="#666">15420 ns</text>
-    <text x="295.625000" y="190" font-size="10" fill="#666">11 times</text>
+    <text x="535.000000" y="176" font-size="10" fill="#666">16341 ns</text>
+    <text x="293.552632" y="190" font-size="10" fill="#666">11 times</text>
   </g>
 </svg>
