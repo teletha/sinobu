@@ -55,6 +55,7 @@ public class Project extends bee.api.Project {
 
         // For JSON benchmark
         require("com.fasterxml.jackson.core", "jackson-databind").atTest();
+        require("com.fasterxml.jackson.module", "jackson-module-afterburner").atTest();
         require("com.google.code.gson", "gson").atTest();
         require("com.alibaba", "fastjson").atTest();
         require("com.grack", "nanojson").atTest();
