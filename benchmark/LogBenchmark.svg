@@ -3,29 +3,33 @@
       text {
           font-family: Arial;
           font-size: 13px;
-          fill: #666;
+          fill: #787878;
+      }
+
+      .desc {
+          font-size: 9px;
       }
 
       .vline {
-          fill: #ccc;
+          fill: #acacac;
           stroke: none;
           stroke-width: 0;
       }
 
       .subline {
-          fill: #ccc;
+          fill: #bbb;
           stroke: none;
           stroke-width: 0;
       }
 
       .call {
-          fill: #FFAB7B;
+          fill: #4886CD;
           stroke-linejoin: round;
           height: 14px;
       }
 
       .gc {
-          fill: #BA95EB;
+          fill: #4FB84B;
           stroke-linejoin: round;
           height: 14px;
       }
@@ -42,107 +46,107 @@
     <rect x="525" y="0" width="1" height="692" class="subline"/>
     <rect x="175" y="692" width="450" height="1" class="subline"/>
 
-    <rect x="235" y="700" width="30" class="call"/>
-    <text x="275" y="712">ns / call</text>
-    <rect x="365" y="700" width="30" class="gc"/>
-    <text x="405" y="712">GC</text>
+    <rect x="265" y="700" width="30" class="call"/>
+    <text x="305" y="712">ns / call</text>
+    <rect x="395" y="700" width="30" class="gc"/>
+    <text x="435" y="712">GC</text>
    </g>
   <g>
-    <rect x="175" y="20" width="3.871105" rx="2" ry="2" class="call"/>
+    <rect x="175" y="20" width="3.420726" rx="2" ry="2" class="call"/>
     <rect x="175" y="34" width="0.000000" rx="2" ry="2" class="gc"/>
     <text x="160" y="37" text-anchor="end">Sinobu Sync-NoCaller</text>
-    <text x="188.871105" y="32" font-size="10" fill="#666">208 ns</text>
-    <text x="185.000000" y="46" font-size="10" fill="#666">0 times</text>
+    <text x="185.420726" y="30" class="desc">189</text>
+    <text x="182.000000" y="44" class="desc">0</text>
   </g>
   <g>
-    <rect x="175" y="68" width="6.718600" rx="2" ry="2" class="call"/>
-    <rect x="175" y="82" width="120.000000" rx="2" ry="2" class="gc"/>
-    <text x="160" y="85" text-anchor="end">Logback Async-NoCaller</text>
-    <text x="191.718600" y="80" font-size="10" fill="#666">361 ns</text>
-    <text x="305.000000" y="94" font-size="10" fill="#666">4 times</text>
+    <rect x="175" y="68" width="6.153687" rx="2" ry="2" class="call"/>
+    <rect x="175" y="82" width="30.000000" rx="2" ry="2" class="gc"/>
+    <text x="160" y="85" text-anchor="end">Log4j2 Async-NoCaller</text>
+    <text x="188.153687" y="78" class="desc">340</text>
+    <text x="212.000000" y="92" class="desc">1</text>
   </g>
   <g>
-    <rect x="175" y="116" width="6.904711" rx="2" ry="2" class="call"/>
-    <rect x="175" y="130" width="30.000000" rx="2" ry="2" class="gc"/>
-    <text x="160" y="133" text-anchor="end">Log4j2 Async-NoCaller</text>
-    <text x="191.904711" y="128" font-size="10" fill="#666">371 ns</text>
-    <text x="215.000000" y="142" font-size="10" fill="#666">1 times</text>
+    <rect x="175" y="116" width="7.728307" rx="2" ry="2" class="call"/>
+    <rect x="175" y="130" width="120.000000" rx="2" ry="2" class="gc"/>
+    <text x="160" y="133" text-anchor="end">Logback Async-NoCaller</text>
+    <text x="189.728307" y="126" class="desc">427</text>
+    <text x="302.000000" y="140" class="desc">4</text>
   </g>
   <g>
-    <rect x="175" y="164" width="7.723599" rx="2" ry="2" class="call"/>
-    <rect x="175" y="178" width="120.000000" rx="2" ry="2" class="gc"/>
-    <text x="160" y="181" text-anchor="end">Logback Sync-NoCaller</text>
-    <text x="192.723599" y="176" font-size="10" fill="#666">415 ns</text>
-    <text x="305.000000" y="190" font-size="10" fill="#666">4 times</text>
+    <rect x="175" y="164" width="7.855001" rx="2" ry="2" class="call"/>
+    <rect x="175" y="178" width="0.000000" rx="2" ry="2" class="gc"/>
+    <text x="160" y="181" text-anchor="end">Log4j2 Sync-NoCaller</text>
+    <text x="189.855001" y="174" class="desc">434</text>
+    <text x="182.000000" y="188" class="desc">0</text>
   </g>
   <g>
-    <rect x="175" y="212" width="8.374987" rx="2" ry="2" class="call"/>
-    <rect x="175" y="226" width="0.000000" rx="2" ry="2" class="gc"/>
-    <text x="160" y="229" text-anchor="end">Log4j2 Sync-NoCaller</text>
-    <text x="193.374987" y="224" font-size="10" fill="#666">450 ns</text>
-    <text x="185.000000" y="238" font-size="10" fill="#666">0 times</text>
+    <rect x="175" y="212" width="7.855001" rx="2" ry="2" class="call"/>
+    <rect x="175" y="226" width="120.000000" rx="2" ry="2" class="gc"/>
+    <text x="160" y="229" text-anchor="end">Logback Sync-NoCaller</text>
+    <text x="189.855001" y="222" class="desc">434</text>
+    <text x="302.000000" y="236" class="desc">4</text>
   </g>
   <g>
-    <rect x="175" y="260" width="68.377114" rx="2" ry="2" class="call"/>
+    <rect x="175" y="260" width="68.016341" rx="2" ry="2" class="call"/>
     <rect x="175" y="274" width="120.000000" rx="2" ry="2" class="gc"/>
     <text x="160" y="277" text-anchor="end">TinyLog Sync-Caller</text>
-    <text x="253.377114" y="272" font-size="10" fill="#666">3674 ns</text>
-    <text x="305.000000" y="286" font-size="10" fill="#666">4 times</text>
+    <text x="250.016341" y="270" class="desc">3758</text>
+    <text x="302.000000" y="284" class="desc">4</text>
   </g>
   <g>
-    <rect x="175" y="308" width="73.811550" rx="2" ry="2" class="call"/>
+    <rect x="175" y="308" width="72.414417" rx="2" ry="2" class="call"/>
     <rect x="175" y="322" width="102.000000" rx="2" ry="2" class="gc"/>
     <text x="160" y="325" text-anchor="end">TinyLog Async-Caller</text>
-    <text x="258.811550" y="320" font-size="10" fill="#666">3966 ns</text>
-    <text x="287.000000" y="334" font-size="10" fill="#666">3 times</text>
+    <text x="254.414417" y="318" class="desc">4001</text>
+    <text x="284.000000" y="332" class="desc">3</text>
   </g>
   <g>
-    <rect x="175" y="356" width="76.733489" rx="2" ry="2" class="call"/>
-    <rect x="175" y="370" width="120.000000" rx="2" ry="2" class="gc"/>
+    <rect x="175" y="356" width="81.101975" rx="2" ry="2" class="call"/>
+    <rect x="175" y="370" width="108.000000" rx="2" ry="2" class="gc"/>
     <text x="160" y="373" text-anchor="end">Sinobu Sync-Caller</text>
-    <text x="261.733489" y="368" font-size="10" fill="#666">4123 ns</text>
-    <text x="305.000000" y="382" font-size="10" fill="#666">4 times</text>
+    <text x="263.101975" y="366" class="desc">4481</text>
+    <text x="290.000000" y="380" class="desc">3</text>
   </g>
   <g>
-    <rect x="175" y="404" width="141.388387" rx="2" ry="2" class="call"/>
+    <rect x="175" y="404" width="144.810735" rx="2" ry="2" class="call"/>
     <rect x="175" y="418" width="90.000000" rx="2" ry="2" class="gc"/>
     <text x="160" y="421" text-anchor="end">Log4j2 Sync-Caller</text>
-    <text x="326.388387" y="416" font-size="10" fill="#666">7597 ns</text>
-    <text x="275.000000" y="430" font-size="10" fill="#666">3 times</text>
+    <text x="326.810735" y="414" class="desc">8001</text>
+    <text x="272.000000" y="428" class="desc">3</text>
   </g>
   <g>
-    <rect x="175" y="452" width="176.116665" rx="2" ry="2" class="call"/>
-    <rect x="175" y="466" width="90.000000" rx="2" ry="2" class="gc"/>
+    <rect x="175" y="452" width="174.438929" rx="2" ry="2" class="call"/>
+    <rect x="175" y="466" width="78.000000" rx="2" ry="2" class="gc"/>
     <text x="160" y="469" text-anchor="end">Log4j2 Async-Caller</text>
-    <text x="361.116665" y="464" font-size="10" fill="#666">9463 ns</text>
-    <text x="275.000000" y="478" font-size="10" fill="#666">3 times</text>
+    <text x="356.438929" y="462" class="desc">9638</text>
+    <text x="260.000000" y="476" class="desc">2</text>
   </g>
   <g>
-    <rect x="175" y="500" width="269.897905" rx="2" ry="2" class="call"/>
-    <rect x="175" y="514" width="60.000000" rx="2" ry="2" class="gc"/>
+    <rect x="175" y="500" width="281.277795" rx="2" ry="2" class="call"/>
+    <rect x="175" y="514" width="54.000000" rx="2" ry="2" class="gc"/>
     <text x="160" y="517" text-anchor="end">Logback Async-Caller</text>
-    <text x="454.897905" y="512" font-size="10" fill="#666">14502 ns</text>
-    <text x="245.000000" y="526" font-size="10" fill="#666">2 times</text>
+    <text x="463.277795" y="510" class="desc">15541</text>
+    <text x="236.000000" y="524" class="desc">1</text>
   </g>
   <g>
-    <rect x="175" y="548" width="310.786451" rx="2" ry="2" class="call"/>
+    <rect x="175" y="548" width="312.951184" rx="2" ry="2" class="call"/>
     <rect x="175" y="562" width="60.000000" rx="2" ry="2" class="gc"/>
     <text x="160" y="565" text-anchor="end">Logback Sync-Caller</text>
-    <text x="495.786451" y="560" font-size="10" fill="#666">16699 ns</text>
-    <text x="245.000000" y="574" font-size="10" fill="#666">2 times</text>
+    <text x="494.951184" y="558" class="desc">17291</text>
+    <text x="242.000000" y="572" class="desc">2</text>
   </g>
   <g>
-    <rect x="175" y="596" width="330.737531" rx="2" ry="2" class="call"/>
+    <rect x="175" y="596" width="336.027511" rx="2" ry="2" class="call"/>
     <rect x="175" y="610" width="150.000000" rx="2" ry="2" class="gc"/>
     <text x="160" y="613" text-anchor="end">JUL Sync-NoCaller</text>
-    <text x="515.737531" y="608" font-size="10" fill="#666">17771 ns</text>
-    <text x="335.000000" y="622" font-size="10" fill="#666">5 times</text>
+    <text x="518.027511" y="606" class="desc">18566</text>
+    <text x="332.000000" y="620" class="desc">5</text>
   </g>
   <g>
     <rect x="175" y="644" width="350.000000" rx="2" ry="2" class="call"/>
     <rect x="175" y="658" width="150.000000" rx="2" ry="2" class="gc"/>
     <text x="160" y="661" text-anchor="end">JUL Sync-Caller</text>
-    <text x="535.000000" y="656" font-size="10" fill="#666">18806 ns</text>
-    <text x="335.000000" y="670" font-size="10" fill="#666">5 times</text>
+    <text x="532.000000" y="654" class="desc">19338</text>
+    <text x="332.000000" y="668" class="desc">5</text>
   </g>
 </svg>
