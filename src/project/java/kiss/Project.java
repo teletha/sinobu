@@ -57,9 +57,12 @@ public class Project extends bee.api.Project {
         require("com.fasterxml.jackson.core", "jackson-databind").atTest();
         require("com.google.code.gson", "gson").atTest();
         require("com.alibaba", "fastjson").atTest();
+        require("com.grack", "nanojson").atTest();
+        require("com.jsoniter", "jsoniter");
 
         // For XML benchmark
         require("org.jsoup", "jsoup").atTest();
+        require("net.sourceforge.htmlcleaner", "htmlcleaner").atTest();
 
         // For Mustache benchmark
         require("com.github.spullara.mustache.java", "compiler").atTest();

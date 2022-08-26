@@ -9,6 +9,7 @@
  */
 package kiss.xml;
 
+import org.htmlcleaner.HtmlCleaner;
 import org.jsoup.Jsoup;
 
 import antibug.profiler.Benchmark;
@@ -27,6 +28,11 @@ public class XMLParseBenchmark {
 
         benchmark.measure("Jsoup", () -> {
             return Jsoup.parse(html);
+        });
+
+        HtmlCleaner cleaner = new HtmlCleaner();
+        benchmark.measure("HTMLCleaner", () -> {
+            return cleaner.clean(html);
         });
 
         benchmark.perform();
