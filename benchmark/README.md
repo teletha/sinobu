@@ -4,6 +4,9 @@
 ### JSON Parsing
 <img src="/benchmark/JSONParseBenchmark.svg" width="700">
 
+### JSON Travesing
+<img src="/benchmark/JSONTraverseBenchmark.svg" width="700">
+
 ### HTML Parsing
 <img src="/benchmark/XMLParseBenchmark.svg" width="700">
 
