@@ -11,12 +11,7 @@ package kiss.json;
 
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
 import com.google.gson.Gson;
-import com.grack.nanojson.JsonObject;
-import com.grack.nanojson.JsonParser;
-import com.grack.nanojson.JsonParser.JsonParserContext;
-import com.jsoniter.JsonIterator;
 
 import antibug.profiler.Benchmark;
 import kiss.I;
@@ -116,20 +111,6 @@ public class JSONParseBenchmark {
         ObjectMapper mapper = new ObjectMapper();
         benchmark.measure("Jackson", () -> {
             return mapper.readTree(json);
-        });
-
-        ObjectMapper afterburner = new ObjectMapper().registerModule(new AfterburnerModule());
-        benchmark.measure("Jackson Afterburner", () -> {
-            return afterburner.readTree(json);
-        });
-
-        JsonParserContext<JsonObject> context = JsonParser.object();
-        benchmark.measure("NanoJson", () -> {
-            return context.from(json);
-        });
-
-        benchmark.measure("Jsoniter", () -> {
-            return JsonIterator.deserialize(json);
         });
 
         benchmark.perform();

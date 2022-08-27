@@ -59,7 +59,7 @@ public class Project extends bee.api.Project {
         require("com.google.code.gson", "gson").atTest();
         require("com.alibaba", "fastjson").atTest();
         require("com.grack", "nanojson").atTest();
-        require("com.jsoniter", "jsoniter");
+        require("com.jsoniter", "jsoniter").atTest();
 
         // For XML benchmark
         require("org.jsoup", "jsoup").atTest();
