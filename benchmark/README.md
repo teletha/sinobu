@@ -7,6 +7,9 @@
 ### JSON Travesing
 <img src="/benchmark/JSONTraverseBenchmark.svg" width="700">
 
+### JSON Mapping
+<img src="/benchmark/JSONMappingBenchmark.svg" width="700">
+
 ### HTML Parsing
 <img src="/benchmark/XMLParseBenchmark.svg" width="700">
 
