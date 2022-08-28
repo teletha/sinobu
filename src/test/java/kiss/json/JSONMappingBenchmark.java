@@ -9,6 +9,11 @@
  */
 package kiss.json;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 
@@ -19,30 +24,43 @@ public class JSONMappingBenchmark {
 
     private static final String json = """
             {
-                "name": "Alexandra",
-                "age": 20
+                "member": [
+                    {
+                        "name": "Ada",
+                        "age": 20
+                    },{
+                        "name": "BrainCrash",
+                        "age": 21
+                    },{
+                        "name": "COBOL",
+                        "age": 22
+                    },{
+                        "name": "Delphi",
+                        "age": 23
+                    }
+                ]
             }
             """;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws JsonMappingException, JsonProcessingException {
         Benchmark benchmark = new Benchmark();
 
         benchmark.measure("Sinobu", () -> {
-            return I.json(json).as(Person.class);
+            return I.json(json).as(Group.class);
         });
 
         benchmark.measure("FastJson", () -> {
-            return com.alibaba.fastjson.JSON.parseObject(json, Person.class);
+            return com.alibaba.fastjson.JSON.parseObject(json, Group.class);
         });
 
         Gson gson = new Gson();
         benchmark.measure("Gson", () -> {
-            return gson.fromJson(json, Person.class);
+            return gson.fromJson(json, Group.class);
         });
 
         ObjectMapper mapper = new ObjectMapper();
         benchmark.measure("Jackson", () -> {
-            return mapper.readValue(json, Person.class);
+            return mapper.readValue(json, Group.class);
         });
 
         benchmark.perform();
@@ -55,5 +73,12 @@ public class JSONMappingBenchmark {
         public String name;
 
         public int age;
+    }
+
+    /**
+     * 
+     */
+    public static class Group {
+        public List<Person> member = new ArrayList();
     }
 }

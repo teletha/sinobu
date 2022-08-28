@@ -9,7 +9,7 @@
  */
 package kiss;
 
-import static bee.api.License.MIT;
+import static bee.api.License.*;
 
 import javax.lang.model.SourceVersion;
 
@@ -58,8 +58,6 @@ public class Project extends bee.api.Project {
         require("com.fasterxml.jackson.module", "jackson-module-afterburner").atTest();
         require("com.google.code.gson", "gson").atTest();
         require("com.alibaba", "fastjson").atTest();
-        require("com.grack", "nanojson").atTest();
-        require("com.jsoniter", "jsoniter").atTest();
 
         // For XML benchmark
         require("org.jsoup", "jsoup").atTest();
