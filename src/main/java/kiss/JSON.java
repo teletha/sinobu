@@ -471,7 +471,6 @@ public class JSON {
      * @throws IOException
      */
     private String string() throws IOException {
-        if (current != '"') expected(":");
         read();
 
         // start capture
