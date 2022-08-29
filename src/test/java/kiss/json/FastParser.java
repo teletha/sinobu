@@ -12,9 +12,13 @@ package kiss.json;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import kiss.I;
+import kiss.JSON;
 import kiss.Ⅱ;
 import kiss.model.Model;
 import kiss.model.Property;
@@ -59,7 +63,7 @@ public class FastParser {
 
         readUnspace();
         if (fill != -1) {
-            return (T) value(Model.of(type));
+            return (T) value(type == JSON.class ? null : Model.of(type));
         }
 
         return null;
@@ -86,7 +90,7 @@ public class FastParser {
 
         // array
         case '[':
-            Object list = I.make(model.type);
+            Object list = model == null ? new LinkedHashMap() : I.make(model.type);
             readUnspace();
             if (current == ']') {
                 readUnspace();
@@ -95,26 +99,37 @@ public class FastParser {
 
             int count = -1;
             do {
-                Property p = model.property(++count <= 9 ? C[count] : Integer.toString(count));
-                model.set(list, p, value(p.model));
+                String name = ++count <= 9 ? C[count] : Integer.toString(count);
+                if (model == null) {
+                    ((Map) list).put(name, value(null));
+                } else {
+                    Property p = model.property(name);
+                    model.set(list, p, value(p.model));
+                }
             } while (readSeparator(']'));
             return list;
 
         // object
         case '{':
-            Object obj = I.make(model.type);
+            Object obj = model == null ? new HashMap() : I.make(model.type);
             readUnspace();
             if (current == '}') {
                 return obj;
             }
             do {
-                Property p = model.property(string());
+                String name = string();
                 if (current != ':') expected(":");
                 readUnspace();
-                if (p.model.atomic) {
-                    model.set(obj, p, I.transform(value(p.model), p.model.type));
+
+                if (model == null) {
+                    ((Map) obj).put(name, value(null));
                 } else {
-                    model.set(obj, p, value(p.model));
+                    Property p = model.property(name);
+                    if (p.model.atomic) {
+                        model.set(obj, p, I.transform(value(p.model), p.model.type));
+                    } else {
+                        model.set(obj, p, value(p.model));
+                    }
                 }
             } while (readSeparator('}'));
             return obj;
