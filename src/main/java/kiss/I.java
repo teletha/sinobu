@@ -9,7 +9,8 @@
  */
 package kiss;
 
-import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.*;
+import static java.nio.charset.StandardCharsets.*;
 import static java.time.format.DateTimeFormatter.*;
 
 import java.io.ByteArrayOutputStream;
@@ -37,10 +38,10 @@ import java.net.HttpRetryException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpClient.Redirect;
 import java.net.http.HttpRequest;
-import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.net.http.WebSocket;
@@ -2103,12 +2104,9 @@ public class I {
             // Perform the translation online.
             // TODO We do not want to make more than one request at the same time,
             // so we have certain intervals.
-            return I.http(HttpRequest.newBuilder()
-                    .uri(URI.create("https://www.ibm.com/demos/live/watson-language-translator/api/translate/text"))
-                    .header("Content-Type", "application/json")
-                    .POST(BodyPublishers.ofString("{\"text\":\"" + text
-                            .replaceAll("[\\n|\\r]+", " ") + "\",\"source\":\"en\",\"target\":\"" + lang + "\"}")), JSON.class)
-                    .flatIterable(v -> v.find(String.class, "payload", "translations", "0", "translation"))
+            return I.http("https://script.google.com/macros/s/AKfycbwnesFo4pF0G5OxXtsA6DeEELayUCC4yZhY4mCVQkhFufXdsQXtiyLMEb7FYcz2DEzUBw/exec?word=" + URLEncoder
+                    .encode(text.replaceAll("[\\n|\\r]+", " "), UTF_8) + "&source=en&target=" + lang, JSON.class)
+                    .map(v -> v.text("result"))
                     .skipNull()
                     .map(v -> {
                         bundle.messages.put(text, v);

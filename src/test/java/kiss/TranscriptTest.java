@@ -124,7 +124,7 @@ class TranscriptTest {
         Variable<String> text = I.translate("one\ntwo");
 
         I.Lang.set("fr");
-        assert text.next().equals("Un deux");
+        assert text.next().equals("un deux");
     }
 
     @Test
@@ -140,7 +140,7 @@ class TranscriptTest {
         Variable<String> text = I.translate("five\r\nsix");
 
         I.Lang.set("ru");
-        assert text.next().equals("пять шести");
+        assert text.next().equals("пять шесть");
     }
 
     @Test
