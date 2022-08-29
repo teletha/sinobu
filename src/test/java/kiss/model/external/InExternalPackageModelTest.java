@@ -9,30 +9,24 @@
  */
 package kiss.model.external;
 
-import java.util.List;
+import java.util.Collection;
 
 import org.junit.jupiter.api.Test;
 
 import kiss.model.Model;
 import kiss.model.Property;
 
-/**
- * @version 2012/04/08 2:02:36
- */
-public class InExternalPackageModelTest {
+class InExternalPackageModelTest {
 
     @Test
-    public void fieldPropertyInPrivateClass() throws Exception {
+    void fieldPropertyInPrivateClass() {
         Model model = Model.of(PrivateClass.class);
         assert model != null;
 
-        List<Property> list = model.properties();
+        Collection<Property> list = model.properties();
         assert 1 == list.size();
     }
 
-    /**
-     * @version 2012/04/07 11:59:27
-     */
     private static final class PrivateClass {
 
         @SuppressWarnings("unused")

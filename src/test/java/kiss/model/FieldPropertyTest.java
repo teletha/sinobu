@@ -370,7 +370,7 @@ class FieldPropertyTest {
     private boolean validatePropertyAccess(Object instance, Object expectedCurrentValue, Object newValue) {
         Model model = Model.of(instance);
         assert model.properties().size() == 1;
-        Property p = (Property) model.properties().get(0);
+        Property p = (Property) model.properties().iterator().next();
         if (!p.model.type.isPrimitive()) {
             assert p.model.type.isInstance(newValue);
         }

@@ -27,6 +27,7 @@ import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -36,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import kiss.Decoder;
@@ -66,7 +68,7 @@ public class Model<M> {
     public final boolean atomic;
 
     /** The unmodifiable properties list of this object model. */
-    private List<Property> properties = Collections.EMPTY_LIST;
+    private Map<String, Property> properties = Collections.EMPTY_MAP;
 
     /** The flag of initialization. */
     private boolean initialized;
@@ -145,7 +147,7 @@ public class Model<M> {
 
                 // build valid properties
                 // don't use type parameter to reduce footprint
-                ArrayList properties = new ArrayList();
+                properties = new TreeMap();
 
                 for (Entry<String, Method[]> entry : candidates.entrySet()) {
                     Method[] methods = entry.getValue();
@@ -167,7 +169,7 @@ public class Model<M> {
                                 };
 
                                 // register it
-                                properties.add(property);
+                                properties.put(property.name, property);
                             }
                         } catch (Exception e) {
                             throw I.quiet(e);
@@ -209,7 +211,7 @@ public class Model<M> {
                                     property.observer = m -> ((Variable) field.get(m)).observe();
 
                                     // register it
-                                    properties.add(property);
+                                    properties.put(property.name, property);
                                 } else if ((fieldModel.atomic && notFinal) || !fieldModel.atomic || isRecord) {
                                     // field
                                     field.setAccessible(true);
@@ -231,7 +233,7 @@ public class Model<M> {
                                     };
 
                                     // register it
-                                    properties.add(property);
+                                    properties.put(property.name, property);
                                 }
                             }
                         }
@@ -239,12 +241,7 @@ public class Model<M> {
                     clazz = clazz.getSuperclass();
                 }
 
-                // trim and sort property list
-                properties.trimToSize();
-                properties.sort(Comparator.<Property, String> comparing(v -> v.name));
-
-                // exposed property list must be unmodifiable
-                this.properties = Collections.unmodifiableList(properties);
+                this.properties = Collections.unmodifiableMap(properties);
             } catch (Exception e) {
                 throw I.quiet(e);
             }
@@ -259,13 +256,7 @@ public class Model<M> {
      * @return A suitable property or <code>null</code>.
      */
     public Property property(String name) {
-        for (int i = properties.size() - 1; 0 <= i; --i) {
-            Property property = properties.get(i);
-            if (property.name.equals(name)) {
-                return property;
-            }
-        }
-        return null;
+        return properties.get(name);
     }
 
     /**
@@ -273,8 +264,8 @@ public class Model<M> {
      * 
      * @return
      */
-    public List<Property> properties() {
-        return this.properties;
+    public Collection<Property> properties() {
+        return properties.values();
     }
 
     /**
@@ -338,7 +329,7 @@ public class Model<M> {
     public void walk(M object, WiseTriConsumer<Model<M>, Property, Object> walker) {
         // check whether this model is attribute or not.
         if (walker != null) {
-            for (Property property : properties) {
+            for (Property property : properties.values()) {
                 walker.accept(this, property, get(object, property));
             }
         }
