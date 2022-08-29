@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
@@ -62,6 +63,11 @@ class ModelTest {
         assert propertyType == property.model.type;
         assert property.getter != null;
         assert property.setter != null;
+    }
+
+    @Test
+    void nullInput() {
+        Assertions.assertThrows(NullPointerException.class, () -> new Model(null));
     }
 
     @Test
