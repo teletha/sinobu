@@ -61,9 +61,6 @@ public class Model<M> {
     /** The {@link Class} which is represented by this {@link Model}. */
     public final Class<M> type;
 
-    /** The human readable identifier of this object model. */
-    public final String name;
-
     /** Whether this {@link Model} is an atomic type or a object type. */
     public final boolean atomic;
 
@@ -83,7 +80,6 @@ public class Model<M> {
         // Skip null check because this method can throw NullPointerException.
         // if (type == null) throw new NullPointerException("Model class shouldn't be null.");
         this.type = type;
-        this.name = type.getSimpleName();
         this.atomic = I.find(Decoder.class, type) != null || type.isArray();
     }
 
