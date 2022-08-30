@@ -190,7 +190,7 @@ Add it into in the dependencies element like so:
 <dependency>
     <groupId>com.github.teletha</groupId>
     <artifactId>sinobu</artifactId>
-    <version>2.18.0</version>
+    <version>2.20.0</version>
 </dependency>
 ```
 #### [Gradle](https://gradle.org/)
@@ -201,7 +201,7 @@ repositories } url "https://jitpack.io" }
 ```
 Add it into the dependencies section like so:
 ```gradle
-dependencies :sinobu:2.18.0'
+dependencies :sinobu:2.20.0'
 }
 ```
 #### [SBT](https://www.scala-sbt.org/)
@@ -211,7 +211,7 @@ resolvers += "jitpack" at "https://jitpack.io"
 ```
 Add it into the libraryDependencies section like so:
 ```scala
-libraryDependencies += "com.github.teletha" % "sinobu" % "2.18.0"
+libraryDependencies += "com.github.teletha" % "sinobu" % "2.20.0"
 ```
 #### [Leiningen](https://leiningen.org/)
 Add JitPack repository at the end of repositories in your project.clj:
@@ -220,12 +220,12 @@ Add JitPack repository at the end of repositories in your project.clj:
 ```
 Add it into the dependencies section like so:
 ```clj
-:dependencies [[com.github.teletha/sinobu "2.18.0"]]
+:dependencies [[com.github.teletha/sinobu "2.20.0"]]
 ```
 #### [Bee](https://teletha.github.io/bee)
 Add it into your project definition class like so:
 ```java
-require("com.github.teletha", "sinobu", "2.18.0");
+require("com.github.teletha", "sinobu", "2.20.0");
 ```
 <p align="right"><a href="#top">back to top</a></p>
 
@@ -254,46 +254,6 @@ If you think something might be a bug, but you're not sure, ask on StackOverflow
 ## Dependency
 Sinobu depends on the following products on runtime.
 * No Dependency
-
-Sinobu depends on the following products on test.
-* [HttpClientMock-1.0.0](https://mvnrepository.com/artifact/com.pgs-soft/HttpClientMock/1.0.0)
-* [activation-1.1](https://mvnrepository.com/artifact/javax.activation/activation/1.1)
-* [animal-sniffer-annotations-1.18](https://mvnrepository.com/artifact/org.codehaus.mojo/animal-sniffer-annotations/1.18)
-* [antibug-1.3.0](https://mvnrepository.com/artifact/com.github.teletha/antibug/1.3.0)
-* [apiguardian-api-1.1.2](https://mvnrepository.com/artifact/org.apiguardian/apiguardian-api/1.1.2)
-* [byte-buddy-1.12.13](https://mvnrepository.com/artifact/net.bytebuddy/byte-buddy/1.12.13)
-* [byte-buddy-agent-1.12.13](https://mvnrepository.com/artifact/net.bytebuddy/byte-buddy-agent/1.12.13)
-* [compiler-0.9.10](https://mvnrepository.com/artifact/com.github.spullara.mustache.java/compiler/0.9.10)
-* [disruptor-3.4.4](https://mvnrepository.com/artifact/com.lmax/disruptor/3.4.4)
-* [fastjson-2.0.11.graal](https://mvnrepository.com/artifact/com.alibaba/fastjson/2.0.11.graal)
-* [fastjson2-2.0.11.graal](https://mvnrepository.com/artifact/com.alibaba.fastjson2/fastjson2/2.0.11.graal)
-* [fastjson2-extension-2.0.11.graal](https://mvnrepository.com/artifact/com.alibaba.fastjson2/fastjson2-extension/2.0.11.graal)
-* [gson-2.9.1](https://mvnrepository.com/artifact/com.google.code.gson/gson/2.9.1)
-* [hamcrest-all-1.3](https://mvnrepository.com/artifact/org.hamcrest/hamcrest-all/1.3)
-* [jackson-annotations-2.13.3](https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations/2.13.3)
-* [jackson-core-2.13.3](https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core/2.13.3)
-* [jackson-databind-2.13.3](https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind/2.13.3)
-* [javaee-api-8.0.1](https://mvnrepository.com/artifact/javax/javaee-api/8.0.1)
-* [javax.mail-1.6.2](https://mvnrepository.com/artifact/com.sun.mail/javax.mail/1.6.2)
-* [jmustache-1.15](https://mvnrepository.com/artifact/com.samskivert/jmustache/1.15)
-* [jsoup-1.15.2](https://mvnrepository.com/artifact/org.jsoup/jsoup/1.15.2)
-* [junit-jupiter-api-5.9.0-M1](https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api/5.9.0-M1)
-* [junit-jupiter-engine-5.9.0-M1](https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine/5.9.0-M1)
-* [junit-jupiter-params-5.9.0-M1](https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-params/5.9.0-M1)
-* [junit-platform-commons-1.9.0-M1](https://mvnrepository.com/artifact/org.junit.platform/junit-platform-commons/1.9.0-M1)
-* [junit-platform-engine-1.9.0](https://mvnrepository.com/artifact/org.junit.platform/junit-platform-engine/1.9.0)
-* [junit-platform-launcher-1.9.0](https://mvnrepository.com/artifact/org.junit.platform/junit-platform-launcher/1.9.0)
-* [log4j-api-2.18.0](https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api/2.18.0)
-* [log4j-core-2.18.0](https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core/2.18.0)
-* [logback-classic-1.3.0-beta0](https://mvnrepository.com/artifact/ch.qos.logback/logback-classic/1.3.0-beta0)
-* [logback-core-1.3.0-beta0](https://mvnrepository.com/artifact/ch.qos.logback/logback-core/1.3.0-beta0)
-* [opentest4j-1.2.0](https://mvnrepository.com/artifact/org.opentest4j/opentest4j/1.2.0)
-* [reactive-streams-1.0.4](https://mvnrepository.com/artifact/org.reactivestreams/reactive-streams/1.0.4)
-* [rxjava-3.1.5](https://mvnrepository.com/artifact/io.reactivex.rxjava3/rxjava/3.1.5)
-* [slf4j-api-2.0.0-beta1](https://mvnrepository.com/artifact/org.slf4j/slf4j-api/2.0.0-beta1)
-* [slf4j-nop-2.0.0-beta1](https://mvnrepository.com/artifact/org.slf4j/slf4j-nop/2.0.0-beta1)
-* [tinylog-api-2.5.0-M2.1](https://mvnrepository.com/artifact/org.tinylog/tinylog-api/2.5.0-M2.1)
-* [tinylog-impl-2.5.0-M2.1](https://mvnrepository.com/artifact/org.tinylog/tinylog-impl/2.5.0-M2.1)
 <p align="right"><a href="#top">back to top</a></p>
 
 
