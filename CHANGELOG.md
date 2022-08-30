@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.20.0](https://github.com/teletha/sinobu/compare/v2.19.0...v2.20.0) (2022-08-30)
+
+
+### Features
+
+* Revert Model#properties. ([9c7c31b](https://github.com/teletha/sinobu/commit/9c7c31b2d4d66151a5beecdd764b52950ff7eb1f))
+
 ## [2.19.0](https://github.com/teletha/sinobu/compare/v2.18.0...v2.19.0) (2022-08-30)
 
 
