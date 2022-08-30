@@ -38,7 +38,7 @@ class FieldVariablePropertyTest {
         }
 
         Model model = Model.of(Declare.class);
-        assert model.properties().size() == 0;
+        assert model.properties.size() == 0;
     }
 
     @Test
@@ -48,7 +48,7 @@ class FieldVariablePropertyTest {
         }
 
         Model model = Model.of(Declare.class);
-        assert model.properties().size() == 0;
+        assert model.properties.size() == 0;
     }
 
     @Test
@@ -58,7 +58,7 @@ class FieldVariablePropertyTest {
         }
 
         Model model = Model.of(Declare.class);
-        assert model.properties().size() == 0;
+        assert model.properties.size() == 0;
     }
 
     @Test
@@ -338,8 +338,8 @@ class FieldVariablePropertyTest {
      */
     private boolean validatePropertyAccess(Object instance, Object expectedCurrentValue, Object newValue) {
         Model model = Model.of(instance);
-        assert model.properties().size() == 1;
-        Property p = (Property) model.properties().iterator().next();
+        assert model.properties.size() == 1;
+        Property p = (Property) model.properties.values().iterator().next();
 
         // get current value
         Object propertyValue = model.get(instance, p);

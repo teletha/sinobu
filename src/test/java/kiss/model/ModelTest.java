@@ -9,8 +9,6 @@
  */
 package kiss.model;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -126,7 +124,7 @@ class ModelTest {
         property = model.property("string");
         assert property != null;
 
-        assert 2 == model.properties().size();
+        assert 2 == model.properties.size();
     }
 
     @Test
@@ -140,7 +138,6 @@ class ModelTest {
         model = property.model;
         assert model != null;
         assert Map.class == model.type;
-        assert 0 == model.properties().size();
 
         property = model.property("test");
         assert property != null;
@@ -166,9 +163,9 @@ class ModelTest {
         }
 
         Model<FinalFieldProperty> model = Model.of(FinalFieldProperty.class);
-        assert model.properties().size() == 1;
+        assert model.properties.size() == 1;
 
-        Property person = model.properties().iterator().next();
+        Property person = model.properties.values().iterator().next();
         assert person.model.type == Person.class;
 
         FinalFieldProperty instance = I.make(FinalFieldProperty.class);
@@ -187,7 +184,7 @@ class ModelTest {
         Model model = Model.of(ProtectedAccessor.class);
         assert model != null;
 
-        Collection<Property> list = model.properties();
+        Collection<Property> list = model.properties.values();
         assert 3 == list.size();
 
         ProtectedAccessor accessor = I.make(ProtectedAccessor.class);
@@ -209,7 +206,7 @@ class ModelTest {
         Model model = Model.of(PackagePrivateAccessor.class);
         assert model != null;
 
-        Collection<Property> list = model.properties();
+        Collection<Property> list = model.properties.values();
         assert 3 == list.size();
 
         PackagePrivateAccessor accessor = I.make(PackagePrivateAccessor.class);
@@ -231,7 +228,7 @@ class ModelTest {
         Model model = Model.of(PrivateAccessor.class);
         assert model != null;
 
-        Collection<Property> list = model.properties();
+        Collection<Property> list = model.properties.values();
         assert 3 == list.size();
 
         PrivateAccessor accessor = I.make(PrivateAccessor.class);
@@ -253,7 +250,7 @@ class ModelTest {
         Model model = Model.of(FinalAccessor.class);
         assert model != null;
 
-        Collection<Property> list = model.properties();
+        Collection<Property> list = model.properties.values();
         assert 3 == list.size();
 
         FinalAccessor accessor = I.make(FinalAccessor.class);
@@ -275,7 +272,7 @@ class ModelTest {
         Model model = Model.of(OverrideFinalAccessor.class);
         assert model != null;
 
-        Collection<Property> list = model.properties();
+        Collection<Property> list = model.properties.values();
         assert 3 == list.size();
     }
 
@@ -293,7 +290,6 @@ class ModelTest {
         model = property.model;
         assert model != null;
         assert Map.class == model.type;
-        assert 0 == model.properties().size();
 
         property = model.property("1");
         assert property != null;
@@ -317,7 +313,6 @@ class ModelTest {
         model = property.model;
         assert model != null;
         assert Map.class == model.type;
-        assert 0 == model.properties().size();
     }
 
     /**
@@ -560,7 +555,7 @@ class ModelTest {
         Model model = Model.of(OnlyGetter.class);
         assert model != null;
 
-        Collection<Property> list = model.properties();
+        Collection<Property> list = model.properties.values();
         assert 0 == list.size();
     }
 
@@ -572,7 +567,7 @@ class ModelTest {
         Model model = Model.of(OnlySetter.class);
         assert model != null;
 
-        Collection<Property> list = model.properties();
+        Collection<Property> list = model.properties.values();
         assert 0 == list.size();
     }
 
@@ -584,75 +579,15 @@ class ModelTest {
         Model model = Model.of(StaticAccessor.class);
         assert model != null;
 
-        Collection<Property> list = model.properties();
+        Collection<Property> list = model.properties.values();
         assert 0 == list.size();
-    }
-
-    /**
-     * Properties are unmodifiable.
-     */
-    @Test
-    void testUnmodifiable01() {
-        assertThrows(UnsupportedOperationException.class, () -> {
-            Model model = Model.of(Person.class);
-            Collection<Property> properties = model.properties();
-            properties.clear();
-        });
-    }
-
-    /**
-     * Properties are unmodifiable.
-     */
-    @Test
-    void testUnmodifiable02() {
-        assertThrows(UnsupportedOperationException.class, () -> {
-            Model model = Model.of(Person.class);
-            Collection<Property> properties = model.properties();
-            properties.remove(0);
-        });
-    }
-
-    /**
-     * Properties are unmodifiable.
-     */
-    @Test
-    void testUnmodifiable03() {
-        assertThrows(UnsupportedOperationException.class, () -> {
-            Model model = Model.of(Person.class);
-            Collection<Property> properties = model.properties();
-            properties.add(new Property(model, "test", null));
-        });
-    }
-
-    /**
-     * Properties are unmodifiable.
-     */
-    @Test
-    void testUnmodifiable04() {
-        assertThrows(UnsupportedOperationException.class, () -> {
-            Model model = Model.of(Person.class);
-            Collection<Property> properties = model.properties();
-            properties.iterator().remove();
-        });
-    }
-
-    /**
-     * Properties are unmodifiable.
-     */
-    @Test
-    void testUnmodifiable05() {
-        assertThrows(UnsupportedOperationException.class, () -> {
-            Model model = Model.of(Person.class);
-            Collection<Property> properties = model.properties();
-            properties.add(new Property(null, "", null));
-        });
     }
 
     @Test
     void proxy() {
         ProxyModel proxy = I.make(ProxyModel.class, (p, m, a) -> null);
         Model model = Model.of(proxy);
-        Collection<Property> properties = model.properties();
+        Collection<Property> properties = model.properties.values();
 
         assert properties.size() == 1;
     }

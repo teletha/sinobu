@@ -27,7 +27,6 @@ import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -65,10 +64,7 @@ public class Model<M> {
     public final boolean atomic;
 
     /** The unmodifiable properties list of this object model. */
-    private Map<String, Property> properties = Collections.EMPTY_MAP;
-
-    /** The flag of initialization. */
-    private boolean initialized;
+    Map<String, Property> properties;
 
     /**
      * Create Model instance.
@@ -87,8 +83,8 @@ public class Model<M> {
      * Initialize this {@link Model} only once.
      */
     private synchronized void init() {
-        if (initialized == false) {
-            initialized = true;
+        if (properties == null) {
+            properties = Collections.EMPTY_MAP;
             try {
                 // examine all methods without private, final, static or native
                 Map<String, Method[]> candidates = new HashMap();
@@ -236,8 +232,6 @@ public class Model<M> {
                     }
                     clazz = clazz.getSuperclass();
                 }
-
-                this.properties = Collections.unmodifiableMap(properties);
             } catch (Exception e) {
                 throw I.quiet(e);
             }
@@ -253,15 +247,6 @@ public class Model<M> {
      */
     public Property property(String name) {
         return properties.get(name);
-    }
-
-    /**
-     * List up all properties.
-     * 
-     * @return
-     */
-    public Collection<Property> properties() {
-        return properties.values();
     }
 
     /**

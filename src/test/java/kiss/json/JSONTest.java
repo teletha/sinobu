@@ -9,7 +9,7 @@
  */
 package kiss.json;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -450,23 +450,8 @@ class JSONTest {
      * @param other
      */
     private static void validate(Model<Object> model, Object one, Object other) {
-        List<Property> properties = new ArrayList(model.properties());
-
-        if (model.type.isAssignableFrom(List.class) && one != null) {
-            List list = (List) one;
-
-            for (int i = 0; i < list.size(); i++) {
-                properties.add(model.property(String.valueOf(i)));
-            }
-        }
-
-        if (model.type.isAssignableFrom(Map.class) && one != null) {
-            Map<String, Object> map = (Map) one;
-
-            for (String key : map.keySet()) {
-                properties.add(model.property(key));
-            }
-        }
+        List<Property> properties = new ArrayList();
+        model.walk(one, (m, p, o) -> properties.add(p));
 
         for (Property property : properties) {
             Object oneValue = model.get(one, property);

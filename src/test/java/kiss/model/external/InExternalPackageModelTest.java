@@ -9,12 +9,9 @@
  */
 package kiss.model.external;
 
-import java.util.Collection;
-
 import org.junit.jupiter.api.Test;
 
 import kiss.model.Model;
-import kiss.model.Property;
 
 class InExternalPackageModelTest {
 
@@ -22,9 +19,7 @@ class InExternalPackageModelTest {
     void fieldPropertyInPrivateClass() {
         Model model = Model.of(PrivateClass.class);
         assert model != null;
-
-        Collection<Property> list = model.properties();
-        assert 1 == list.size();
+        assert model.property("property") != null;
     }
 
     private static final class PrivateClass {
