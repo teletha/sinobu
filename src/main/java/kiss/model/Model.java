@@ -27,6 +27,7 @@ import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -236,6 +237,15 @@ public class Model<M> {
                 throw I.quiet(e);
             }
         }
+    }
+
+    /**
+     * List up all properties.
+     * 
+     * @return
+     */
+    public Collection<Property> properties() {
+        return properties.values();
     }
 
     /**
