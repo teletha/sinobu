@@ -1,5 +1,24 @@
 # Changelog
 
+## [2.19.0](https://github.com/teletha/sinobu/compare/v2.18.0...v2.19.0) (2022-08-30)
+
+
+### Features
+
+* Model holds its properties on TreeMap. ([bd12ca7](https://github.com/teletha/sinobu/commit/bd12ca711c0a7ec8227db94af657d4fa6e795608))
+* Remove Model#name. ([b369376](https://github.com/teletha/sinobu/commit/b369376ccff4d67672e754214075ea19b8b509cc))
+* Remove Model#properties ([391d05a](https://github.com/teletha/sinobu/commit/391d05af3c50683dc2f4fadbb4e30fa6e0a9ecf5))
+* Speed up JSON parsing. ([6020a05](https://github.com/teletha/sinobu/commit/6020a05cb011ae8949dea72c73d2323b9b7a11c4))
+
+
+### Bug Fixes
+
+* benchmark ([18e672e](https://github.com/teletha/sinobu/commit/18e672e28e044be5fe956fbfc303c683fa908ca3))
+* Optimize json parser. ([124a8a8](https://github.com/teletha/sinobu/commit/124a8a8a0ae5d5243e7e17d516e65a92a3397ba0))
+* speed up json parsing ([d9423a8](https://github.com/teletha/sinobu/commit/d9423a866493c292efd4e1d978df77f66f11f81f))
+* Speed up parsing JSON. ([f5b9b69](https://github.com/teletha/sinobu/commit/f5b9b696371d404193420a9d817bbdc4011e61d9))
+* Use google translation API. ([b428238](https://github.com/teletha/sinobu/commit/b428238c4da87c66e5dbdee44364f325472252fb))
+
 ## [2.18.0](https://github.com/teletha/sinobu/compare/v2.17.0...v2.18.0) (2022-08-11)
 
 
