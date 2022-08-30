@@ -9,11 +9,12 @@
  */
 package kiss.json;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
+import kiss.JSON;
 
 class ParserTest {
 
@@ -111,54 +112,156 @@ class ParserTest {
 
     @Test
     void primitiveTrue() {
-        parse("""
+        JSON json = parse("""
                 {
-                    "name": true
+                    "key": true
                 }
                 """);
+
+        assert json.get(boolean.class, "key") == true;
     }
 
     @Test
     void primitiveFalse() {
-        parse("""
+        JSON json = parse("""
                 {
-                    "name": false
+                    "key": false
                 }
                 """);
+
+        assert json.get(boolean.class, "key") == false;
+    }
+
+    @Test
+    void primitivePositiveInt() {
+        JSON json = parse("""
+                {
+                    "key": 10
+                }
+                """);
+
+        assert json.get(int.class, "key") == 10;
+    }
+
+    @Test
+    void primitiveNegativeInt() {
+        JSON json = parse("""
+                {
+                    "key": -1
+                }
+                """);
+
+        assert json.get(int.class, "key") == -1;
+    }
+
+    @Test
+    void primitivePositiveDecimal() {
+        JSON json = parse("""
+                {
+                    "key": 0.123
+                }
+                """);
+
+        assert json.get(float.class, "key") == 0.123f;
+    }
+
+    @Test
+    void primitiveNegativeDecimal() {
+        JSON json = parse("""
+                {
+                    "key": -50.2
+                }
+                """);
+
+        assert json.get(float.class, "key") == -50.2f;
+    }
+
+    @Test
+    void primitivePositiveExponetial() {
+        JSON json = parse("""
+                {
+                    "key": 3e-1
+                }
+                """);
+
+        assert json.get(float.class, "key") == 0.3f;
+    }
+
+    @Test
+    void primitiveNegativeExponetial() {
+        JSON json = parse("""
+                {
+                    "key": -3e-1
+                }
+                """);
+
+        assert json.get(float.class, "key") == -0.3f;
+    }
+
+    @Test
+    void primitivePositiveExponetialPlus() {
+        JSON json = parse("""
+                {
+                    "key": 3e+1
+                }
+                """);
+
+        assert json.get(float.class, "key") == 30f;
+    }
+
+    @Test
+    void primitiveNegativeExponetialPlus() {
+        JSON json = parse("""
+                {
+                    "key": -3e+1
+                }
+                """);
+
+        assert json.get(float.class, "key") == -30f;
+    }
+
+    @Test
+    void primitiveZero() {
+        JSON json = parse("""
+                {
+                    "key": 0
+                }
+                """);
+
+        assert json.get(float.class, "key") == 0f;
     }
 
     @Test
     void primitiveNull() {
-        parse("""
+        JSON json = parse("""
                 {
-                    "name": null
+                    "key": null
                 }
                 """);
+
+        assert json.get("key") == null;
     }
 
     @Test
     void primitiveNullSpace() {
-        parse("""
+        JSON json = parse("""
                 {
-                    "name": null
+                    "key": null\s
                 }
                 """);
+
+        assert json.get("key") == null;
     }
 
     @Test
     void primitiveNullTab() {
-        parse("""
+        JSON json = parse("""
                 {
-                    "name": null\t
+                    "key": null\t
                 }
                 """);
-    }
 
-    @Test
-    void primitiveNullNoSpace() {
-        parse("""
-                {"name":null}
-                """);
+        assert json.get("key") == null;
     }
 
     @Test
@@ -173,11 +276,33 @@ class ParserTest {
     }
 
     @Test
-    void invalidPrimitiveName1() {
+    void invalidKeywordNull() {
         assertThrows(IllegalStateException.class, () -> {
             parse("""
                     {
-                        "name": nulll
+                        "invlid": nullll
+                    }
+                    """);
+        });
+    }
+
+    @Test
+    void invalidKeywordTrue() {
+        assertThrows(IllegalStateException.class, () -> {
+            parse("""
+                    {
+                        "invlid": TRUE
+                    }
+                    """);
+        });
+    }
+
+    @Test
+    void invalidKeywordFalse() {
+        assertThrows(IllegalStateException.class, () -> {
+            parse("""
+                    {
+                        "invlid": falsee
                     }
                     """);
         });
@@ -185,11 +310,19 @@ class ParserTest {
 
     @Test
     void array1() {
-        parse("""
+        JSON json = parse("""
                 {
                     "name" : ["string", true, false, null, 1, -1, 0.2, 3e+1]
                 }
                 """);
+
+        assert json.get("name").get(String.class, "0").equals("string");
+        assert json.get("name").get(boolean.class, "1") == true;
+        assert json.get("name").get(boolean.class, "2") == false;
+        assert json.get("name").get(int.class, "4") == 1;
+        assert json.get("name").get(int.class, "5") == -1;
+        assert json.get("name").get(float.class, "6") == 0.2f;
+        assert json.get("name").get(float.class, "7") == 30f;
     }
 
     @Test
@@ -468,27 +601,27 @@ class ParserTest {
      * 
      * @param text
      */
-    private void parse(String text) {
-        parse(text, "Normal");
+    private JSON parse(String text) {
         parse(text.replaceAll("[ ]", "    "), "Multi Spaces");
         parse(text.replaceAll("[ \\t\\r\\n]", ""), "No Whitespace");
+        return parse(text, "Normal");
     }
 
     /**
      * Try to parse json.
      * 
-     * @param json
+     * @param text
      * @param type
      */
-    private void parse(String json, String type) {
+    private JSON parse(String text, String type) {
         try {
-            if (json.length() == 0) {
-                return;
+            if (text.length() == 0) {
+                return null;
             }
 
-            I.json(json);
+            return I.json(text);
         } catch (Throwable e) {
-            e.addSuppressed(new IllegalArgumentException("Fail to parse json :" + type + "\r\n" + json));
+            e.addSuppressed(new IllegalArgumentException("Fail to parse json :" + type + "\r\n" + text));
 
             throw I.quiet(e);
         }

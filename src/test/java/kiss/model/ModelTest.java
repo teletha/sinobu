@@ -11,10 +11,11 @@ package kiss.model;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.Comparator;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
@@ -62,6 +63,11 @@ class ModelTest {
         assert propertyType == property.model.type;
         assert property.getter != null;
         assert property.setter != null;
+    }
+
+    @Test
+    void nullInput() {
+        Assertions.assertThrows(NullPointerException.class, () -> new Model(null));
     }
 
     @Test
@@ -162,7 +168,7 @@ class ModelTest {
         Model<FinalFieldProperty> model = Model.of(FinalFieldProperty.class);
         assert model.properties().size() == 1;
 
-        Property person = model.properties().get(0);
+        Property person = model.properties().iterator().next();
         assert person.model.type == Person.class;
 
         FinalFieldProperty instance = I.make(FinalFieldProperty.class);
@@ -181,7 +187,7 @@ class ModelTest {
         Model model = Model.of(ProtectedAccessor.class);
         assert model != null;
 
-        List<Property> list = model.properties();
+        Collection<Property> list = model.properties();
         assert 3 == list.size();
 
         ProtectedAccessor accessor = I.make(ProtectedAccessor.class);
@@ -203,7 +209,7 @@ class ModelTest {
         Model model = Model.of(PackagePrivateAccessor.class);
         assert model != null;
 
-        List<Property> list = model.properties();
+        Collection<Property> list = model.properties();
         assert 3 == list.size();
 
         PackagePrivateAccessor accessor = I.make(PackagePrivateAccessor.class);
@@ -225,7 +231,7 @@ class ModelTest {
         Model model = Model.of(PrivateAccessor.class);
         assert model != null;
 
-        List<Property> list = model.properties();
+        Collection<Property> list = model.properties();
         assert 3 == list.size();
 
         PrivateAccessor accessor = I.make(PrivateAccessor.class);
@@ -247,7 +253,7 @@ class ModelTest {
         Model model = Model.of(FinalAccessor.class);
         assert model != null;
 
-        List<Property> list = model.properties();
+        Collection<Property> list = model.properties();
         assert 3 == list.size();
 
         FinalAccessor accessor = I.make(FinalAccessor.class);
@@ -269,7 +275,7 @@ class ModelTest {
         Model model = Model.of(OverrideFinalAccessor.class);
         assert model != null;
 
-        List<Property> list = model.properties();
+        Collection<Property> list = model.properties();
         assert 3 == list.size();
     }
 
@@ -554,7 +560,7 @@ class ModelTest {
         Model model = Model.of(OnlyGetter.class);
         assert model != null;
 
-        List<Property> list = model.properties();
+        Collection<Property> list = model.properties();
         assert 0 == list.size();
     }
 
@@ -566,7 +572,7 @@ class ModelTest {
         Model model = Model.of(OnlySetter.class);
         assert model != null;
 
-        List<Property> list = model.properties();
+        Collection<Property> list = model.properties();
         assert 0 == list.size();
     }
 
@@ -578,7 +584,7 @@ class ModelTest {
         Model model = Model.of(StaticAccessor.class);
         assert model != null;
 
-        List<Property> list = model.properties();
+        Collection<Property> list = model.properties();
         assert 0 == list.size();
     }
 
@@ -589,7 +595,7 @@ class ModelTest {
     void testUnmodifiable01() {
         assertThrows(UnsupportedOperationException.class, () -> {
             Model model = Model.of(Person.class);
-            List<Property> properties = model.properties();
+            Collection<Property> properties = model.properties();
             properties.clear();
         });
     }
@@ -601,7 +607,7 @@ class ModelTest {
     void testUnmodifiable02() {
         assertThrows(UnsupportedOperationException.class, () -> {
             Model model = Model.of(Person.class);
-            List<Property> properties = model.properties();
+            Collection<Property> properties = model.properties();
             properties.remove(0);
         });
     }
@@ -613,7 +619,7 @@ class ModelTest {
     void testUnmodifiable03() {
         assertThrows(UnsupportedOperationException.class, () -> {
             Model model = Model.of(Person.class);
-            List<Property> properties = model.properties();
+            Collection<Property> properties = model.properties();
             properties.add(new Property(model, "test", null));
         });
     }
@@ -625,7 +631,7 @@ class ModelTest {
     void testUnmodifiable04() {
         assertThrows(UnsupportedOperationException.class, () -> {
             Model model = Model.of(Person.class);
-            List<Property> properties = model.properties();
+            Collection<Property> properties = model.properties();
             properties.iterator().remove();
         });
     }
@@ -637,8 +643,8 @@ class ModelTest {
     void testUnmodifiable05() {
         assertThrows(UnsupportedOperationException.class, () -> {
             Model model = Model.of(Person.class);
-            List<Property> properties = model.properties();
-            properties.sort(Comparator.comparing(v -> v.name));
+            Collection<Property> properties = model.properties();
+            properties.add(new Property(null, "", null));
         });
     }
 
@@ -646,7 +652,7 @@ class ModelTest {
     void proxy() {
         ProxyModel proxy = I.make(ProxyModel.class, (p, m, a) -> null);
         Model model = Model.of(proxy);
-        List<Property> properties = model.properties();
+        Collection<Property> properties = model.properties();
 
         assert properties.size() == 1;
     }

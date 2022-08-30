@@ -9,12 +9,15 @@
  */
 package kiss.json;
 
+import java.io.StringReader;
+
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 
 import antibug.profiler.Benchmark;
 import kiss.I;
+import kiss.JSON;
 
 public class JSONParseBenchmark {
 
@@ -94,6 +97,10 @@ public class JSONParseBenchmark {
 
     public static void main(String[] args) {
         Benchmark benchmark = new Benchmark();
+
+        benchmark.measure("New Parser", () -> {
+            return new FastParser().parse(new StringReader(json), JSON.class);
+        });
 
         benchmark.measure("Sinobu", () -> {
             return I.json(json);
