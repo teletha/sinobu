@@ -220,8 +220,9 @@ public class Model<M> {
                                     field.setAccessible(true);
 
                                     Property property = new Property(fieldModel, field.getName(), field);
-                                    property.getter = create(field, WiseFunction.class, "APPLY", true);
-                                    // property.getter = m -> field.get(m);
+                                    // property.getter = create(field, WiseFunction.class, "APPLY",
+                                    // true);
+                                    property.getter = m -> field.get(m);
                                     property.setter = !isRecord ? (m, v) -> {
                                         if (notFinal) field.set(m, v);
                                         return m;
