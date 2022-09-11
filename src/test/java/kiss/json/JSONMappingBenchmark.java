@@ -45,14 +45,12 @@ public class JSONMappingBenchmark {
     public static void main(String[] args) throws IOException {
         Benchmark benchmark = new Benchmark();
 
-        Group group = new FastParser().parse(new StringReader(json), Group.class);
-        System.out.println(group.member.get(0));
         benchmark.measure("New parser", () -> {
             return new FastParser().parse(new StringReader(json), Group.class);
         });
 
         benchmark.measure("Sinobu", () -> {
-            return I.json(json).as(Group.class);
+            return I.json(json);
         });
 
         benchmark.measure("FastJson", () -> {
