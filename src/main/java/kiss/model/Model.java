@@ -13,7 +13,6 @@ import static java.lang.reflect.Modifier.*;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Repeatable;
-import java.lang.invoke.CallSite;
 import java.lang.invoke.LambdaMetafactory;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -45,12 +44,16 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.ObjDoubleConsumer;
+import java.util.function.ObjIntConsumer;
+import java.util.function.ObjLongConsumer;
 
 import kiss.Decoder;
 import kiss.I;
 import kiss.Managed;
 import kiss.Signal;
 import kiss.Variable;
+import kiss.WiseBiConsumer;
 import kiss.WiseFunction;
 import kiss.WiseTriConsumer;
 
@@ -161,10 +164,12 @@ public class Model<M> {
                                 methods[1].setAccessible(true);
 
                                 // this property is valid
+                                WiseBiConsumer setter = createSetter(methods[1]);
                                 Property property = new Property(model, entry.getKey(), null);
-                                property.getter = create(methods[0], true);
+                                property.getter = createGetter(methods[0]);
                                 property.setter = (m, v) -> {
-                                    methods[1].invoke(m, v);
+                                    setter.ACCEPT(m, v);
+                                    // methods[1].invoke(m, v);
                                     return m;
                                 };
 
@@ -688,14 +693,95 @@ public class Model<M> {
         return parameters;
     }
 
-    static <T> T create(Method method, boolean get) throws Throwable {
+    static WiseFunction createGetter(Method method) throws Throwable {
         Lookup lookup = MethodHandles.privateLookupIn(method.getDeclaringClass(), MethodHandles.lookup());
         MethodHandle mh = lookup.unreflect(method);
 
-        CallSite site = LambdaMetafactory
-                .metafactory(lookup, "APPLY", MethodType.methodType(WiseFunction.class), mh.type().generic(), mh, mh.type());
-        MethodHandle m = site.dynamicInvoker();
+        return (WiseFunction) LambdaMetafactory
+                .metafactory(lookup, "APPLY", MethodType.methodType(WiseFunction.class), mh.type().generic(), mh, mh.type())
+                .dynamicInvoker()
+                .invokeExact();
+    }
 
-        return (T) m.invokeWithArguments();
+    static WiseBiConsumer createSetter(Method method) throws Throwable {
+        Lookup lookup = MethodHandles.privateLookupIn(method.getDeclaringClass(), MethodHandles.lookup());
+        MethodHandle mh = lookup.unreflect(method);
+        Class<?> param = method.getParameterTypes()[0];
+        MethodType type = MethodType.methodType(void.class, Object.class, param.isPrimitive() ? param : Object.class);
+
+        if (param == int.class) {
+            ObjIntConsumer con = (ObjIntConsumer) LambdaMetafactory
+                    .metafactory(lookup, "accept", MethodType.methodType(ObjIntConsumer.class), type, mh, mh.type())
+                    .dynamicInvoker()
+                    .invokeExact();
+            return (a, b) -> con.accept(a, (int) b);
+        } else if (param == long.class) {
+            ObjLongConsumer con = (ObjLongConsumer) LambdaMetafactory
+                    .metafactory(lookup, "accept", MethodType.methodType(ObjLongConsumer.class), type, mh, mh.type())
+                    .dynamicInvoker()
+                    .invokeExact();
+            return (a, b) -> con.accept(a, (long) b);
+        } else if (param == double.class) {
+            ObjDoubleConsumer con = (ObjDoubleConsumer) LambdaMetafactory
+                    .metafactory(lookup, "accept", MethodType.methodType(ObjDoubleConsumer.class), type, mh, mh.type())
+                    .dynamicInvoker()
+                    .invokeExact();
+            return (a, b) -> con.accept(a, (double) b);
+        } else if (param == float.class) {
+            ObjFloatConsumer con = (ObjFloatConsumer) LambdaMetafactory
+                    .metafactory(lookup, "accept", MethodType.methodType(ObjFloatConsumer.class), type, mh, mh.type())
+                    .dynamicInvoker()
+                    .invokeExact();
+            return (a, b) -> con.accept(a, (float) b);
+        } else if (param == boolean.class) {
+            ObjBooleanConsumer con = (ObjBooleanConsumer) LambdaMetafactory
+                    .metafactory(lookup, "accept", MethodType.methodType(ObjBooleanConsumer.class), type, mh, mh.type())
+                    .dynamicInvoker()
+                    .invokeExact();
+            return (a, b) -> con.accept(a, (boolean) b);
+        } else if (param == byte.class) {
+            ObjByteConsumer con = (ObjByteConsumer) LambdaMetafactory
+                    .metafactory(lookup, "accept", MethodType.methodType(ObjByteConsumer.class), type, mh, mh.type())
+                    .dynamicInvoker()
+                    .invokeExact();
+            return (a, b) -> con.accept(a, (byte) b);
+        } else if (param == short.class) {
+            ObjShortConsumer con = (ObjShortConsumer) LambdaMetafactory
+                    .metafactory(lookup, "accept", MethodType.methodType(ObjShortConsumer.class), type, mh, mh.type())
+                    .dynamicInvoker()
+                    .invokeExact();
+            return (a, b) -> con.accept(a, (short) b);
+        } else if (param == char.class) {
+            ObjCharConsumer con = (ObjCharConsumer) LambdaMetafactory
+                    .metafactory(lookup, "accept", MethodType.methodType(ObjCharConsumer.class), type, mh, mh.type())
+                    .dynamicInvoker()
+                    .invokeExact();
+            return (a, b) -> con.accept(a, (char) b);
+        } else {
+            return (WiseBiConsumer) LambdaMetafactory
+                    .metafactory(lookup, "ACCEPT", MethodType.methodType(WiseBiConsumer.class), type, mh, mh.type())
+                    .dynamicInvoker()
+                    .invokeExact();
+        }
+    }
+
+    public interface ObjBooleanConsumer {
+        void accept(Object o, boolean value);
+    }
+
+    public interface ObjByteConsumer {
+        void accept(Object o, byte value);
+    }
+
+    public interface ObjShortConsumer {
+        void accept(Object o, short value);
+    }
+
+    public interface ObjFloatConsumer {
+        void accept(Object o, float value);
+    }
+
+    public interface ObjCharConsumer {
+        void accept(Object o, char value);
     }
 }

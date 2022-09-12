@@ -13,10 +13,10 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Method;
-import java.util.function.Function;
 
 import antibug.profiler.Benchmark;
 import kiss.I;
+import kiss.WiseFunction;
 
 public class ReflectionMethodBenchmark {
 
@@ -61,7 +61,7 @@ public class ReflectionMethodBenchmark {
             }
         });
 
-        Function function = Model.create(method, true);
+        WiseFunction function = Model.createGetter(method);
         benchmark.measure("LambdaMetaFactory", () -> {
             try {
                 return function.apply(base);
