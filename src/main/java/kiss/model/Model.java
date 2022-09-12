@@ -14,10 +14,10 @@ import static java.lang.reflect.Modifier.*;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Repeatable;
 import java.lang.invoke.CallSite;
-import java.lang.invoke.LambdaConversionException;
 import java.lang.invoke.LambdaMetafactory;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -51,7 +51,6 @@ import kiss.I;
 import kiss.Managed;
 import kiss.Signal;
 import kiss.Variable;
-import kiss.WiseBiConsumer;
 import kiss.WiseFunction;
 import kiss.WiseTriConsumer;
 
@@ -161,14 +160,12 @@ public class Model<M> {
                                 methods[0].setAccessible(true);
                                 methods[1].setAccessible(true);
 
-                                WiseBiConsumer setter = create(methods[1], WiseBiConsumer.class, "ACCEPT");
-
                                 // this property is valid
                                 Property property = new Property(model, entry.getKey(), null);
-                                property.getter = create(methods[0], WiseFunction.class, "APPLY");
-                                property.setter = (o, v) -> {
-                                    setter.ACCEPT(o, v);
-                                    return o;
+                                property.getter = create(methods[0], true);
+                                property.setter = (m, v) -> {
+                                    methods[1].invoke(m, v);
+                                    return m;
                                 };
 
                                 // register it
@@ -220,8 +217,6 @@ public class Model<M> {
                                     field.setAccessible(true);
 
                                     Property property = new Property(fieldModel, field.getName(), field);
-                                    // property.getter = create(field, WiseFunction.class, "APPLY",
-                                    // true);
                                     property.getter = m -> field.get(m);
                                     property.setter = !isRecord ? (m, v) -> {
                                         if (notFinal) field.set(m, v);
@@ -245,7 +240,7 @@ public class Model<M> {
                     }
                     clazz = clazz.getSuperclass();
                 }
-            } catch (Throwable e) {
+            } catch (Exception e) {
                 throw I.quiet(e);
             }
         }
@@ -693,69 +688,14 @@ public class Model<M> {
         return parameters;
     }
 
-    /**
-     * Similar to , except that this factory method returns a dynamically generated implementation
-     * of the argument provided interface. The provided signatureName must identify a method, whose
-     * arguments corresponds to the Method. (If the Method is a non-static method the interface
-     * method's first parameter must be an Object, and the subsequent parameters must match the
-     * Method.)
-     * <p>
-     * Example:<br>
-     * Method method = MyClass.class.getDeclaredMethod("myStaticMethod", int.class, int.class);<br>
-     * IntBinaryOperator sam = LambdaFactory.create(method, IntBinaryOperator.class,
-     * "applyAsInt");<br>
-     * int result = sam.applyAsInt(3, 11);<br>
-     * 
-     * @param method A Method object which defines what to invoke.
-     * @param interfaceClass The interface, which the dynamically generated class shall implement.
-     * @return A dynamically generated implementation of the argument provided interface. The
-     *         implementation offers invocation speed similar to that of a direct method invocation.
-     * @throws Throwable
-     */
-    public static <T> T create(Method method, Class<T> interfaceClass, String signatureName) throws Throwable {
-        MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(method.getDeclaringClass(), MethodHandles.lookup())
-                .in(method.getDeclaringClass());
+    static <T> T create(Method method, boolean get) throws Throwable {
+        Lookup lookup = MethodHandles.privateLookupIn(method.getDeclaringClass(), MethodHandles.lookup());
+        MethodHandle mh = lookup.unreflect(method);
 
-        MethodHandle methodHandle = lookup.unreflect(method);
-        MethodType instantiatedMethodType = methodHandle.type();
-        MethodType signature = createLambdaMethodType(method, instantiatedMethodType);
+        CallSite site = LambdaMetafactory
+                .metafactory(lookup, "APPLY", MethodType.methodType(WiseFunction.class), mh.type().generic(), mh, mh.type());
+        MethodHandle m = site.dynamicInvoker();
 
-        CallSite site = createCallSite(signatureName, lookup, methodHandle, instantiatedMethodType, signature, interfaceClass);
-        MethodHandle factory = site.getTarget();
-        return (T) factory.invoke();
-    }
-
-    public static <T> T create(Field field, Class<T> interfaceClass, String signatureName, boolean getter) throws Throwable {
-        MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(field.getDeclaringClass(), MethodHandles.lookup())
-                .in(field.getDeclaringClass());
-
-        MethodHandle methodHandle = getter ? lookup.unreflectGetter(field) : lookup.unreflectSetter(field);
-        MethodType instantiatedMethodType = methodHandle.type();
-
-        CallSite site = createCallSite(signatureName, lookup, methodHandle, instantiatedMethodType, instantiatedMethodType, interfaceClass);
-        MethodHandle factory = site.getTarget();
-        return (T) factory.invoke();
-    }
-
-    private static MethodType createLambdaMethodType(Method method, MethodType instantiatedMethodType) {
-        MethodType signature = instantiatedMethodType.changeParameterType(0, Object.class);
-
-        Class<?>[] params = method.getParameterTypes();
-        for (int i = 0; i < params.length; i++) {
-            if (Object.class.isAssignableFrom(params[i])) {
-                signature = signature.changeParameterType(i + 1, Object.class);
-            }
-        }
-        if (Object.class.isAssignableFrom(signature.returnType())) {
-            signature = signature.changeReturnType(Object.class);
-        }
-
-        return signature;
-    }
-
-    private static CallSite createCallSite(String signatureName, MethodHandles.Lookup lookup, MethodHandle methodHandle, MethodType instantiatedMethodType, MethodType signature, Class<?> interfaceClass)
-            throws LambdaConversionException {
-        return LambdaMetafactory
-                .metafactory(lookup, signatureName, MethodType.methodType(interfaceClass), signature, methodHandle, instantiatedMethodType);
+        return (T) m.invokeWithArguments();
     }
 }

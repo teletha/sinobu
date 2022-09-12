@@ -7,14 +7,11 @@
  *
  *          https://opensource.org/licenses/MIT
  */
-package kiss.jdk;
+package kiss.model;
 
-import java.lang.invoke.CallSite;
-import java.lang.invoke.LambdaMetafactory;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
-import java.lang.invoke.MutableCallSite;
 import java.lang.reflect.Method;
 import java.util.function.Function;
 
@@ -37,19 +34,6 @@ public class ReflectionMethodBenchmark {
         Benchmark benchmark = new Benchmark().novisualize();
         ReflectionMethodBenchmark base = new ReflectionMethodBenchmark();
 
-        MethodType type = MethodType.methodType(String.class);
-        MethodHandle mh = MethodHandles.lookup().findVirtual(ReflectionMethodBenchmark.class, "one", type);
-        CallSite site = new MutableCallSite(mh);
-        MethodHandle callsited = site.dynamicInvoker();
-        site.setTarget(mh);
-        benchmark.measure("CallsetedMethodHandle", () -> {
-            try {
-                return (String) callsited.invokeExact(base);
-            } catch (Throwable e) {
-                throw I.quiet(e);
-            }
-        });
-
         Method method = ReflectionMethodBenchmark.class.getMethod("one");
         benchmark.measure("Reflection", () -> {
             try {
@@ -61,7 +45,7 @@ public class ReflectionMethodBenchmark {
 
         MethodHandle directMH = MethodHandles.lookup()
                 .findVirtual(ReflectionMethodBenchmark.class, "one", MethodType.methodType(String.class));
-        benchmark.measure("MethodHandle", () -> {
+        benchmark.measure("MH", () -> {
             try {
                 return (String) directMH.invokeExact(base);
             } catch (Throwable e) {
@@ -69,7 +53,7 @@ public class ReflectionMethodBenchmark {
             }
         });
 
-        benchmark.measure("ConstantedMethodHandle", () -> {
+        benchmark.measure("ConstantMH", () -> {
             try {
                 return (String) constantMH.invokeExact(base);
             } catch (Throwable e) {
@@ -77,10 +61,8 @@ public class ReflectionMethodBenchmark {
             }
         });
 
-        CallSite callsite = LambdaMetafactory.metafactory(MethodHandles.lookup(), "apply", MethodType
-                .methodType(Function.class), directMH.type().generic(), directMH, directMH.type());
-        Function function = (Function) callsite.getTarget().invokeExact();
-        benchmark.measure("LambdaFactoryMethodHandle", () -> {
+        Function function = Model.create(method, true);
+        benchmark.measure("LambdaMetaFactory", () -> {
             try {
                 return function.apply(base);
             } catch (Throwable e) {
