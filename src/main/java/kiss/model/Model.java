@@ -734,8 +734,9 @@ public class Model<M> {
                     .invokeExact();
             return (a, b) -> con.accept(a, (float) b);
         } else if (param == boolean.class) {
-            ObjBooleanConsumer con = (ObjBooleanConsumer) LambdaMetafactory
-                    .metafactory(lookup, "accept", MethodType.methodType(ObjBooleanConsumer.class), type, mh, mh.type())
+            WiseBiConsumer con = (WiseBiConsumer) LambdaMetafactory
+                    .metafactory(lookup, "ACCEPT", MethodType.methodType(WiseBiConsumer.class), MethodType
+                            .methodType(void.class, Object.class, Object.class), mh, mh.type())
                     .dynamicInvoker()
                     .invokeExact();
             return (a, b) -> con.accept(a, (boolean) b);
