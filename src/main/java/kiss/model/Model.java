@@ -44,9 +44,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.ObjDoubleConsumer;
-import java.util.function.ObjIntConsumer;
-import java.util.function.ObjLongConsumer;
 
 import kiss.Decoder;
 import kiss.I;
@@ -61,9 +58,6 @@ import kiss.WiseTriConsumer;
  * {@link Model} is the advanced representation of {@link Class} in Sinobu.
  */
 public class Model<M> {
-
-    /** Reusable variable arguments. */
-    private static final Object[] NoARG = new Object[0];
 
     /** The model repository. */
     static final Map<Class, Model> models = new ConcurrentHashMap();
@@ -160,9 +154,6 @@ public class Model<M> {
                             Model model = of(methods[0].getGenericReturnType(), type);
 
                             if (of(methods[1].getGenericParameterTypes()[0], type).type.isAssignableFrom(model.type)) {
-                                methods[0].setAccessible(true);
-                                methods[1].setAccessible(true);
-
                                 // this property is valid
                                 WiseBiConsumer setter = createSetter(methods[1]);
                                 Property property = new Property(model, entry.getKey(), null);
@@ -706,83 +697,9 @@ public class Model<M> {
     static WiseBiConsumer createSetter(Method method) throws Throwable {
         Lookup lookup = MethodHandles.privateLookupIn(method.getDeclaringClass(), MethodHandles.lookup());
         MethodHandle mh = lookup.unreflect(method);
-        Class<?> param = method.getParameterTypes()[0];
-        MethodType type = MethodType.methodType(void.class, Object.class, param.isPrimitive() ? param : Object.class);
 
-        if (param == int.class) {
-            ObjIntConsumer con = (ObjIntConsumer) LambdaMetafactory
-                    .metafactory(lookup, "accept", MethodType.methodType(ObjIntConsumer.class), type, mh, mh.type())
-                    .dynamicInvoker()
-                    .invokeExact();
-            return (a, b) -> con.accept(a, (int) b);
-        } else if (param == long.class) {
-            ObjLongConsumer con = (ObjLongConsumer) LambdaMetafactory
-                    .metafactory(lookup, "accept", MethodType.methodType(ObjLongConsumer.class), type, mh, mh.type())
-                    .dynamicInvoker()
-                    .invokeExact();
-            return (a, b) -> con.accept(a, (long) b);
-        } else if (param == double.class) {
-            ObjDoubleConsumer con = (ObjDoubleConsumer) LambdaMetafactory
-                    .metafactory(lookup, "accept", MethodType.methodType(ObjDoubleConsumer.class), type, mh, mh.type())
-                    .dynamicInvoker()
-                    .invokeExact();
-            return (a, b) -> con.accept(a, (double) b);
-        } else if (param == float.class) {
-            ObjFloatConsumer con = (ObjFloatConsumer) LambdaMetafactory
-                    .metafactory(lookup, "accept", MethodType.methodType(ObjFloatConsumer.class), type, mh, mh.type())
-                    .dynamicInvoker()
-                    .invokeExact();
-            return (a, b) -> con.accept(a, (float) b);
-        } else if (param == boolean.class) {
-            WiseBiConsumer con = (WiseBiConsumer) LambdaMetafactory
-                    .metafactory(lookup, "ACCEPT", MethodType.methodType(WiseBiConsumer.class), MethodType
-                            .methodType(void.class, Object.class, Object.class), mh, mh.type())
-                    .dynamicInvoker()
-                    .invokeExact();
-            return (a, b) -> con.accept(a, (boolean) b);
-        } else if (param == byte.class) {
-            ObjByteConsumer con = (ObjByteConsumer) LambdaMetafactory
-                    .metafactory(lookup, "accept", MethodType.methodType(ObjByteConsumer.class), type, mh, mh.type())
-                    .dynamicInvoker()
-                    .invokeExact();
-            return (a, b) -> con.accept(a, (byte) b);
-        } else if (param == short.class) {
-            ObjShortConsumer con = (ObjShortConsumer) LambdaMetafactory
-                    .metafactory(lookup, "accept", MethodType.methodType(ObjShortConsumer.class), type, mh, mh.type())
-                    .dynamicInvoker()
-                    .invokeExact();
-            return (a, b) -> con.accept(a, (short) b);
-        } else if (param == char.class) {
-            ObjCharConsumer con = (ObjCharConsumer) LambdaMetafactory
-                    .metafactory(lookup, "accept", MethodType.methodType(ObjCharConsumer.class), type, mh, mh.type())
-                    .dynamicInvoker()
-                    .invokeExact();
-            return (a, b) -> con.accept(a, (char) b);
-        } else {
-            return (WiseBiConsumer) LambdaMetafactory
-                    .metafactory(lookup, "ACCEPT", MethodType.methodType(WiseBiConsumer.class), type, mh, mh.type())
-                    .dynamicInvoker()
-                    .invokeExact();
-        }
-    }
-
-    public interface ObjBooleanConsumer {
-        void accept(Object o, boolean value);
-    }
-
-    public interface ObjByteConsumer {
-        void accept(Object o, byte value);
-    }
-
-    public interface ObjShortConsumer {
-        void accept(Object o, short value);
-    }
-
-    public interface ObjFloatConsumer {
-        void accept(Object o, float value);
-    }
-
-    public interface ObjCharConsumer {
-        void accept(Object o, char value);
+        return (WiseBiConsumer) LambdaMetafactory.metafactory(lookup, "ACCEPT", MethodType.methodType(WiseBiConsumer.class), mh.type()
+                .generic()
+                .changeReturnType(void.class), mh, mh.type().wrap().changeReturnType(void.class)).dynamicInvoker().invokeExact();
     }
 }
