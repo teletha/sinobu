@@ -364,41 +364,6 @@ const root = {
 		{
 			"modifiers": {
 				"#": "java.util.Collections$UnmodifiableSet",},
-			"name": "Model.ObjBooleanConsumer",
-			"packageName": "kiss.model",
-			"type": "Functional"
-		},
-		{
-			"modifiers": {
-				"#": "java.util.Collections$UnmodifiableSet",},
-			"name": "Model.ObjByteConsumer",
-			"packageName": "kiss.model",
-			"type": "Functional"
-		},
-		{
-			"modifiers": {
-				"#": "java.util.Collections$UnmodifiableSet",},
-			"name": "Model.ObjCharConsumer",
-			"packageName": "kiss.model",
-			"type": "Functional"
-		},
-		{
-			"modifiers": {
-				"#": "java.util.Collections$UnmodifiableSet",},
-			"name": "Model.ObjFloatConsumer",
-			"packageName": "kiss.model",
-			"type": "Functional"
-		},
-		{
-			"modifiers": {
-				"#": "java.util.Collections$UnmodifiableSet",},
-			"name": "Model.ObjShortConsumer",
-			"packageName": "kiss.model",
-			"type": "Functional"
-		},
-		{
-			"modifiers": {
-				"#": "java.util.Collections$UnmodifiableSet",},
 			"name": "Narrow",
 			"packageName": "kiss",
 			"type": "Functional"
