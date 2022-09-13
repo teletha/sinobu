@@ -340,6 +340,26 @@ public class JSON {
         }
     }
 
+    JSON(String reader) {
+        char[] b = P.poll();
+        this.buffer = b == null ? new char[1024 * 4] : b;
+        this.captureStart = -1;
+        this.capture = new StringBuilder();
+
+        reader.getChars(0, reader.length(), buffer, 0);
+        fill = reader.length();
+        index = 0;
+
+        try {
+            readUnspace();
+            if (fill != -1) {
+                root = value();
+            }
+        } catch (IOException e) {
+            throw I.quiet(e);
+        }
+    }
+
     /**
      * Read value.
      * 
@@ -540,6 +560,13 @@ public class JSON {
                 capture.append(buffer, captureStart, fill - captureStart);
                 captureStart = 0;
             }
+
+            if (reader == null) {
+                current = -1;
+                P.offer(buffer);
+                return;
+            }
+
             fill = reader.read(buffer, 0, buffer.length);
             index = 0;
             if (fill == -1) {
@@ -563,6 +590,12 @@ public class JSON {
                     capture.append(buffer, captureStart, fill - captureStart);
                     captureStart = 0;
                 }
+                if (reader == null) {
+                    current = -1;
+                    P.offer(buffer);
+                    return;
+                }
+
                 fill = reader.read(buffer, 0, buffer.length);
                 index = 0;
                 if (fill == -1) {

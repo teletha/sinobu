@@ -1049,7 +1049,7 @@ public class I {
      * @throws IllegalStateException If the input data is empty or invalid format.
      */
     public static JSON json(String input) {
-        return input.charAt(0) == 'h' ? I.http(input, JSON.class).to().acquire() : json(new StringReader(input));
+        return input.charAt(0) == 'h' ? I.http(input, JSON.class).to().acquire() : new JSON(input);
     }
 
     /**
