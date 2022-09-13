@@ -74,8 +74,6 @@ public class Project extends bee.api.Project {
         require("ch.qos.logback", "logback-classic").atTest();
         require("org.slf4j", "slf4j-nop").atTest();
 
-        require("com.github.hervian", "lambda-factory");
-
         versionControlSystem("https://github.com/teletha/sinobu");
     }
 
