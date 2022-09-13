@@ -10,12 +10,12 @@
 package kiss.json;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.function.ToIntFunction;
 
 import kiss.I;
 import kiss.JSON;
@@ -36,7 +36,7 @@ public class FastParser {
 
     private char[] buffer;
 
-    private Reader reader;
+    private ToIntFunction<char[]> reader;
 
     private int fill;
 
@@ -54,12 +54,34 @@ public class FastParser {
      * @return
      * @throws IOException
      */
-    public <T> T parse(Reader reader, Class<T> type) throws IOException {
+    public <T> T parse(ToIntFunction<char[]> reader, Class<T> type) throws IOException {
         char[] b = P.poll();
         this.buffer = b == null ? new char[1024 * 4] : b;
         this.reader = reader;
         this.captureStart = -1;
         this.capture = new StringBuilder();
+
+        readUnspace();
+        if (fill != -1) {
+            return (T) value(type == JSON.class ? null : Model.of(type));
+        }
+
+        return null;
+    }
+
+    /**
+     * @return
+     * @throws IOException
+     */
+    public <T> T parse(String reader, Class<T> type) throws IOException {
+        char[] b = P.poll();
+        this.buffer = b == null ? new char[1024 * 4] : b;
+        this.captureStart = -1;
+        this.capture = new StringBuilder();
+
+        reader.getChars(0, reader.length(), buffer, 0);
+        fill = reader.length();
+        index = 0;
 
         readUnspace();
         if (fill != -1) {
@@ -126,7 +148,7 @@ public class FastParser {
                 } else {
                     Property p = model.property(name);
                     if (p.model.atomic) {
-                        model.set(obj, p, I.transform(value(p.model), p.model.type));
+                        model.set(obj, p, p.model.decoder.decode((String) value(p.model)));
                     } else {
                         model.set(obj, p, value(p.model));
                     }
@@ -285,7 +307,8 @@ public class FastParser {
                 capture.append(buffer, captureStart, fill - captureStart);
                 captureStart = 0;
             }
-            fill = reader.read(buffer, 0, buffer.length);
+
+            fill = reader.applyAsInt(buffer);
             index = 0;
             if (fill == -1) {
                 current = -1;
@@ -308,7 +331,7 @@ public class FastParser {
                     capture.append(buffer, captureStart, fill - captureStart);
                     captureStart = 0;
                 }
-                fill = reader.read(buffer, 0, buffer.length);
+                fill = reader.applyAsInt(buffer);
                 index = 0;
                 if (fill == -1) {
                     current = -1;

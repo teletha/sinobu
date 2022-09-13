@@ -46,6 +46,7 @@ import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import kiss.Decoder;
+import kiss.Encoder;
 import kiss.I;
 import kiss.Managed;
 import kiss.Signal;
@@ -68,6 +69,12 @@ public class Model<M> {
     /** Whether this {@link Model} is an atomic type or a object type. */
     public final boolean atomic;
 
+    /** The associated decoder. */
+    public final Decoder<M> decoder;
+
+    /** The associated encoder. */
+    public final Encoder<M> encoder;
+
     /** The unmodifiable properties list of this object model. */
     Map<String, Property> properties;
 
@@ -81,7 +88,9 @@ public class Model<M> {
         // Skip null check because this method can throw NullPointerException.
         // if (type == null) throw new NullPointerException("Model class shouldn't be null.");
         this.type = type;
-        this.atomic = I.find(Decoder.class, type) != null || type.isArray();
+        this.decoder = I.find(Decoder.class, type);
+        this.encoder = I.find(Encoder.class, type);
+        this.atomic = decoder != null || type.isArray();
     }
 
     /**
@@ -286,15 +295,7 @@ public class Model<M> {
      * @throws IllegalArgumentException If the given object can't resolve the given property.
      */
     public M set(M object, Property property, Object value) {
-        if (object != null && property != null) {
-            // field or method access
-            Class type = property.model.type;
-
-            if ((!type.isPrimitive() && !type.isEnum()) || value != null) {
-                return (M) property.setter.apply(object, value);
-            }
-        }
-        return object;
+        return (M) property.setter.apply(object, value);
     }
 
     /**

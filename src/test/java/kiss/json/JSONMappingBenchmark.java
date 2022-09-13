@@ -10,9 +10,9 @@
 package kiss.json;
 
 import java.io.IOException;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.ToIntFunction;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -46,7 +46,7 @@ public class JSONMappingBenchmark {
         Benchmark benchmark = new Benchmark();
 
         benchmark.measure("New parser", () -> {
-            return new FastParser().parse(new StringReader(json), Group.class);
+            return new FastParser().parse(new FastStringReader(json), Group.class);
         });
 
         benchmark.measure("Sinobu", () -> {
@@ -92,5 +92,31 @@ public class JSONMappingBenchmark {
      */
     public static class Group {
         public List<Person> member = new ArrayList();
+    }
+
+    public static class FastStringReader implements ToIntFunction<char[]> {
+
+        private final String text;
+
+        private final int length;
+
+        private int next;
+
+        public FastStringReader(String text) {
+            this.text = text;
+            this.length = text.length();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public int applyAsInt(char[] value) {
+            if (length <= next) return -1;
+            int size = Math.min(length - next, value.length);
+            text.getChars(next, next + size, value, 0);
+            next += size;
+            return size;
+        }
     }
 }
