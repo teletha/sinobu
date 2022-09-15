@@ -1,7 +1,10 @@
 ### Logging
 <img src="/benchmark/LogBenchmark.svg" width="700">
 
-### JSON Parsing
+### JSON (Small) Parsing
+<img src="/benchmark/JSONParseShortBenchmark.svg" width="700">
+
+### JSON (Large) Parsing
 <img src="/benchmark/JSONParseBenchmark.svg" width="700">
 
 ### JSON Travesing
