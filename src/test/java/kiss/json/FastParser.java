@@ -308,6 +308,12 @@ public class FastParser {
                 captureStart = 0;
             }
 
+            if (reader == null) {
+                current = -1;
+                P.offer(buffer);
+                return;
+            }
+
             fill = reader.applyAsInt(buffer);
             index = 0;
             if (fill == -1) {
@@ -330,6 +336,11 @@ public class FastParser {
                 if (captureStart != -1) {
                     capture.append(buffer, captureStart, fill - captureStart);
                     captureStart = 0;
+                }
+                if (reader == null) {
+                    current = -1;
+                    P.offer(buffer);
+                    return;
                 }
                 fill = reader.applyAsInt(buffer);
                 index = 0;

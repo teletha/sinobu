@@ -295,7 +295,15 @@ public class Model<M> {
      * @throws IllegalArgumentException If the given object can't resolve the given property.
      */
     public M set(M object, Property property, Object value) {
-        return (M) property.setter.apply(object, value);
+        if (object != null && property != null) {
+            // field or method access
+            Class type = property.model.type;
+
+            if ((!type.isPrimitive() && !type.isEnum()) || value != null) {
+                return (M) property.setter.apply(object, value);
+            }
+        }
+        return object;
     }
 
     /**

@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 625 290">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 625 338">
   <style>
       text {
           font-family: Arial;
@@ -35,55 +35,62 @@
       }
   </style>
   <g>
-    <rect x="175" y="0" width="1" height="260" class="vline"/>
-    <rect x="275" y="0" width="1" height="260" class="vline"/>
-    <rect x="375" y="0" width="1" height="260" class="vline"/>
-    <rect x="475" y="0" width="1" height="260" class="vline"/>
-    <rect x="575" y="0" width="1" height="260" class="vline"/>
-    <rect x="225" y="0" width="1" height="260" class="subline"/>
-    <rect x="325" y="0" width="1" height="260" class="subline"/>
-    <rect x="425" y="0" width="1" height="260" class="subline"/>
-    <rect x="525" y="0" width="1" height="260" class="subline"/>
-    <rect x="175" y="260" width="450" height="1" class="subline"/>
+    <rect x="175" y="0" width="1" height="308" class="vline"/>
+    <rect x="275" y="0" width="1" height="308" class="vline"/>
+    <rect x="375" y="0" width="1" height="308" class="vline"/>
+    <rect x="475" y="0" width="1" height="308" class="vline"/>
+    <rect x="575" y="0" width="1" height="308" class="vline"/>
+    <rect x="225" y="0" width="1" height="308" class="subline"/>
+    <rect x="325" y="0" width="1" height="308" class="subline"/>
+    <rect x="425" y="0" width="1" height="308" class="subline"/>
+    <rect x="525" y="0" width="1" height="308" class="subline"/>
+    <rect x="175" y="308" width="450" height="1" class="subline"/>
 
-    <rect x="265" y="268" width="30" class="call"/>
-    <text x="305" y="280">ns / call</text>
-    <rect x="395" y="268" width="30" class="gc"/>
-    <text x="435" y="280">GC</text>
+    <rect x="265" y="316" width="30" class="call"/>
+    <text x="305" y="328">ns / call</text>
+    <rect x="395" y="316" width="30" class="gc"/>
+    <text x="435" y="328">GC</text>
    </g>
   <g>
-    <rect x="175" y="20" width="104.027778" rx="2" ry="2" class="call"/>
-    <rect x="175" y="34" width="66.416510" rx="2" ry="2" class="gc"/>
-    <text x="160" y="37" text-anchor="end">Sinobu</text>
-    <text x="286.027778" y="30" class="desc">107</text>
-    <text x="248.416510" y="44" class="desc">47</text>
+    <rect x="175" y="20" width="122.397661" rx="2" ry="2" class="call"/>
+    <rect x="175" y="34" width="47.333333" rx="2" ry="2" class="gc"/>
+    <text x="160" y="37" text-anchor="end">New Parser</text>
+    <text x="304.397661" y="30" class="desc">299</text>
+    <text x="229.333333" y="44" class="desc">14</text>
   </g>
   <g>
-    <rect x="175" y="68" width="109.861111" rx="2" ry="2" class="call"/>
-    <rect x="175" y="82" width="70.075047" rx="2" ry="2" class="gc"/>
-    <text x="160" y="85" text-anchor="end">New Parser</text>
-    <text x="291.861111" y="78" class="desc">113</text>
-    <text x="252.075047" y="92" class="desc">49</text>
+    <rect x="175" y="68" width="122.397661" rx="2" ry="2" class="call"/>
+    <rect x="175" y="82" width="40.000000" rx="2" ry="2" class="gc"/>
+    <text x="160" y="85" text-anchor="end">Sinobu</text>
+    <text x="304.397661" y="78" class="desc">299</text>
+    <text x="222.000000" y="92" class="desc">12</text>
   </g>
   <g>
-    <rect x="175" y="116" width="123.472222" rx="2" ry="2" class="call"/>
-    <rect x="175" y="130" width="86.679174" rx="2" ry="2" class="gc"/>
+    <rect x="175" y="116" width="144.093567" rx="2" ry="2" class="call"/>
+    <rect x="175" y="130" width="75.333333" rx="2" ry="2" class="gc"/>
     <text x="160" y="133" text-anchor="end">FastJson</text>
-    <text x="305.472222" y="126" class="desc">127</text>
-    <text x="268.679174" y="140" class="desc">61</text>
+    <text x="326.093567" y="126" class="desc">352</text>
+    <text x="257.333333" y="140" class="desc">22</text>
   </g>
   <g>
-    <rect x="175" y="164" width="188.611111" rx="2" ry="2" class="call"/>
-    <rect x="175" y="178" width="84.709193" rx="2" ry="2" class="gc"/>
-    <text x="160" y="181" text-anchor="end">Jackson</text>
-    <text x="370.611111" y="174" class="desc">194</text>
-    <text x="266.709193" y="188" class="desc">60</text>
+    <rect x="175" y="164" width="155.555556" rx="2" ry="2" class="call"/>
+    <rect x="175" y="178" width="23.333333" rx="2" ry="2" class="gc"/>
+    <text x="160" y="181" text-anchor="end">Flat Parser</text>
+    <text x="337.555556" y="174" class="desc">380</text>
+    <text x="205.333333" y="188" class="desc">7</text>
   </g>
   <g>
-    <rect x="175" y="212" width="350.000000" rx="2" ry="2" class="call"/>
-    <rect x="175" y="226" width="150.000000" rx="2" ry="2" class="gc"/>
-    <text x="160" y="229" text-anchor="end">Gson</text>
-    <text x="532.000000" y="222" class="desc">360</text>
-    <text x="332.000000" y="236" class="desc">106</text>
+    <rect x="175" y="212" width="192.397661" rx="2" ry="2" class="call"/>
+    <rect x="175" y="226" width="77.333333" rx="2" ry="2" class="gc"/>
+    <text x="160" y="229" text-anchor="end">Jackson</text>
+    <text x="374.397661" y="222" class="desc">470</text>
+    <text x="259.333333" y="236" class="desc">23</text>
+  </g>
+  <g>
+    <rect x="175" y="260" width="350.000000" rx="2" ry="2" class="call"/>
+    <rect x="175" y="274" width="150.000000" rx="2" ry="2" class="gc"/>
+    <text x="160" y="277" text-anchor="end">Gson</text>
+    <text x="532.000000" y="270" class="desc">855</text>
+    <text x="332.000000" y="284" class="desc">45</text>
   </g>
 </svg>

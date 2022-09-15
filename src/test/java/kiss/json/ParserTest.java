@@ -9,13 +9,16 @@
  */
 package kiss.json;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
 import kiss.I;
 import kiss.JSON;
 
+@Execution(ExecutionMode.SAME_THREAD)
 class ParserTest {
 
     @Test
