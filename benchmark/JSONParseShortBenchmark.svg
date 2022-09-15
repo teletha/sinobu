@@ -52,45 +52,45 @@
     <text x="435" y="328">GC</text>
    </g>
   <g>
-    <rect x="175" y="20" width="122.397661" rx="2" ry="2" class="call"/>
-    <rect x="175" y="34" width="47.333333" rx="2" ry="2" class="gc"/>
+    <rect x="175" y="20" width="53.884181" rx="2" ry="2" class="call"/>
+    <rect x="175" y="34" width="16.605166" rx="2" ry="2" class="gc"/>
     <text x="160" y="37" text-anchor="end">New Parser</text>
-    <text x="304.397661" y="30" class="desc">299</text>
-    <text x="229.333333" y="44" class="desc">14</text>
+    <text x="235.884181" y="30" class="desc">109</text>
+    <text x="198.605166" y="44" class="desc">6</text>
   </g>
   <g>
-    <rect x="175" y="68" width="122.397661" rx="2" ry="2" class="call"/>
-    <rect x="175" y="82" width="40.000000" rx="2" ry="2" class="gc"/>
-    <text x="160" y="85" text-anchor="end">Sinobu</text>
-    <text x="304.397661" y="78" class="desc">299</text>
-    <text x="222.000000" y="92" class="desc">12</text>
+    <rect x="175" y="68" width="138.912429" rx="2" ry="2" class="call"/>
+    <rect x="175" y="82" width="76.383764" rx="2" ry="2" class="gc"/>
+    <text x="160" y="85" text-anchor="end">FastJson</text>
+    <text x="320.912429" y="78" class="desc">281</text>
+    <text x="258.383764" y="92" class="desc">27</text>
   </g>
   <g>
-    <rect x="175" y="116" width="144.093567" rx="2" ry="2" class="call"/>
-    <rect x="175" y="130" width="75.333333" rx="2" ry="2" class="gc"/>
-    <text x="160" y="133" text-anchor="end">FastJson</text>
-    <text x="326.093567" y="126" class="desc">352</text>
-    <text x="257.333333" y="140" class="desc">22</text>
+    <rect x="175" y="116" width="160.663842" rx="2" ry="2" class="call"/>
+    <rect x="175" y="130" width="30.442804" rx="2" ry="2" class="gc"/>
+    <text x="160" y="133" text-anchor="end">Flat Parser</text>
+    <text x="342.663842" y="126" class="desc">325</text>
+    <text x="212.442804" y="140" class="desc">11</text>
   </g>
   <g>
-    <rect x="175" y="164" width="155.555556" rx="2" ry="2" class="call"/>
-    <rect x="175" y="178" width="23.333333" rx="2" ry="2" class="gc"/>
-    <text x="160" y="181" text-anchor="end">Flat Parser</text>
-    <text x="337.555556" y="174" class="desc">380</text>
-    <text x="205.333333" y="188" class="desc">7</text>
+    <rect x="175" y="164" width="168.079096" rx="2" ry="2" class="call"/>
+    <rect x="175" y="178" width="33.210332" rx="2" ry="2" class="gc"/>
+    <text x="160" y="181" text-anchor="end">Sinobu</text>
+    <text x="350.079096" y="174" class="desc">340</text>
+    <text x="215.210332" y="188" class="desc">12</text>
   </g>
   <g>
-    <rect x="175" y="212" width="192.397661" rx="2" ry="2" class="call"/>
-    <rect x="175" y="226" width="77.333333" rx="2" ry="2" class="gc"/>
+    <rect x="175" y="212" width="209.110169" rx="2" ry="2" class="call"/>
+    <rect x="175" y="226" width="75.830258" rx="2" ry="2" class="gc"/>
     <text x="160" y="229" text-anchor="end">Jackson</text>
-    <text x="374.397661" y="222" class="desc">470</text>
-    <text x="259.333333" y="236" class="desc">23</text>
+    <text x="391.110169" y="222" class="desc">423</text>
+    <text x="257.830258" y="236" class="desc">27</text>
   </g>
   <g>
     <rect x="175" y="260" width="350.000000" rx="2" ry="2" class="call"/>
     <rect x="175" y="274" width="150.000000" rx="2" ry="2" class="gc"/>
     <text x="160" y="277" text-anchor="end">Gson</text>
-    <text x="532.000000" y="270" class="desc">855</text>
-    <text x="332.000000" y="284" class="desc">45</text>
+    <text x="532.000000" y="270" class="desc">708</text>
+    <text x="332.000000" y="284" class="desc">54</text>
   </g>
 </svg>
