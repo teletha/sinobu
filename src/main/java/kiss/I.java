@@ -1093,7 +1093,7 @@ public class I {
      */
     public static JSON json(Reader input) {
         try {
-            return new JSON(input);
+            return new JSON(null).parse(input, null);
         } catch (Exception e) {
             throw I.quiet(e);
         } finally {

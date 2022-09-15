@@ -322,12 +322,12 @@ public class JSON {
     private int captureStart;
 
     /**
-     * Initialize parser.
+     * Parser the given json.
      * 
      * @param reader
      * @throws IOException
      */
-    JSON(Reader reader) throws IOException {
+    <T> T parse(Reader reader, Model<T> model) throws IOException {
         char[] b = P.poll();
         this.buffer = b == null ? new char[1024 * 4] : b;
         this.reader = reader;
@@ -336,8 +336,9 @@ public class JSON {
 
         readUnspace();
         if (fill != -1) {
-            root = value();
+            root = value(model);
         }
+        return (T) (model == null ? this : root);
     }
 
     /**
@@ -345,7 +346,7 @@ public class JSON {
      * 
      * @throws IOException
      */
-    private Object value() throws IOException {
+    private Object value(Model model) throws IOException {
         switch (current) {
         // keyword
         case 'n':
@@ -361,7 +362,7 @@ public class JSON {
 
         // array
         case '[':
-            Map array = new LinkedHashMap();
+            Object array = model == null ? new LinkedHashMap() : I.make(model.type);
             readUnspace();
             if (current == ']') {
                 readUnspace();
@@ -370,13 +371,19 @@ public class JSON {
 
             int count = -1;
             do {
-                array.put(++count <= 9 ? C[count] : Integer.toString(count), value());
+                String name = ++count <= 9 ? C[count] : Integer.toString(count);
+                if (model == null) {
+                    ((Map) array).put(name, value(null));
+                } else {
+                    Property p = model.property(name);
+                    model.set(array, p, value(p.model));
+                }
             } while (readSeparator(']'));
             return array;
 
         // object
         case '{':
-            Map object = new HashMap();
+            Object object = model == null ? new HashMap() : I.make(model.type);
             readUnspace();
             if (current == '}') {
                 return object;
@@ -385,7 +392,16 @@ public class JSON {
                 String name = string();
                 if (current != ':') expected(":");
                 readUnspace();
-                object.put(name, value());
+                if (model == null) {
+                    ((Map) object).put(name, value(null));
+                } else {
+                    Property p = model.property(name);
+                    if (p.model.atomic) {
+                        model.set(object, p, p.model.decoder.decode((String) value(p.model)));
+                    } else {
+                        model.set(object, p, value(p.model));
+                    }
+                }
             } while (readSeparator('}'));
             return object;
 

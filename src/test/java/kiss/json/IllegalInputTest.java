@@ -33,7 +33,7 @@ class IllegalInputTest {
 
     @Test
     void readNullReader() {
-        assertThrows(IllegalStateException.class, () -> I.json((Reader) null));
+        assertThrows(NullPointerException.class, () -> I.json((Reader) null));
     }
 
     @Test
