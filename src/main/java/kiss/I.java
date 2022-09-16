@@ -16,6 +16,7 @@ import static java.time.format.DateTimeFormatter.*;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -83,6 +84,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.LongSupplier;
 import java.util.function.Supplier;
+import java.util.function.ToIntFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
@@ -1049,7 +1051,37 @@ public class I {
      * @throws IllegalStateException If the input data is empty or invalid format.
      */
     public static JSON json(String input) {
-        return input.charAt(0) == 'h' ? I.http(input, JSON.class).to().acquire() : json(new StringReader(input));
+        try {
+            return input.charAt(0) == 'h' ? I.http(input, JSON.class).to().acquire() : new JSON(null).parse(new FastReader(input), null);
+        } catch (IOException e) {
+            throw I.quiet(e);
+        }
+    }
+
+    private static class FastReader implements ToIntFunction<char[]> {
+
+        private String text;
+
+        private int length;
+
+        private int current;
+
+        private FastReader(String text) {
+            this.text = text;
+            this.length = text.length();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public int applyAsInt(char[] value) {
+            if (current >= length) return -1;
+            int n = Math.min(length - current, value.length);
+            text.getChars(current, current + n, value, 0);
+            current += n;
+            return n;
+        }
     }
 
     /**
@@ -1093,7 +1125,7 @@ public class I {
      */
     public static JSON json(Reader input) {
         try {
-            return new JSON(null).parse(input, null);
+            return new JSON(null).parse(input::read, null);
         } catch (Exception e) {
             throw I.quiet(e);
         } finally {

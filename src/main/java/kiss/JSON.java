@@ -10,7 +10,6 @@
 package kiss;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,6 +21,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.function.ToIntFunction;
 
 import kiss.model.Model;
 import kiss.model.Property;
@@ -301,7 +301,7 @@ public class JSON {
     private static final Ⅱ<String, char[]>[] S = new Ⅱ[65536];
 
     /** The input source. */
-    private Reader reader;
+    private ToIntFunction<char[]> reader;
 
     /** The input buffer. */
     private char[] buffer;
@@ -327,7 +327,7 @@ public class JSON {
      * @param reader
      * @throws IOException
      */
-    <T> T parse(Reader reader, Model<T> model) throws IOException {
+    <T> T parse(ToIntFunction<char[]> reader, Model<T> model) throws IOException {
         char[] b = P.poll();
         this.buffer = b == null ? new char[1024 * 4] : b;
         this.reader = reader;
@@ -557,7 +557,7 @@ public class JSON {
                 captureStart = 0;
             }
 
-            fill = reader.read(buffer, 0, buffer.length);
+            fill = reader.applyAsInt(buffer);
             index = 0;
             if (fill == -1) {
                 current = -1;
@@ -581,7 +581,7 @@ public class JSON {
                     captureStart = 0;
                 }
 
-                fill = reader.read(buffer, 0, buffer.length);
+                fill = reader.applyAsInt(buffer);
                 index = 0;
                 if (fill == -1) {
                     current = -1;
