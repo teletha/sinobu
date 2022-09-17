@@ -9,8 +9,8 @@
  */
 package kiss;
 
-import static java.lang.Boolean.FALSE;
-import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.lang.Boolean.*;
+import static java.nio.charset.StandardCharsets.*;
 import static java.time.format.DateTimeFormatter.*;
 
 import java.io.ByteArrayOutputStream;
@@ -1077,7 +1077,8 @@ public class I {
         @Override
         public int applyAsInt(char[] value) {
             if (current >= length) return -1;
-            int n = Math.min(length - current, value.length);
+            int n = length - current;
+            if (4096 < n) n = 4096;
             text.getChars(current, current + n, value, 0);
             current += n;
             return n;
@@ -1125,7 +1126,13 @@ public class I {
      */
     public static JSON json(Reader input) {
         try {
-            return new JSON(null).parse(input::read, null);
+            return new JSON(null).parse(chars -> {
+                try {
+                    return input.read(chars);
+                } catch (IOException e) {
+                    throw I.quiet(e);
+                }
+            }, null);
         } catch (Exception e) {
             throw I.quiet(e);
         } finally {
