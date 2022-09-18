@@ -590,7 +590,7 @@ public class JSON {
                 }
             }
             current = buffer[index++];
-        } while (current == ' ' || current == '\t' || current == '\n' || current == '\r');
+        } while (current <= ' ');
     }
 
     /**

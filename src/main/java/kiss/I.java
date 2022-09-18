@@ -9,8 +9,8 @@
  */
 package kiss;
 
-import static java.lang.Boolean.*;
-import static java.nio.charset.StandardCharsets.*;
+import static java.lang.Boolean.FALSE;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.time.format.DateTimeFormatter.*;
 
 import java.io.ByteArrayOutputStream;
@@ -1053,6 +1053,23 @@ public class I {
     public static JSON json(String input) {
         try {
             return input.charAt(0) == 'h' ? I.http(input, JSON.class).to().acquire() : new JSON(null).parse(new FastReader(input), null);
+        } catch (IOException e) {
+            throw I.quiet(e);
+        }
+    }
+
+    /**
+     * Parse the specified JSON format text.
+     * 
+     * @param input A json format text. <code>null</code> will throw {@link NullPointerException}.
+     *            The empty or invalid format data will throw {@link IllegalStateException}.
+     * @return A parsed {@link JSON}.
+     * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
+     * @throws IllegalStateException If the input data is empty or invalid format.
+     */
+    public static <T> T json(String input, Class<T> type) {
+        try {
+            return new JSON(null).parse(new FastReader(input), Model.of(type));
         } catch (IOException e) {
             throw I.quiet(e);
         }

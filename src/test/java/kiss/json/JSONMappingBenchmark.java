@@ -50,7 +50,7 @@ public class JSONMappingBenchmark {
         });
 
         benchmark.measure("Sinobu", () -> {
-            return I.json(json).as(Group.class);
+            return I.json(json, Group.class);
         });
 
         benchmark.measure("FastJson", () -> {
