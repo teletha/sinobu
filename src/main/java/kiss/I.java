@@ -9,8 +9,8 @@
  */
 package kiss;
 
-import static java.lang.Boolean.FALSE;
-import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.lang.Boolean.*;
+import static java.nio.charset.StandardCharsets.*;
 import static java.time.format.DateTimeFormatter.*;
 
 import java.io.ByteArrayOutputStream;
@@ -84,7 +84,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.LongSupplier;
 import java.util.function.Supplier;
-import java.util.function.ToIntFunction;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
@@ -1052,7 +1051,11 @@ public class I {
      */
     public static JSON json(String input) {
         try {
-            return input.charAt(0) == 'h' ? I.http(input, JSON.class).to().acquire() : new JSON(null).parse(new FastReader(input), null);
+            Subscriber<?> reader = new Subscriber();
+            reader.time = input.length();
+            reader.text = new StringBuilder(input);
+
+            return input.charAt(0) == 'h' ? I.http(input, JSON.class).to().acquire() : new JSON(null).parse(reader, null);
         } catch (IOException e) {
             throw I.quiet(e);
         }
@@ -1069,36 +1072,13 @@ public class I {
      */
     public static <T> T json(String input, Class<T> type) {
         try {
-            return new JSON(null).parse(new FastReader(input), Model.of(type));
+            Subscriber<?> reader = new Subscriber();
+            reader.time = input.length();
+            reader.text = new StringBuilder(input);
+
+            return new JSON(null).parse(reader, Model.of(type));
         } catch (IOException e) {
             throw I.quiet(e);
-        }
-    }
-
-    private static class FastReader implements ToIntFunction<char[]> {
-
-        private String text;
-
-        private int length;
-
-        private int current;
-
-        private FastReader(String text) {
-            this.text = text;
-            this.length = text.length();
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public int applyAsInt(char[] value) {
-            if (current >= length) return -1;
-            int n = length - current;
-            if (4096 < n) n = 4096;
-            text.getChars(current, current + n, value, 0);
-            current += n;
-            return n;
         }
     }
 
@@ -1143,9 +1123,9 @@ public class I {
      */
     public static JSON json(Reader input) {
         try {
-            return new JSON(null).parse(chars -> {
+            return new JSON(null).parse(text -> {
                 try {
-                    return input.read(chars);
+                    return input.read(text);
                 } catch (IOException e) {
                     throw I.quiet(e);
                 }

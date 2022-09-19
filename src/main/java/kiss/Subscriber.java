@@ -21,6 +21,7 @@ import java.util.WeakHashMap;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.function.Consumer;
+import java.util.function.ToIntFunction;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
@@ -30,7 +31,7 @@ import java.util.zip.InflaterInputStream;
  * class. Fields should only be initialized if they are needed in the constructor. If you initialize
  * a field at the time of its declaration, even unnecessary fields will be initialized.
  */
-class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Storable<Subscriber> {
+class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Storable<Subscriber>, ToIntFunction<char[]> {
 
     /** Generic counter. */
     volatile long index;
@@ -267,4 +268,19 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
     // Logging
     // ======================================================================
     CharBuffer chars;
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int applyAsInt(char[] value) {
+        if (index >= time) return -1;
+        int length = (int) time;
+        int current = (int) index;
+        int n = length - current;
+        if (4096 < n) n = 4096;
+        text.getChars(current, current + n, value, 0);
+        index += n;
+        return n;
+    }
 }

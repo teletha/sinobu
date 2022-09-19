@@ -28,8 +28,8 @@ public class JSONParseShortBenchmark {
     public static void main(String[] args) {
         Benchmark benchmark = new Benchmark();
 
-        // benchmark.measure("New Parser", () -> {
-        // return new FastParser().parse(json, JSON.class);
+        // benchmark.measure("Sinobu Flat", () -> {
+        // return new FlatParser(json);
         // });
 
         benchmark.measure("Sinobu", () -> {
