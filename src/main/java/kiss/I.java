@@ -9,8 +9,8 @@
  */
 package kiss;
 
-import static java.lang.Boolean.*;
-import static java.nio.charset.StandardCharsets.*;
+import static java.lang.Boolean.FALSE;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.time.format.DateTimeFormatter.*;
 
 import java.io.ByteArrayOutputStream;
@@ -1051,11 +1051,7 @@ public class I {
      */
     public static JSON json(String input) {
         try {
-            Subscriber<?> reader = new Subscriber();
-            reader.time = input.length();
-            reader.text = new StringBuilder(input);
-
-            return input.charAt(0) == 'h' ? I.http(input, JSON.class).to().acquire() : new JSON(null).parse(reader, null);
+            return input.charAt(0) == 'h' ? I.http(input, JSON.class).to().acquire() : new JSON(null).parse(new StringReader(input), null);
         } catch (IOException e) {
             throw I.quiet(e);
         }
@@ -1072,11 +1068,7 @@ public class I {
      */
     public static <T> T json(String input, Class<T> type) {
         try {
-            Subscriber<?> reader = new Subscriber();
-            reader.time = input.length();
-            reader.text = new StringBuilder(input);
-
-            return new JSON(null).parse(reader, Model.of(type));
+            return new JSON(null).parse(new StringReader(input), Model.of(type));
         } catch (IOException e) {
             throw I.quiet(e);
         }
@@ -1123,14 +1115,8 @@ public class I {
      */
     public static JSON json(Reader input) {
         try {
-            return new JSON(null).parse(text -> {
-                try {
-                    return input.read(text);
-                } catch (IOException e) {
-                    throw I.quiet(e);
-                }
-            }, null);
-        } catch (Exception e) {
+            return new JSON(null).parse(input, null);
+        } catch (IOException e) {
             throw I.quiet(e);
         } finally {
             I.quiet(input);

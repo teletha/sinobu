@@ -53,7 +53,6 @@ import kiss.Signal;
 import kiss.Variable;
 import kiss.WiseBiConsumer;
 import kiss.WiseFunction;
-import kiss.WiseSupplier;
 import kiss.WiseTriConsumer;
 
 /**
@@ -694,15 +693,17 @@ public class Model<M> {
         return parameters;
     }
 
-    static WiseSupplier createConstructor(Constructor constructor) throws Throwable {
-        Lookup lookup = MethodHandles.privateLookupIn(constructor.getDeclaringClass(), MethodHandles.lookup());
-        MethodHandle mh = lookup.unreflectConstructor(constructor);
-
-        return (WiseSupplier) LambdaMetafactory
-                .metafactory(lookup, "call", MethodType.methodType(WiseSupplier.class), mh.type().generic(), mh, mh.type())
-                .dynamicInvoker()
-                .invokeExact();
-    }
+    // static WiseSupplier createConstructor(Constructor constructor) throws Throwable {
+    // Lookup lookup = MethodHandles.privateLookupIn(constructor.getDeclaringClass(),
+    // MethodHandles.lookup());
+    // MethodHandle mh = lookup.unreflectConstructor(constructor);
+    //
+    // return (WiseSupplier) LambdaMetafactory
+    // .metafactory(lookup, "call", MethodType.methodType(WiseSupplier.class), mh.type().generic(),
+    // mh, mh.type())
+    // .dynamicInvoker()
+    // .invokeExact();
+    // }
 
     static WiseFunction createGetter(Method method) throws Throwable {
         Lookup lookup = MethodHandles.privateLookupIn(method.getDeclaringClass(), MethodHandles.lookup());
