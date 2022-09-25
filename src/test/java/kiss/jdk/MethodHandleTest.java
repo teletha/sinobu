@@ -11,20 +11,18 @@ package kiss.jdk;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 
 import org.junit.jupiter.api.Test;
 
-/**
- * @version 2011/12/15 18:21:34
- */
-public class MethodHandleTest {
+class MethodHandleTest {
 
     @Test
-    public void field() throws Throwable {
-        MethodHandle setter = MethodHandles.lookup().unreflectSetter(Tihayahuru.class.getDeclaredField("name"));
-        MethodHandle getter = MethodHandles.lookup().unreflectGetter(Tihayahuru.class.getDeclaredField("name"));
+    void field() throws Throwable {
+        MethodHandle setter = MethodHandles.lookup().unreflectSetter(Naming.class.getDeclaredField("name"));
+        MethodHandle getter = MethodHandles.lookup().unreflectGetter(Naming.class.getDeclaredField("name"));
 
-        Tihayahuru object = new Tihayahuru();
+        Naming object = new Naming();
         assert object.name == null;
 
         setter.invoke(object, "test");
@@ -32,10 +30,35 @@ public class MethodHandleTest {
         assert getter.invoke(object).equals("test");
     }
 
-    /**
-     * @version 2011/12/15 18:22:12
-     */
-    private static class Tihayahuru {
+    @Test
+    void zeroInt() throws Throwable {
+        MethodHandle mh = MethodHandles.zero(int.class);
+        int value = (int) mh.invokeExact();
+        assert value == 0;
+    }
+
+    @Test
+    void zeroBoolean() throws Throwable {
+        MethodHandle mh = MethodHandles.zero(boolean.class);
+        boolean value = (boolean) mh.invokeExact();
+        assert value == false;
+    }
+
+    @Test
+    void zeroFloat() throws Throwable {
+        MethodHandle mh = MethodHandles.zero(float.class);
+        float value = (float) mh.invokeExact();
+        assert value == 0f;
+    }
+
+    @Test
+    void zeroFloatAsObject() throws Throwable {
+        MethodHandle mh = MethodHandles.zero(float.class).asType(MethodType.methodType(Object.class));
+        Object value = mh.invokeExact();
+        assert ((float) value) == 0f;
+    }
+
+    private static class Naming {
 
         public String name;
     }

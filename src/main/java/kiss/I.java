@@ -1671,9 +1671,9 @@ public class I {
         Constructor constructor = Model.collectConstructors(model)[0];
         constructor.setAccessible(true);
 
-        return () -> {
-            Class[] types = constructor.getParameterTypes();
+        Class[] types = constructor.getParameterTypes();
 
+        return () -> {
             // constructor injection
             Object[] params = null;
 
