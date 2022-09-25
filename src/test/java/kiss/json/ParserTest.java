@@ -9,7 +9,7 @@
  */
 package kiss.json;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
@@ -177,6 +177,17 @@ class ParserTest {
                 """);
 
         assert json.get(float.class, "key") == -50.2f;
+    }
+
+    @Test
+    void primitiveNegativeDecimalWithZeroStart() {
+        JSON json = parse("""
+                {
+                    "key": -0.02
+                }
+                """);
+
+        assert json.get(float.class, "key") == -0.02f;
     }
 
     @Test
