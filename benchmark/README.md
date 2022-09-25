@@ -5,7 +5,7 @@
 <img src="/benchmark/JSONParseShortBenchmark.svg" width="700">
 
 ### JSON (Large) Parsing
-<img src="/benchmark/JSONParseBenchmark.svg" width="700">
+<img src="/benchmark/JSONParseLongBenchmark.svg" width="700">
 
 ### JSON Travesing
 <img src="/benchmark/JSONTraverseBenchmark.svg" width="700">
