@@ -9,8 +9,8 @@
  */
 package kiss;
 
-import static java.lang.Boolean.FALSE;
-import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.lang.Boolean.*;
+import static java.nio.charset.StandardCharsets.*;
 import static java.time.format.DateTimeFormatter.*;
 
 import java.io.ByteArrayOutputStream;
@@ -1071,6 +1071,54 @@ public class I {
             return new JSON(null).parse(new StringReader(input), Model.of(type));
         } catch (IOException e) {
             throw I.quiet(e);
+        }
+    }
+
+    private static class FastReader extends Reader {
+
+        private int pos;
+
+        private final int max;
+
+        private final char[] chars;
+
+        private FastReader(String str) {
+            this.chars = str.toCharArray();
+            this.max = chars.length;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public int read(char[] buf) throws IOException {
+            if (pos >= max) {
+                return -1;
+            }
+
+            int len = 4096;
+            int avail = max - pos;
+            if (len > avail) {
+                len = avail;
+            }
+            System.arraycopy(chars, pos, buf, 0, len);
+            pos += len;
+            return len;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public int read(char[] cbuf, int off, int len) throws IOException {
+            return 0;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void close() throws IOException {
         }
     }
 

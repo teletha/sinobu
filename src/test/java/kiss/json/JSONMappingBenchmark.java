@@ -49,7 +49,7 @@ public class JSONMappingBenchmark {
         });
 
         benchmark.measure("FastJson", () -> {
-            return com.alibaba.fastjson.JSON.parseObject(json, Group.class);
+            return com.alibaba.fastjson2.JSON.parseObject(json, Group.class);
         });
 
         Gson gson = new Gson();

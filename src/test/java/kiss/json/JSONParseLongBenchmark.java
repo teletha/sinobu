@@ -9,7 +9,7 @@
  */
 package kiss.json;
 
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 
@@ -100,7 +100,7 @@ public class JSONParseLongBenchmark {
         });
 
         benchmark.measure("FastJson", () -> {
-            return com.alibaba.fastjson.JSON.parseObject(json, JSONObject.class);
+            return com.alibaba.fastjson2.JSON.parseObject(json, JSONObject.class);
         });
 
         Gson gson = new Gson();
