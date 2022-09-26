@@ -48,6 +48,10 @@ public class JSONMappingBenchmark {
             return I.json(json, Group.class);
         });
 
+        benchmark.measure("Sinobu2", () -> {
+            return I.json2(json, Group.class);
+        });
+
         benchmark.measure("FastJson", () -> {
             return com.alibaba.fastjson2.JSON.parseObject(json, Group.class);
         });

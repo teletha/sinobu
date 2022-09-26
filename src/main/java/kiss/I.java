@@ -9,8 +9,8 @@
  */
 package kiss;
 
-import static java.lang.Boolean.*;
-import static java.nio.charset.StandardCharsets.*;
+import static java.lang.Boolean.FALSE;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.time.format.DateTimeFormatter.*;
 
 import java.io.ByteArrayOutputStream;
@@ -1074,17 +1074,34 @@ public class I {
         }
     }
 
+    /**
+     * Parse the specified JSON format text.
+     * 
+     * @param input A json format text. <code>null</code> will throw {@link NullPointerException}.
+     *            The empty or invalid format data will throw {@link IllegalStateException}.
+     * @return A parsed {@link JSON}.
+     * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
+     * @throws IllegalStateException If the input data is empty or invalid format.
+     */
+    public static <T> T json2(String input, Class<T> type) {
+        try {
+            return new JSON(null).parse(new FastReader(input), Model.of(type));
+        } catch (IOException e) {
+            throw I.quiet(e);
+        }
+    }
+
     private static class FastReader extends Reader {
 
         private int pos;
 
         private final int max;
 
-        private final char[] chars;
+        private final String chars;
 
         private FastReader(String str) {
-            this.chars = str.toCharArray();
-            this.max = chars.length;
+            this.chars = str;
+            this.max = chars.length();
         }
 
         /**
@@ -1101,7 +1118,7 @@ public class I {
             if (len > avail) {
                 len = avail;
             }
-            System.arraycopy(chars, pos, buf, 0, len);
+            chars.getChars(pos, pos + len, buf, 0);
             pos += len;
             return len;
         }
@@ -1164,6 +1181,25 @@ public class I {
     public static JSON json(Reader input) {
         try {
             return new JSON(null).parse(input, null);
+        } catch (IOException e) {
+            throw I.quiet(e);
+        } finally {
+            I.quiet(input);
+        }
+    }
+
+    /**
+     * Parse the specified JSON format text.
+     * 
+     * @param input A json format text. <code>null</code> will throw {@link NullPointerException}.
+     *            The empty or invalid format data will throw {@link IllegalStateException}.
+     * @return A parsed {@link JSON}.
+     * @throws NullPointerException If the input data or the root Java object is <code>null</code>.
+     * @throws IllegalStateException If the input data is empty or invalid format.
+     */
+    public static <T> T json(Reader input, Class<T> type) {
+        try {
+            return new JSON(null).parse(input, Model.of(type));
         } catch (IOException e) {
             throw I.quiet(e);
         } finally {
