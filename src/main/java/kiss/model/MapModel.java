@@ -49,7 +49,7 @@ class MapModel<K, V> extends Model<Map<K, V>> {
      */
     @Override
     public Property property(String name) {
-        return !key.atomic ? null : new Property(value, name, null);
+        return new Property(value, name, null);
     }
 
     /**
@@ -57,11 +57,7 @@ class MapModel<K, V> extends Model<Map<K, V>> {
      */
     @Override
     public Object get(Map object, Property property) {
-        if (!key.atomic) {
-            return super.get(object, property);
-        } else {
-            return object.get(I.transform(property.name, key.type));
-        }
+        return object.get(I.transform(property.name, key.type));
     }
 
     /**
@@ -69,11 +65,7 @@ class MapModel<K, V> extends Model<Map<K, V>> {
      */
     @Override
     public Map set(Map object, Property property, Object value) {
-        if (!key.atomic) {
-            object = super.set(object, property, value);
-        } else {
-            object.put(I.transform(property.name, key.type), value);
-        }
+        object.put(I.transform(property.name, key.type), value);
         return object;
     }
 
@@ -82,13 +74,9 @@ class MapModel<K, V> extends Model<Map<K, V>> {
      */
     @Override
     public void walk(Map<K, V> object, WiseTriConsumer<Model<Map<K, V>>, Property, Object> walker) {
-        if (!key.atomic) {
-            super.walk(object, walker);
-        } else {
-            if (object != null) {
-                for (Entry<K, V> entry : object.entrySet()) {
-                    walker.accept(this, new Property(value, I.transform(entry.getKey(), String.class), null), entry.getValue());
-                }
+        if (object != null) {
+            for (Entry<K, V> entry : object.entrySet()) {
+                walker.accept(this, new Property(value, I.transform(entry.getKey(), String.class), null), entry.getValue());
             }
         }
     }

@@ -37,10 +37,10 @@ public class Property {
     public final boolean transitory;
 
     /** The property accessor. */
-    WiseFunction getter;
+    public WiseFunction getter;
 
     /** The property accessor. */
-    WiseBiFunction setter;
+    public WiseBiFunction setter;
 
     /** The property ovserver. */
     WiseFunction<Object, Signal> observer;
