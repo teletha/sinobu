@@ -9,8 +9,8 @@
  */
 package kiss;
 
-import static java.lang.Boolean.FALSE;
-import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.lang.Boolean.*;
+import static java.nio.charset.StandardCharsets.*;
 import static java.time.format.DateTimeFormatter.*;
 
 import java.io.ByteArrayOutputStream;

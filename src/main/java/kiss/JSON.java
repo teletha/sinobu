@@ -487,10 +487,9 @@ public class JSON {
      * @throws IOException
      */
     private String string() throws IOException {
-        read();
+        captureStart = index;
 
-        // start capture
-        captureStart = index - 1;
+        read();
         while (current != '"') {
             if (current == '\\') {
                 // pause capture
