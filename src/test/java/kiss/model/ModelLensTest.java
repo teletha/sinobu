@@ -9,11 +9,11 @@
  */
 package kiss.model;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import kiss.Variable;
 import kiss.sample.bean.EnumProperty;
-import kiss.sample.bean.EnumProperty.Value;
 import kiss.sample.bean.GenericStringBean;
 import kiss.sample.bean.Person;
 
@@ -90,20 +90,15 @@ class ModelLensTest {
 
     @Test
     void setNullObject() {
-        Person person = new Person();
         Model model = Model.of(Person.class);
-        model.set(null, model.property("firstName"), "ERROR");
-
-        assert person.getFirstName() == null;
+        Assertions.assertThrows(NullPointerException.class, () -> model.set(null, model.property("firstName"), "ERROR"));
     }
 
     @Test
     void setNullProperty() {
         Person person = new Person();
         Model model = Model.of(Person.class);
-        model.set(person, null, "ERROR");
-
-        assert person.getFirstName() == null;
+        Assertions.assertThrows(NullPointerException.class, () -> model.set(person, null, "ERROR"));
     }
 
     @Test
@@ -122,9 +117,7 @@ class ModelLensTest {
         person.setAge(10);
 
         Model model = Model.of(Person.class);
-        model.set(person, model.property("age"), null);
-
-        assert person.getAge() == 10;
+        Assertions.assertThrows(NullPointerException.class, () -> model.set(person, model.property("age"), null));
     }
 
     @Test
@@ -136,7 +129,7 @@ class ModelLensTest {
         model.set(instance, model.property("fieldWithDefault"), null);
 
         assert instance.field == null;
-        assert instance.fieldWithDefault == Value.One;
+        assert instance.fieldWithDefault == null;
     }
 
     @Test
