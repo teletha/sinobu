@@ -10,6 +10,7 @@
 package kiss.json;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +44,10 @@ public class JSONMappingBenchmark {
 
     public static void main(String[] args) throws IOException {
         Benchmark benchmark = new Benchmark();
+
+        benchmark.measure("Flat", () -> {
+            return new FlatParser2().parse(new StringReader(json), Group.class);
+        });
 
         benchmark.measure("Sinobu", () -> {
             return I.json(json, Group.class);
