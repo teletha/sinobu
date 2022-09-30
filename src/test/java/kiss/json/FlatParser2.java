@@ -25,7 +25,7 @@ import kiss.model.Property;
 public class FlatParser2 {
 
     /** Reuse buffers. */
-    private static final ArrayBlockingQueue<char[]> P = new ArrayBlockingQueue(16);
+    private static final ArrayBlockingQueue<Ⅱ<char[], StringBuilder>> P = new ArrayBlockingQueue(16);
 
     /** Reuse text symbol. */
     private static final Ⅱ<String, char[]>[] S = new Ⅱ[65536];
@@ -33,8 +33,8 @@ public class FlatParser2 {
     /** Reuse array's index to reduce GC execution. */
     private static final String[] C = "0123456789".split("");
 
-    private static final Map<Class, WiseFunction<FlatParser2, Object>> readers = Map
-            .of(int.class, FlatParser2::readInt, String.class, FlatParser2::readString);
+    private static final Map<Model, WiseFunction<FlatParser2, Object>> readers = Map
+            .of(Model.of(int.class), FlatParser2::readInt, Model.of(String.class), FlatParser2::readString);
 
     private Reader reader;
 
@@ -57,13 +57,16 @@ public class FlatParser2 {
     public Object parse(Reader reader, Class type) throws IOException {
         this.reader = reader;
 
-        char[] b = P.poll();
-        this.buffer = b == null ? new char[1024 * 4] : b;
-        capture = new StringBuilder();
+        Ⅱ<char[], StringBuilder> b = P.poll();
+        if (b == null) b = I.pair(new char[1024 * 4], new StringBuilder());
+        this.buffer = b.ⅰ;
+        this.capture = b.ⅱ;
         captureStart = -1;
 
         root = readObject(Model.of(type));
-        P.offer(buffer);
+
+        capture.setLength(0);
+        P.offer(b);
 
         return root;
     }
@@ -71,49 +74,47 @@ public class FlatParser2 {
     private Object readObject(Model model) throws IOException {
         readUnspace();
 
-        if (current == '{') {
+        switch (current) {
+        case '[':
+            Model next = model.property(C[0]).model;
+            List array = (List) I.make(model.type);
+            do {
+                array.add(readObject(next));
+                readUnspace();
+            } while (current == ',');
+            return array;
+
+        case '{':
             Object map = I.make(model.type);
             do {
                 Property p = model.property(readString());
-                readUnspace();
-                if (current != ':') throw new Error();
+                read(':');
 
-                Object value;
-                WiseFunction<FlatParser2, Object> reader = readers.get(p.model.type);
-                if (reader == null) {
-                    value = readObject(p.model);
-                } else {
-                    value = reader.apply(this);
-                }
-                model.set(map, p, value);
+                WiseFunction<FlatParser2, Object> reader = readers.get(p.model);
+                model.set(map, p, reader == null ? readObject(p.model) : reader.apply(this));
 
                 readUnspace();
             } while (current == ',');
             return map;
-        } else if (current == '[') {
-            Property p = model.property(C[0]);
-            List array = (List) I.make(model.type);
-            do {
-                array.add(readObject(p.model));
 
-                readUnspace();
-            } while (current == ',');
-            return array;
-        } else {
+        default:
             throw new Error(String.valueOf((char) current));
         }
+    }
+
+    private void read(char c) throws IOException {
+        readUnspace();
+        if (current != c) throw new Error("Expected " + c);
     }
 
     private Integer readInt() throws IOException {
         readUnspace();
 
-        captureStart = index;
-
         while ('0' <= current && current <= '9') {
             read();
         }
 
-        return Integer.valueOf(endCapture());
+        return Integer.MAX_VALUE;
     }
 
     private String readString() throws IOException {
@@ -123,7 +124,53 @@ public class FlatParser2 {
             captureStart = index;
 
             do {
-                read();
+                if (current == '\\') {
+                    // pause capture
+                    int end = current == -1 ? index : index - 1;
+                    capture.append(buffer, captureStart, end - captureStart);
+                    captureStart = -1;
+
+                    // escape
+                    read();
+                    switch (current) {
+                    case '"':
+                    case '/':
+                    case '\\':
+                        capture.append((char) current);
+                        break;
+                    case 'b':
+                        capture.append('\b');
+                        break;
+                    case 'f':
+                        capture.append('\f');
+                        break;
+                    case 'n':
+                        capture.append('\n');
+                        break;
+                    case 'r':
+                        capture.append('\r');
+                        break;
+                    case 't':
+                        capture.append('\t');
+                        break;
+                    case 'u':
+                        char[] chars = new char[4];
+                        for (int i = 0; i < 4; i++) {
+                            read();
+                            chars[i] = (char) current;
+                        }
+                        capture.append((char) Integer.parseInt(new String(chars), 16));
+                        break;
+                    default:
+                        throw new Error();
+                    }
+                    read();
+
+                    // start capture
+                    captureStart = index - 1;
+                } else {
+                    read();
+                }
             } while (current != '"');
 
             return endCapture();
@@ -182,7 +229,6 @@ public class FlatParser2 {
             if (fill == -1) {
                 System.out.println("OK");
                 current = -1;
-                P.offer(buffer);
                 return;
             }
         }
@@ -207,11 +253,9 @@ public class FlatParser2 {
                 if (fill == -1) {
                     System.out.println("OK2");
                     current = -1;
-                    P.offer(buffer);
                     return;
                 }
             }
-            current = buffer[index++];
-        } while (current <= ' ');
+        } while ((current = buffer[index++]) <= ' ');
     }
 }
