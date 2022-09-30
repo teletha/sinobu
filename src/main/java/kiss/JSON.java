@@ -588,8 +588,7 @@ public class JSON {
                     return;
                 }
             }
-            current = buffer[index++];
-        } while (current <= ' ');
+        } while ((current = buffer[index++]) <= ' ');
     }
 
     /**
