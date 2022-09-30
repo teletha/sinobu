@@ -10,7 +10,6 @@
 package kiss;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,6 +21,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.function.ToIntFunction;
 
 import kiss.model.Model;
 import kiss.model.Property;
@@ -292,7 +292,7 @@ public class JSON {
     // Parser API
     // ===========================================================
     /** Reuse buffers. */
-    private static final ArrayBlockingQueue<char[]> P = new ArrayBlockingQueue(16);
+    private static final ArrayBlockingQueue<Ⅱ<char[], StringBuilder>> P = new ArrayBlockingQueue(16);
 
     /** Reuse array's index to reduce GC execution. */
     private static final String[] C = "0123456789".split("");
@@ -301,7 +301,7 @@ public class JSON {
     private static final Ⅱ<String, char[]>[] S = new Ⅱ[65536];
 
     /** The input source. */
-    private Reader reader;
+    private ToIntFunction<char[]> reader;
 
     /** The input buffer. */
     private char[] buffer;
@@ -321,24 +321,52 @@ public class JSON {
     /** The capture index in input buffer. */
     private int captureStart;
 
+    private String input;
+
+    private int size;
+
+    private int red;
+
+    /**
+     * @param input
+     */
+    JSON(String input) {
+        this.input = input;
+        this.size = input.length();
+    }
+
+    private int read(char[] buffer) {
+        if (size <= red) return -1;
+        int len = size - red;
+        if (4096 < len) len = 4096;
+        input.getChars(red, red += len, buffer, 0);
+        return len;
+    }
+
     /**
      * Parser the given json.
      * 
      * @param reader
      * @throws IOException
      */
-    <T> T parse(Reader reader, Model<T> model) throws IOException {
-        char[] b = P.poll();
-        this.buffer = b == null ? new char[1024 * 4] : b;
-        this.reader = reader;
+    <T> T parse(ToIntFunction<char[]> reader, Class<T> type) throws IOException {
+        Ⅱ<char[], StringBuilder> b = P.poll();
+        if (b == null) b = I.pair(new char[1024 * 4], new StringBuilder());
+
+        this.reader = reader == null ? this::read : reader;
+        this.buffer = b.ⅰ;
+        this.capture = b.ⅱ;
         this.captureStart = -1;
-        this.capture = new StringBuilder();
 
         readUnspace();
         if (fill != -1) {
-            root = value(model);
+            root = value(type == null ? null : Model.of(type));
         }
-        return (T) (model == null ? this : root);
+
+        capture.setLength(0);
+        P.offer(b);
+
+        return (T) (type == null ? this : root);
     }
 
     /**
@@ -556,11 +584,9 @@ public class JSON {
                 captureStart = 0;
             }
 
-            fill = reader.read(buffer);
+            fill = reader.applyAsInt(buffer);
             index = 0;
             if (fill == -1) {
-                current = -1;
-                P.offer(buffer);
                 return;
             }
         }
@@ -580,11 +606,9 @@ public class JSON {
                     captureStart = 0;
                 }
 
-                fill = reader.read(buffer);
+                fill = reader.applyAsInt(buffer);
                 index = 0;
                 if (fill == -1) {
-                    current = -1;
-                    P.offer(buffer);
                     return;
                 }
             }

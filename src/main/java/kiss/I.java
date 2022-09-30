@@ -1051,7 +1051,7 @@ public class I {
      */
     public static JSON json(String input) {
         try {
-            return input.charAt(0) == 'h' ? I.http(input, JSON.class).to().acquire() : new JSON(null).parse(new StringReader(input), null);
+            return input.charAt(0) == 'h' ? I.http(input, JSON.class).to().acquire() : new JSON(input).parse(null, null);
         } catch (IOException e) {
             throw I.quiet(e);
         }
@@ -1068,7 +1068,7 @@ public class I {
      */
     public static <T> T json(String input, Class<T> type) {
         try {
-            return new JSON(null).parse(new StringReader(input), Model.of(type));
+            return new JSON(input).parse(null, type);
         } catch (IOException e) {
             throw I.quiet(e);
         }
@@ -1114,13 +1114,7 @@ public class I {
      * @throws IllegalStateException If the input data is empty or invalid format.
      */
     public static JSON json(Reader input) {
-        try {
-            return new JSON(null).parse(input, null);
-        } catch (IOException e) {
-            throw I.quiet(e);
-        } finally {
-            I.quiet(input);
-        }
+        return json(input, null);
     }
 
     /**
@@ -1134,7 +1128,13 @@ public class I {
      */
     public static <T> T json(Reader input, Class<T> type) {
         try {
-            return new JSON(null).parse(input, Model.of(type));
+            return new JSON((Appendable) null).parse(buf -> {
+                try {
+                    return input.read(buf);
+                } catch (IOException e) {
+                    throw I.quiet(e);
+                }
+            }, type);
         } catch (IOException e) {
             throw I.quiet(e);
         } finally {
