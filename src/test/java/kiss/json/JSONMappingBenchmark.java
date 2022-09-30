@@ -44,29 +44,13 @@ public class JSONMappingBenchmark {
     public static void main(String[] args) throws IOException {
         Benchmark benchmark = new Benchmark();
 
-        // benchmark.measure("Flat", () -> {
-        // return new FlatParser2().parse(new StringReader(json), Group.class);
-        // });
-
         benchmark.measure("Sinobu", () -> {
             return I.json(json, Group.class);
         });
 
-        // benchmark.measure("Sinobu2", () -> {
-        // return I.json2(json, Group.class);
-        // });
-
-        // benchmark.measure("Sinobu Method", () -> {
-        // return I.json(json, MethodGroup.class);
-        // });
-
         benchmark.measure("FastJson", () -> {
             return com.alibaba.fastjson2.JSON.parseObject(json, Group.class);
         });
-
-        // benchmark.measure("FastJson Method", () -> {
-        // return com.alibaba.fastjson2.JSON.parseObject(json, MethodGroup.class);
-        // });
 
         Gson gson = new Gson();
         benchmark.measure("Gson", () -> {
