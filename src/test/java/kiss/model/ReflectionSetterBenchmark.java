@@ -32,7 +32,7 @@ public class ReflectionSetterBenchmark {
     }
 
     public static void main(String[] args) throws Throwable {
-        Benchmark benchmark = new Benchmark().novisualize();
+        Benchmark benchmark = new Benchmark();
         ReflectionSetterBenchmark base = new ReflectionSetterBenchmark();
 
         Method setter = ReflectionSetterBenchmark.class.getMethod("setOne", String.class);

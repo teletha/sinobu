@@ -30,7 +30,7 @@ public class ReflectionConstructorBenchmark {
     }
 
     public static void main(String[] p) throws Throwable {
-        Benchmark benchmark = new Benchmark().novisualize();
+        Benchmark benchmark = new Benchmark();
 
         Constructor constructor = Meta.class.getDeclaredConstructor();
         constructor.setAccessible(true);

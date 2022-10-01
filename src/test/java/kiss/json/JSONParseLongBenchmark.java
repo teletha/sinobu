@@ -93,7 +93,7 @@ public class JSONParseLongBenchmark {
             """;
 
     public static void main(String[] args) {
-        Benchmark benchmark = new Benchmark();
+        Benchmark benchmark = new Benchmark().visualize();
 
         benchmark.measure("Sinobu", () -> {
             return I.json(json);

@@ -18,7 +18,7 @@ import kiss.WiseFunction;
 public class ReflectionGetterBenchmark {
 
     public static void main(String[] args) throws Throwable {
-        Benchmark benchmark = new Benchmark().novisualize();
+        Benchmark benchmark = new Benchmark();
         ReflectionGetterBenchmark base = new ReflectionGetterBenchmark();
 
         Method method = ReflectionGetterBenchmark.class.getMethod("one");

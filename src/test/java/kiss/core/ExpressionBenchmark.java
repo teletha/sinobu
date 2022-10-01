@@ -28,7 +28,7 @@ public class ExpressionBenchmark {
     private static final String text2 = "{{firstName}} is {{age}} years old.";
 
     public static void main(String[] args) throws Exception {
-        Benchmark benchmark = new Benchmark();
+        Benchmark benchmark = new Benchmark().visualize();
 
         Person person = new Person();
         person.setAge(20);

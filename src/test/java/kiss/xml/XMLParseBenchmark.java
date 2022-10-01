@@ -20,7 +20,7 @@ public class XMLParseBenchmark {
     private static final String html = "<html><head><title>First parse</title></head><body><p>Parsed HTML into a doc.</p></body></html>";
 
     public static void main(String[] args) {
-        Benchmark benchmark = new Benchmark();
+        Benchmark benchmark = new Benchmark().visualize();
 
         benchmark.measure("Sinobu", () -> {
             return I.xml(html);

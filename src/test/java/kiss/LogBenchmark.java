@@ -64,7 +64,7 @@ public class LogBenchmark {
     private static final String message = "Write your message! This is comparison of  logging libraries";
 
     public static void main(String[] args) throws Exception {
-        Benchmark benchmark = new Benchmark().limit(500000);
+        Benchmark benchmark = new Benchmark().limit(500000).visualize();
 
         if (output == OutputType.Console) {
             benchmark.discardSystemOutput();

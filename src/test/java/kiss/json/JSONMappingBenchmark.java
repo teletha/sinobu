@@ -42,7 +42,7 @@ public class JSONMappingBenchmark {
             """;
 
     public static void main(String[] args) throws IOException {
-        Benchmark benchmark = new Benchmark();
+        Benchmark benchmark = new Benchmark().visualize();
 
         benchmark.measure("Sinobu", () -> {
             return I.json(json, Group.class);
