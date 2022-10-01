@@ -649,7 +649,7 @@ public class JSON {
      * Stop text capturing.
      */
     private String endCapture() {
-        int end = current == -1 ? index : index - 1;
+        int end = index - 1;
         String captured;
         if (capture.length() > 0) {
             captured = capture.append(buffer, captureStart, end - captureStart).toString();
