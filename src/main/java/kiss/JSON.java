@@ -10,6 +10,8 @@
 package kiss;
 
 import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,7 +23,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.function.ToIntFunction;
 
 import kiss.model.Model;
 import kiss.model.Property;
@@ -300,8 +301,11 @@ public class JSON {
     /** Reuse text symbol. */
     private static final Ⅱ<String, char[]>[] S = new Ⅱ[65536];
 
+    /** Reuse empty reader. */
+    private static final Reader R = Reader.nullReader();
+
     /** The input source. */
-    private ToIntFunction<char[]> reader;
+    private Reader reader;
 
     /** The input buffer. */
     private char[] buffer;
@@ -321,42 +325,35 @@ public class JSON {
     /** The capture index in input buffer. */
     private int captureStart;
 
-    private String input;
-
-    private int size;
-
-    private int red;
-
-    /**
-     * @param input
-     */
-    JSON(String input) {
-        this.input = input;
-        this.size = input.length();
-    }
-
-    private int read(char[] buffer) {
-        if (size <= red) return -1;
-        int len = size - red;
-        if (4096 < len) len = 4096;
-        input.getChars(red, red += len, buffer, 0);
-        return len;
-    }
-
     /**
      * Parser the given json.
      * 
-     * @param reader
+     * @param <T>
+     * @param reader A input stream.
+     * @param text A input text.
+     * @param type A model type.
+     * @return
      * @throws IOException
      */
-    <T> T parse(ToIntFunction<char[]> reader, Class<T> type) throws IOException {
+    <T> T parse(Reader reader, String text, Class<T> type) throws IOException {
         Ⅱ<char[], StringBuilder> b = P.poll();
         if (b == null) b = I.pair(new char[1024 * 4], new StringBuilder());
 
-        this.reader = reader == null ? this::read : reader;
         this.buffer = b.ⅰ;
         this.capture = b.ⅱ;
         this.captureStart = -1;
+
+        if (reader == null) {
+            if (text.length() <= 4096) {
+                this.fill = text.length();
+                this.reader = R;
+                text.getChars(0, fill, buffer, 0);
+            } else {
+                this.reader = new StringReader(text);
+            }
+        } else {
+            this.reader = reader;
+        }
 
         readUnspace();
         if (fill != -1) {
@@ -584,7 +581,7 @@ public class JSON {
                 captureStart = 0;
             }
 
-            fill = reader.applyAsInt(buffer);
+            fill = reader.read(buffer);
             index = 0;
             if (fill == -1) {
                 return;
@@ -606,7 +603,7 @@ public class JSON {
                     captureStart = 0;
                 }
 
-                fill = reader.applyAsInt(buffer);
+                fill = reader.read(buffer);
                 index = 0;
                 if (fill == -1) {
                     return;

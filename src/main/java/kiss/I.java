@@ -9,8 +9,8 @@
  */
 package kiss;
 
-import static java.lang.Boolean.*;
-import static java.nio.charset.StandardCharsets.*;
+import static java.lang.Boolean.FALSE;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.time.format.DateTimeFormatter.*;
 
 import java.io.ByteArrayOutputStream;
@@ -1051,7 +1051,7 @@ public class I {
      */
     public static JSON json(String input) {
         try {
-            return input.charAt(0) == 'h' ? I.http(input, JSON.class).to().acquire() : new JSON(input).parse(null, null);
+            return input.charAt(0) == 'h' ? I.http(input, JSON.class).to().acquire() : new JSON().parse(null, input, null);
         } catch (IOException e) {
             throw I.quiet(e);
         }
@@ -1068,7 +1068,7 @@ public class I {
      */
     public static <T> T json(String input, Class<T> type) {
         try {
-            return new JSON(input).parse(null, type);
+            return new JSON().parse(null, input, type);
         } catch (IOException e) {
             throw I.quiet(e);
         }
@@ -1128,13 +1128,7 @@ public class I {
      */
     public static <T> T json(Reader input, Class<T> type) {
         try {
-            return new JSON((Appendable) null).parse(buf -> {
-                try {
-                    return input.read(buf);
-                } catch (IOException e) {
-                    throw I.quiet(e);
-                }
-            }, type);
+            return new JSON().parse(input, null, type);
         } catch (IOException e) {
             throw I.quiet(e);
         } finally {
