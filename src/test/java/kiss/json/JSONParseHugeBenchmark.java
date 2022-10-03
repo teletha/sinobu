@@ -34,7 +34,7 @@ public class JSONParseHugeBenchmark {
             builder.append("  {").append(EOL);
             builder.append("    \"name\" : \"").append(RandomString.make(15)).append("\",").append(EOL);
             builder.append("    \"age\" : ").append(random.nextInt(100)).append(",").append(EOL);
-            builder.append("    \"point\" : ").append(random.nextFloat(0.3f)).append(",").append(EOL);
+            builder.append("    \"point\" : ").append(random.nextInt(100)).append(".").append(random.nextInt(100)).append(",").append(EOL);
             builder.append("    \"active\" : ").append(random.nextBoolean()).append(EOL);
             builder.append("  }");
 
