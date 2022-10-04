@@ -301,9 +301,6 @@ public class JSON {
     /** Reuse text symbol. */
     private static final Ⅱ<String, char[]>[] S = new Ⅱ[65536];
 
-    /** Reuse empty reader. */
-    private static final Reader R = Reader.nullReader();
-
     /** The input source. */
     private Reader reader;
 
@@ -346,7 +343,6 @@ public class JSON {
         if (reader == null) {
             if (text.length() <= 4096) {
                 this.fill = text.length();
-                this.reader = R;
                 text.getChars(0, fill, buffer, 0);
             } else {
                 this.reader = new StringReader(text);
@@ -576,6 +572,8 @@ public class JSON {
      */
     private void read() throws IOException {
         if (index == fill) {
+            if (reader == null) return;
+
             if (captureStart != -1) {
                 capture.append(buffer, captureStart, fill - captureStart);
                 captureStart = 0;
@@ -598,6 +596,8 @@ public class JSON {
     private void readUnspace() throws IOException {
         do {
             if (index == fill) {
+                if (reader == null) return;
+
                 if (captureStart != -1) {
                     capture.append(buffer, captureStart, fill - captureStart);
                     captureStart = 0;
