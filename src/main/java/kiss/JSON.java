@@ -623,6 +623,9 @@ public class JSON {
                     return;
                 }
             }
+
+            // loop unrolling - performance optimization
+            if (index + 1 < fill && ' ' < (current = buffer[index++])) break;
         } while ((current = buffer[index++]) <= ' ');
     }
 
