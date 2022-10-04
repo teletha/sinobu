@@ -410,6 +410,7 @@ public class JSON {
                 return object;
             }
             do {
+                if (current != '"') expected('"');
                 String name = string();
                 if (current != ':') expected(":");
                 readUnspace();
@@ -460,6 +461,11 @@ public class JSON {
                 digit();
             }
             return endCapture();
+
+        // End of Text
+        case 0x00:
+            return null;
+
         // invalid token
         default:
             return expected("value");
@@ -572,7 +578,10 @@ public class JSON {
      */
     private void read() throws IOException {
         if (index == fill) {
-            if (reader == null) return;
+            if (reader == null) {
+                current = 0;
+                return;
+            }
 
             if (captureStart != -1) {
                 capture.append(buffer, captureStart, fill - captureStart);
@@ -582,6 +591,7 @@ public class JSON {
             fill = reader.read(buffer);
             index = 0;
             if (fill == -1) {
+                current = 0;
                 return;
             }
         }
@@ -596,7 +606,10 @@ public class JSON {
     private void readUnspace() throws IOException {
         do {
             if (index == fill) {
-                if (reader == null) return;
+                if (reader == null) {
+                    current = 0;
+                    return;
+                }
 
                 if (captureStart != -1) {
                     capture.append(buffer, captureStart, fill - captureStart);
@@ -606,6 +619,7 @@ public class JSON {
                 fill = reader.read(buffer);
                 index = 0;
                 if (fill == -1) {
+                    current = 0;
                     return;
                 }
             }

@@ -57,13 +57,23 @@ class ParserTest {
     }
 
     @Test
-    void noneSpace() {
+    void onlySpace() {
         parse(" ");
     }
 
     @Test
-    void noneTab() {
+    void onlyTab() {
         parse("\t");
+    }
+
+    @Test
+    void onlyNum() {
+        parse("15");
+    }
+
+    @Test
+    void onlyString() {
+        parse("\"text\"");
     }
 
     @Test
