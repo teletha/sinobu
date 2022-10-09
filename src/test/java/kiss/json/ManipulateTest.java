@@ -187,7 +187,6 @@ public class ManipulateTest {
         JSON json = I.json("""
                 { "key" : 12 }
                 """);
-        assert json.has("key", "12");
         assert json.has("key", 12);
     }
 
@@ -196,7 +195,6 @@ public class ManipulateTest {
         JSON json = I.json("""
                 { "key" : -12 }
                 """);
-        assert json.has("key", "-12");
         assert json.has("key", -12);
     }
 
@@ -205,7 +203,6 @@ public class ManipulateTest {
         JSON json = I.json("""
                 { "key" : 1.2 }
                 """);
-        assert json.has("key", "1.2");
         assert json.has("key", 1.2);
     }
 
@@ -214,7 +211,6 @@ public class ManipulateTest {
         JSON json = I.json("""
                 { "key" : true }
                 """);
-        assert json.has("key", "true");
         assert json.has("key", true);
     }
 
@@ -223,7 +219,6 @@ public class ManipulateTest {
         JSON json = I.json("""
                 { "key" : false }
                 """);
-        assert json.has("key", "false");
         assert json.has("key", false);
     }
 

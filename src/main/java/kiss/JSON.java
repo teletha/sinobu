@@ -159,7 +159,7 @@ public class JSON {
      * @return A result.
      */
     public boolean has(String key, Object value) {
-        return root instanceof Map ? Objects.equals(((Map) root).get(key), String.valueOf(value)) : false;
+        return root instanceof Map ? Objects.equals(Objects.toString(((Map) root).get(key)), Objects.toString(value)) : false;
     }
 
     /**
@@ -459,9 +459,18 @@ public class JSON {
                 if (current == '+' || current == '-') read();
                 digit();
             }
-            return endCapture();
 
-        // End of Text
+            if (model != null && model.type == int.class && capture.length() == 0) {
+                int num = 0;
+                for (int i = captureStart; i < index - 1; i++) {
+                    num = num * 10 + (buffer[i] - '0');
+                }
+                return num;
+            } else {
+                return endCapture();
+            }
+
+            // End of Text
         case 0x00:
             return null;
 
