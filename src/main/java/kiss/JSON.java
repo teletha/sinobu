@@ -159,7 +159,7 @@ public class JSON {
      * @return A result.
      */
     public boolean has(String key, Object value) {
-        return root instanceof Map ? Objects.equals(Objects.toString(((Map) root).get(key)), Objects.toString(value)) : false;
+        return root instanceof Map ? Objects.equals(((Map) root).get(key), value) : false;
     }
 
     /**
