@@ -75,7 +75,7 @@ class ModelLensTest {
         Model model = Model.of(GenericStringBean.class);
         model.set(bean, model.property("generic"), "value");
 
-        assert "value" == bean.getGeneric();
+        assert bean.getGeneric().equals("value");
     }
 
     @Test

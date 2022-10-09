@@ -26,23 +26,27 @@ public class JSONMappingBenchmark {
                 "member": [
                     {
                         "name": "Ada",
-                        "age": 20
+                        "age": 20,
+                        "active": true
                     },{
                         "name": "BrainCrash",
-                        "age": 21
+                        "age": 21,
+                        "active": false
                     },{
                         "name": "COBOL",
-                        "age": 22
+                        "age": 22,
+                        "active": true
                     },{
                         "name": "Delphi",
-                        "age": 23
+                        "age": 23,
+                        "active": false
                     }
                 ]
             }
             """;
 
     public static void main(String[] args) throws IOException {
-        Benchmark benchmark = new Benchmark().visualize().trial(30);
+        Benchmark benchmark = new Benchmark().visualize().trial(5);
 
         benchmark.measure("Sinobu", () -> {
             return I.json(json, Group.class);
@@ -73,6 +77,7 @@ public class JSONMappingBenchmark {
 
         public int age;
 
+        public boolean active;
     }
 
     /**
