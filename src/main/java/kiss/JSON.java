@@ -301,6 +301,9 @@ public class JSON {
     /** Reuse text symbol. */
     private static final Ⅱ<String, char[]>[] S = new Ⅱ[65536];
 
+    /** Reuse keyword symbol. */
+    private static final char[][] W = {"null".toCharArray(), "true".toCharArray(), "false".toCharArray()};
+
     /** The input source. */
     private Reader reader;
 
@@ -371,11 +374,11 @@ public class JSON {
         switch (current) {
         // keyword
         case 'n':
-            return keyword(null);
+            return keyword(null, W[0]);
         case 't':
-            return keyword("true");
+            return keyword(Boolean.TRUE, W[1]);
         case 'f':
-            return keyword("false");
+            return keyword(Boolean.FALSE, W[2]);
 
         // string
         case '"':
@@ -418,11 +421,7 @@ public class JSON {
                     ((Map) object).put(name, value(null));
                 } else {
                     Property p = model.property(name);
-                    if (p.model.atomic) {
-                        model.set(object, p, p.model.decoder.decode((String) value(p.model)));
-                    } else {
-                        model.set(object, p, value(p.model));
-                    }
+                    model.set(object, p, value(p.model));
                 }
             } while (readSeparator('}'));
             return object;
@@ -497,13 +496,12 @@ public class JSON {
      * @return A target value.
      * @throws IOException
      */
-    private Object keyword(Object keyword) throws IOException {
-        String value = String.valueOf(keyword);
-
-        for (int i = 0; i < value.length(); i++) {
-            if (current != value.charAt(i)) expected(value);
+    private Boolean keyword(Boolean keyword, char[] word) throws IOException {
+        for (int i = 1; i < word.length; i++) {
             read();
+            if (current != word[i]) expected(String.valueOf(word));
         }
+        read();
         return keyword;
     }
 

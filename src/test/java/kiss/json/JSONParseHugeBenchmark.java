@@ -17,7 +17,6 @@ import com.google.gson.Gson;
 
 import antibug.profiler.Benchmark;
 import kiss.I;
-import net.bytebuddy.utility.RandomString;
 
 public class JSONParseHugeBenchmark {
 
@@ -32,7 +31,7 @@ public class JSONParseHugeBenchmark {
         builder.append("{ \"persons\":[").append(EOL);
         for (int i = 0; i < size; i++) {
             builder.append("  {").append(EOL);
-            builder.append("    \"name\" : \"").append(RandomString.make(15)).append("\",").append(EOL);
+            builder.append("    \"name\" : \"").append(random.nextLong()).append("\",").append(EOL);
             builder.append("    \"age\" : ").append(random.nextInt(100)).append(",").append(EOL);
             builder.append("    \"point\" : ").append(random.nextInt(100)).append(".").append(random.nextInt(100)).append(",").append(EOL);
             builder.append("    \"active\" : ").append(random.nextBoolean()).append(EOL);

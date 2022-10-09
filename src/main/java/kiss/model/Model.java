@@ -295,6 +295,9 @@ public class Model<M> {
      * @throws IllegalArgumentException If the given object can't resolve the given property.
      */
     public M set(M object, Property property, Object value) {
+        if (property.model.atomic && value instanceof String) {
+            value = property.model.decoder.decode((String) value);
+        }
         return (M) property.setter.apply(object, value);
     }
 

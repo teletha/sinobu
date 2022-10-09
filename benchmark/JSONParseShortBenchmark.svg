@@ -52,31 +52,31 @@
     <text x="435" y="232">GC</text>
    </g>
   <g>
-    <rect x="175" y="20" width="106.761006" rx="2" ry="2" class="call"/>
-    <rect x="175" y="34" width="95.771144" rx="2" ry="2" class="gc"/>
+    <rect x="175" y="20" width="107.530120" rx="2" ry="2" class="call"/>
+    <rect x="175" y="34" width="94.270833" rx="2" ry="2" class="gc"/>
     <text x="160" y="37" text-anchor="end">FastJson</text>
-    <text x="288.761006" y="30" class="desc">97</text>
-    <text x="277.771144" y="44" class="desc">77</text>
+    <text x="289.530120" y="30" class="desc">102</text>
+    <text x="276.270833" y="44" class="desc">72</text>
   </g>
   <g>
-    <rect x="175" y="68" width="147.484277" rx="2" ry="2" class="call"/>
-    <rect x="175" y="82" width="33.333333" rx="2" ry="2" class="gc"/>
+    <rect x="175" y="68" width="142.319277" rx="2" ry="2" class="call"/>
+    <rect x="175" y="82" width="34.635417" rx="2" ry="2" class="gc"/>
     <text x="160" y="85" text-anchor="end">Sinobu</text>
-    <text x="329.484277" y="78" class="desc">134</text>
-    <text x="215.333333" y="92" class="desc">26</text>
+    <text x="324.319277" y="78" class="desc">135</text>
+    <text x="216.635417" y="92" class="desc">26</text>
   </g>
   <g>
-    <rect x="175" y="116" width="190.408805" rx="2" ry="2" class="call"/>
-    <rect x="175" y="130" width="84.825871" rx="2" ry="2" class="gc"/>
+    <rect x="175" y="116" width="187.650602" rx="2" ry="2" class="call"/>
+    <rect x="175" y="130" width="85.937500" rx="2" ry="2" class="gc"/>
     <text x="160" y="133" text-anchor="end">Jackson</text>
-    <text x="372.408805" y="126" class="desc">173</text>
-    <text x="266.825871" y="140" class="desc">68</text>
+    <text x="369.650602" y="126" class="desc">178</text>
+    <text x="267.937500" y="140" class="desc">66</text>
   </g>
   <g>
     <rect x="175" y="164" width="350.000000" rx="2" ry="2" class="call"/>
     <rect x="175" y="178" width="150.000000" rx="2" ry="2" class="gc"/>
     <text x="160" y="181" text-anchor="end">Gson</text>
-    <text x="532.000000" y="174" class="desc">318</text>
-    <text x="332.000000" y="188" class="desc">120</text>
+    <text x="532.000000" y="174" class="desc">332</text>
+    <text x="332.000000" y="188" class="desc">115</text>
   </g>
 </svg>
