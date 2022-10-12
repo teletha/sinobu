@@ -9,11 +9,12 @@
  */
 package kiss.model;
 
-import java.lang.invoke.CallSite;
 import java.lang.invoke.LambdaMetafactory;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
+import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
 
 import antibug.profiler.Benchmark;
@@ -21,15 +22,9 @@ import kiss.I;
 
 public class ReflectionFieldSetterBenchmark {
 
-    private static final MethodHandle staticSetter;
+    private static final MethodHandle staticSetter = Builder.fieldSetter(ReflectionFieldSetterBenchmark.class, "one", int.class);
 
-    static {
-        try {
-            staticSetter = MethodHandles.lookup().findSetter(ReflectionFieldSetterBenchmark.class, "one", int.class);
-        } catch (Exception e) {
-            throw I.quiet(e);
-        }
-    }
+    private static final VarHandle staticVH = Builder.vhSetter(ReflectionFieldSetterBenchmark.class, "one", int.class);
 
     public static void main(String[] args) throws Throwable {
         Benchmark benchmark = new Benchmark();
@@ -65,26 +60,24 @@ public class ReflectionFieldSetterBenchmark {
             }
         });
 
-        MethodHandle unreflect = MethodHandles.lookup().unreflectSetter(setter);
-
-        MethodType type = unreflect.type().wrap().changeReturnType(void.class);
-        CallSite site = LambdaMetafactory.metafactory(MethodHandles.lookup(), "accept", MethodType
-                .methodType(BiIntConsumer.class, MethodHandle.class), type.erase(), MethodHandles.exactInvoker(unreflect.type()), type);
-        BiIntConsumer bi = (BiIntConsumer) site.getTarget().invokeExact(unreflect);
-        benchmark.measure("LambdaMeta", () -> {
-            bi.accept(base, 1);
-            return "one";
+        benchmark.measure("StaticVH", () -> {
+            try {
+                staticVH.set(base, 1);
+                return "one";
+            } catch (Throwable e) {
+                throw I.quiet(e);
+            }
         });
 
-        // WiseBiConsumer setterFunction = Model.createSetter(setter);
-        // benchmark.measure("LambdaMetaFactory", () -> {
-        // try {
-        // setterFunction.accept(base, "one");
-        // return "one";
-        // } catch (Throwable e) {
-        // throw I.quiet(e);
-        // }
-        // });
+        BiIntConsumer lambda = createSetter(setter);
+        benchmark.measure("LambdaMeta", () -> {
+            try {
+                lambda.accept(base, 1);
+                return "one";
+            } catch (Throwable e) {
+                throw I.quiet(e);
+            }
+        });
 
         benchmark.measure("DirectCall", () -> {
             try {
@@ -102,5 +95,15 @@ public class ReflectionFieldSetterBenchmark {
 
     public interface BiIntConsumer<T> {
         void accept(T one, int two);
+    }
+
+    static BiIntConsumer createSetter(Field field) throws Throwable {
+        Lookup lookup = MethodHandles.privateLookupIn(field.getDeclaringClass(), MethodHandles.lookup());
+        MethodHandle mh = lookup.unreflectSetter(field);
+        mh = lookup.findSetter(field.getDeclaringClass(), field.getName(), field.getType());
+
+        return (BiIntConsumer) LambdaMetafactory.metafactory(lookup, "accept", MethodType.methodType(BiIntConsumer.class), mh.type()
+                .generic()
+                .changeReturnType(void.class), mh, mh.type().wrap().changeReturnType(void.class)).dynamicInvoker().invokeExact();
     }
 }
