@@ -159,7 +159,7 @@ public class JSON {
      * @return A result.
      */
     public boolean has(String key, Object value) {
-        return root instanceof Map ? Objects.equals(((Map) root).get(key), value) : false;
+        return root instanceof Map ? Objects.equals(((Map) root).get(key), String.valueOf(value)) : false;
     }
 
     /**
@@ -301,9 +301,6 @@ public class JSON {
     /** Reuse text symbol. */
     private static final Ⅱ<String, char[]>[] S = new Ⅱ[65536];
 
-    /** Reuse keyword symbol. */
-    private static final char[][] W = {"null".toCharArray(), "true".toCharArray(), "false".toCharArray()};
-
     /** The input source. */
     private Reader reader;
 
@@ -374,11 +371,11 @@ public class JSON {
         switch (current) {
         // keyword
         case 'n':
-            return keyword(null, W[0]);
+            return keyword(null);
         case 't':
-            return keyword(Boolean.TRUE, W[1]);
+            return keyword("true");
         case 'f':
-            return keyword(Boolean.FALSE, W[2]);
+            return keyword("false");
 
         // string
         case '"':
@@ -421,7 +418,11 @@ public class JSON {
                     ((Map) object).put(name, value(null));
                 } else {
                     Property p = model.property(name);
-                    model.set(object, p, value(p.model));
+                    if (p.model.atomic) {
+                        model.set(object, p, p.model.decoder.decode((String) value(p.model)));
+                    } else {
+                        model.set(object, p, value(p.model));
+                    }
                 }
             } while (readSeparator('}'));
             return object;
@@ -459,18 +460,9 @@ public class JSON {
                 if (current == '+' || current == '-') read();
                 digit();
             }
+            return endCapture();
 
-            if (model != null && model.type == int.class && capture.length() == 0) {
-                int num = 0;
-                for (int i = captureStart; i < index - 1; i++) {
-                    num = num * 10 + (buffer[i] - '0');
-                }
-                return num;
-            } else {
-                return endCapture();
-            }
-
-            // End of Text
+        // End of Text
         case 0x00:
             return null;
 
@@ -505,12 +497,13 @@ public class JSON {
      * @return A target value.
      * @throws IOException
      */
-    private Boolean keyword(Boolean keyword, char[] word) throws IOException {
-        for (int i = 1; i < word.length; i++) {
+    private Object keyword(Object keyword) throws IOException {
+        String value = String.valueOf(keyword);
+
+        for (int i = 0; i < value.length(); i++) {
+            if (current != value.charAt(i)) expected(value);
             read();
-            if (current != word[i]) expected(String.valueOf(word));
         }
-        read();
         return keyword;
     }
 
@@ -630,9 +623,6 @@ public class JSON {
                     return;
                 }
             }
-
-            // loop unrolling - performance optimization
-            if (index + 1 < fill && ' ' < (current = buffer[index++])) break;
         } while ((current = buffer[index++]) <= ' ');
     }
 
