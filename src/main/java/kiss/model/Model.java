@@ -219,20 +219,28 @@ public class Model<M> {
                                     properties.put(property.name, property);
                                 } else if ((fieldModel.atomic && notFinal) || !fieldModel.atomic || isRecord) {
                                     Property property = new Property(fieldModel, field.getName(), field);
+
                                     property.getter = m -> field.get(m);
-                                    property.setter = !isRecord ? (m, v) -> {
-                                        if (notFinal) field.set(m, v);
-                                        return m;
-                                    } : (m, v) -> {
-                                        Constructor c = collectConstructors(type)[0];
-                                        Parameter[] params = c.getParameters();
-                                        Object[] values = new Object[params.length];
-                                        for (int i = 0; i < params.length; i++) {
-                                            String name = params[i].getName();
-                                            values[i] = name.equals(property.name) ? v : get((M) m, property(name));
-                                        }
-                                        return c.newInstance(values);
-                                    };
+                                    if (isRecord) {
+                                        property.setter = (m, v) -> {
+                                            Constructor c = collectConstructors(type)[0];
+                                            Parameter[] params = c.getParameters();
+                                            Object[] values = new Object[params.length];
+                                            for (int i = 0; i < params.length; i++) {
+                                                String name = params[i].getName();
+                                                values[i] = name.equals(property.name) ? v : get((M) m, property(name));
+                                            }
+                                            return c.newInstance(values);
+                                        };
+                                    } else {
+                                        MethodHandle setter = MethodHandles.privateLookupIn(type, MethodHandles.lookup())
+                                                .unreflectSetter(field);
+
+                                        property.setter = (m, v) -> {
+                                            setter.invoke(m, v);
+                                            return m;
+                                        };
+                                    }
 
                                     // register it
                                     properties.put(property.name, property);

@@ -173,10 +173,10 @@ class ModelTest {
         Person other = new Person();
 
         model.set(instance, person, other);
-        assert instance.noneAttribute.getAge() == 10;
+        assert instance.noneAttribute.getAge() == 0;
 
         Person retrieved = (Person) model.get(instance, person);
-        assert retrieved.getAge() == 10;
+        assert retrieved.getAge() == 0;
     }
 
     @Test
