@@ -218,9 +218,6 @@ public class Model<M> {
                                     // register it
                                     properties.put(property.name, property);
                                 } else if ((fieldModel.atomic && notFinal) || !fieldModel.atomic || isRecord) {
-                                    // field
-                                    field.setAccessible(true);
-
                                     Property property = new Property(fieldModel, field.getName(), field);
                                     property.getter = m -> field.get(m);
                                     property.setter = !isRecord ? (m, v) -> {
