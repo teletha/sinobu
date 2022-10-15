@@ -233,9 +233,7 @@ public class Model<M> {
                                             return c.newInstance(values);
                                         };
                                     } else {
-                                        MethodHandle setter = MethodHandles.privateLookupIn(type, MethodHandles.lookup())
-                                                .unreflectSetter(field);
-
+                                        MethodHandle setter = MethodHandles.lookup().unreflectSetter(field);
                                         property.setter = (m, v) -> {
                                             setter.invoke(m, v);
                                             return m;
