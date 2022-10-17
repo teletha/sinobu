@@ -8,10 +8,10 @@
 		<script src="mimic.js" type="module"></script>
 		<link href="main.css" rel="stylesheet"/>
 	</head>
-	<body class="g">
-		<header class="P">
-			<h1 class="T" date="2022-10-17" ver="2.20.0"><code>Sinobu</code></h1>
-			<nav class="h"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
+	<body class="O">
+		<header class="j">
+			<h1 class="I" date="2022-10-17" ver="2.20.0"><code>Sinobu</code></h1>
+			<nav class="d"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#text"/>
 					</svg>Document</a><a href="api/"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#package"/>
@@ -22,7 +22,7 @@
 					</svg>Activity</a><a href="https://github.com//teletha/sinobu" target="_blank"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#github"/>
 					</svg>Repository</a></nav>
-			<div class="d" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
+			<div class="Y" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#sun"/>
 					</svg>
 				</a><a id="dark" title="Change to a darker color scheme"><svg class="A svg" viewBox="0 0 24 24">
@@ -30,81 +30,81 @@
 					</svg>
 				</a></div>
 		</header>
-		<main class="O">
-			<nav class="H">
+		<main class="i">
+			<nav class="J">
 				<div></div>
 			</nav>
-			<article class="M" id="Article">
-				<section class="Q"><code class="j">kiss</code>
-					<h2 class="Functional I"><code class="W">Disposable</code></h2>
-					<div class="S"></div><span class="B"><p>The <code><a href="api/kiss.Disposable.html">Disposable</a></code> interface is used when components need to deallocate and dispose resources
+			<article class="Z" id="Article">
+				<section class="T"><code class="f">kiss</code>
+					<h2 class="Functional X"><code class="Q">Disposable</code></h2>
+					<div class="c"></div><span class="B"><p>The <code><a href="api/kiss.Disposable.html">Disposable</a></code> interface is used when components need to deallocate and dispose resources
  prior to their destruction.</p>
 					</span></section>
-				<section class="Q" id="vandalize()">
-					<h2 class="X"><i class="ABSTRACT"><i class="PUBLIC"></i></i><code class="W">vandalize</code><code class="f">()</code><i class="k"><code>void</code></i></h2><span class="B"><p>Functional interface method to implement actual dispose action, this operation should be
+				<section class="T" id="vandalize()">
+					<h2 class="U"><i class="ABSTRACT"><i class="PUBLIC"></i></i><code class="Q">vandalize</code><code class="V">()</code><i class="M"><code>void</code></i></h2><span class="B"><p>Functional interface method to implement actual dispose action, this operation should be
  idempotent.
  
 							<p>
  User SHOULD NOT call this method directly.</p>
 						</p>
 					</span></section>
-				<section class="Q" id="dispose()">
-					<h2 class="X"><i class="DEFAULT"><i class="PUBLIC"></i></i><code class="W">dispose</code><code class="f">()</code><i class="k"><code>void</code></i></h2><span class="B"><p>Dispose the resource, this operation should be idempotent.</p>
+				<section class="T" id="dispose()">
+					<h2 class="U"><i class="DEFAULT"><i class="PUBLIC"></i></i><code class="Q">dispose</code><code class="V">()</code><i class="M"><code>void</code></i></h2><span class="B"><p>Dispose the resource, this operation should be idempotent.</p>
 					</span></section>
-				<section class="Q" id="isDisposed()">
-					<h2 class="X"><i class="DEFAULT"><i class="PUBLIC"></i></i><code class="W">isDisposed</code><code class="f">()</code><i class="k"><code>boolean</code></i></h2>
-					<table class="J">
-						<tr class="V">
+				<section class="T" id="isDisposed()">
+					<h2 class="U"><i class="DEFAULT"><i class="PUBLIC"></i></i><code class="Q">isDisposed</code><code class="V">()</code><i class="M"><code>boolean</code></i></h2>
+					<table class="e">
+						<tr class="g">
 							<td><code>boolean</code></td>
 							<td><span><p>A result.</p>
 								</span></td>
 						</tr>
 					</table><span class="B"><p>Check the state of operation. (default : false)</p>
 					</span></section>
-				<section class="Q" id="add(kiss.Disposable)">
-					<h2 class="X"><i class="DEFAULT"><i class="PUBLIC"></i></i><code class="W">add</code><code class="f">(<code><a href="api/kiss.Disposable.html">Disposable</a></code> <code class="parameterName">next</code>)</code><i class="k"><code><a href="api/kiss.Disposable.html">Disposable</a></code></i></h2>
-					<table class="J">
-						<tr class="Z">
+				<section class="T" id="add(kiss.Disposable)">
+					<h2 class="U"><i class="DEFAULT"><i class="PUBLIC"></i></i><code class="Q">add</code><code class="V">(<code><a href="api/kiss.Disposable.html">Disposable</a></code> <code class="parameterName">next</code>)</code><i class="M"><code><a href="api/kiss.Disposable.html">Disposable</a></code></i></h2>
+					<table class="e">
+						<tr class="b">
 							<td><code><a href="api/kiss.Disposable.html">Disposable</a></code> <code>next</code></td>
 							<td><span><p>A next <code><a href="api/kiss.Disposable.html">Disposable</a></code> to execute.</p>
 								</span></td>
 						</tr>
-						<tr class="V">
+						<tr class="g">
 							<td><code><a href="api/kiss.Disposable.html">Disposable</a></code></td>
 							<td><span><p>A composed <code><a href="api/kiss.Disposable.html">Disposable</a></code>.</p>
 								</span></td>
 						</tr>
 					</table><span class="B"><p>Append companion <code><a href="api/kiss.Disposable.html">Disposable</a></code>.</p>
 					</span></section>
-				<section class="Q" id="add(java.util.concurrent.Future)">
-					<h2 class="X"><i class="DEFAULT"><i class="PUBLIC"></i></i><code class="W">add</code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/Future.html">Future</a></code> <code class="parameterName">next</code>)</code><i class="k"><code><a href="api/kiss.Disposable.html">Disposable</a></code></i></h2>
-					<table class="J">
-						<tr class="Z">
+				<section class="T" id="add(java.util.concurrent.Future)">
+					<h2 class="U"><i class="DEFAULT"><i class="PUBLIC"></i></i><code class="Q">add</code><code class="V">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/Future.html">Future</a></code> <code class="parameterName">next</code>)</code><i class="M"><code><a href="api/kiss.Disposable.html">Disposable</a></code></i></h2>
+					<table class="e">
+						<tr class="b">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/Future.html">Future</a></code> <code>next</code></td>
 							<td><span><p>A next <code><a href="api/kiss.Disposable.html">Disposable</a></code> to execute.</p>
 								</span></td>
 						</tr>
-						<tr class="V">
+						<tr class="g">
 							<td><code><a href="api/kiss.Disposable.html">Disposable</a></code></td>
 							<td><span><p>A composed <code><a href="api/kiss.Disposable.html">Disposable</a></code>.</p>
 								</span></td>
 						</tr>
 					</table><span class="B"><p>Append as companion <code><a href="api/kiss.Disposable.html">Disposable</a></code>. <code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/Future.html">Future</a></code> will be canceled.</p>
 					</span></section>
-				<section class="Q" id="sub()">
-					<h2 class="X"><i class="DEFAULT"><i class="PUBLIC"></i></i><code class="W">sub</code><code class="f">()</code><i class="k"><code><a href="api/kiss.Disposable.html">Disposable</a></code></i></h2>
-					<table class="J">
-						<tr class="V">
+				<section class="T" id="sub()">
+					<h2 class="U"><i class="DEFAULT"><i class="PUBLIC"></i></i><code class="Q">sub</code><code class="V">()</code><i class="M"><code><a href="api/kiss.Disposable.html">Disposable</a></code></i></h2>
+					<table class="e">
+						<tr class="g">
 							<td><code><a href="api/kiss.Disposable.html">Disposable</a></code></td>
 							<td><span><p>A child <code><a href="api/kiss.Disposable.html">Disposable</a></code>.</p>
 								</span></td>
 						</tr>
 					</table><span class="B"><p>Create child <code><a href="api/kiss.Disposable.html">Disposable</a></code>.</p>
 					</span></section>
-				<section class="Q" id="empty()">
-					<h2 class="X"><i class="STATIC PUBLIC"></i><code class="W">empty</code><code class="f">()</code><i class="k"><code><a href="api/kiss.Disposable.html">Disposable</a></code></i></h2>
-					<table class="J">
-						<tr class="V">
+				<section class="T" id="empty()">
+					<h2 class="U"><i class="STATIC PUBLIC"></i><code class="Q">empty</code><code class="V">()</code><i class="M"><code><a href="api/kiss.Disposable.html">Disposable</a></code></i></h2>
+					<table class="e">
+						<tr class="g">
 							<td><code><a href="api/kiss.Disposable.html">Disposable</a></code></td>
 							<td><span><p>A created empty <code><a href="api/kiss.Disposable.html">Disposable</a></code>.</p>
 								</span></td>
@@ -112,20 +112,20 @@
 					</table><span class="B"><p>Create new empty <code><a href="api/kiss.Disposable.html">Disposable</a></code>.</p>
 					</span></section>
 			</article>
-			<aside class="R" id="SubNavi">
-				<div class="L">
-					<h5 class="e">Static Methods</h5>
+			<aside class="K" id="SubNavi">
+				<div class="P">
+					<h5 class="l">Static Methods</h5>
 					<ul>
-						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.Disposable.html#empty()">empty</a></code><code class="f">()</code><i class="i"><code><a href="api/kiss.Disposable.html">Disposable</a></code></i></li>
+						<li><i class="STATIC PUBLIC"></i><code><a href="api/kiss.Disposable.html#empty()">empty</a></code><code class="V">()</code><i class="N"><code><a href="api/kiss.Disposable.html">Disposable</a></code></i></li>
 					</ul>
-					<h5 class="e">Methods</h5>
+					<h5 class="l">Methods</h5>
 					<ul>
-						<li><i class="ABSTRACT"><i class="PUBLIC"></i></i><code><a href="api/kiss.Disposable.html#vandalize()">vandalize</a></code><code class="f">()</code><i class="i"><code>void</code></i></li>
-						<li><i class="DEFAULT"><i class="PUBLIC"></i></i><code><a href="api/kiss.Disposable.html#dispose()">dispose</a></code><code class="f">()</code><i class="i"><code>void</code></i></li>
-						<li><i class="DEFAULT"><i class="PUBLIC"></i></i><code><a href="api/kiss.Disposable.html#isDisposed()">isDisposed</a></code><code class="f">()</code><i class="i"><code>boolean</code></i></li>
-						<li><i class="DEFAULT"><i class="PUBLIC"></i></i><code><a href="api/kiss.Disposable.html#add(kiss.Disposable)">add</a></code><code class="f">(<code><a href="api/kiss.Disposable.html">Disposable</a></code> <code class="parameterName">next</code>)</code><i class="i"><code><a href="api/kiss.Disposable.html">Disposable</a></code></i></li>
-						<li><i class="DEFAULT"><i class="PUBLIC"></i></i><code><a href="api/kiss.Disposable.html#add(java.util.concurrent.Future)">add</a></code><code class="f">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/Future.html">Future</a></code> <code class="parameterName">next</code>)</code><i class="i"><code><a href="api/kiss.Disposable.html">Disposable</a></code></i></li>
-						<li><i class="DEFAULT"><i class="PUBLIC"></i></i><code><a href="api/kiss.Disposable.html#sub()">sub</a></code><code class="f">()</code><i class="i"><code><a href="api/kiss.Disposable.html">Disposable</a></code></i></li>
+						<li><i class="ABSTRACT"><i class="PUBLIC"></i></i><code><a href="api/kiss.Disposable.html#vandalize()">vandalize</a></code><code class="V">()</code><i class="N"><code>void</code></i></li>
+						<li><i class="DEFAULT"><i class="PUBLIC"></i></i><code><a href="api/kiss.Disposable.html#dispose()">dispose</a></code><code class="V">()</code><i class="N"><code>void</code></i></li>
+						<li><i class="DEFAULT"><i class="PUBLIC"></i></i><code><a href="api/kiss.Disposable.html#isDisposed()">isDisposed</a></code><code class="V">()</code><i class="N"><code>boolean</code></i></li>
+						<li><i class="DEFAULT"><i class="PUBLIC"></i></i><code><a href="api/kiss.Disposable.html#add(kiss.Disposable)">add</a></code><code class="V">(<code><a href="api/kiss.Disposable.html">Disposable</a></code> <code class="parameterName">next</code>)</code><i class="N"><code><a href="api/kiss.Disposable.html">Disposable</a></code></i></li>
+						<li><i class="DEFAULT"><i class="PUBLIC"></i></i><code><a href="api/kiss.Disposable.html#add(java.util.concurrent.Future)">add</a></code><code class="V">(<code><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/concurrent/Future.html">Future</a></code> <code class="parameterName">next</code>)</code><i class="N"><code><a href="api/kiss.Disposable.html">Disposable</a></code></i></li>
+						<li><i class="DEFAULT"><i class="PUBLIC"></i></i><code><a href="api/kiss.Disposable.html#sub()">sub</a></code><code class="V">()</code><i class="N"><code><a href="api/kiss.Disposable.html">Disposable</a></code></i></li>
 					</ul>
 				</div>
 			</aside>
