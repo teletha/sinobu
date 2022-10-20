@@ -52,42 +52,42 @@
     <text x="435" y="280">GC</text>
   </g>
 
-  <rect x="175" y="20" width="201.459733" rx="2" ry="2" class="call"/>
-  <rect x="175" y="34" width="51.980198" rx="2" ry="2" class="gc"/>
-  <text x="160" y="37" text-anchor="end">SinobuFind</text>
+  <rect x="175" y="20" width="212.162921" rx="2" ry="2" class="call"/>
+  <rect x="175" y="34" width="49.784483" rx="2" ry="2" class="gc"/>
+  <text x="160" y="37" text-anchor="end">Sinobu</text>
   <text x="160" y="47" text-anchor="end" class="desc">2.20.0</text>
-  <text x="383.459733" y="30" class="desc">6940</text>
-  <text x="233.980198" y="44" class="desc">7</text>
+  <text x="394.162921" y="30" class="desc">3237</text>
+  <text x="231.784483" y="44" class="desc">15</text>
 
-  <rect x="175" y="68" width="201.808078" rx="2" ry="2" class="call"/>
-  <rect x="175" y="82" width="51.980198" rx="2" ry="2" class="gc"/>
-  <text x="160" y="85" text-anchor="end">Sinobu</text>
-  <text x="160" y="95" text-anchor="end" class="desc">2.20.0</text>
-  <text x="383.808078" y="78" class="desc">6952</text>
-  <text x="233.980198" y="92" class="desc">7</text>
+  <rect x="175" y="68" width="214.260300" rx="2" ry="2" class="call"/>
+  <rect x="175" y="82" width="150.000000" rx="2" ry="2" class="gc"/>
+  <text x="160" y="85" text-anchor="end">FastJson</text>
+  <text x="160" y="95" text-anchor="end" class="desc">2.0.15.graal</text>
+  <text x="396.260300" y="78" class="desc">3269</text>
+  <text x="332.000000" y="92" class="desc">46</text>
 
-  <rect x="175" y="116" width="213.651821" rx="2" ry="2" class="call"/>
-  <rect x="175" y="130" width="150.000000" rx="2" ry="2" class="gc"/>
-  <text x="160" y="133" text-anchor="end">FastJson</text>
-  <text x="160" y="143" text-anchor="end" class="desc">2.0.15.graal</text>
-  <text x="395.651821" y="126" class="desc">7360</text>
-  <text x="332.000000" y="140" class="desc">20</text>
+  <rect x="175" y="116" width="219.765918" rx="2" ry="2" class="call"/>
+  <rect x="175" y="130" width="48.491379" rx="2" ry="2" class="gc"/>
+  <text x="160" y="133" text-anchor="end">SinobuFind</text>
+  <text x="160" y="143" text-anchor="end" class="desc"></text>
+  <text x="401.765918" y="126" class="desc">3353</text>
+  <text x="230.491379" y="140" class="desc">15</text>
 
-  <rect x="175" y="164" width="311.420751" rx="2" ry="2" class="call"/>
-  <rect x="175" y="178" width="80.198020" rx="2" ry="2" class="gc"/>
+  <rect x="175" y="164" width="323.061798" rx="2" ry="2" class="call"/>
+  <rect x="175" y="178" width="77.586207" rx="2" ry="2" class="gc"/>
   <text x="160" y="181" text-anchor="end">Jackson</text>
   <text x="160" y="191" text-anchor="end" class="desc">2.14.0-rc2</text>
-  <text x="493.420751" y="174" class="desc">10728</text>
-  <text x="262.198020" y="188" class="desc">10</text>
+  <text x="505.061798" y="174" class="desc">4929</text>
+  <text x="259.586207" y="188" class="desc">24</text>
 
   <rect x="175" y="212" width="350.000000" rx="2" ry="2" class="call"/>
-  <rect x="175" y="226" width="118.811881" rx="2" ry="2" class="gc"/>
+  <rect x="175" y="226" width="118.318966" rx="2" ry="2" class="gc"/>
   <text x="160" y="229" text-anchor="end">Gson</text>
   <text x="160" y="239" text-anchor="end" class="desc">2.9.1</text>
-  <text x="532.000000" y="222" class="desc">12057</text>
-  <text x="300.811881" y="236" class="desc">16</text>
+  <text x="532.000000" y="222" class="desc">5340</text>
+  <text x="300.318966" y="236" class="desc">36</text>
 
   <text x="175" y="300" class="desc">Java: 19</text>
-  <text x="245" y="300" class="desc">Memory: 4072MB</text>
-  <text x="345" y="300" class="desc">CPU: Intel(R) Core(TM) i7-3770K CPU @ 3.50GHz 3.501GHz</text>
+  <text x="245" y="300" class="desc">Memory: 8128MB</text>
+  <text x="345" y="300" class="desc">CPU: 12th Gen Intel(R) Core(TM) i5-12400 2.5GHz</text>
 </svg>

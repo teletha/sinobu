@@ -180,7 +180,7 @@ public class LogBenchmark {
             String name = execution + "-" + caller;
 
             org.apache.logging.log4j.Logger logger = context.getLogger(name);
-            benchmark.measure("Log4j2 " + name, () -> {
+            benchmark.measure("Log4j " + name, () -> {
                 logger.info(message);
                 return -1;
             });
