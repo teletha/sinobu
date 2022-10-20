@@ -112,7 +112,7 @@ class TransformTest {
 
     @Test
     void locale() {
-        Locale value = new Locale("en");
+        Locale value = Locale.ENGLISH;
         String text = "en";
 
         assert I.transform(value, String.class).equals(text);

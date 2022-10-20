@@ -1999,6 +1999,8 @@ public class I {
             long delay = delayTime.getAsLong();
             Runnable task = I.wiseC(observer).bindLast(null);
             Future future;
+
+            @SuppressWarnings("resource")
             ScheduledExecutorService exe = scheduler == null || scheduler.length == 0 || scheduler[0] == null ? I.scheduler : scheduler[0];
 
             if (intervalTime <= 0) {

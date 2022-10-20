@@ -26,12 +26,9 @@ public class ReflectionFieldSetterBenchmark {
 
     private static final MethodHandle staticSetter;
 
-    private static final VarHandle staticVH;
-
     static {
         try {
             staticSetter = MethodHandles.lookup().findSetter(ReflectionFieldSetterBenchmark.class, "one", int.class);
-            staticVH = MethodHandles.lookup().findVarHandle(ReflectionFieldSetterBenchmark.class, "one", int.class);
         } catch (NoSuchFieldException e) {
             throw I.quiet(e);
         } catch (IllegalAccessException e) {
@@ -118,7 +115,7 @@ public class ReflectionFieldSetterBenchmark {
         benchmark.perform();
     }
 
-    private int one = 0;
+    public int one = 0;
 
     public interface BiIntConsumer<T> {
         void accept(T one, int two);

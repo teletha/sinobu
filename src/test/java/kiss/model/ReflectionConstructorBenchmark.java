@@ -44,14 +44,14 @@ public class ReflectionConstructorBenchmark {
             }
         });
 
-        // benchmark.measure("ConstantMH", () -> {
-        // try {
-        // return (Meta) constantMH.invokeExact();
-        // } catch (Throwable e) {
-        // throw I.quiet(e);
-        // }
-        // });
-        //
+        benchmark.measure("ConstantMH", () -> {
+            try {
+                return (Meta) constantMH.invokeExact();
+            } catch (Throwable e) {
+                throw I.quiet(e);
+            }
+        });
+
         // WiseSupplier function = Model.createConstructor(constructor);
         // benchmark.measure("LambdaMetaFactory", () -> {
         // try {
