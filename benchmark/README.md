@@ -1,3 +1,5 @@
+### TEST
+<img src="/benchmark/ex.svg" width="700">
 ### Logging
 <img src="/benchmark/LogBenchmark.svg" width="700">
 
