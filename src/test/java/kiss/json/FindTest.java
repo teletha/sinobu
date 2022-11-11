@@ -18,16 +18,15 @@ import kiss.I;
 import kiss.JSON;
 import kiss.sample.bean.Person;
 
-class TraverseTest {
+class FindTest {
 
     @Test
     void integer() {
-        // @formatter:off
-        JSON json = json(
-        "{",
-        "  'age': 20",
-        "}");
-        // @formatter:on
+        JSON json = json("""
+                {
+                    "age": 20
+                }
+                """);
 
         List<Integer> values = json.find(int.class, "age");
         assert values.size() == 1;
@@ -35,13 +34,77 @@ class TraverseTest {
     }
 
     @Test
+    void integerFromString() {
+        JSON json = json("""
+                {
+                    "age": "20"
+                }
+                """);
+
+        List<Integer> values = json.find(int.class, "age");
+        assert values.size() == 1;
+        assert values.get(0) == 20;
+    }
+
+    @Test
+    void decimalFloat() {
+        JSON json = json("""
+                {
+                    "size": 1.3
+                }
+                """);
+
+        List<Float> values = json.find(float.class, "size");
+        assert values.size() == 1;
+        assert values.get(0) == 1.3f;
+    }
+
+    @Test
+    void decimalFloatFromString() {
+        JSON json = json("""
+                {
+                    "size": "1.3"
+                }
+                """);
+
+        List<Float> values = json.find(float.class, "size");
+        assert values.size() == 1;
+        assert values.get(0) == 1.3f;
+    }
+
+    @Test
+    void decimalDouble() {
+        JSON json = json("""
+                {
+                    "size": 1.3
+                }
+                """);
+
+        List<Double> values = json.find(double.class, "size");
+        assert values.size() == 1;
+        assert values.get(0) == 1.3d;
+    }
+
+    @Test
+    void decimalDoubleFromString() {
+        JSON json = json("""
+                {
+                    "size": "1.3"
+                }
+                """);
+
+        List<Double> values = json.find(double.class, "size");
+        assert values.size() == 1;
+        assert values.get(0) == 1.3d;
+    }
+
+    @Test
     void string() {
-        // @formatter:off
-        JSON json = json(
-        "{",
-        "  'name': 'Jill'",
-        "}");
-        // @formatter:on
+        JSON json = json("""
+                {
+                    "name": "Jill"
+                }
+                """);
 
         List<String> values = json.find(String.class, "name");
         assert values.size() == 1;
@@ -50,12 +113,11 @@ class TraverseTest {
 
     @Test
     void nullValue() {
-        // @formatter:off
-        JSON json = json(
-        "{",
-        "  'name': null",
-        "}");
-        // @formatter:on
+        JSON json = json("""
+                {
+                    "name": null
+                }
+                """);
 
         List<String> values = json.find(String.class, "name");
         assert values.size() == 0;
@@ -63,14 +125,13 @@ class TraverseTest {
 
     @Test
     void nestObject() {
-        // @formatter:off
-        JSON json = json(
-        "{",
-        "  'city': {",
-        "    'id': 'NY'",
-        "  }",
-        "}");
-        // @formatter:on
+        JSON json = json("""
+                {
+                    "city": {
+                        "id": "NY"
+                    }
+                }
+                """);
 
         List<String> values = json.find(String.class, "city", "id");
         assert values.size() == 1;
@@ -79,16 +140,15 @@ class TraverseTest {
 
     @Test
     void arrayAll() {
-        // @formatter:off
-        JSON json = json(
-        "{",
-        "  'names': [",
-        "    'Jill',",
-        "    'Bell',",
-        "    'Alice'",
-        "  ]",
-        "}");
-        // @formatter:on
+        JSON json = json("""
+                {
+                    "names": [
+                        "Jill",
+                        "Bell",
+                        "Alice"
+                    ]
+                }
+                """);
 
         List<String> values = json.find(String.class, "names", "*");
         assert values.size() == 3;
@@ -99,16 +159,15 @@ class TraverseTest {
 
     @Test
     void arrayIndex() {
-        // @formatter:off
-        JSON json = json(
-        "{",
-        "  'names': [",
-        "    'Jill',",
-        "    'Bell',",
-        "    'Alice'",
-        "  ]",
-        "}");
-        // @formatter:on
+        JSON json = json("""
+                {
+                    "names": [
+                        "Jill",
+                        "Bell",
+                        "Alice"
+                    ]
+                }
+                """);
 
         List<String> values = json.find(String.class, "names", "1");
         assert values.size() == 1;
@@ -117,16 +176,15 @@ class TraverseTest {
 
     @Test
     void arrayObject() {
-        // @formatter:off
-        JSON json = json(
-        "{",
-        "  'names': [",
-        "    {'name': 'Jill'},",
-        "    {'name': 'Bell'},",
-        "    {'name': 'Alice'}",
-        "  ]",
-        "}");
-        // @formatter:on
+        JSON json = json("""
+                {
+                    "names": [
+                        { "name" : "Jill" },
+                        { "name" : "Bell" },
+                        { "name" : "Alice" }
+                    ]
+                }
+                """);
 
         List<String> values = json.find(String.class, "names", "*", "name");
         assert values.size() == 3;
@@ -137,16 +195,15 @@ class TraverseTest {
 
     @Test
     void arrayIndexObject() {
-        // @formatter:off
-        JSON json = json(
-        "{",
-        "  'names': [",
-        "    {'name': 'Jill'},",
-        "    {'name': 'Bell'},",
-        "    {'name': 'Alice'}",
-        "  ]",
-        "}");
-        // @formatter:on
+        JSON json = json("""
+                {
+                    "names": [
+                        { "name" : "Jill" },
+                        { "name" : "Bell" },
+                        { "name" : "Alice" }
+                    ]
+                }
+                """);
 
         List<String> values = json.find(String.class, "names", "1", "name");
         assert values.size() == 1;
@@ -155,16 +212,15 @@ class TraverseTest {
 
     @Test
     void arrayModel() {
-        // @formatter:off
-        JSON json = json(
-        "{",
-        "  'names': [",
-        "    {'firstName': 'Jill'},",
-        "    {'firstName': 'Bell'},",
-        "    {'firstName': 'Alice'}",
-        "  ]",
-        "}");
-        // @formatter:on
+        JSON json = json("""
+                {
+                    "names": [
+                        { "firstName" : "Jill" },
+                        { "firstName" : "Bell" },
+                        { "firstName" : "Alice" }
+                    ]
+                }
+                """);
 
         List<Person> values = json.find(Person.class, "names", "*");
         assert values.size() == 3;
@@ -175,14 +231,13 @@ class TraverseTest {
 
     @Test
     void wildcard() {
-        // @formatter:off
-        JSON json = json(
-        "[",
-        "    {'firstName': 'Jill'},",
-        "    {'firstName': 'Bell'},",
-        "    {'firstName': 'Alice'}",
-        "]");
-        // @formatter:on
+        JSON json = json("""
+                [
+                        { "firstName" : "Jill" },
+                        { "firstName" : "Bell" },
+                        { "firstName" : "Alice" }
+                ]
+                """);
 
         List<Person> values = json.find(Person.class, "*");
         assert values.size() == 3;
@@ -193,14 +248,13 @@ class TraverseTest {
 
     @Test
     void wildcardReversed() {
-        // @formatter:off
-        JSON json = json(
-        "[",
-        "    {'firstName': 'Jill'},",
-        "    {'firstName': 'Bell'},",
-        "    {'firstName': 'Alice'}",
-        "]");
-        // @formatter:on
+        JSON json = json("""
+                [
+                        { "firstName" : "Jill" },
+                        { "firstName" : "Bell" },
+                        { "firstName" : "Alice" }
+                ]
+                """);
 
         List<Person> values = json.find(Person.class, "$");
         assert values.size() == 3;
@@ -241,7 +295,7 @@ class TraverseTest {
                     '3': 'Holo'
                 }
                 """);
-    
+
         List<String> values = json.find(String.class, "*");
         assert values.size() == 3;
         assert values.get(0).equals("Jill");
@@ -280,12 +334,11 @@ class TraverseTest {
 
     @Test
     void emptyPath() {
-        // @formatter:off
-        JSON json = json(
-        "{",
-        "  'age': 20",
-        "}");
-        // @formatter:on
+        JSON json = json("""
+                {
+                    "age": 20
+                }
+                """);
 
         List<Integer> values = json.get("age").find(int.class, new String[0]);
         assert values.size() == 1;

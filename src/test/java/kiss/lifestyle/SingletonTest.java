@@ -20,11 +20,11 @@ public class SingletonTest {
     @Test
     public void singleton() {
         @Managed(Singleton.class)
-        class Earth {
+        class Tweet {
         }
 
-        Earth one = I.make(Earth.class);
-        Earth other = I.make(Earth.class);
+        Tweet one = I.make(Tweet.class);
+        Tweet other = I.make(Tweet.class);
         assert one == other; // same instance
     }
 }

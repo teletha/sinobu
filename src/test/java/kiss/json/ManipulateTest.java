@@ -9,6 +9,7 @@
  */
 package kiss.json;
 
+import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Assertions;
@@ -47,6 +48,29 @@ public class ManipulateTest {
 
         assert json.get("child1").get("name").as(String.class).equals("first");
         assert json.get("child2").get("name").as(String.class).equals("second");
+    }
+
+    @Test
+    public void readNestedValueBySequentialKeys() {
+        JSON json = I.json("""
+                [
+                    {
+                        "type" : {
+                            "name" : "first"
+                        }
+                    },
+                    {
+                        "type" : {
+                            "name" : "second"
+                        }
+                    }
+                ]
+                """);
+
+        List<String> found = json.find(String.class, "*", "type", "name");
+        assert found.size() == 2;
+        assert found.get(0).equals("first");
+        assert found.get(1).equals("second");
     }
 
     @Test

@@ -16,9 +16,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Callable;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
-import kiss.Disposable;
 import kiss.I;
 import kiss.Lifestyle;
 import kiss.Managed;
@@ -26,7 +26,6 @@ import kiss.Singleton;
 import kiss.json.ManipulateTest;
 import kiss.lifestyle.PrototypeTest;
 import kiss.lifestyle.SingletonTest;
-import kiss.sample.bean.Person;
 
 /**
  * <h2>Document</h2>
@@ -135,18 +134,20 @@ public class DocumentDoc {
             public class Creating_an_object {
 
                 void createObject() {
-                    Person someone = I.make(Person.class);
-                    assert someone != null;
+                    class Tweet {
+                    }
+
+                    Tweet one = I.make(Tweet.class);
+                    assert one != null;
                 }
             }
         }
 
         /**
          * <p>
-         * In order to define a lifestyle, we need to write a {@link Lifestyle} interface. This
-         * interface is essentially equivalent to {@link Callable}, but it is called when a specific
-         * Type (class or interface) is requested for a container, and it makes the following 3
-         * decisions:
+         * In order to define a lifestyle, you need to implement Lifestyle interface. This interface
+         * is essentially equivalent to Callable. It is called when container requests the specific
+         * type. It makes the following 3 decisions:
          * </p>
          * <ol>
          * <li>Which class to instantiate actually.</li>
@@ -154,52 +155,41 @@ public class DocumentDoc {
          * <li>How to manage the instances.</li>
          * </ol>
          * <p>
-         * As the simplest example, let's consider a prototype pattern that creates a new instance
-         * using the new operator each time it is requested. The following implementation is called
-         * every time an instance of Person is requested for the container, and creates and returns
-         * a new instance.
-         * </p>
-         * <pre>{@link Prototype}</pre>
-         * <p>
-         * This kind of prototype pattern is set as the default lifestyle in Sinobu because it is
-         * expected to be used most often. Also, you can use {@link I#prototype(Class)} to generate
-         * prototypical lifestyles for any type, so there is no need to actually write such an
-         * implementation.
+         * Sinobu defines two lifestyles that are frequently used. One is the prototype pattern and
+         * the other is the singleton pattern.
          * </p>
          */
         public class Defining_lifestyle {
 
-            class Prototype implements Lifestyle<Person> {
-
-                @Override
-                public Person call() throws Exception {
-                    return new Person();
-                }
+            /**
+             * <p>
+             * The default lifestyle is Prototype, it creates a new instance on demand. This is
+             * applied automatically and you have to configure nothing.
+             * </p>
+             * <pre>{@link PrototypeTest#prototype()}</pre>
+             */
+            public class Prototype {
             }
 
             /**
              * <p>
-             * Sinobu comes with two pre-defined lifestyles. One is the prototype lifestyle
-             * described earlier, which generates a new instant every time it is requested. This is
-             * the default lifestyle in Sinobu, so you do not need to make any special settings to
-             * use it.
-             * </p>
-             * <pre>{@link PrototypeTest#prototype()}</pre>
-             * <p>
              * The other is the singleton lifestyle, which keeps a single instance in the JVM and
-             * always returns it.
+             * always returns it. This time, the lifestyle is applied with annotations when defining
+             * the class.
              * </p>
              * <pre>{@link SingletonTest#singleton()}</pre>
              */
-            public class Pre_defined_lifestyle {
+            public class Singleton {
             }
 
             /**
              * <p>
-             * You can also define new lifestyles based on arbitrary contexts by implementing the
-             * {@link Lifestyle} interface and defining a constructor to receive the requested type.
+             * You can also implement lifestyles tied to specific contexts. Custom class requires to
+             * implement the Lifestyle interface and receive the requested type in the constructor.
+             * I'm using {@link I#prototype(Class)} here to make Dependency Injection work, but you
+             * can use any instantiation technique.
              * </p>
-             * <pre>{@link PerThread}</pre>
+             * <pre>{@link PerThread}</pre> <pre>{@link #perThread()}</pre>
              */
             public class Custom_lifestyle {
 
@@ -207,13 +197,11 @@ public class DocumentDoc {
                     private final ThreadLocal<T> local;
 
                     PerThread(Class<T> requestedType) {
-                        local = ThreadLocal.withInitial(() -> {
-                            try {
-                                return requestedType.getDeclaredConstructor().newInstance();
-                            } catch (Exception e) {
-                                throw new Error(e);
-                            }
-                        });
+                        // use sinobu's default instance builder
+                        Lifestyle<T> prototype = I.prototype(requestedType);
+
+                        // use ThreadLocal as contextual instance holder
+                        local = ThreadLocal.withInitial(prototype::get);
                     }
 
                     @Override
@@ -221,60 +209,86 @@ public class DocumentDoc {
                         return local.get();
                     }
                 }
+
+                public void perThread() {
+                    @Managed(PerThread.class)
+                    class User {
+                    }
+
+                    // create contextual user
+                    User user1 = I.make(User.class);
+                    User user2 = I.make(User.class);
+                    assert user1 == user2; // same
+
+                    new Thread(() -> {
+                        User user3 = I.make(User.class);
+                        assert user1 != user3; // different
+                    }).run();
+                }
             }
 
             /**
              * <p>
-             * Sinobu comes with built-in lifestles for the following types.
+             * Sinobu has built-in defined lifestyles for specific types.
              * </p>
              * <dl>
              * <dt>{@link List}
-             * <dd>Generate a new {@link ArrayList} each time.</dd>
+             * <dd>Create new instance each time. ({@link ArrayList})</dd>
              * <dt>{@link Set}
-             * <dd>Generate a new {@link HashSet} each time.</dd>
+             * <dd>Create new instance each time. ({@link HashSet})</dd>
              * <dt>{@link Map}
-             * <dd>Generate a new {@link HashMap} each time.</dd>
+             * <dd>Create new instance each time. ({@link HashMap})</dd>
              * <dt>{@link Locale}
              * <dd>Always returns the instance retrieved from {@link Locale#getDefault()}.</dd>
              * </dl>
              */
-            public class Builtin_types {
+            public class Builtin_lifestyles {
             }
         }
 
         /**
          * <p>
-         * To use a lifestyle other than the prototype lifestyle, you need to individually configure
-         * the lifestyle to be used in the class. There are two ways to do this, one is to use
-         * {@link Managed} annotation. This way is useful if you want to specify a lifestyle for a
-         * class that is under your control. The following is an example of using the
-         * {@link Singleton} lifestyle.
+         * To apply a non-prototype lifestyle, you need to configure each class individually. There
+         * are two ways to do this.
          * </p>
-         * <pre>{@link Earth}</pre>
-         * <p>
-         * {@link Managed} annotation specifies the implementation of {@link Lifestyle} you want to
-         * use, but if none is specified, it is treated as if a prototype lifestyle is specified.
-         * </p>
-         * <p>
-         * The other is defining custom {@link Lifestyle}. Sinobu recognizes it automatically if
-         * your custom lifestyle class is loaded or unloaded by {@link I#load(Class)} and
-         * {@link Disposable#dispose()}methods. The following is example.
-         * </p>
-         * <pre>{@link SingletonLocale}</pre>
          */
-        public class Registering_lifestyle {
+        public class Applying_lifestyle {
 
-            @Managed(Singleton.class)
-            class Earth {
+            /**
+             * <p>
+             * One is to use {@link Managed} annotation. This method is useful if you want to apply
+             * lifestyle to classes that are under your control.
+             * </p>
+             * <pre>{@link UnderYourControl}</pre>
+             */
+            public class Use_Managed_annotation {
+
+                @Managed(Singleton.class)
+                class UnderYourControl {
+                }
             }
 
-            class SingletonLocale implements Lifestyle<Locale> {
+            /**
+             * <p>
+             * Another is to load the Lifestyle implementation. Sinobu has a wide variety of
+             * extension points, and Lifestyle is one of them. This method is useful if you want to
+             * apply lifestyle to classes that are not under your control.
+             * </p>
+             * <pre>{@link GlobalThreadPool}</pre> <pre>{@link #loadLifestyle()}</pre>
+             */
+            public class Use_Lifestyle_extension {
+                class GlobalThreadPool implements Lifestyle<Executor> {
 
-                private static final Locale singleton = Locale.forLanguageTag("language-tag");
+                    private static final Executor pool = Executors.newCachedThreadPool();
 
-                @Override
-                public Locale call() throws Exception {
-                    return singleton;
+                    @Override
+                    public Executor call() throws Exception {
+                        return pool;
+                    }
+                }
+
+                public void loadLifestyle() {
+                    I.load(GlobalThreadPool.class);
                 }
             }
         }
@@ -320,14 +334,6 @@ public class DocumentDoc {
          * memory in a tree format. It is not a streaming format, so please be careful when parsing
          * very large JSON.
          * </p>
-         * <p>
-         * You can access the value by specifying the key.
-         * </p>
-         * <pre>{@link ManipulateTest#readValue()}</pre>
-         * <p>
-         * You can specify a key multiple times to access nested values.
-         * </p>
-         * <pre>{@link ManipulateTest#readNestedValue()}</pre>
          */
         public class Reading_JSON {
 
@@ -345,6 +351,10 @@ public class DocumentDoc {
              * You can specify a key multiple times to access nested values.
              * </p>
              * <pre>{@link ManipulateTest#readNestedValue()}</pre>
+             * <p>
+             * You can also find all values by the sequential keys.
+             * </p>
+             * <pre>{@link ManipulateTest#readNestedValueBySequentialKeys()}</pre>
              */
             public class Access_to_the_nested_value {
             }

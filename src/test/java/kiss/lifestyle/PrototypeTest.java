@@ -17,11 +17,11 @@ public class PrototypeTest {
 
     @Test
     public void prototype() {
-        class Person {
+        class Tweet {
         }
 
-        Person someone = I.make(Person.class);
-        Person anyone = I.make(Person.class);
-        assert someone != anyone; // two different instances
+        Tweet one = I.make(Tweet.class);
+        Tweet other = I.make(Tweet.class);
+        assert one != other; // two different instances
     }
 }
