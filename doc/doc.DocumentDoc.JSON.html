@@ -4,14 +4,13 @@
 		<meta charset="UTF-8"/>
 		<title>Sinobu API</title>
 		<base href="../"/>
-		<script async="true" src="highlight.js" type="module"></script>
 		<script src="mimic.js" type="module"></script>
 		<link href="main.css" rel="stylesheet"/>
 	</head>
-	<body class="L">
-		<header class="Q">
-			<h1 class="J" date="2022-10-21" ver="2.20.0"><code>Sinobu</code></h1>
-			<nav class="M"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
+	<body class="W">
+		<header class="O">
+			<h1 class="k" date="2022-11-11" ver="2.20.0"><code>Sinobu</code></h1>
+			<nav class="b"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#text"/>
 					</svg>Document</a><a href="api/"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#package"/>
@@ -22,7 +21,7 @@
 					</svg>Activity</a><a href="https://github.com//teletha/sinobu" target="_blank"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#github"/>
 					</svg>Repository</a></nav>
-			<div class="I" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
+			<div class="P" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#sun"/>
 					</svg>
 				</a><a id="dark" title="Change to a darker color scheme"><svg class="A svg" viewBox="0 0 24 24">
@@ -30,21 +29,21 @@
 					</svg>
 				</a></div>
 		</header>
-		<main class="O">
-			<nav class="T">
+		<main class="j">
+			<nav class="f">
 				<div></div>
 			</nav>
-			<article class="K" id="Article">
-				<section class="Y B" id="doc.DocumentDoc.JSON.Reading_JSON">
-					<header class="B R">
+			<article class="d" id="Article">
+				<section class="l B" id="doc.DocumentDoc.JSON.Reading_JSON">
+					<header class="B S">
 						<h2>Reading JSON</h2>
-						<div class="N"><a class="perp f"><svg class="A svg" viewBox="0 0 24 24">
+						<div class="g"><a class="perp e"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
-							</a><a class="tweet f"><svg class="A svg" viewBox="0 0 24 24">
+							</a><a class="tweet e"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit f" href="https://github.com//teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L318-L330"><svg class="A svg" viewBox="0 0 24 24">
+							</a><a class="edit e" href="https://github.com//teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L332-L336"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
@@ -53,49 +52,17 @@
  memory in a tree format. It is not a streaming format, so please be careful when parsing
  very large JSON.
  </p>
- <p>
- You can access the value by specifying the key.
- </p>
- <pre class="lang-java"><code>public void readValue() {
-    JSON json = I.json(&#34;&#34;&#34;
-            {
-                &#34;number&#34; : 10,
-                &#34;bool&#34; : false
-            }
-            &#34;&#34;&#34;);
-
-    assert json.get(&#34;number&#34;).as(int.class) == 10;
-    assert json.get(&#34;bool&#34;).as(boolean.class) == false;
-}</code></pre>
- <p>
- You can specify a key multiple times to access nested values.
- </p>
- <pre class="lang-java"><code>public void readNestedValue() {
-    JSON json = I.json(&#34;&#34;&#34;
-            {
-                &#34;child1&#34; : {
-                    &#34;name&#34; : &#34;first&#34;
-                },
-                &#34;child2&#34; : {
-                    &#34;name&#34; : &#34;second&#34;
-                }
-            }
-            &#34;&#34;&#34;);
-
-    assert json.get(&#34;child1&#34;).get(&#34;name&#34;).as(String.class).equals(&#34;first&#34;);
-    assert json.get(&#34;child2&#34;).get(&#34;name&#34;).as(String.class).equals(&#34;second&#34;);
-}</code></pre>
 					</span>
 					<section class="B U" id="doc.DocumentDoc.JSON.Reading_JSON.Access_to_the_value">
-						<header class="B R">
+						<header class="B S">
 							<h3>Access to the value</h3>
-							<div class="N"><a class="perp f"><svg class="A svg" viewBox="0 0 24 24">
+							<div class="g"><a class="perp e"><svg class="A svg" viewBox="0 0 24 24">
 										<use href="main.svg#copy"/>
 									</svg>
-								</a><a class="tweet f"><svg class="A svg" viewBox="0 0 24 24">
+								</a><a class="tweet e"><svg class="A svg" viewBox="0 0 24 24">
 										<use href="main.svg#twitter"/>
 									</svg>
-								</a><a class="edit f" href="https://github.com//teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L335-L338"><svg class="A svg" viewBox="0 0 24 24">
+								</a><a class="edit e" href="https://github.com//teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L341-L344"><svg class="A svg" viewBox="0 0 24 24">
 										<use href="main.svg#edit"/>
 									</svg>
 								</a></div>
@@ -115,15 +82,15 @@
 }</code></pre>
 						</span></section>
 					<section class="B U" id="doc.DocumentDoc.JSON.Reading_JSON.Access_to_the_nested_value">
-						<header class="B R">
+						<header class="B S">
 							<h3>Access to the nested value</h3>
-							<div class="N"><a class="perp f"><svg class="A svg" viewBox="0 0 24 24">
+							<div class="g"><a class="perp e"><svg class="A svg" viewBox="0 0 24 24">
 										<use href="main.svg#copy"/>
 									</svg>
-								</a><a class="tweet f"><svg class="A svg" viewBox="0 0 24 24">
+								</a><a class="tweet e"><svg class="A svg" viewBox="0 0 24 24">
 										<use href="main.svg#twitter"/>
 									</svg>
-								</a><a class="edit f" href="https://github.com//teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L344-L347"><svg class="A svg" viewBox="0 0 24 24">
+								</a><a class="edit e" href="https://github.com//teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L350-L357"><svg class="A svg" viewBox="0 0 24 24">
 										<use href="main.svg#edit"/>
 									</svg>
 								</a></div>
@@ -145,11 +112,35 @@
     assert json.get(&#34;child1&#34;).get(&#34;name&#34;).as(String.class).equals(&#34;first&#34;);
     assert json.get(&#34;child2&#34;).get(&#34;name&#34;).as(String.class).equals(&#34;second&#34;);
 }</code></pre>
+ <p>
+ You can also find all values by the sequential keys.
+ </p>
+ <pre class="lang-java"><code>public void readNestedValueBySequentialKeys() {
+    JSON json = I.json(&#34;&#34;&#34;
+            [
+                {
+                    &#34;type&#34; : {
+                        &#34;name&#34; : &#34;first&#34;
+                    }
+                },
+                {
+                    &#34;type&#34; : {
+                        &#34;name&#34; : &#34;second&#34;
+                    }
+                }
+            ]
+            &#34;&#34;&#34;);
+
+    List&#60;String&#62; found = json.find(String.class, &#34;*&#34;, &#34;type&#34;, &#34;name&#34;);
+    assert found.size() == 2;
+    assert found.get(0).equals(&#34;first&#34;);
+    assert found.get(1).equals(&#34;second&#34;);
+}</code></pre>
 						</span></section>
 				</section>
 			</article>
-			<aside class="P" id="SubNavi">
-				<div class="Z"></div>
+			<aside class="Q" id="SubNavi">
+				<div class="M"></div>
 			</aside>
 		</main>
 		<script src="root.js"></script>

@@ -34,9 +34,14 @@ const root = {
 					"path": "doc/doc.DocumentDoc.Managing_object_lifestyle.html#doc.DocumentDoc.Managing_object_lifestyle.Defining_lifestyle",
 					"subs": [
 						{
-							"path": "doc/doc.DocumentDoc.Managing_object_lifestyle.html#doc.DocumentDoc.Managing_object_lifestyle.Defining_lifestyle.Pre_defined_lifestyle",
+							"path": "doc/doc.DocumentDoc.Managing_object_lifestyle.html#doc.DocumentDoc.Managing_object_lifestyle.Defining_lifestyle.Prototype",
 							"subs": [],
-							"title": "Pre defined lifestyle"
+							"title": "Prototype"
+						},
+						{
+							"path": "doc/doc.DocumentDoc.Managing_object_lifestyle.html#doc.DocumentDoc.Managing_object_lifestyle.Defining_lifestyle.Singleton",
+							"subs": [],
+							"title": "Singleton"
 						},
 						{
 							"path": "doc/doc.DocumentDoc.Managing_object_lifestyle.html#doc.DocumentDoc.Managing_object_lifestyle.Defining_lifestyle.Custom_lifestyle",
@@ -44,17 +49,28 @@ const root = {
 							"title": "Custom lifestyle"
 						},
 						{
-							"path": "doc/doc.DocumentDoc.Managing_object_lifestyle.html#doc.DocumentDoc.Managing_object_lifestyle.Defining_lifestyle.Builtin_types",
+							"path": "doc/doc.DocumentDoc.Managing_object_lifestyle.html#doc.DocumentDoc.Managing_object_lifestyle.Defining_lifestyle.Builtin_lifestyles",
 							"subs": [],
-							"title": "Builtin types"
+							"title": "Builtin lifestyles"
 						}
 					],
 					"title": "Defining lifestyle"
 				},
 				{
-					"path": "doc/doc.DocumentDoc.Managing_object_lifestyle.html#doc.DocumentDoc.Managing_object_lifestyle.Registering_lifestyle",
-					"subs": [],
-					"title": "Registering lifestyle"
+					"path": "doc/doc.DocumentDoc.Managing_object_lifestyle.html#doc.DocumentDoc.Managing_object_lifestyle.Applying_lifestyle",
+					"subs": [
+						{
+							"path": "doc/doc.DocumentDoc.Managing_object_lifestyle.html#doc.DocumentDoc.Managing_object_lifestyle.Applying_lifestyle.Use_Managed_annotation",
+							"subs": [],
+							"title": "Use Managed annotation"
+						},
+						{
+							"path": "doc/doc.DocumentDoc.Managing_object_lifestyle.html#doc.DocumentDoc.Managing_object_lifestyle.Applying_lifestyle.Use_Lifestyle_extension",
+							"subs": [],
+							"title": "Use Lifestyle extension"
+						}
+					],
+					"title": "Applying lifestyle"
 				}
 			],
 			"title": "Managing object lifestyle"
