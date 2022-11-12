@@ -9,6 +9,8 @@
  */
 package doc;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -19,6 +21,7 @@ import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import kiss.Extensible;
 import kiss.I;
 import kiss.Lifestyle;
 import kiss.Managed;
@@ -415,10 +418,107 @@ public class DocumentDoc {
 
     public class Plugin {
 
-        public class Extension_Point {
+        /**
+         * <pre>{@link #usage()}</pre>
+         */
+        public class Usage {
+
+            public void usage() {
+                interface Encoder<T> extends Extensible {
+                    String encode(T value);
+                }
+
+                class LocalDateEncoder implements Encoder<LocalDate> {
+
+                    @Override
+                    public String encode(LocalDate value) {
+                        return DateTimeFormatter.ISO_DATE.format(value);
+                    }
+                }
+
+                Encoder<LocalDate> encoder = I.find(Encoder.class, LocalDate.class);
+                String encoded = encoder.encode(LocalDate.of(2022, 11, 11));
+                assert encoded.equals("2022-11-11");
+            }
         }
 
+        /**
+         * <p>
+         * Sinobu has a general-purpose plug-in mechanism for extending application functions. An
+         * extensible place is called Extension Point, and its substance is a type (interface or
+         * class) marked with the {@link Extensible} interface.
+         * </p>
+         * <p>
+         * We give a definition of <em>Extension Point</em> like the following.
+         * </p>
+         * <ul>
+         * <li>It implements {@link Extensible} interface.</li>
+         * <li>It has {@link Extensible} interface in not ancestor but parent.</li>
+         * </ul>
+         * <pre>{@link ThisIsExtensionPoint}</pre><pre>{@link ThisIsAlsoExtensionPoint}</pre><pre>{@link ThisIsNotExtensionPoint}</pre>
+         */
+        public class Extension_Point {
+
+            interface ThisIsExtensionPoint extends Extensible {
+            }
+
+            interface ThisIsNotExtensionPoint extends ThisIsExtensionPoint {
+            }
+
+            class ThisIsAlsoExtensionPoint implements Extensible {
+                // This is both Extension Point and Extension.
+            }
+        }
+
+        /**
+         * <p>
+         * We give a definition of <em>Extension</em> like the following.
+         * </p>
+         * <ul>
+         * <li>It implements any Extension Point or is Extension Point itself.</li>
+         * <li>It must be concrete class and has a suitable constructor for Sinobu (see also
+         * {@link I#make(Class)} method).</li>
+         * </ul>
+         * <pre>{@link ThisIsExtension}</pre><pre>{@link ThisIsAlsoExtension}</pre><pre>{@link ThisIsNotExtension}</pre>
+         */
         public class Extension {
+            class ThisIsExtension implements Extensible {
+                // This is both Extension Point and Extension.
+            }
+
+            class ThisIsAlsoExtension extends ThisIsExtension {
+                // But not Extension Point.
+            }
+
+            class ThisIsNotExtension extends ThisIsExtension {
+
+                public ThisIsNotExtension(NotInjectable object) {
+                    // because of invalid constructor
+                }
+            }
+
+            private class NotInjectable {
+            }
+        }
+
+        /**
+         * <p>
+         * You can provide <em>Extension Key</em> for each Extensions by using parameter. The key
+         * makes easy finding an Extension you need (see also {@link I#find(Class, Class)}).
+         * </p>
+         * <pre>{@link ExtensionPointWithKey}</pre><pre>{@link ExtensionWithKey}</pre><pre>{@link ExtensionWithAnotherKey}</pre>
+         */
+        public class Extension_Key {
+            interface ExtensionPointWithKey<K> extends Extensible {
+            }
+
+            class ExtensionWithKey implements ExtensionPointWithKey<String> {
+                // Associate this Extension with String class.
+            }
+
+            class ExtensionWithAnotherKey implements ExtensionPointWithKey<List> {
+                // Associate this Extension with List interface.
+            }
         }
 
         public class Dynamic_Loading {
