@@ -236,6 +236,11 @@ const root = {
 			"path": "doc/doc.DocumentDoc.Plugin.html",
 			"subs": [
 				{
+					"path": "doc/doc.DocumentDoc.Plugin.html#doc.DocumentDoc.Plugin.Usage",
+					"subs": [],
+					"title": "Usage"
+				},
+				{
 					"path": "doc/doc.DocumentDoc.Plugin.html#doc.DocumentDoc.Plugin.Extension_Point",
 					"subs": [],
 					"title": "Extension Point"
@@ -244,6 +249,11 @@ const root = {
 					"path": "doc/doc.DocumentDoc.Plugin.html#doc.DocumentDoc.Plugin.Extension",
 					"subs": [],
 					"title": "Extension"
+				},
+				{
+					"path": "doc/doc.DocumentDoc.Plugin.html#doc.DocumentDoc.Plugin.Extension_Key",
+					"subs": [],
+					"title": "Extension Key"
 				},
 				{
 					"path": "doc/doc.DocumentDoc.Plugin.html#doc.DocumentDoc.Plugin.Dynamic_Loading",
