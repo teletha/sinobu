@@ -10,7 +10,6 @@
 package doc;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -21,6 +20,8 @@ import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import doc.ExtensionTest.Codec;
+import doc.ExtensionTest.LocalDateCodec;
 import kiss.Extensible;
 import kiss.I;
 import kiss.Lifestyle;
@@ -419,27 +420,9 @@ public class DocumentDoc {
     public class Plugin {
 
         /**
-         * <pre>{@link #usage()}</pre>
+         * <pre>{@link ExtensionTest}</pre>
          */
         public class Usage {
-
-            public void usage() {
-                interface Encoder<T> extends Extensible {
-                    String encode(T value);
-                }
-
-                class LocalDateEncoder implements Encoder<LocalDate> {
-
-                    @Override
-                    public String encode(LocalDate value) {
-                        return DateTimeFormatter.ISO_DATE.format(value);
-                    }
-                }
-
-                Encoder<LocalDate> encoder = I.find(Encoder.class, LocalDate.class);
-                String encoded = encoder.encode(LocalDate.of(2022, 11, 11));
-                assert encoded.equals("2022-11-11");
-            }
         }
 
         /**
@@ -452,10 +435,14 @@ public class DocumentDoc {
          * We give a definition of <em>Extension Point</em> like the following.
          * </p>
          * <ul>
-         * <li>It implements {@link Extensible} interface.</li>
-         * <li>It has {@link Extensible} interface in not ancestor but parent.</li>
+         * <li>It implements {@link Extensible} interface directly.</li>
          * </ul>
          * <pre>{@link ThisIsExtensionPoint}</pre><pre>{@link ThisIsAlsoExtensionPoint}</pre><pre>{@link ThisIsNotExtensionPoint}</pre>
+         * <p>
+         * In the usage example, Codec is the extension point that converts any object to a string
+         * representation.
+         * </p>
+         * <pre>{@link Codec}</pre>
          */
         public class Extension_Point {
 
@@ -480,6 +467,11 @@ public class DocumentDoc {
          * {@link I#make(Class)} method).</li>
          * </ul>
          * <pre>{@link ThisIsExtension}</pre><pre>{@link ThisIsAlsoExtension}</pre><pre>{@link ThisIsNotExtension}</pre>
+         * <p>
+         * In the usage example, LocalDateCodec is the extension that is special implementation for
+         * {@link LocalDate}.
+         * </p>
+         * <pre>{@link LocalDateCodec}</pre>
          */
         public class Extension {
             class ThisIsExtension implements Extensible {
