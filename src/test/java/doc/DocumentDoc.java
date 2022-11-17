@@ -513,7 +513,29 @@ public class DocumentDoc {
             }
         }
 
+        /**
+         * <p>
+         * All extensions are not recognized automatically, you have to load them explicitly using
+         * {@link I#load(Class)}.
+         * </p>
+         * <pre>{@link ExtensionUser}</pre><pre>{@link ApplicationMain}</pre>
+         */
         public class Dynamic_Loading {
+            class ExtensionUser {
+                static {
+                    I.load(ExtensionUser.class);
+                }
+
+                // write your code
+            }
+
+            class ApplicationMain {
+                public static void main(String[] args) {
+                    I.load(ApplicationMain.class);
+
+                    // start your application
+                }
+            }
         }
 
         public class Query_Extension {

@@ -26,7 +26,7 @@ public class ExtensionTest {
     }
 
     /**
-     * This is extension.
+     * This is extension with LocalDate key.
      */
     class LocalDateCodec implements Codec<LocalDate> {
 
