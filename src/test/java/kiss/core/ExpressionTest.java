@@ -23,9 +23,6 @@ import kiss.I;
 import kiss.sample.bean.Person;
 import kiss.sample.bean.StringMap;
 
-/**
- * 
- */
 class ExpressionTest {
 
     @Test
@@ -82,6 +79,13 @@ class ExpressionTest {
         assert I.express("{spaceAtTail} ", $("spaceAtTail", "ok")).equals("ok ");
         assert I.express(" {space} ", $("space", "ok")).equals(" ok ");
         assert I.express("\t{spaceLike}　", $("spaceLike", "ok")).equals("\tok　");
+    }
+
+    @Test
+    void emptyPath() {
+        KVS context = $("lang", "the minimum language");
+
+        assert I.express("I want {}.", context).equals("I want {}.");
     }
 
     @Test

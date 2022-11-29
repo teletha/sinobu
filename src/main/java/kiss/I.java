@@ -9,8 +9,8 @@
  */
 package kiss;
 
-import static java.lang.Boolean.FALSE;
-import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.lang.Boolean.*;
+import static java.nio.charset.StandardCharsets.*;
 import static java.time.format.DateTimeFormatter.*;
 
 import java.io.ByteArrayOutputStream;
@@ -654,9 +654,7 @@ public class I {
     }
 
     /**
-     * It is a very simple template engine that can calculate a string that replaces the path of a
-     * property names enclosed in "{}" with the actual value of the property. Support
-     * <a href="https://mustache.github.io/mustache.5.html">Mustache Syntax</a> partially.
+     * Internal template processor.
      * 
      * @param text A text with the path of the property names enclosed in "{}".
      * @param contexts A list of context values.
@@ -674,7 +672,7 @@ public class I {
             closeStart = text.indexOf(close, openEnd + 1);
 
             if (closeStart == -1) {
-                throw new Error();
+                break;
             } else {
                 builder.append(text, closeEnd, openStart);
                 closeEnd = closeStart + close.length();
