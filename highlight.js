@@ -301,7 +301,7 @@ e["after:highlightBlock"](Object.assign({block:t.el},t))})})(e),s.push(e)}
 }),e.debugMode=()=>{o=!1},e.safeMode=()=>{o=!0
 },e.versionString="11.4.0",e.regex={concat:f,lookahead:d,either:p,optional:h,
 anyNumberOfTimes:u};for(const e in M)"object"==typeof M[e]&&n(M[e])
-;return Object.assign(e,M),e})({});export{J as default};/*! `java` grammar compiled for Highlight.js 11.6.0 */
+;return Object.assign(e,M),e})({});export{J as default};/*! `java` grammar compiled for Highlight.js 11.7.0 */
 var hljsGrammar=(()=>{"use strict"
 ;var e="\\.([0-9](_*[0-9])*)",a="[0-9a-fA-F](_*[0-9a-fA-F])*",n={
 className:"number",variants:[{
@@ -314,7 +314,7 @@ begin:"\\b0(_*[0-7])*[lL]?\\b"},{begin:"\\b0[bB][01](_*[01])*[lL]?\\b"}],
 relevance:0};function s(e,a,n){return-1===n?"":e.replace(a,(t=>s(e,a,n-1)))}
 return e=>{
 const a=e.regex,t="[\xc0-\u02b8a-zA-Z_$][\xc0-\u02b8a-zA-Z_$0-9]*",r=t+s("(?:<"+t+"~~~(?:\\s*,\\s*"+t+"~~~)*>)?",/~~~/g,2),i={
-keyword:["synchronized","abstract","private","var","static","if","const ","for","while","strictfp","finally","protected","import","native","final","void","enum","else","break","transient","catch","instanceof","volatile","case","assert","package","default","public","try","switch","continue","throws","protected","public","private","module","requires","exports","do","sealed"],
+keyword:["synchronized","abstract","private","var","static","if","const ","for","while","strictfp","finally","protected","import","native","final","void","enum","else","break","transient","catch","instanceof","volatile","case","assert","package","default","public","try","switch","continue","throws","protected","public","private","module","requires","exports","do","sealed","yield","permits"],
 literal:["false","true","null"],
 type:["char","boolean","long","float","int","byte","short","double"],
 built_in:["super","this"]},l={className:"meta",begin:"@"+t,contains:[{
@@ -338,7 +338,7 @@ begin:["(?:"+r+"\\s+)",e.UNDERSCORE_IDENT_RE,/\s*(?=\()/],className:{
 end:/\)/,keywords:i,relevance:0,
 contains:[l,e.APOS_STRING_MODE,e.QUOTE_STRING_MODE,n,e.C_BLOCK_COMMENT_MODE]
 },e.C_LINE_COMMENT_MODE,e.C_BLOCK_COMMENT_MODE]},n,l]}}})()
-;J.registerLanguage('java', hljsGrammar);/*! `xml` grammar compiled for Highlight.js 11.6.0 */
+;J.registerLanguage('java', hljsGrammar);/*! `xml` grammar compiled for Highlight.js 11.7.0 */
 var hljsGrammar=(()=>{"use strict";return e=>{
 const a=e.regex,n=a.concat(/[\p{L}_]/u,a.optional(/[\p{L}0-9_.-]*:/u),/[\p{L}0-9_.-]*/u),s={
 className:"symbol",begin:/&[a-z]+;|&#[0-9]+;|&#x[a-f0-9]+;/},t={begin:/\s/,
