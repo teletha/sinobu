@@ -1,5 +1,31 @@
 # Changelog
 
+## [2.21.0](https://github.com/teletha/sinobu/compare/v2.20.0...v2.21.0) (2022-11-29)
+
+
+### Features
+
+* JSON parser can detect more granular syntax errors. ([7fdbc0b](https://github.com/teletha/sinobu/commit/7fdbc0b7590fc79d1cc2834aac8eb22e2c7d12bb))
+
+
+### Bug Fixes
+
+* I#express can't resolve empty path. ([2f33072](https://github.com/teletha/sinobu/commit/2f330720c79655b4c5c6866ce342fd42ac1d5bd7))
+* JSON reduces memory usage ([0ff299f](https://github.com/teletha/sinobu/commit/0ff299f1426cb786300103790db615ec02a9cbc2))
+* Model#set is simplified. ([c1a1fd3](https://github.com/teletha/sinobu/commit/c1a1fd38ccf00ec1f3a3eb4680b6388eb33ef79c))
+* Optimize parsing for small JSON ([18ba233](https://github.com/teletha/sinobu/commit/18ba2339fe713ce2ffd43bfc08f2d1dc73b48f9a))
+* Property access is more faster. ([484a557](https://github.com/teletha/sinobu/commit/484a5570439cf65448417227d0a006becb1bcf11))
+* reduce code size ([d1ed126](https://github.com/teletha/sinobu/commit/d1ed126fe4a3a2465a54dedf7784f94d38a0ae67))
+* remove duplicated code ([73eb4fe](https://github.com/teletha/sinobu/commit/73eb4fe8561adf707f0ac0d2c5cff2c71e2bec3f))
+* remove restriction for non-attribute final field ([e949af4](https://github.com/teletha/sinobu/commit/e949af40d21eb8a9a1aae457d7431f5f18dd17fd))
+* remove unused code ([fa4acd3](https://github.com/teletha/sinobu/commit/fa4acd3ff6246984463ac201ca955eddfed7e531))
+* Simplify MapModel. ([4f9167e](https://github.com/teletha/sinobu/commit/4f9167e151f83b16d1ed4b15fab4ffd6d814e9de))
+* Speed up I#make. ([149e88c](https://github.com/teletha/sinobu/commit/149e88ca84b64449df42e52a85a12ba7eb4d45a4))
+* Speed up JSON parsing. ([068f1e5](https://github.com/teletha/sinobu/commit/068f1e5710a2bf4b1bfb6153eeb96b25a66f215d))
+* speed up json(String) parsing ([97585f0](https://github.com/teletha/sinobu/commit/97585f0430541466c3c084ffd61657069cdc9591))
+* speed up parsing boolean value ([187b2fe](https://github.com/teletha/sinobu/commit/187b2feb41788afb05c5ee603bf85fd1d0b47529))
+* Update antibug. ([fd5cbaf](https://github.com/teletha/sinobu/commit/fd5cbaf58c23f0fa1ab7829dd205d612a159d9fa))
+
 ## [2.20.0](https://github.com/teletha/sinobu/compare/v2.19.0...v2.20.0) (2022-08-30)
 
 
