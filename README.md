@@ -196,12 +196,14 @@ Add it into in the dependencies element like so:
 #### [Gradle](https://gradle.org/)
 Add JitPack repository at the end of repositories in your build.gradle:
 ```gradle
-repositories 
+repositories {
+    maven { url "https://jitpack.io" }
 }
 ```
 Add it into the dependencies section like so:
 ```gradle
-dependencies :sinobu:2.21.0'
+dependencies {
+    implementation 'com.github.teletha:sinobu:2.21.0'
 }
 ```
 #### [SBT](https://www.scala-sbt.org/)
