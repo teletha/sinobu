@@ -1599,7 +1599,7 @@ public class I {
             // At first, we should search the associated lifestyle from extension points.
             lifestyle = find(Lifestyle.class, modelClass);
 
-            // Then, check its Manageable annotation.
+            // Then, check its Managed annotation.
             if (lifestyle == null) {
                 // If the actual model class doesn't provide its lifestyle explicitly, we use
                 // Prototype lifestyle which is default lifestyle in Sinobu.

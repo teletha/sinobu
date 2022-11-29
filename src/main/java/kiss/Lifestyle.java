@@ -23,7 +23,7 @@ package kiss;
  * default. The following is example.
  * </p>
  * <pre>{@code
- * &#64;Manageable(lifestyle = Singleton.class)
+ * &#64;Managed(lifestyle = Singleton.class)
  * public class TargetClass {
  * }
  * }</pre>
