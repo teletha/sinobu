@@ -142,6 +142,7 @@ class XMLManipulationTest {
 
         assert e.find("P > Q").size() == 2;
         assert e.find("P").size() == 2;
+        assert e.find("Q").size() == 2;
     }
 
     @Test
