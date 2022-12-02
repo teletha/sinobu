@@ -14,7 +14,6 @@ import static javax.xml.XMLConstants.*;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -610,7 +609,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
         List<XML> elements = new ArrayList();
 
         for (Node node : nodes) {
-            elements.add(new XML(doc, Collections.singletonList(node)));
+            elements.add(new XML(doc, I.list(node)));
         }
         return elements.iterator();
     }
