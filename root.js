@@ -212,25 +212,41 @@ const root = {
 			"title": "ReactiveX"
 		},
 		{
-			"path": "doc/doc.DocumentDoc.Template_Engine.html",
+			"path": "doc/doc.DocumentDoc.Template_Literal.html",
 			"subs": [
 				{
-					"path": "doc/doc.DocumentDoc.Template_Engine.html#doc.DocumentDoc.Template_Engine.Variable",
-					"subs": [],
-					"title": "Variable"
+					"path": "doc/doc.DocumentDoc.Template_Literal.html#doc.DocumentDoc.Template_Literal.What_is_Mustache_",
+					"subs": [
+						{
+							"path": "doc/doc.DocumentDoc.Template_Literal.html#doc.DocumentDoc.Template_Literal.What_is_Mustache_.Usage_in_general",
+							"subs": [],
+							"title": "Usage in general"
+						},
+						{
+							"path": "doc/doc.DocumentDoc.Template_Literal.html#doc.DocumentDoc.Template_Literal.What_is_Mustache_.Usage_at_Sinobu",
+							"subs": [],
+							"title": "Usage at Sinobu"
+						}
+					],
+					"title": "What is Mustache?"
 				},
 				{
-					"path": "doc/doc.DocumentDoc.Template_Engine.html#doc.DocumentDoc.Template_Engine.Section",
+					"path": "doc/doc.DocumentDoc.Template_Literal.html#doc.DocumentDoc.Template_Literal.Syntax",
+					"subs": [],
+					"title": "Syntax"
+				},
+				{
+					"path": "doc/doc.DocumentDoc.Template_Literal.html#doc.DocumentDoc.Template_Literal.Section",
 					"subs": [],
 					"title": "Section"
 				},
 				{
-					"path": "doc/doc.DocumentDoc.Template_Engine.html#doc.DocumentDoc.Template_Engine.Comment",
+					"path": "doc/doc.DocumentDoc.Template_Literal.html#doc.DocumentDoc.Template_Literal.Comment",
 					"subs": [],
 					"title": "Comment"
 				}
 			],
-			"title": "Template Engine"
+			"title": "Template Literal"
 		},
 		{
 			"path": "doc/doc.DocumentDoc.Plugin.html",
