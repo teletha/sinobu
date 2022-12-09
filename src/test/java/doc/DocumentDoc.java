@@ -410,17 +410,25 @@ public class DocumentDoc {
 
         /**
          * <p>
-         * Java19 does not yet have a language built-in template syntax. Therefore, Sinobu provides
-         * a mechanism to parse Mustache syntax instead.
+         * Use {@link I#express(String, Object...)} with your context data.
+         * </p>
+         * <pre>{@link MustacheTest#usage()}</pre>
+         */
+        public class Usage {
+        }
+
+        /**
+         * Mustache can be used for HTML, config files, source code - anything. It works by
+         * expanding tags in a template using values provided in a hash or object. We call it
+         * "logic-less" because there are no if statements, else clauses, or for loops. Instead
+         * there are only tags. Some tags are replaced with a value, some nothing, and others a
+         * series of values.
          * </p>
          * <p>
-         * A Mustache template is a type of template system used in web applications to embed data
-         * in HTML. Mustache is supported by a variety of programming languages and frameworks, and
-         * can be used to display data in various markup languages such as HTML and XML. In addition
-         * to displaying data, Mustache allows for features such as conditional branching and
-         * looping, and can even include external templates. As such, Mustache templates are a
-         * useful tool for more efficiently developing applications.
+         * Java19 does not yet have a language built-in template syntax. Therefore, Sinobu provides
+         * a mechanism to parse <a href="https://mustache.github.io/">Mustache</a> syntax instead.
          * </p>
+         * <p>
          */
         public class What_is_Mustache_ {
 
