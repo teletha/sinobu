@@ -215,6 +215,11 @@ const root = {
 			"path": "doc/doc.DocumentDoc.Template_Literal.html",
 			"subs": [
 				{
+					"path": "doc/doc.DocumentDoc.Template_Literal.html#doc.DocumentDoc.Template_Literal.Usage",
+					"subs": [],
+					"title": "Usage"
+				},
+				{
 					"path": "doc/doc.DocumentDoc.Template_Literal.html#doc.DocumentDoc.Template_Literal.What_is_Mustache_",
 					"subs": [
 						{

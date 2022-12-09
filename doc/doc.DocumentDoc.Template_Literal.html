@@ -7,10 +7,10 @@
 		<script src="mimic.js" type="module"></script>
 		<link href="main.css" rel="stylesheet"/>
 	</head>
-	<body class="W">
-		<header class="L">
-			<h1 class="M" date="2022-12-06" ver="2.21.0"><code>Sinobu</code></h1>
-			<nav class="i"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
+	<body class="Y">
+		<header class="b">
+			<h1 class="g" date="2022-12-09" ver="2.21.0"><code>Sinobu</code></h1>
+			<nav class="S"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#text"/>
 					</svg>Document</a><a href="api/"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#package"/>
@@ -21,7 +21,7 @@
 					</svg>Activity</a><a href="https://github.com//teletha/sinobu" target="_blank"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#github"/>
 					</svg>Repository</a></nav>
-			<div class="X" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
+			<div class="U" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#sun"/>
 					</svg>
 				</a><a id="dark" title="Change to a darker color scheme"><svg class="A svg" viewBox="0 0 24 24">
@@ -29,47 +29,71 @@
 					</svg>
 				</a></div>
 		</header>
-		<main class="e">
-			<nav class="H">
+		<main class="R">
+			<nav class="h">
 				<div></div>
 			</nav>
-			<article class="Q" id="Article">
-				<section class="S B" id="doc.DocumentDoc.Template_Literal.What_is_Mustache_">
-					<header class="B h">
-						<h2>What is Mustache?</h2>
-						<div class="U"><a class="perp J"><svg class="A svg" viewBox="0 0 24 24">
+			<article class="K" id="Article">
+				<section class="W B" id="doc.DocumentDoc.Template_Literal.Usage">
+					<header class="B Z">
+						<h2>Usage</h2>
+						<div class="O"><a class="perp I"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
-							</a><a class="tweet J"><svg class="A svg" viewBox="0 0 24 24">
+							</a><a class="tweet I"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit J" href="https://github.com//teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L412-L423"><svg class="A svg" viewBox="0 0 24 24">
+							</a><a class="edit I" href="https://github.com//teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L412-L415"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
 					</header><span class="B"><p>
- Java19 does not yet have a language built-in template syntax. Therefore, Sinobu provides
- a mechanism to parse Mustache syntax instead.
+ Use <code><a href="api/kiss.I.html#express(java.lang.String,java.lang.Object...)">I#express(String, Object...)</a></code> with your context data.
+ </p>
+ <pre class="lang-java"><code>@Test
+public void usage() {
+    record Person(String name, int age) {
+    }
+    Person context = new Person(&#34;Takina Inoue&#34;, 16);
+    String evaluated = I.express(&#34;She is {name}, {age} years old.&#34;, context);
+    assert evaluated.equals(&#34;She is Takina Inoue, 16 years old.&#34;);
+}</code></pre>
+					</span></section>
+				<section class="W B" id="doc.DocumentDoc.Template_Literal.What_is_Mustache_">
+					<header class="B Z">
+						<h2>What is Mustache?</h2>
+						<div class="O"><a class="perp I"><svg class="A svg" viewBox="0 0 24 24">
+									<use href="main.svg#copy"/>
+								</svg>
+							</a><a class="tweet I"><svg class="A svg" viewBox="0 0 24 24">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit I" href="https://github.com//teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L421-L431"><svg class="A svg" viewBox="0 0 24 24">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="B"><p>Mustache can be used for HTML, config files, source code - anything. It works by
+ expanding tags in a template using values provided in a hash or object. We call it
+ &#34;logic-less&#34; because there are no if statements, else clauses, or for loops. Instead
+ there are only tags. Some tags are replaced with a value, some nothing, and others a
+ series of values.
  </p>
  <p>
- A Mustache template is a type of template system used in web applications to embed data
- in HTML. Mustache is supported by a variety of programming languages and frameworks, and
- can be used to display data in various markup languages such as HTML and XML. In addition
- to displaying data, Mustache allows for features such as conditional branching and
- looping, and can even include external templates. As such, Mustache templates are a
- useful tool for more efficiently developing applications.
+ Java19 does not yet have a language built-in template syntax. Therefore, Sinobu provides
+ a mechanism to parse <a href="https://mustache.github.io/">Mustache</a> syntax instead.
  </p>
+ <p/>
 					</span>
-					<section class="B j" id="doc.DocumentDoc.Template_Literal.What_is_Mustache_.Usage_in_general">
-						<header class="B Y">
+					<section class="B c" id="doc.DocumentDoc.Template_Literal.What_is_Mustache_.Usage_in_general">
+						<header class="B H">
 							<h3>Usage in general</h3>
-							<div class="U"><a class="perp J"><svg class="A svg" viewBox="0 0 24 24">
+							<div class="O"><a class="perp I"><svg class="A svg" viewBox="0 0 24 24">
 										<use href="main.svg#copy"/>
 									</svg>
-								</a><a class="tweet J"><svg class="A svg" viewBox="0 0 24 24">
+								</a><a class="tweet I"><svg class="A svg" viewBox="0 0 24 24">
 										<use href="main.svg#twitter"/>
 									</svg>
-								</a><a class="edit J" href="https://github.com//teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L428-L449"><svg class="A svg" viewBox="0 0 24 24">
+								</a><a class="edit I" href="https://github.com//teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L436-L457"><svg class="A svg" viewBox="0 0 24 24">
 										<use href="main.svg#edit"/>
 									</svg>
 								</a></div>
@@ -95,16 +119,16 @@
  <pre><code> &#60;p&#62;&#60;/p&#62;
 </code></pre>
 						</span></section>
-					<section class="B j" id="doc.DocumentDoc.Template_Literal.What_is_Mustache_.Usage_at_Sinobu">
-						<header class="B Y">
+					<section class="B c" id="doc.DocumentDoc.Template_Literal.What_is_Mustache_.Usage_at_Sinobu">
+						<header class="B H">
 							<h3>Usage at Sinobu</h3>
-							<div class="U"><a class="perp J"><svg class="A svg" viewBox="0 0 24 24">
+							<div class="O"><a class="perp I"><svg class="A svg" viewBox="0 0 24 24">
 										<use href="main.svg#copy"/>
 									</svg>
-								</a><a class="tweet J"><svg class="A svg" viewBox="0 0 24 24">
+								</a><a class="tweet I"><svg class="A svg" viewBox="0 0 24 24">
 										<use href="main.svg#twitter"/>
 									</svg>
-								</a><a class="edit J" href="https://github.com//teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L455-L459"><svg class="A svg" viewBox="0 0 24 24">
+								</a><a class="edit I" href="https://github.com//teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L463-L467"><svg class="A svg" viewBox="0 0 24 24">
 										<use href="main.svg#edit"/>
 									</svg>
 								</a></div>
@@ -115,16 +139,16 @@
  </p>
 						</span></section>
 				</section>
-				<section class="S B" id="doc.DocumentDoc.Template_Literal.Syntax">
-					<header class="B h">
+				<section class="W B" id="doc.DocumentDoc.Template_Literal.Syntax">
+					<header class="B Z">
 						<h2>Syntax</h2>
-						<div class="U"><a class="perp J"><svg class="A svg" viewBox="0 0 24 24">
+						<div class="O"><a class="perp I"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
-							</a><a class="tweet J"><svg class="A svg" viewBox="0 0 24 24">
+							</a><a class="tweet I"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit J" href="https://github.com//teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L466-L492"><svg class="A svg" viewBox="0 0 24 24">
+							</a><a class="edit I" href="https://github.com//teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L474-L500"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
@@ -154,8 +178,8 @@
 </code></pre>
 					</span></section>
 			</article>
-			<aside class="R" id="SubNavi">
-				<div class="T"></div>
+			<aside class="Q" id="SubNavi">
+				<div class="P"></div>
 			</aside>
 		</main>
 		<script src="root.js"></script>
