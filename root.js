@@ -221,18 +221,7 @@ const root = {
 				},
 				{
 					"path": "doc/doc.DocumentDoc.Template_Literal.html#doc.DocumentDoc.Template_Literal.What_is_Mustache_",
-					"subs": [
-						{
-							"path": "doc/doc.DocumentDoc.Template_Literal.html#doc.DocumentDoc.Template_Literal.What_is_Mustache_.Usage_in_general",
-							"subs": [],
-							"title": "Usage in general"
-						},
-						{
-							"path": "doc/doc.DocumentDoc.Template_Literal.html#doc.DocumentDoc.Template_Literal.What_is_Mustache_.Usage_at_Sinobu",
-							"subs": [],
-							"title": "Usage at Sinobu"
-						}
-					],
+					"subs": [],
 					"title": "What is Mustache?"
 				},
 				{
