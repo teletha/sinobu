@@ -410,7 +410,9 @@ public class DocumentDoc {
 
         /**
          * <p>
-         * Use {@link I#express(String, Object...)} with your context data.
+         * Passing the template string and context data to method
+         * {@link I#express(String, Object...)}, we get a string in which the various placeholders
+         * are replaced by the data.
          * </p>
          * <pre>{@link MustacheTest#usage()}</pre>
          */
@@ -431,43 +433,6 @@ public class DocumentDoc {
          * <p>
          */
         public class What_is_Mustache_ {
-
-            /**
-             * <p>
-             * To use Mustache, you must first create a Mustache template, which is written using a
-             * markup language such as HTML or XML. Within this template, special symbols called
-             * Mustache specifiers are used to specify where to embed the data.
-             * </p>
-             * <p>
-             * Next, within the program that uses the Mustache template, the Mustache engine is
-             * initialized. At this point, the Mustache engine is passed the template and the data.
-             * The data is written using data structures such as JavaScript objects.
-             * </p>
-             * <p>
-             * Finally, the Mustache engine is used to render the Mustache template. At this time,
-             * the Mustache engine replaces the Mustache specifier in the template and populates the
-             * data to produce a finished HTML, XML, or other markup language document.
-             * </p>
-             * <p>
-             * The specific usage varies depending on the programming language and framework, but
-             * the above steps are a rough outline of the basic procedure for using Mustache.
-             * </p>
-             * <pre>{@code 
-             *  <p></p>
-             * }</pre>
-             */
-            public class Usage_in_general {
-            }
-
-            /**
-             * <p>
-             * In SInobu, Mustache can be used by calling the {@link I#express(String, Object...)}
-             * method. This method parses the given string, reads the necessary variables from the
-             * context, substitutes them, and returns the resulting string.
-             * </p>
-             */
-            public class Usage_at_Sinobu {
-            }
         }
 
         /**
