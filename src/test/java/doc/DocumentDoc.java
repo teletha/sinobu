@@ -409,11 +409,6 @@ public class DocumentDoc {
     public class Template_Literal {
 
         /**
-         * <p>
-         * Passing the template string and context data to method
-         * {@link I#express(String, Object...)}, we get a string in which the various placeholders
-         * are replaced by the data.
-         * </p>
          * <pre>{@link MustacheTest#usage()}</pre>
          */
         public class Usage {
@@ -432,31 +427,31 @@ public class DocumentDoc {
          * </p>
          * <p>
          */
-        public class What_is_Mustache_ {
+        public class Mustache {
         }
 
         /**
          * <p>
-         * The syntax of Mustache is very simple. In a Mustache template, you use special symbols
-         * called Mustache delimiters to specify where the data should be inserted. Mustache
-         * delimiters are written in the following format:
+         * The syntax of Mustache is very simple. In a Mustache template, you use special
+         * symbols called Mustache delimiters to specify where the data should be inserted.
+         * Mustache delimiters are written in the following format:
          * </p>
          * <pre>{@code 
          *  {placeholder}
          * }</pre>
          * <p>
-         * As you can see, a Mustache delimiter is a string of characters enclosed in double braces,
-         * such as "{placeholder}". This string specifies the location where the data should be
-         * inserted. For example, consider the following Mustache template:
+         * As you can see, a Mustache delimiter is a string of characters enclosed in double
+         * braces, such as "{placeholder}". This string specifies the location where the data
+         * should be inserted. For example, consider the following Mustache template:
          * </p>
          * <pre>{@code 
         *  <h1>{title}</h1>
         * }</pre>
          * <p>
          * In this template, the string "{title}" is a Mustache delimiter that represents a
-         * placeholder called "title". When using this template, you need to provide data for the
-         * "title" placeholder. For instance, you might have the following JavaScript object as the
-         * data:
+         * placeholder called "title". When using this template, you need to provide data for
+         * the "title" placeholder. For instance, you might have the following JavaScript object
+         * as the data:
          * </p>
          * <pre language="js">{@code 
          *  var data = {
@@ -465,9 +460,6 @@ public class DocumentDoc {
          * }</pre>
          */
         public class Syntax {
-        }
-
-        public class Section {
         }
 
         public class Comment {
