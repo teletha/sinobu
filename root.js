@@ -220,19 +220,14 @@ const root = {
 					"title": "Usage"
 				},
 				{
-					"path": "doc/doc.DocumentDoc.Template_Literal.html#doc.DocumentDoc.Template_Literal.What_is_Mustache_",
+					"path": "doc/doc.DocumentDoc.Template_Literal.html#doc.DocumentDoc.Template_Literal.Mustache",
 					"subs": [],
-					"title": "What is Mustache?"
+					"title": "Mustache"
 				},
 				{
 					"path": "doc/doc.DocumentDoc.Template_Literal.html#doc.DocumentDoc.Template_Literal.Syntax",
 					"subs": [],
 					"title": "Syntax"
-				},
-				{
-					"path": "doc/doc.DocumentDoc.Template_Literal.html#doc.DocumentDoc.Template_Literal.Section",
-					"subs": [],
-					"title": "Section"
 				},
 				{
 					"path": "doc/doc.DocumentDoc.Template_Literal.html#doc.DocumentDoc.Template_Literal.Comment",
