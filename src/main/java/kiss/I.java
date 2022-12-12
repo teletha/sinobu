@@ -654,13 +654,15 @@ public class I {
     }
 
     /**
-     * Internal template processor.
+     * It is a very simple template engine that can calculate a string that replaces the path of a
+     * property names enclosed in "{}" with the actual value of the property. Support
+     * <a href="https://mustache.github.io/mustache.5.html">Mustache Syntax</a> partially.
      * 
      * @param text A text with the path of the property names enclosed in "{}".
      * @param contexts A list of context values.
      * @return A calculated text.
      */
-    private static String express(String text, String open, String close, Object[] contexts, WiseTriFunction<Model, Object, String, Object>[] resolvers) {
+    public static String express(String text, String open, String close, Object[] contexts, WiseTriFunction<Model, Object, String, Object>... resolvers) {
         StringBuilder builder = new StringBuilder();
         int openStart = 0;
         int openEnd = 0;
