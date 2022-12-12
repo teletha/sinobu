@@ -221,13 +221,24 @@ const root = {
 				},
 				{
 					"path": "doc/doc.DocumentDoc.Template_Literal.html#doc.DocumentDoc.Template_Literal.Mustache",
-					"subs": [],
+					"subs": [
+						{
+							"path": "doc/doc.DocumentDoc.Template_Literal.html#doc.DocumentDoc.Template_Literal.Mustache.Syntax",
+							"subs": [],
+							"title": "Syntax"
+						},
+						{
+							"path": "doc/doc.DocumentDoc.Template_Literal.html#doc.DocumentDoc.Template_Literal.Mustache.Usage_at_Sinobu",
+							"subs": [],
+							"title": "Usage at Sinobu"
+						}
+					],
 					"title": "Mustache"
 				},
 				{
-					"path": "doc/doc.DocumentDoc.Template_Literal.html#doc.DocumentDoc.Template_Literal.Syntax",
+					"path": "doc/doc.DocumentDoc.Template_Literal.html#doc.DocumentDoc.Template_Literal.Section",
 					"subs": [],
-					"title": "Syntax"
+					"title": "Section"
 				},
 				{
 					"path": "doc/doc.DocumentDoc.Template_Literal.html#doc.DocumentDoc.Template_Literal.Comment",
