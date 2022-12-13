@@ -47,7 +47,7 @@ public class ExtensionTest {
      * User code.
      */
     @Test
-    public void usage() {
+    void usage() {
         // find extension by type
         Codec<LocalDate> codec = I.find(Codec.class, LocalDate.class);
 

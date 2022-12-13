@@ -22,8 +22,7 @@ import java.util.concurrent.Executors;
 
 import doc.ExtensionTest.Codec;
 import doc.ExtensionTest.LocalDateCodec;
-import doc.MustacheTest.Template;
-import doc.MustacheTest.Template.Data;
+import doc.MustacheTest.Person;
 import kiss.Extensible;
 import kiss.I;
 import kiss.Lifestyle;
@@ -34,8 +33,6 @@ import kiss.lifestyle.PrototypeTest;
 import kiss.lifestyle.SingletonTest;
 
 /**
- * <h2>Document</h2>
- * 
  * @product sinobu
  * @project sinobu
  */
@@ -90,13 +87,13 @@ public class DocumentDoc {
          * <a href="https://maven.apache.org/">Maven</a> or
          * <a href="https://gradle.org/">Gradle</a>.
          * </p>
-         * <pre class="lang-xml">{@code
+         * {@snippet lang = xml :
          * <dependency>
          *     <groupId>{project}</groupId>
          *     <artifactId>{product}</artifactId>
          *     <version>{version}<version>
          * </dependency>
-         * }</pre>
+         * }
          */
         public class How_to_install {
         }
@@ -130,7 +127,7 @@ public class DocumentDoc {
              * such problems, Sinobu comes with its own very simple DI container. The following code
              * shows the creation of an object using DI container.
              * </p>
-             * <pre>{@link #createObject()}</pre>
+             * {@link #createObject() @}
              * <p>
              * As you can see from the above code, there is no actual container object; Sinobu has
              * only one global container in the JVM, and that object cannot be accessed directly. In
@@ -172,7 +169,7 @@ public class DocumentDoc {
              * The default lifestyle is Prototype, it creates a new instance on demand. This is
              * applied automatically and you have to configure nothing.
              * </p>
-             * <pre>{@link PrototypeTest#prototype()}</pre>
+             * {@link PrototypeTest#prototype() @}
              */
             public class Prototype {
             }
@@ -183,7 +180,7 @@ public class DocumentDoc {
              * always returns it. This time, the lifestyle is applied with annotations when defining
              * the class.
              * </p>
-             * <pre>{@link SingletonTest#singleton()}</pre>
+             * {@link SingletonTest#singleton() @}
              */
             public class Singleton {
             }
@@ -195,7 +192,7 @@ public class DocumentDoc {
              * I'm using {@link I#prototype(Class)} here to make Dependency Injection work, but you
              * can use any instantiation technique.
              * </p>
-             * <pre>{@link PerThread}</pre> <pre>{@link #perThread()}</pre>
+             * {@link PerThread @}{@link #perThread() @}
              */
             public class Custom_lifestyle {
 
@@ -265,7 +262,7 @@ public class DocumentDoc {
              * One is to use {@link Managed} annotation. This method is useful if you want to apply
              * lifestyle to classes that are under your control.
              * </p>
-             * <pre>{@link UnderYourControl}</pre>
+             * {@link UnderYourControl @}
              */
             public class Use_Managed_annotation {
 
@@ -280,7 +277,7 @@ public class DocumentDoc {
              * extension points, and Lifestyle is one of them. This method is useful if you want to
              * apply lifestyle to classes that are not under your control.
              * </p>
-             * <pre>{@link GlobalThreadPool}</pre> <pre>{@link #loadLifestyle()}</pre>
+             * {@link GlobalThreadPool @} {@link #loadLifestyle() @}
              */
             public class Use_Lifestyle_extension {
                 class GlobalThreadPool implements Lifestyle<Executor> {
@@ -411,7 +408,7 @@ public class DocumentDoc {
     public class Template_Literal {
 
         /**
-         * <pre>{@link MustacheTest#usage()}</pre>
+         * {@link MustacheTest @}
          */
         public class Usage {
         }
@@ -427,7 +424,6 @@ public class DocumentDoc {
          * Java19 does not yet have a language built-in template syntax. Therefore, Sinobu provides
          * a mechanism to parse <a href="https://mustache.github.io/">Mustache</a> syntax instead.
          * </p>
-         * <p>
          */
         public class Mustache {
 
@@ -438,8 +434,8 @@ public class DocumentDoc {
              * Mustache delimiters to specify where the data should be inserted. Mustache delimiters
              * are written in the following format:
              * </p>
-             * <pre>{@code 
-             *  {placeholder}
+             * <pre>{@code
+             * {placeholder}
              * }</pre>
              * </p>
              * <p>
@@ -447,18 +443,18 @@ public class DocumentDoc {
              * brace, such as "&#123;placeholder&#125;". This string specifies the location where
              * the data should be inserted. For example, consider the following Mustache template:
              * </p>
-             * <pre>{@link Template#template}</pre>
+             * <pre>{@link MustacheTest#template}</pre>
              * <p>
-             * When using this template, you need to provide data for the "title" placeholder. For
-             * instance, you might have the following JavaBean object as data:
+             * When using this template, you need to provide data for placeholders. For instance,
+             * you might have the following JavaBean object as data:
              * </p>
-             * <pre>{@link Data}</pre>
+             * {@link Person @}
              * <p>
              * Passing the template string and context data to method
              * {@link I#express(String, Object...)}, we get a string in which the various
-             * placeholders are replaced by the data.
+             * placeholders are replaced by its data.
              * </p>
-             * <pre>{@linkplain Template#template()}</pre>
+             * {@link MustacheTest#use() @body}
              * <p>
              * Next, within the program that uses the Mustache template, the Mustache engine is
              * initialized. At this point, the Mustache engine is passed the template and the data.
@@ -473,9 +469,6 @@ public class DocumentDoc {
              * The specific usage varies depending on the programming language and framework, but
              * the above steps are a rough outline of the basic procedure for using Mustache.
              * </p>
-             * <pre>{@code 
-             *  <p></p>
-             * }</pre>
              */
             public class Syntax {
             }
@@ -518,12 +511,13 @@ public class DocumentDoc {
          * <ul>
          * <li>It implements {@link Extensible} interface directly.</li>
          * </ul>
-         * <pre>{@link ThisIsExtensionPoint}</pre><pre>{@link ThisIsAlsoExtensionPoint}</pre><pre>{@link ThisIsNotExtensionPoint}</pre>
+         * {@link ThisIsExtensionPoint @} {@link ThisIsAlsoExtensionPoint @}
+         * {@link ThisIsNotExtensionPoint @}
          * <p>
          * In the usage example, Codec is the extension point that converts any object to a string
          * representation.
          * </p>
-         * <pre>{@link Codec}</pre>
+         * {@link Codec @}
          */
         public class Extension_Point {
 
@@ -547,12 +541,12 @@ public class DocumentDoc {
          * <li>It must be concrete class and has a suitable constructor for Sinobu (see also
          * {@link I#make(Class)} method).</li>
          * </ul>
-         * <pre>{@link ThisIsExtension}</pre><pre>{@link ThisIsAlsoExtension}</pre><pre>{@link ThisIsNotExtension}</pre>
+         * {@link ThisIsExtension @}{@link ThisIsAlsoExtension @} {@link ThisIsNotExtension @}
          * <p>
          * In the usage example, LocalDateCodec is the extension that is special implementation for
          * {@link LocalDate}.
          * </p>
-         * <pre>{@link LocalDateCodec}</pre>
+         * {@link LocalDateCodec @}
          */
         public class Extension {
             class ThisIsExtension implements Extensible {
@@ -579,7 +573,8 @@ public class DocumentDoc {
          * You can provide <em>Extension Key</em> for each Extensions by using parameter. The key
          * makes easy finding an Extension you need (see also {@link I#find(Class, Class)}).
          * </p>
-         * <pre>{@link ExtensionPointWithKey}</pre><pre>{@link ExtensionWithKey}</pre><pre>{@link ExtensionWithAnotherKey}</pre>
+         * {@link ExtensionPointWithKey @} {@link ExtensionWithKey @}
+         * {@link ExtensionWithAnotherKey @}
          */
         public class Extension_Key {
             interface ExtensionPointWithKey<K> extends Extensible {
@@ -599,7 +594,7 @@ public class DocumentDoc {
          * All extensions are not recognized automatically, you have to load them explicitly using
          * {@link I#load(Class)}.
          * </p>
-         * <pre>{@link ExtensionUser}</pre><pre>{@link ApplicationMain}</pre>
+         * {@link ExtensionUser @} {@link ApplicationMain @}
          */
         public class Dynamic_Loading {
             class ExtensionUser {
