@@ -32,10 +32,6 @@ import kiss.json.ManipulateTest;
 import kiss.lifestyle.PrototypeTest;
 import kiss.lifestyle.SingletonTest;
 
-/**
- * @product sinobu
- * @project sinobu
- */
 public class DocumentDoc {
 
     public class Introduction {
@@ -344,7 +340,7 @@ public class DocumentDoc {
              * <p>
              * You can access the value by specifying the key.
              * </p>
-             * <pre>{@link ManipulateTest#readValue()}</pre>
+             * {@link ManipulateTest#readValue() @}
              */
             public class Access_to_the_value {
             }
@@ -353,11 +349,11 @@ public class DocumentDoc {
              * <p>
              * You can specify a key multiple times to access nested values.
              * </p>
-             * <pre>{@link ManipulateTest#readNestedValue()}</pre>
+             * {@link ManipulateTest#readNestedValue() @}
              * <p>
              * You can also find all values by the sequential keys.
              * </p>
-             * <pre>{@link ManipulateTest#readNestedValueBySequentialKeys()}</pre>
+             * {@link ManipulateTest#readNestedValueBySequentialKeys() @}
              */
             public class Access_to_the_nested_value {
             }
@@ -434,16 +430,14 @@ public class DocumentDoc {
              * Mustache delimiters to specify where the data should be inserted. Mustache delimiters
              * are written in the following format:
              * </p>
-             * <pre>{@code
-             * {placeholder}
-             * }</pre>
+             * {@code {placeholder} @}
              * </p>
              * <p>
              * As you can see, Mustache delimiter is a string of characters enclosed in single
              * brace, such as "&#123;placeholder&#125;". This string specifies the location where
              * the data should be inserted. For example, consider the following Mustache template:
              * </p>
-             * <pre>{@link MustacheTest#template}</pre>
+             * {@link MustacheTest#template @}
              * <p>
              * When using this template, you need to provide data for placeholders. For instance,
              * you might have the following JavaBean object as data:
@@ -454,7 +448,7 @@ public class DocumentDoc {
              * {@link I#express(String, Object...)}, we get a string in which the various
              * placeholders are replaced by its data.
              * </p>
-             * {@link MustacheTest#use() @body}
+             * {@linkplain MustacheTest#use() @}
              * <p>
              * Next, within the program that uses the Mustache template, the Mustache engine is
              * initialized. At this point, the Mustache engine is passed the template and the data.
@@ -494,7 +488,7 @@ public class DocumentDoc {
     public class Plugin {
 
         /**
-         * <pre>{@link ExtensionTest}</pre>
+         * {@link ExtensionTest @}
          */
         public class Usage {
         }
