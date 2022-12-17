@@ -67,18 +67,18 @@ package kiss;
  * You can provide <em>Extension Key</em> for each Extensions by using parameter. The key makes easy
  * finding an Extension you need (see also {@link I#find(Class, Class)}).
  * </p>
- * <pre>
- * interface ExtensionPointWithKey&lt;K&gt; extends Extensible {
+ * <pre>{@code
+ * interface ExtensionPointWithKey<K> extends Extensible {
  * }
  * 
- * class ExtensionWithKey implements ExtensionPointWithKey&lt;String&gt; {
+ * class ExtensionWithKey implements ExtensionPointWithKey<String> {
  *     // Associate this Extension with String class.
  * }
  * 
- * class ExtensionWithAnotherKey implements ExtensionPointWithKey&lt;List&gt; {
+ * class ExtensionWithAnotherKey implements ExtensionPointWithKey<List> {
  *     // Associate this Extension with List interface.
  * }
- * </pre>
+ * }</pre>
  * 
  * @see I#find(Class)
  * @see I#find(Class, Class)
