@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.22.0](https://github.com/teletha/sinobu/compare/v2.21.0...v2.22.0) (2022-12-17)
+
+
+### Features
+
+* Expose mustache method with configurable delimiters. ([c556d52](https://github.com/teletha/sinobu/commit/c556d52857ee61121e9e4c32355649eeea0b3079))
+
+
+### Bug Fixes
+
+* XML#parent will occur UnsupportedOperationException. ([6a438df](https://github.com/teletha/sinobu/commit/6a438df307263c88fa9ef166c4598e6097a2cb44))
+
 ## [2.21.0](https://github.com/teletha/sinobu/compare/v2.20.0...v2.21.0) (2022-11-29)
 
 
