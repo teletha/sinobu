@@ -725,6 +725,17 @@ class ExpressionTest {
     // }
 
     @Test
+    void setDelimiterOnInitialization() {
+        KVS context = $("value", "change delimiter");
+
+        assert I.express("""
+                ##value##
+                """, "##", "##", new Object[] {context}).equals("""
+                change delimiter
+                """);
+    }
+
+    @Test
     void setDelimiter1() {
         KVS context = $("value", "change delimiter");
 
