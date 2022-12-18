@@ -25,8 +25,36 @@ class XMLParserTest {
     }
 
     @Test
+    void htmlWithHeadSpaces() {
+        XML xml = I.xml(" \r\n\t<html><head></head><body></body></html>");
+
+        assert xml.find("> *").size() == 2;
+    }
+
+    @Test
+    void htmlWithTailSapces() {
+        XML xml = I.xml("<html><head></head><body></body></html> \r\n\t");
+
+        assert xml.find("> *").size() == 2;
+    }
+
+    @Test
     void htmlWithDoctype() {
         XML xml = I.xml("<!DOCTYPE html><html><body/></html>");
+
+        assert xml.find("body").size() == 1;
+    }
+
+    @Test
+    void htmlWithDoctypeWithHeadSpaces() {
+        XML xml = I.xml(" \r\n\t<!DOCTYPE html><html><body/></html>");
+
+        assert xml.find("body").size() == 1;
+    }
+
+    @Test
+    void htmlWithDoctypeWithTailSpaces() {
+        XML xml = I.xml("<!DOCTYPE html><html><body/></html> \r\n\t");
 
         assert xml.find("body").size() == 1;
     }
