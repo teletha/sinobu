@@ -38,6 +38,7 @@ import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.ConsoleAppender;
 import ch.qos.logback.core.FileAppender;
+import kiss.LogBenchmark.ModifiableFormatter;
 
 public class LogBenchmark {
 
