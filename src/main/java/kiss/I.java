@@ -1934,26 +1934,26 @@ public class I {
     }
 
     /**
-     * Returns an {@link Signal} that emits a {@code 1L} after the {@code delayTime}.
+     * Returns an {@link Signal} that emits long value (1) after the delay time.
      *
      * @param delayTime The delay time to wait before emitting the first value of 1L
-     * @param unit The time unit for {@code delayTime}
+     * @param unit The time unit for delay time
      * @param scheduler The task scheduler.
-     * @return {@link Signal} that emits a {@code 1L} after the {@code delayTime}
+     * @return {@link Signal} that emits long value (1) after the delay time
      */
     public static Signal<Long> schedule(long delayTime, TimeUnit unit, ScheduledExecutorService... scheduler) {
         return schedule(delayTime, -1, unit, false, scheduler).take(1);
     }
 
     /**
-     * Returns an {@link Signal} that emits a {@code 1L} after the {@code delayTime} and ever
-     * increasing numbers after each {@code intervalTime} of time thereafter.
+     * Returns an {@link Signal} that emits long value (1) after the delay time and ever increasing
+     * numbers after each interval time of time thereafter.
      * 
      * @param delayTime The initial delay time to wait before emitting the first value of 1L
      * @param intervalTime The period of time between emissions of the subsequent numbers
-     * @param unit the time unit for both {@code delayTime} and {@code intervalTime}
-     * @return {@link Signal} that emits a 1L after the {@code delayTime} and ever increasing
-     *         numbers after each {@code intervalTime} of time thereafter
+     * @param unit the time unit for both delay time and interval time
+     * @return {@link Signal} that emits long value (1) after the delay time and ever increasing
+     *         numbers after each interval time of time thereafter
      */
     public static Signal<Long> schedule(long delayTime, long intervalTime, TimeUnit unit, boolean fixedRate, ScheduledExecutorService... scheduler) {
         return schedule(() -> delayTime, intervalTime, unit, fixedRate, scheduler);
@@ -1968,8 +1968,8 @@ public class I {
      * @param interval The period of time between emissions of the subsequent numbers
      * @param unit The interval time unit.
      * @param scheduler The task scheduler.
-     * @return {@link Signal} that emits a 1L at the {@code time} and ever increasing numbers after
-     *         each {@code interval} of time thereafter
+     * @return {@link Signal} that emits long value (1) at the time and ever increasing numbers
+     *         after each interval of time thereafter
      */
     public static Signal<Long> schedule(LocalTime time, long interval, TimeUnit unit, ScheduledExecutorService... scheduler) {
         return schedule(() -> {
@@ -1983,14 +1983,14 @@ public class I {
     }
 
     /**
-     * Returns an {@link Signal} that emits a {@code 1L} after the {@code delayTime} and ever
-     * increasing numbers after each {@code intervalTime} of time thereafter.
+     * Returns an {@link Signal} that emits long value (1) after the delay time and ever increasing
+     * numbers after each interval time of time thereafter.
      * 
      * @param delayTime The initial delay time to wait before emitting the first value of 1L
      * @param intervalTime The period of time between emissions of the subsequent numbers
-     * @param unit the time unit for both {@code delayTime} and {@code intervalTime}
-     * @return {@link Signal} that emits a 1L after the {@code delayTime} and ever increasing
-     *         numbers after each {@code intervalTime} of time thereafter
+     * @param unit the time unit for both delay time and interval time
+     * @return {@link Signal} that emits long value (1) after the delay time and ever increasing
+     *         numbers after each interval time of time thereafter
      */
     private static Signal<Long> schedule(LongSupplier delayTime, long intervalTime, TimeUnit unit, boolean fixedRate, ScheduledExecutorService... scheduler) {
         Objects.requireNonNull(unit);

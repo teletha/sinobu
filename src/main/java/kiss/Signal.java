@@ -155,8 +155,8 @@ public final class Signal<V> {
     }
 
     /**
-     * An {@link Observer} must call an Observable's {@code subscribe} method in order to receive
-     * items and notifications from the Observable.
+     * An {@link Observer} must call an {@link Signal#to()} method in order to receive items and
+     * notifications from the Observable.
      *
      * @param next A delegator method of {@link Observer#accept(Object)}.
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
@@ -166,8 +166,8 @@ public final class Signal<V> {
     }
 
     /**
-     * An {@link Observer} must call an Observable's {@code subscribe} method in order to receive
-     * items and notifications from the Observable.
+     * An {@link Observer} must call an {@link Signal#to()} method in order to receive items and
+     * notifications from the Observable.
      *
      * @param next A delegator method of {@link Observer#accept(Object)}.
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
@@ -177,8 +177,8 @@ public final class Signal<V> {
     }
 
     /**
-     * An {@link Observer} must call an Observable's {@code subscribe} method in order to receive
-     * items and notifications from the Observable.
+     * An {@link Observer} must call an {@link Signal#to()} method in order to receive items and
+     * notifications from the Observable.
      *
      * @param next A delegator method of {@link Observer#accept(Object)}.
      * @param error A delegator method of {@link Observer#error(Throwable)}.
@@ -189,8 +189,8 @@ public final class Signal<V> {
     }
 
     /**
-     * An {@link Observer} must call an Observable's {@code subscribe} method in order to receive
-     * items and notifications from the Observable.
+     * An {@link Observer} must call an {@link Signal#to()} method in order to receive items and
+     * notifications from the Observable.
      *
      * @param next A delegator method of {@link Observer#accept(Object)}.
      * @param complete A delegator method of {@link Observer#complete()}.
@@ -416,9 +416,9 @@ public final class Signal<V> {
     /**
      * Filters the values of an {@link Signal} sequence based on the specified type.
      *
-     * @param type The type of result. <code>null</code> throws {@link NullPointerException}.
+     * @param type The type of result. {@code null} throws {@link NullPointerException}.
      * @return {ChainableAPI}
-     * @throws NullPointerException If the type is <code>null</code>.
+     * @throws NullPointerException If the type is {@code null}.
      */
     public final <R> Signal<R> as(Class<? extends R>... type) {
         if (type == null || type.length == 0) {
@@ -563,7 +563,7 @@ public final class Signal<V> {
      * </pre>
      *
      * @param time Time to collect values. Zero or negative number will ignore this instruction.
-     * @param unit A unit of time for the specified timeout. <code>null</code> will ignore this
+     * @param unit A unit of time for the specified timeout. {@code null} will ignore this
      *            instruction.
      * @param scheduler An event scheduler.
      * @return {ChainableAPI}
@@ -1065,7 +1065,7 @@ public final class Signal<V> {
      * value emission.
      *
      * @param time A time value. Zero or negative number will ignore this instruction.
-     * @param unit A time unit. <code>null</code> will ignore this instruction.
+     * @param unit A time unit. {@code null} will ignore this instruction.
      * @param scheduler
      * @return {ChainableAPI}
      */
@@ -1078,7 +1078,7 @@ public final class Signal<V> {
      * value emission.
      *
      * @param time A time value. Zero or negative number will ignore this instruction.
-     * @param unit A time unit. <code>null</code> will ignore this instruction.
+     * @param unit A time unit. {@code null} will ignore this instruction.
      * @param acceptFirst Determines whether to pass the first element or not. It is useful to get
      *            the beginning and end of a sequence of events.
      * @param scheduler
@@ -1093,7 +1093,7 @@ public final class Signal<V> {
      * value emission.
      *
      * @param time A time value. Zero or negative number will ignore this instruction.
-     * @param unit A time unit. <code>null</code> will ignore this instruction.
+     * @param unit A time unit. {@code null} will ignore this instruction.
      * @param scheduler
      * @return {ChainableAPI}
      */
@@ -1106,7 +1106,7 @@ public final class Signal<V> {
      * value emission.
      *
      * @param time A time value. Zero or negative number will ignore this instruction.
-     * @param unit A time unit. <code>null</code> will ignore this instruction.
+     * @param unit A time unit. {@code null} will ignore this instruction.
      * @param scheduler
      * @return {ChainableAPI}
      */
@@ -1761,7 +1761,7 @@ public final class Signal<V> {
      * Ensure the interval time for each values in {@link Signal} sequence.
      *
      * @param interval Time to emit values. Zero or negative number will ignore this instruction.
-     * @param unit A unit of time for the specified interval. <code>null</code> will ignore this
+     * @param unit A unit of time for the specified interval. {@code null} will ignore this
      *            instruction.
      * @return {ChainableAPI}
      */
@@ -1988,7 +1988,7 @@ public final class Signal<V> {
      * </pre>
      *
      * @param function A converter function to apply to each value emitted by this {@link Signal} .
-     *            <code>null</code> will ignore this instruction.
+     *            {@code null} will ignore this instruction.
      * @return {ChainableAPI}
      */
     public final <R> Signal<R> map(WiseFunction<? super V, R> function) {
@@ -2011,7 +2011,7 @@ public final class Signal<V> {
      * 
      * @param context A {@link Supplier} of {@link Signal} specific context.
      * @param function A converter function to apply to each value emitted by this {@link Signal} .
-     *            <code>null</code> will ignore this instruction.
+     *            {@code null} will ignore this instruction.
      * @return {ChainableAPI}
      */
     public final <C, R> Signal<R> map(Supplier<C> context, WiseBiFunction<C, ? super V, R> function) {
@@ -2054,7 +2054,7 @@ public final class Signal<V> {
      * ───①─❶─②──❷③───④❸──⑤──┼
      * </pre>
      *
-     * @param others A target {@link Signal} to merge. <code>null</code> will be ignored.
+     * @param others A target {@link Signal} to merge. {@code null} will be ignored.
      * @return {ChainableAPI}
      */
     public final Signal<V> merge(Signal<? extends V>... others) {
@@ -2067,7 +2067,7 @@ public final class Signal<V> {
      * preassignout any transformation.
      * </p>
      *
-     * @param others A target {@link Signal} set to merge. <code>null</code> will be ignored.
+     * @param others A target {@link Signal} set to merge. {@code null} will be ignored.
      * @return {ChainableAPI}
      */
     public final Signal<V> merge(Iterable<Signal<? extends V>> others) {
@@ -2756,7 +2756,7 @@ public final class Signal<V> {
      * 
      * @param contextSupplier A {@link Supplier} of {@link Signal} specific context.
      * @param condition A condition function to apply to each value emitted by this {@link Signal} .
-     *            <code>null</code> will ignore this instruction.
+     *            {@code null} will ignore this instruction.
      * @return {ChainableAPI}
      */
     public final <C> Signal<V> skip(Supplier<C> contextSupplier, BiPredicate<C, ? super V> condition) {
@@ -2773,7 +2773,7 @@ public final class Signal<V> {
      * given predicate.
      * </p>
      *
-     * @param condition An external boolean {@link Signal}. <code>null</code> will ignore this
+     * @param condition An external boolean {@link Signal}. {@code null} will ignore this
      *            instruction.
      * @return {ChainableAPI}
      */
@@ -2998,8 +2998,7 @@ public final class Signal<V> {
     }
 
     /**
-     * Emit <code>null</code> item before beginning to emit the items from the source
-     * {@link Signal}.
+     * Emit {@code null} item before beginning to emit the items from the source {@link Signal}.
      * 
      * @return {ChainableAPI}
      */
@@ -3161,7 +3160,7 @@ public final class Signal<V> {
      * </p>
      *
      * @param condition A function that evaluates the values emitted by the source {@link Signal},
-     *            returning {@code true} if they pass the filter. <code>null</code> will ignore this
+     *            returning {@code true} if they pass the filter. {@code null} will ignore this
      *            instruction.
      * @return {ChainableAPI}
      */
@@ -3180,7 +3179,7 @@ public final class Signal<V> {
      * </p>
      *
      * @param condition A function that evaluates the values emitted by the source {@link Signal},
-     *            returning {@code true} if they pass the filter. <code>null</code> will ignore this
+     *            returning {@code true} if they pass the filter. {@code null} will ignore this
      *            instruction.
      * @return {ChainableAPI}
      */
@@ -3199,7 +3198,7 @@ public final class Signal<V> {
      * 
      * @param contextSupplier A {@link Supplier} of {@link Signal} specific context.
      * @param condition A condition function to apply to each value emitted by this {@link Signal} .
-     *            <code>null</code> will ignore this instruction.
+     *            {@code null} will ignore this instruction.
      * @return {ChainableAPI}
      */
     public final <C> Signal<V> take(Supplier<C> contextSupplier, BiPredicate<C, ? super V> condition) {
@@ -3212,7 +3211,7 @@ public final class Signal<V> {
      * given predicate.
      * </p>
      *
-     * @param condition An external boolean {@link Signal}. <code>null</code> will ignore this
+     * @param condition An external boolean {@link Signal}. {@code null} will ignore this
      *            instruction.
      * @return {ChainableAPI}
      */
@@ -3226,7 +3225,7 @@ public final class Signal<V> {
      * given predicate.
      * </p>
      *
-     * @param condition An external boolean {@link Signal}. <code>null</code> will ignore this
+     * @param condition An external boolean {@link Signal}. {@code null} will ignore this
      *            instruction.
      * @return {ChainableAPI}
      */
@@ -3284,8 +3283,7 @@ public final class Signal<V> {
      * second {@link Signal} emits an item.
      *
      * @param timing A {@link Signal} whose first emitted item will cause takeUntil to stop emitting
-     *            items from the source {@link Signal}. <code>null</code> will ignore this.
-     *            instruction.
+     *            items from the source {@link Signal}. {@code null} will ignore this. instruction.
      * @return A {@link Signal} that emits the items emitted by the source {@link Signal} until such
      *         time as other emits its first item.
      */
@@ -3378,7 +3376,7 @@ public final class Signal<V> {
      * {@link TimeoutException}.
      * 
      * @param time Time to take values. Zero or negative number will ignore this instruction.
-     * @param unit A unit of time for the specified timeout. <code>null</code> will ignore this
+     * @param unit A unit of time for the specified timeout. {@code null} will ignore this
      *            instruction.
      * @param scheduler An event scheduler.
      * @return {ChainableAPI}
@@ -3416,7 +3414,7 @@ public final class Signal<V> {
      *
      * @param time Time to wait before sending another item after emitting the last item. Zero or
      *            negative number will ignore this instruction.
-     * @param unit A unit of time for the specified timeout. <code>null</code> will ignore this
+     * @param unit A unit of time for the specified timeout. {@code null} will ignore this
      *            instruction.
      * @return {ChainableAPI}
      */
@@ -3436,7 +3434,7 @@ public final class Signal<V> {
      *
      * @param time Time to wait before sending another item after emitting the last item. Zero or
      *            negative number will ignore this instruction.
-     * @param unit A unit of time for the specified timeout. <code>null</code> will ignore this
+     * @param unit A unit of time for the specified timeout. {@code null} will ignore this
      *            instruction.
      * @param nanoClock A nano-time stamp provider.
      * @return {ChainableAPI}

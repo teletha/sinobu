@@ -22,24 +22,24 @@ package kiss;
  * control. If the lifestyle is not specified, Sinobu uses {@link I#prototype(Class)} lifestyle as
  * default. The following is example.
  * </p>
- * <pre>{@code
+ * {@snippet lang = java :
  * &#64;Managed(lifestyle = Singleton.class)
  * public class TargetClass {
  * }
- * }</pre>
+ * }
  * <p>
  * The other is defining custom {@link Lifestyle}. Sinobu recognizes it automatically if your custom
  * lifestyle class is loaded or unloaded by {@link I#load(Class)} and
  * {@link Disposable#dispose()}methods. The following is example.
  * </p>
- * <pre>{@code
+ * {@snippet lang = java :
  * public class CustomLifestyle implements Lifestyle<ClassNotUnderYourControl> {
  * 
  *     public ClassNotUnderYourControl call() {
  *         return new ClassNotUnderYourControl();
  *     }
  * }
- * }</pre>
+ * }
  * 
  * @param <M> A {@link Managed} class.
  * @see I#prototype(Class)

@@ -85,9 +85,9 @@ public class DocumentDoc {
          * </p>
          * {@snippet lang = xml :
          * <dependency>
-         *     <groupId>{project}</groupId>
-         *     <artifactId>{product}</artifactId>
-         *     <version>{version}<version>
+         *     <groupId>{@var project}</groupId>
+         *     <artifactId>{@var product}</artifactId>
+         *     <version>{@var version}<version>
          * </dependency>
          * }
          */

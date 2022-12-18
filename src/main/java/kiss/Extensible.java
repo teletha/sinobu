@@ -26,7 +26,7 @@ package kiss;
  * <li>It implements {@link Extensible} interface.</li>
  * <li>It has {@link Extensible} interface in not ancestor but parent.</li>
  * </ul>
- * <pre>
+ * {@snippet lang = java :
  * interface ThisIsExtensionPoint extends Extensible {
  * }
  * 
@@ -36,7 +36,7 @@ package kiss;
  * class ThisIsAlsoExtensionPoint implements Extensible {
  *     // This is both Extension Point and Extension.
  * }
- * </pre>
+ * }
  * <h2 id="Extension">What is Extension?</h2>
  * <p>
  * We give a definition of <em>Extension</em> like the following.
@@ -46,7 +46,7 @@ package kiss;
  * <li>It must be concrete class and has a suitable constructor for Sinobu (see also
  * {@link I#make(Class)} method).</li>
  * </ul>
- * <pre>
+ * {@snippet lang = java :
  * class ThisIsExtension implements Extensible {
  *     // This is both Extension Point and Extension.
  * }
@@ -61,13 +61,13 @@ package kiss;
  *         // because of invalid constructor
  *     }
  * }
- * </pre>
+ * }
  * <h2 id="ExtensionKey">What is Extension Key?</h2>
  * <p>
  * You can provide <em>Extension Key</em> for each Extensions by using parameter. The key makes easy
  * finding an Extension you need (see also {@link I#find(Class, Class)}).
  * </p>
- * <pre>{@code
+ * {@snippet lang = java :
  * interface ExtensionPointWithKey<K> extends Extensible {
  * }
  * 
@@ -78,7 +78,7 @@ package kiss;
  * class ExtensionWithAnotherKey implements ExtensionPointWithKey<List> {
  *     // Associate this Extension with List interface.
  * }
- * }</pre>
+ * }
  * 
  * @see I#find(Class)
  * @see I#find(Class, Class)
