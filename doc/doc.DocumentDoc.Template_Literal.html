@@ -7,10 +7,10 @@
 		<script src="mimic.js" type="module"></script>
 		<link href="main.css" rel="stylesheet"/>
 	</head>
-	<body class="W">
-		<header class="k">
-			<h1 class="Z" date="2022-12-18" ver="2.22.0"><code>Sinobu</code></h1>
-			<nav class="J"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
+	<body class="m">
+		<header class="T">
+			<h1 class="c" date="2022-12-18" ver="2.22.0"><code>Sinobu</code></h1>
+			<nav class="l"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#text"/>
 					</svg>Document</a><a href="api/"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#package"/>
@@ -21,7 +21,7 @@
 					</svg>Activity</a><a href="https://github.com//teletha/sinobu" target="_blank"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#github"/>
 					</svg>Repository</a></nav>
-			<div class="O" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
+			<div class="Y" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#sun"/>
 					</svg>
 				</a><a id="dark" title="Change to a darker color scheme"><svg class="A svg" viewBox="0 0 24 24">
@@ -29,13 +29,143 @@
 					</svg>
 				</a></div>
 		</header>
-		<main class="U">
-			<nav class="I">
+		<main class="j">
+			<nav class="Q">
 				<div></div>
 			</nav>
-			<article class="Y" id="Article"></article>
-			<aside class="b" id="SubNavi">
-				<div class="T"></div>
+			<article class="M" id="Article">
+				<section class="P B" id="doc.DocumentDoc.Template_Literal.Usage">
+					<header class="B J">
+						<h2>Usage</h2>
+						<div class="i"><a class="perp R"><svg class="A svg" viewBox="0 0 24 24">
+									<use href="main.svg#copy"/>
+								</svg>
+							</a><a class="tweet R"><svg class="A svg" viewBox="0 0 24 24">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit R" href="https://github.com//teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L407-L407"><svg class="A svg" viewBox="0 0 24 24">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="B"><pre class="lang-java"><code>import org.junit.jupiter.api.Test;
+import kiss.I;
+
+class MustacheTest {
+
+    String template = &#34;She is {name}, {age} years old.&#34;;
+
+    record Person(String name, int age) {
+    }
+
+    @Test
+    void use() {
+        Person data = new Person(&#34;Takina Inoue&#34;, 16);
+        assert I.express(template, data).equals(&#34;She is Takina Inoue, 16 years old.&#34;);
+    }
+}</code></pre>
+					</span></section>
+				<section class="P B" id="doc.DocumentDoc.Template_Literal.Mustache">
+					<header class="B J">
+						<h2>Mustache</h2>
+						<div class="i"><a class="perp R"><svg class="A svg" viewBox="0 0 24 24">
+									<use href="main.svg#copy"/>
+								</svg>
+							</a><a class="tweet R"><svg class="A svg" viewBox="0 0 24 24">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit R" href="https://github.com//teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L413-L422"><svg class="A svg" viewBox="0 0 24 24">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="B"><p>Mustache can be used for HTML, config files, source code - anything. It works by
+ expanding tags in a template using values provided in a hash or object. We call it
+ &#34;logic-less&#34; because there are no if statements, else clauses, or for loops. Instead
+ there are only tags. Some tags are replaced with a value, some nothing, and others a
+ series of values.
+ </p>
+ <p>
+ Java19 does not yet have a language built-in template syntax. Therefore, Sinobu provides
+ a mechanism to parse <a href="https://mustache.github.io/">Mustache</a> syntax instead.
+ </p>
+					</span>
+					<section class="B I" id="doc.DocumentDoc.Template_Literal.Mustache.Syntax">
+						<header class="B k">
+							<h3>Syntax</h3>
+							<div class="i"><a class="perp R"><svg class="A svg" viewBox="0 0 24 24">
+										<use href="main.svg#copy"/>
+									</svg>
+								</a><a class="tweet R"><svg class="A svg" viewBox="0 0 24 24">
+										<use href="main.svg#twitter"/>
+									</svg>
+								</a><a class="edit R" href="https://github.com//teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L427-L465"><svg class="A svg" viewBox="0 0 24 24">
+										<use href="main.svg#edit"/>
+									</svg>
+								</a></div>
+						</header><span class="B"><p>
+ To use Mustache, you must first create a Mustache template, which is written using a
+ markup language such as HTML or XML. In template, you use special symbols called
+ Mustache delimiters to specify where the data should be inserted. Mustache delimiters
+ are written in the following format:
+ </p>
+ <pre class="lang-"><code>{placeholder}</code></pre>
+ 
+ <p>
+ As you can see, Mustache delimiter is a string of characters enclosed in single
+ brace, such as &#34;&#123;placeholder&#125;&#34;. This string specifies the location where
+ the data should be inserted. For example, consider the following Mustache template:
+ </p>
+ <pre class="lang-java"><code>String template = &#34;She is {name}, {age} years old.&#34;;</code></pre>
+ <p>
+ When using this template, you need to provide data for placeholders. For instance,
+ you might have the following JavaBean object as data:
+ </p>
+ <pre class="lang-java"><code>record Person(String name, int age)</code></pre>
+ <p>
+ Passing the template string and context data to method
+ <code><a href="api/kiss.I.html#express(java.lang.String,java.lang.Object...)">I#express(String, Object...)</a></code>, we get a string in which the various
+ placeholders are replaced by its data.
+ </p>
+ <pre class="lang-java"><code>Person data = new Person(&#34;Takina Inoue&#34;, 16);
+
+assert I.express(template, data).equals(&#34;She is Takina Inoue, 16 years old.&#34;);</code></pre>
+ <p>
+ Next, within the program that uses the Mustache template, the Mustache engine is
+ initialized. At this point, the Mustache engine is passed the template and the data.
+ The data is written using data structures such as JavaScript objects.
+ </p>
+ <p>
+ Finally, the Mustache engine is used to render the Mustache template. At this time,
+ the Mustache engine replaces the Mustache specifier in the template and populates the
+ data to produce a finished HTML, XML, or other markup language document.
+ </p>
+ <p>
+ The specific usage varies depending on the programming language and framework, but
+ the above steps are a rough outline of the basic procedure for using Mustache.
+ </p>
+						</span></section>
+					<section class="B I" id="doc.DocumentDoc.Template_Literal.Mustache.Usage_at_Sinobu">
+						<header class="B k">
+							<h3>Usage at Sinobu</h3>
+							<div class="i"><a class="perp R"><svg class="A svg" viewBox="0 0 24 24">
+										<use href="main.svg#copy"/>
+									</svg>
+								</a><a class="tweet R"><svg class="A svg" viewBox="0 0 24 24">
+										<use href="main.svg#twitter"/>
+									</svg>
+								</a><a class="edit R" href="https://github.com//teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L471-L475"><svg class="A svg" viewBox="0 0 24 24">
+										<use href="main.svg#edit"/>
+									</svg>
+								</a></div>
+						</header><span class="B"><p>
+ In SInobu, Mustache can be used by calling the <code><a href="api/kiss.I.html#express(java.lang.String,java.lang.Object...)">I#express(String, Object...)</a></code>
+ method. This method parses the given string, reads the necessary variables from the
+ context, substitutes them, and returns the resulting string.
+ </p>
+						</span></section>
+				</section>
+			</article>
+			<aside class="h" id="SubNavi">
+				<div class="d"></div>
 			</aside>
 		</main>
 		<script src="root.js"></script>
