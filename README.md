@@ -190,7 +190,7 @@ Add it into in the dependencies element like so:
 <dependency>
     <groupId>com.github.teletha</groupId>
     <artifactId>sinobu</artifactId>
-    <version>2.21.0</version>
+    <version>2.22.0</version>
 </dependency>
 ```
 #### [Gradle](https://gradle.org/)
@@ -203,7 +203,7 @@ repositories {
 Add it into the dependencies section like so:
 ```gradle
 dependencies {
-    implementation 'com.github.teletha:sinobu:2.21.0'
+    implementation 'com.github.teletha:sinobu:2.22.0'
 }
 ```
 #### [SBT](https://www.scala-sbt.org/)
@@ -213,7 +213,7 @@ resolvers += "jitpack" at "https://jitpack.io"
 ```
 Add it into the libraryDependencies section like so:
 ```scala
-libraryDependencies += "com.github.teletha" % "sinobu" % "2.21.0"
+libraryDependencies += "com.github.teletha" % "sinobu" % "2.22.0"
 ```
 #### [Leiningen](https://leiningen.org/)
 Add JitPack repository at the end of repositories in your project.clj:
@@ -222,12 +222,12 @@ Add JitPack repository at the end of repositories in your project.clj:
 ```
 Add it into the dependencies section like so:
 ```clj
-:dependencies [[com.github.teletha/sinobu "2.21.0"]]
+:dependencies [[com.github.teletha/sinobu "2.22.0"]]
 ```
 #### [Bee](https://teletha.github.io/bee)
 Add it into your project definition class like so:
 ```java
-require("com.github.teletha", "sinobu", "2.21.0");
+require("com.github.teletha", "sinobu", "2.22.0");
 ```
 <p align="right"><a href="#top">back to top</a></p>
 
