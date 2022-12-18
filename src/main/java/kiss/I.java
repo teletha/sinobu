@@ -2413,14 +2413,20 @@ public class I {
 
             // byte data types
             byte[] bytes = xml instanceof String ? ((String) xml).getBytes(StandardCharsets.UTF_8) : (byte[]) xml;
-            if (6 < bytes.length && bytes[0] == '<') {
-                if (bytes[1] == '!' || (bytes[1] == 'h' && bytes[2] == 't' && bytes[3] == 'm' && bytes[4] == 'l' && bytes[5] == '>')) {
+
+            // skip whitespaces
+            int pos = 0;
+            while (bytes[pos] <= 32) {
+                pos++;
+            }
+
+            if (pos + 6 < bytes.length && bytes[pos] == '<') {
+                if (bytes[pos + 1] == '!' || (bytes[pos + 1] == 'h' && bytes[pos + 2] == 't' && bytes[pos + 3] == 'm' && bytes[pos + 4] == 'l' && bytes[pos + 5] == '>')) {
                     return new XML(null, null).parse(bytes, StandardCharsets.UTF_8);
                 }
             }
 
             String value = new String(bytes, StandardCharsets.UTF_8);
-
             if (xmlLiteral.matcher(value).matches()) {
                 doc = dom.parse(new InputSource(new StringReader("<m>".concat(value.replaceAll("<\\?.+\\?>", "")).concat("</m>"))));
                 return new XML(doc, XML.convert(doc.getFirstChild().getChildNodes()));
