@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.22.2](https://github.com/teletha/sinobu/compare/v2.22.1...v2.22.2) (2022-12-19)
+
+
+### Bug Fixes
+
+* I#xml with blank string must throw exception ([a6053b7](https://github.com/teletha/sinobu/commit/a6053b7034466c637be4522a1303829e459b3ef1))
+
 ## [2.22.1](https://github.com/teletha/sinobu/compare/v2.22.0...v2.22.1) (2022-12-18)
 
 
