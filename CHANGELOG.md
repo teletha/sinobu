@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.22.1](https://github.com/teletha/sinobu/compare/v2.22.0...v2.22.1) (2022-12-18)
+
+
+### Bug Fixes
+
+* I#xml can parse text with heading whitespaces. ([bdebd85](https://github.com/teletha/sinobu/commit/bdebd85c1fea44e2706a73590601669916024e3d))
+
 ## [2.22.0](https://github.com/teletha/sinobu/compare/v2.21.0...v2.22.0) (2022-12-17)
 
 
