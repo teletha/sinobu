@@ -9,6 +9,12 @@
  */
 package kiss.xml;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.io.InputStream;
+import java.io.Reader;
+import java.nio.file.Path;
+
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Node;
 
@@ -298,6 +304,25 @@ class XMLParserTest {
         XML xml = I.xml("<html><Q/><Q/><Q><p/><Q><p/></html>");
 
         assert xml.children().size() == 3;
+    }
+
+    @Test
+    void variousNullInputs() {
+        assertThrows(NullPointerException.class, () -> I.xml((String) null));
+        assertThrows(NullPointerException.class, () -> I.xml((Path) null));
+        assertThrows(NullPointerException.class, () -> I.xml((InputStream) null));
+        assertThrows(NullPointerException.class, () -> I.xml((Reader) null));
+        assertThrows(NullPointerException.class, () -> I.xml((Node) null));
+    }
+
+    @Test
+    void empty() {
+        assertThrows(ArrayIndexOutOfBoundsException.class, () -> I.xml(""));
+    }
+
+    @Test
+    void whitespaceOnly() {
+        assertThrows(ArrayIndexOutOfBoundsException.class, () -> I.xml(" \t\r\n"));
     }
 
     @Test

@@ -2336,7 +2336,7 @@ public class I {
      * @param input Text of xml representation.
      * @return A constructed {@link XML}.
      * @throws NullPointerException If the input data is <code>null</code>.
-     * @throws IllegalStateException If the input data is empty or invalid format.
+     * @throws ArrayIndexOutOfBoundsException If the input data is empty or invalid format.
      */
     public static XML xml(String input) {
         return input.startsWith("http:/") || input.startsWith("https:/") ? I.http(input, XML.class).to().acquire() : I.xml(null, input);
@@ -2348,7 +2348,7 @@ public class I {
      * @param input Path to the XML file.
      * @return A constructed {@link XML}.
      * @throws NullPointerException If the input data is <code>null</code>.
-     * @throws IllegalStateException If the input data is empty or invalid format.
+     * @throws ArrayIndexOutOfBoundsException If the input data is empty or invalid format.
      */
     public static XML xml(Path input) {
         try {
@@ -2364,7 +2364,7 @@ public class I {
      * @param input Text stream of xml representation.
      * @return A constructed {@link XML}.
      * @throws NullPointerException If the input data is <code>null</code>.
-     * @throws IllegalStateException If the input data is empty or invalid format.
+     * @throws ArrayIndexOutOfBoundsException If the input data is empty or invalid format.
      */
     public static XML xml(InputStream input) {
         try {
@@ -2380,7 +2380,7 @@ public class I {
      * @param input Text stream of xml representation.
      * @return A constructed {@link XML}.
      * @throws NullPointerException If the input data is <code>null</code>.
-     * @throws IllegalStateException If the input data is empty or invalid format.
+     * @throws ArrayIndexOutOfBoundsException If the input data is empty or invalid format.
      */
     public static XML xml(Reader input) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -2394,6 +2394,7 @@ public class I {
      * @param input A xml expression.
      * @return A constructed {@link XML}.
      * @throws NullPointerException If the input data is <code>null</code>.
+     * @throws ArrayIndexOutOfBoundsException If the input data is empty or invalid format.
      */
     public static XML xml(Node input) {
         return I.xml(null, input);
@@ -2415,9 +2416,8 @@ public class I {
             byte[] bytes = xml instanceof String ? ((String) xml).getBytes(StandardCharsets.UTF_8) : (byte[]) xml;
 
             // skip whitespaces
-            int pos = 0;
-            while (bytes[pos] <= 32) {
-                pos++;
+            int pos = -1;
+            while (bytes[++pos] <= 32) {
             }
 
             if (pos + 6 < bytes.length && bytes[pos] == '<') {
