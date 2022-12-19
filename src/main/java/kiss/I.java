@@ -2416,8 +2416,9 @@ public class I {
             byte[] bytes = xml instanceof String ? ((String) xml).getBytes(StandardCharsets.UTF_8) : (byte[]) xml;
 
             // skip whitespaces
-            int pos = -1;
-            while (bytes[++pos] <= 32) {
+            int pos = 0;
+            while (pos < bytes.length && bytes[pos] <= 32) {
+                pos++;
             }
 
             if (pos + 6 < bytes.length && bytes[pos] == '<') {

@@ -16,6 +16,7 @@ import java.io.Reader;
 import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Node;
 
 import kiss.I;
@@ -317,12 +318,12 @@ class XMLParserTest {
 
     @Test
     void empty() {
-        assertThrows(ArrayIndexOutOfBoundsException.class, () -> I.xml(""));
+        assertThrows(DOMException.class, () -> I.xml(""));
     }
 
     @Test
     void whitespaceOnly() {
-        assertThrows(ArrayIndexOutOfBoundsException.class, () -> I.xml(" \t\r\n"));
+        assertThrows(DOMException.class, () -> I.xml("  \t\r\n  "));
     }
 
     @Test
