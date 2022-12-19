@@ -68,7 +68,6 @@ public class Project extends bee.api.Project {
         require("com.samskivert", "jmustache").atTest();
 
         // For logging benchmark
-        require("org.apache.logging.log4j", "log4j-api").atTest();
         require("org.apache.logging.log4j", "log4j-core").atTest();
         require("com.lmax", "disruptor", "3.4.4").atTest();
         require("org.tinylog", "tinylog-impl").atTest();
