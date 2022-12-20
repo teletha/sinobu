@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.0.0](https://github.com/teletha/sinobu/compare/v2.23.0...v3.0.0) (2022-12-20)
+
+
+### ⚠ BREAKING CHANGES
+
+* Drop Tree and TreeNode.
+
+### Features
+
+* Drop Tree and TreeNode. ([bf08e8d](https://github.com/teletha/sinobu/commit/bf08e8d13b60c0dc25f900aa6a0486aaef881cb5))
+
 ## [2.23.0](https://github.com/teletha/sinobu/compare/v2.22.2...v2.23.0) (2022-12-20)
 
 
