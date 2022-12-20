@@ -285,27 +285,6 @@ const root = {
 			"title": "Plugin"
 		},
 		{
-			"path": "doc/doc.DocumentDoc.DSL.html",
-			"subs": [
-				{
-					"path": "doc/doc.DocumentDoc.DSL.html#doc.DocumentDoc.DSL.Tree_Structured_Data",
-					"subs": [],
-					"title": "Tree Structured Data"
-				},
-				{
-					"path": "doc/doc.DocumentDoc.DSL.html#doc.DocumentDoc.DSL.Node_and_Leaf",
-					"subs": [],
-					"title": "Node and Leaf"
-				},
-				{
-					"path": "doc/doc.DocumentDoc.DSL.html#doc.DocumentDoc.DSL.HTML_Sample",
-					"subs": [],
-					"title": "HTML Sample"
-				}
-			],
-			"title": "DSL"
-		},
-		{
 			"path": "doc/doc.DocumentDoc.Persistence.html",
 			"subs": [
 				{
