@@ -58,7 +58,6 @@ public class DocumentDoc {
          * <li>Template
          * engine(<a href="https://mustache.github.io/mustache.5.html">Mustache</a>)</li>
          * <li>Dynamic plug-in mechanism</li>
-         * <li>Domain specific languages</li>
          * <li>Object Persistence</li>
          * <li>Logging</li>
          * </ul>
@@ -609,17 +608,6 @@ public class DocumentDoc {
         }
 
         public class Query_Extension {
-        }
-    }
-
-    public class DSL {
-        public class Tree_Structured_Data {
-        }
-
-        public class Node_and_Leaf {
-        }
-
-        public class HTML_Sample {
         }
     }
 
