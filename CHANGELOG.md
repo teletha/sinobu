@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.23.0](https://github.com/teletha/sinobu/compare/v2.22.2...v2.23.0) (2022-12-20)
+
+
+### Features
+
+* export structure builder as lycoris ([bdb674b](https://github.com/teletha/sinobu/commit/bdb674b2baf70dad2bc5ab884f3e161fd76ce2c0))
+
 ## [2.22.2](https://github.com/teletha/sinobu/compare/v2.22.1...v2.22.2) (2022-12-19)
 
 
