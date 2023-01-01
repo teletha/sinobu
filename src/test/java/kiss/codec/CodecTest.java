@@ -42,10 +42,6 @@ import kiss.I;
 
 class CodecTest {
 
-    static {
-        System.out.println("sun.nio.fs.UnixPath".hashCode());
-    }
-
     @Test
     void Boolean() {
         assert codec(Boolean.TRUE);
