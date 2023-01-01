@@ -343,6 +343,7 @@ public class I {
                 return Locale::forLanguageTag;
             case 1464606545: // java.nio.file.Path
             case -2015077501: // sun.nio.fs.WindowsPath
+            case 527201650: // sun.nio.fs.UnixPath
                 return Path::of;
             case -1023498007: // java.time.Duration
             case 1296075756: // java.time.Instant
