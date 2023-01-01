@@ -202,46 +202,50 @@ public class Model<M> {
                                     || field.isAnnotationPresent(Managed.class) //
                                     || (isRecord && (PRIVATE & modifier) == PRIVATE)) {
                                 field.setAccessible(true);
-                                Model fieldModel = of(field.getGenericType(), type);
-
-                                if (Variable.class.isAssignableFrom(fieldModel.type)) {
-                                    // variable
-                                    Property property = new Property(of(collectParameters(field
-                                            .getGenericType(), Variable.class, type)[0], type), field.getName(), field);
-                                    property.getter = m -> ((Variable) field.get(m)).v;
-                                    property.setter = (m, v) -> {
-                                        ((Variable) field.get(m)).set(v);
-                                        return m;
-                                    };
-                                    property.observer = m -> ((Variable) field.get(m)).observe();
-
-                                    // register it
-                                    properties.put(property.name, property);
-                                } else if ((fieldModel.atomic && notFinal) || !fieldModel.atomic || isRecord) {
-                                    Property property = new Property(fieldModel, field.getName(), field);
-
-                                    property.getter = m -> field.get(m);
-                                    if (isRecord) {
+                                try {
+                                    Model fieldModel = of(field.getGenericType(), type);
+                                    if (Variable.class.isAssignableFrom(fieldModel.type)) {
+                                        // variable
+                                        Property property = new Property(of(collectParameters(field
+                                                .getGenericType(), Variable.class, type)[0], type), field.getName(), field);
+                                        property.getter = m -> ((Variable) field.get(m)).v;
                                         property.setter = (m, v) -> {
-                                            Constructor c = collectConstructors(type)[0];
-                                            Parameter[] params = c.getParameters();
-                                            Object[] values = new Object[params.length];
-                                            for (int i = 0; i < params.length; i++) {
-                                                String name = params[i].getName();
-                                                values[i] = name.equals(property.name) ? v : get((M) m, property(name));
-                                            }
-                                            return c.newInstance(values);
-                                        };
-                                    } else {
-                                        MethodHandle setter = MethodHandles.lookup().unreflectSetter(field);
-                                        property.setter = (m, v) -> {
-                                            setter.invoke(m, v);
+                                            ((Variable) field.get(m)).set(v);
                                             return m;
                                         };
-                                    }
+                                        property.observer = m -> ((Variable) field.get(m)).observe();
 
-                                    // register it
-                                    properties.put(property.name, property);
+                                        // register it
+                                        properties.put(property.name, property);
+                                    } else if ((fieldModel.atomic && notFinal) || !fieldModel.atomic || isRecord) {
+                                        Property property = new Property(fieldModel, field.getName(), field);
+
+                                        property.getter = m -> field.get(m);
+                                        if (isRecord) {
+                                            property.setter = (m, v) -> {
+                                                Constructor c = collectConstructors(type)[0];
+                                                Parameter[] params = c.getParameters();
+                                                Object[] values = new Object[params.length];
+                                                for (int i = 0; i < params.length; i++) {
+                                                    String name = params[i].getName();
+                                                    values[i] = name.equals(property.name) ? v : get((M) m, property(name));
+                                                }
+                                                return c.newInstance(values);
+                                            };
+                                        } else {
+                                            MethodHandle setter = MethodHandles.lookup().unreflectSetter(field);
+                                            property.setter = (m, v) -> {
+                                                setter.invoke(m, v);
+                                                return m;
+                                            };
+                                        }
+
+                                        // register it
+                                        properties.put(property.name, property);
+                                    }
+                                } catch (Throwable e) {
+                                    e.printStackTrace();
+                                    throw I.quiet(e);
                                 }
                             }
                         }
@@ -704,21 +708,32 @@ public class Model<M> {
     // }
 
     static WiseFunction createGetter(Method method) throws Throwable {
-        Lookup lookup = MethodHandles.privateLookupIn(method.getDeclaringClass(), MethodHandles.lookup());
-        MethodHandle mh = lookup.unreflect(method);
+        try {
+            Lookup lookup = MethodHandles.privateLookupIn(method.getDeclaringClass(), MethodHandles.lookup());
+            MethodHandle mh = lookup.unreflect(method);
 
-        return (WiseFunction) LambdaMetafactory
-                .metafactory(lookup, "APPLY", MethodType.methodType(WiseFunction.class), mh.type().generic(), mh, mh.type())
-                .dynamicInvoker()
-                .invokeExact();
+            return (WiseFunction) LambdaMetafactory
+                    .metafactory(lookup, "APPLY", MethodType.methodType(WiseFunction.class), mh.type().generic(), mh, mh.type())
+                    .dynamicInvoker()
+                    .invokeExact();
+        } catch (Throwable e) {
+            return method::invoke;
+        }
     }
 
     static WiseBiConsumer createSetter(Method method) throws Throwable {
-        Lookup lookup = MethodHandles.privateLookupIn(method.getDeclaringClass(), MethodHandles.lookup());
-        MethodHandle mh = lookup.unreflect(method);
+        try {
+            Lookup lookup = MethodHandles.privateLookupIn(method.getDeclaringClass(), MethodHandles.lookup());
+            MethodHandle mh = lookup.unreflect(method);
 
-        return (WiseBiConsumer) LambdaMetafactory.metafactory(lookup, "ACCEPT", MethodType.methodType(WiseBiConsumer.class), mh.type()
-                .generic()
-                .changeReturnType(void.class), mh, mh.type().wrap().changeReturnType(void.class)).dynamicInvoker().invokeExact();
+            return (WiseBiConsumer) LambdaMetafactory
+                    .metafactory(lookup, "ACCEPT", MethodType.methodType(WiseBiConsumer.class), mh.type()
+                            .generic()
+                            .changeReturnType(void.class), mh, mh.type().wrap().changeReturnType(void.class))
+                    .dynamicInvoker()
+                    .invokeExact();
+        } catch (Throwable e) {
+            return method::invoke;
+        }
     }
 }

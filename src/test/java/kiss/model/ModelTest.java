@@ -10,6 +10,7 @@
 package kiss.model;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -610,5 +611,11 @@ class ModelTest {
     void primitive() {
         Model<Integer> model = Model.of(int.class);
         assert model.type == int.class;
+    }
+
+    @Test
+    void date() {
+        Model<Date> model = Model.of(Date.class);
+        assert model.type == Date.class;
     }
 }

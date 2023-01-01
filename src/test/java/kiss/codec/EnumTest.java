@@ -13,10 +13,17 @@ import java.lang.annotation.RetentionPolicy;
 
 import org.junit.jupiter.api.Test;
 
+import kiss.Decoder;
 import kiss.I;
 import kiss.LoadableTestBase;
 
 class EnumTest extends LoadableTestBase {
+
+    @Test
+    void codec() {
+        Decoder decoder = I.find(Decoder.class, RetentionPolicy.class);
+        assert decoder != null;
+    }
 
     @Test
     void builtin() {
