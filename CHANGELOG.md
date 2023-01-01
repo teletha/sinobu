@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.0.1](https://github.com/teletha/sinobu/compare/v3.0.0...v3.0.1) (2023-01-01)
+
+
+### Bug Fixes
+
+* non-accessible model (i.e. java.util.Date) will throw exception ([e36d74c](https://github.com/teletha/sinobu/commit/e36d74c6968c12f51fbd4068d415ebd5ec07b601))
+* Path codec supports non-windows environment ([df59d3a](https://github.com/teletha/sinobu/commit/df59d3a2773117e7c0a99fc2ef4c660be5e318cc))
+
 ## [3.0.0](https://github.com/teletha/sinobu/compare/v2.23.0...v3.0.0) (2022-12-20)
 
 
