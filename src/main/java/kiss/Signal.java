@@ -3502,12 +3502,25 @@ public final class Signal<V> {
      * @return
      */
     public final Signal<V> waitForTerminate() {
+        return waitForTerminate(false);
+    }
+
+    /**
+     * Synchronization Support Tool : Wait in the current thread until this {@link Signal} to be
+     * terminated. Termination is one of the states of completed, error or disposed.
+     * 
+     * @param rethrow Rethrow error in the current thread.
+     * @return
+     */
+    public final Signal<V> waitForTerminate(boolean rethrow) {
         return new Signal<>((observer, disposer) -> {
             try {
+                Variable<Throwable> error = Variable.empty();
                 CountDownLatch latch = new CountDownLatch(1);
-                to(observer::accept, I.bundle(I.wiseC(latch::countDown), observer::error), I
+                to(observer::accept, I.bundle(error::set, I.wiseC(latch::countDown), observer::error), I
                         .bundle(latch::countDown, observer::complete), disposer.add(latch::countDown), false);
                 latch.await();
+                if (rethrow) error.to(observer::error);
             } catch (Exception e) {
                 observer.error(e);
             }
