@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.1.0](https://github.com/teletha/sinobu/compare/v3.0.1...v3.1.0) (2023-01-04)
+
+
+### Features
+
+* Add Signale#waitForTerminate(rethrow) ([81a7f28](https://github.com/teletha/sinobu/commit/81a7f284dc1d7c766a9f7f77afb0dfaf52323c12))
+* Signal#waitForTerminate always rethrow error ([360983d](https://github.com/teletha/sinobu/commit/360983d81b61c33784d2204f2d280ab2f68360fe))
+
 ## [3.0.1](https://github.com/teletha/sinobu/compare/v3.0.0...v3.0.1) (2023-01-01)
 
 
