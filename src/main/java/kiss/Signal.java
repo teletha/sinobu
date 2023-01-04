@@ -10,7 +10,7 @@
 package kiss;
 
 import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.*;
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -3502,28 +3502,18 @@ public final class Signal<V> {
      * @return
      */
     public final Signal<V> waitForTerminate() {
-        return waitForTerminate(false);
-    }
-
-    /**
-     * Synchronization Support Tool : Wait in the current thread until this {@link Signal} to be
-     * terminated. Termination is one of the states of completed, error or disposed.
-     * 
-     * @param rethrow Rethrow error in the current thread.
-     * @return
-     */
-    public final Signal<V> waitForTerminate(boolean rethrow) {
         return new Signal<>((observer, disposer) -> {
+            Variable<Throwable> error = Variable.empty();
+
             try {
-                Variable<Throwable> error = Variable.empty();
                 CountDownLatch latch = new CountDownLatch(1);
-                to(observer::accept, I.bundle(error::set, I.wiseC(latch::countDown), observer::error), I
-                        .bundle(latch::countDown, observer::complete), disposer.add(latch::countDown), false);
+                to(observer::accept, I.bundle(error, I.wiseC(latch::countDown)), I.bundle(latch::countDown, observer::complete), disposer
+                        .add(latch::countDown), false);
                 latch.await();
-                if (rethrow) error.to(observer::error);
-            } catch (Exception e) {
-                observer.error(e);
+            } catch (Throwable e) {
+                error.set(e);
             }
+            error.to(observer::error);
             return disposer;
         });
     }
