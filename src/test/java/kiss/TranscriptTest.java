@@ -29,7 +29,7 @@ class TranscriptTest {
     final CleanRoom room = new CleanRoom();
 
     @BeforeEach
-    private void initialize() {
+    void initialize() {
         I.Lang.set("en");
         I.env("LangDirectory", room.locateDirectory("transcript").toAbsolutePath().toString());
 
