@@ -3262,6 +3262,10 @@ public final class Signal<V> {
         return take(AtomicLong::new, (context, value) -> condition.test(context.getAndIncrement()), true, false, false);
     }
 
+    public final Signal<V> takeIf(Function<V, Signal<?>> condition) {
+        return take(v -> condition.apply(v).isSignaled().to().v);
+    }
+
     /**
      * <p>
      * Returns an {@link Signal} that emits items emitted by the source {@link Signal}, checks the
