@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.2.0](https://github.com/teletha/sinobu/compare/v3.1.0...v3.2.0) (2023-03-02)
+
+
+### Features
+
+* Add Signale#skipIf and #takeIf. ([3dc49ca](https://github.com/teletha/sinobu/commit/3dc49caa474aac7b2fbe23fc649592333955d2eb))
+
 ## [3.1.0](https://github.com/teletha/sinobu/compare/v3.0.1...v3.1.0) (2023-01-04)
 
 
