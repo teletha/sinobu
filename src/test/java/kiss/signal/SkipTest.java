@@ -218,4 +218,27 @@ class SkipTest extends SignalTester {
         assert main.isNotCompleted();
         assert main.isNotDisposed();
     }
+
+    @Test
+    void skipIf() {
+        monitor(1, int.class, signal -> signal.skipIf(value -> value % 2 == 0 ? I.signal() : I.signal(10)));
+        assert main.emit(1, 2, 3, 4, 5, Complete).value(2, 4);
+        assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+
+        // error
+        monitor(1, int.class, signal -> signal.skipIf(value -> value % 2 == 0 ? I.signal() : I.signal(10)));
+        assert main.emit(Error.class, 1, 2).value();
+        assert main.isNotCompleted();
+        assert main.isError();
+        assert main.isDisposed();
+
+        // complete
+        monitor(1, int.class, signal -> signal.skipIf(value -> value % 2 == 0 ? I.signal() : I.signal(10)));
+        assert main.emit(Complete, 1, 2).value();
+        assert main.isNotError();
+        assert main.isCompleted();
+        assert main.isDisposed();
+    }
 }

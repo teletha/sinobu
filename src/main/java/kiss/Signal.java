@@ -10,7 +10,7 @@
 package kiss;
 
 import static java.lang.Boolean.*;
-import static java.util.concurrent.TimeUnit.NANOSECONDS;
+import static java.util.concurrent.TimeUnit.*;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -2794,6 +2794,22 @@ public final class Signal<V> {
     }
 
     /**
+     * <p>
+     * Returns an {@link Signal} that emits items emitted by the source {@link Signal}, checks the
+     * specified predicate for each item, and then completes if the condition is not signaled.
+     * </p>
+     *
+     * @param condition A function that evaluates an item emitted by the source {@link Signal} and
+     *            returns a value.
+     * @return An {@link Signal} that first emits items emitted by the source {@link Signal}, checks
+     *         the specified condition after each item, and then completes if the condition is not
+     *         signaled.
+     */
+    public final Signal<V> skipIf(Function<V, Signal<?>> condition) {
+        return skip(v -> condition.apply(v).isEmitted().to().v);
+    }
+
+    /**
      * Return the {@link Signal} which ignores the specified error.
      * 
      * @param types A list of error types to ignore.
@@ -3262,8 +3278,20 @@ public final class Signal<V> {
         return take(AtomicLong::new, (context, value) -> condition.test(context.getAndIncrement()), true, false, false);
     }
 
+    /**
+     * <p>
+     * Returns an {@link Signal} that emits items emitted by the source {@link Signal}, checks the
+     * specified predicate for each item, and then completes if the condition is signaled.
+     * </p>
+     *
+     * @param condition A function that evaluates an item emitted by the source {@link Signal} and
+     *            returns a value.
+     * @return An {@link Signal} that first emits items emitted by the source {@link Signal}, checks
+     *         the specified condition after each item, and then completes if the condition is
+     *         signaled.
+     */
     public final Signal<V> takeIf(Function<V, Signal<?>> condition) {
-        return take(v -> condition.apply(v).isSignaled().to().v);
+        return take(v -> condition.apply(v).isEmitted().to().v);
     }
 
     /**

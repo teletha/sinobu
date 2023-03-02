@@ -291,4 +291,27 @@ class TakeTest extends SignalTester {
 
         assert completes[0] == 1;
     }
+
+    @Test
+    void takeIf() {
+        monitor(1, int.class, signal -> signal.takeIf(value -> value % 2 == 0 ? I.signal() : I.signal(10)));
+        assert main.emit(1, 2, 3, 4, 5, Complete).value(1, 3, 5);
+        assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+
+        // error
+        monitor(1, int.class, signal -> signal.takeIf(value -> value % 2 == 0 ? I.signal() : I.signal(10)));
+        assert main.emit(Error.class, 1, 2).value();
+        assert main.isNotCompleted();
+        assert main.isError();
+        assert main.isDisposed();
+
+        // complete
+        monitor(1, int.class, signal -> signal.takeIf(value -> value % 2 == 0 ? I.signal() : I.signal(10)));
+        assert main.emit(Complete, 1, 2).value();
+        assert main.isNotError();
+        assert main.isCompleted();
+        assert main.isDisposed();
+    }
 }
