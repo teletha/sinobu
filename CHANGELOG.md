@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.3.0](https://github.com/teletha/sinobu/compare/v3.2.0...v3.3.0) (2023-05-18)
+
+
+### Features
+
+* I#translate can dispose automatic translation. ([69a864b](https://github.com/teletha/sinobu/commit/69a864b17d7d9fff76d2bfb8dd12a685a6ea921c))
+
 ## [3.2.0](https://github.com/teletha/sinobu/compare/v3.1.0...v3.2.0) (2023-03-02)
 
 
