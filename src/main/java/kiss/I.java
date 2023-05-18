@@ -9,9 +9,10 @@
  */
 package kiss;
 
-import static java.lang.Boolean.*;
-import static java.nio.charset.StandardCharsets.*;
-import static java.time.format.DateTimeFormatter.*;
+import static java.lang.Boolean.FALSE;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.time.format.DateTimeFormatter.ISO_DATE;
+import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -2128,6 +2129,18 @@ public class I {
      * @param context Parameters to be assigned to variables in a sentence. (Optional)
      */
     public static Variable<String> translate(String text, Object... context) {
+        return translate(null, text, context);
+    }
+
+    /**
+     * The text will be automatically translated. Basic sentences must be written in English. It
+     * will be translated online automatically into the language specified in the global variable
+     * {@link #Lang}. Once the text is translated, it is saved to the local disk and loaded from
+     * there in the future.
+     * @param text Basic English sentences.
+     * @param context Parameters to be assigned to variables in a sentence. (Optional)
+     */
+    public static Variable<String> translate(Disposable disposer, String text, Object... context) {
         Variable<String> t = Variable.empty();
         I.Lang.observing().switchMap(lang -> {
             // First, check inline cache.
@@ -2151,7 +2164,7 @@ public class I {
                         translate.accept(bundle);
                         return v;
                     });
-        }).startWith(text).to(v -> t.set(I.express(v, I.list(context))));
+        }).startWith(text).to(v -> t.set(I.express(v, I.list(context))), disposer);
         return t;
     }
 

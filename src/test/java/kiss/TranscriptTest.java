@@ -98,6 +98,24 @@ class TranscriptTest {
     }
 
     @Test
+    void disposable() {
+        createBundle("fr", "base", "nombre d'unités");
+        createBundle("ja", "base", "基数");
+
+        Disposable disposer = Disposable.empty();
+        Variable<String> text = I.translate(disposer, "base");
+        assert text.is("base");
+
+        I.Lang.set("fr");
+        assert text.is("nombre d'unités");
+
+        disposer.dispose();
+
+        I.Lang.set("ja");
+        assert text.is("nombre d'unités");
+    }
+
+    @Test
     void translateByOnline() {
         Variable<String> text = I.translate("Water");
         assert text.is("Water");
