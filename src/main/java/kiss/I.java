@@ -2333,7 +2333,7 @@ public class I {
      * @throws NullPointerException If the input Java object or the output is <code>null</code> .
      */
     public static void write(Object input, Appendable out) {
-        write(input, out, Model.of(input));
+        write(Model.of(input), input, out);
     }
 
     /**
@@ -2344,15 +2344,15 @@ public class I {
      * If the output object implements {@link AutoCloseable}, {@link AutoCloseable#close()} method
      * will be invoked certainly.
      * </p>
-     * 
+     * @param model A root model of the input object.
      * @param input A Java object. All properties will be serialized deeply. <code>null</code> will
      *            throw {@link java.lang.NullPointerException}.
      * @param out A serialized data output. <code>null</code> will throw
      *            {@link NullPointerException}.
-     * @param model A root model of the input object.
+     * 
      * @throws NullPointerException If the input Java object or the output is <code>null</code> .
      */
-    public static void write(Object input, Appendable out, Model model) {
+    public static void write(Model model, Object input, Appendable out) {
         Objects.requireNonNull(out);
 
         try {
