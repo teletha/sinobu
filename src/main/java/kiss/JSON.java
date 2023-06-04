@@ -61,6 +61,16 @@ public class JSON {
     /**
      * Data mapping to the specified model.
      * 
+     * @param model A model type.
+     * @return A specified model.
+     */
+    public <M> M as(Model<M> model) {
+        return as(model, I.make(model.type), root);
+    }
+
+    /**
+     * Data mapping to the specified model.
+     * 
      * @param value A model.
      * @return A specified model.
      */

@@ -2137,6 +2137,7 @@ public class I {
      * will be translated online automatically into the language specified in the global variable
      * {@link #Lang}. Once the text is translated, it is saved to the local disk and loaded from
      * there in the future.
+     * 
      * @param text Basic English sentences.
      * @param context Parameters to be assigned to variables in a sentence. (Optional)
      */
@@ -2332,11 +2333,29 @@ public class I {
      * @throws NullPointerException If the input Java object or the output is <code>null</code> .
      */
     public static void write(Object input, Appendable out) {
+        write(Model.of(input), input, out);
+    }
+
+    /**
+     * <p>
+     * Write JSON representation of Java object to the specified output.
+     * </p>
+     * <p>
+     * If the output object implements {@link AutoCloseable}, {@link AutoCloseable#close()} method
+     * will be invoked certainly.
+     * </p>
+     * @param input A Java object. All properties will be serialized deeply. <code>null</code> will
+     *            throw {@link java.lang.NullPointerException}.
+     * @param out A serialized data output. <code>null</code> will throw
+     *            {@link NullPointerException}.
+     *
+     * @throws NullPointerException If the input Java object or the output is <code>null</code> .
+     */
+    public static void write(Model model, Object input, Appendable out) {
         Objects.requireNonNull(out);
 
         try {
             // traverse object as json
-            Model model = Model.of(input);
             new JSON(out).write(model, new Property(model, "", null), input);
         } finally {
             // close carefuly
