@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.5.0](https://github.com/teletha/sinobu/compare/v3.4.0...v3.5.0) (2023-06-06)
+
+
+### Features
+
+* Managed#name can declare the user custom name. ([e0ddec1](https://github.com/teletha/sinobu/commit/e0ddec1848304d421916098d91e595ac33baa0ad))
+
 ## [3.4.0](https://github.com/teletha/sinobu/compare/v3.3.0...v3.4.0) (2023-06-04)
 
 
