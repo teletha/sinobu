@@ -39,6 +39,13 @@ import kiss.model.Property;
 public @interface Managed {
 
     /**
+     * Configure the name of the associated property. Default value is empty.
+     * 
+     * @see Property
+     */
+    String name() default "";
+
+    /**
      * Configure the lifestyle of the instance which is annotated class. The default value is
      * {@link I#prototype(Class)}.
      * 

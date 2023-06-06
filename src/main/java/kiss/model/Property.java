@@ -9,10 +9,12 @@
  */
 package kiss.model;
 
-import static java.lang.reflect.Modifier.*;
+import static java.lang.reflect.Modifier.TRANSIENT;
 
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Member;
 
+import kiss.Managed;
 import kiss.Signal;
 import kiss.WiseBiFunction;
 import kiss.WiseFunction;
@@ -52,7 +54,14 @@ public class Property {
      * @param name A property name.
      * @param mem An associated member (filed or method).
      */
-    public Property(Model model, String name, Member mem) {
+    public <M extends AccessibleObject & Member> Property(Model model, String name, M mem) {
+        if (mem != null) {
+            Managed managed = mem.getAnnotation(Managed.class);
+            if (managed != null && !managed.name().isEmpty()) {
+                name = managed.name();
+            }
+        }
+
         this.model = model;
         this.name = name;
         this.transitory = mem != null && (mem.getModifiers() & TRANSIENT) != 0;
