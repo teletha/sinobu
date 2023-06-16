@@ -813,7 +813,13 @@ public class I {
      * @throws NullPointerException If the extension point is null.
      */
     public static <E extends Extensible> List<E> find(Class<E> extensionPoint) {
-        return I.signal(findBy(extensionPoint)).flatIterable(Ⅱ::ⅰ).skip(e -> Modifier.isAbstract(e.getModifiers())).map(I::make).toList();
+        return I.signal(findBy(extensionPoint)).flatIterable(Ⅱ::ⅰ).skip(e -> Modifier.isAbstract(e.getModifiers())).flatMap(clazz -> {
+            if (clazz.isEnum()) {
+                return I.signal(clazz.getEnumConstants());
+            } else {
+                return I.signal(I.make(clazz));
+            }
+        }).toList();
     }
 
     /**
@@ -1262,7 +1268,7 @@ public class I {
      */
     static <E extends Extensible> Disposable loadE(Class<E> extension) {
         // fast check : exclude non-initializable class
-        if (extension.isEnum() || extension.isAnonymousClass()) return null;
+        if (extension.isAnonymousClass()) return null;
 
         // slow check : exclude non-extensible class
         if (!Extensible.class.isAssignableFrom(extension)) return null;
@@ -2344,12 +2350,12 @@ public class I {
      * If the output object implements {@link AutoCloseable}, {@link AutoCloseable#close()} method
      * will be invoked certainly.
      * </p>
+     * 
      * @param model A root model of the input object.
      * @param input A Java object. All properties will be serialized deeply. <code>null</code> will
      *            throw {@link java.lang.NullPointerException}.
      * @param out A serialized data output. <code>null</code> will throw
      *            {@link NullPointerException}.
-     * 
      * @throws NullPointerException If the input Java object or the output is <code>null</code> .
      */
     public static void write(Model model, Object input, Appendable out) {

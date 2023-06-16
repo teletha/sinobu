@@ -23,34 +23,31 @@ import kiss.sample.bean.Person;
 import kiss.sample.bean.School;
 import kiss.sample.bean.Student;
 
-/**
- * @version 2016/03/29 17:12:21
- */
-public class ExtensibleTest extends LoadableTestBase {
+class ExtensibleTest extends LoadableTestBase {
 
     @Test
-    public void listByClass() {
+    void listByClass() {
         assert 5 == I.find(EPClass.class).size();
     }
 
     @Test
-    public void listByInterface() {
+    void listByInterface() {
         assert 4 == I.find(EPInterface.class).size();
         assert 0 == I.find(KEPInterface.class).size();
     }
 
     @Test
-    public void listByNonExtensionPoint() {
+    void listByNonExtensionPoint() {
         assert 0 == I.find(EPBoth.class).size();
     }
 
     @Test
-    public void listByNull() {
+    void listByNull() {
         Assertions.assertThrows(NullPointerException.class, () -> I.find(null));
     }
 
     @Test
-    public void key() throws Exception {
+    void key() {
         KEPClass extension = I.find(KEPClass.class, Person.class);
         assert extension != null;
         assert KEPClassExtension1.class == extension.getClass();
@@ -61,41 +58,41 @@ public class ExtensibleTest extends LoadableTestBase {
     }
 
     @Test
-    public void keyBySubclass() throws Exception {
+    void keyBySubclass() {
         KEPClass extension = I.find(KEPClass.class, Student.class);
         assert extension != null;
         assert KEPClassExtension1.class == extension.getClass();
     }
 
     @Test
-    public void keyBySubinterface() throws Exception {
+    void keyBySubinterface() {
         KEPClass extension = I.find(KEPClass.class, ArrayList.class);
         assert extension != null;
         assert KEPClassExtension3.class == extension.getClass();
     }
 
     @Test
-    public void keyByNonExistence() throws Exception {
+    void keyByNonExistence() {
         assert I.find(KEPClass.class, School.class) == null;
     }
 
     @Test
-    public void keyByNull() throws Exception {
+    void keyByNull() {
         assert I.find(null, null) == null;
     }
 
     @Test
-    public void keyByNullKey() throws Exception {
+    void keyByNullKey() {
         assert I.find(KEPClass.class, null) == null;
     }
 
     @Test
-    public void keyByNullExtensionPoint() throws Exception {
+    void keyByNullExtensionPoint() {
         assert I.find(null, Person.class) == null;
     }
 
     @Test
-    public void findAs() throws Exception {
+    void findAs() {
         List<Class<EPClass>> extensions = I.findAs(EPClass.class);
         assert extensions.size() == 6;
 
@@ -229,5 +226,29 @@ public class ExtensibleTest extends LoadableTestBase {
     private static <A> KEPInterface<A> anonymousKEPGenericClass() {
         return new KEPInterface<A>() {
         };
+    }
+
+    @Test
+    void findEnum() {
+        List<EnumExtensionPoint> extensions = I.find(EnumExtensionPoint.class);
+        assert extensions.size() == 3;
+        assert extensions.get(0) == EnumExtension.A;
+        assert extensions.get(1) == EnumExtension.B;
+        assert extensions.get(2) == EnumExtension.C;
+    }
+
+    @Test
+    void findAsEnum() {
+        List<Class<EnumExtensionPoint>> extensions = I.findAs(EnumExtensionPoint.class);
+        assert extensions.size() == 2;
+        assert extensions.get(0).equals(EnumExtensionPoint.class);
+        assert extensions.get(1).equals(EnumExtension.class);
+    }
+
+    private interface EnumExtensionPoint extends Extensible {
+    }
+
+    private static enum EnumExtension implements EnumExtensionPoint {
+        A, B, C;
     }
 }
