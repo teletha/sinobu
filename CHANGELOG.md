@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.6.1](https://github.com/teletha/sinobu/compare/v3.6.0...v3.6.1) (2023-06-16)
+
+
+### Bug Fixes
+
+* release please ([f7d7e2b](https://github.com/teletha/sinobu/commit/f7d7e2bde99f8e99a1f8b61470bc3c4bfa14bc46))
+
 ## [3.6.0](https://github.com/teletha/sinobu/compare/v3.5.0...v3.6.0) (2023-06-16)
 
 
