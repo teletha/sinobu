@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.6.0](https://github.com/teletha/sinobu/compare/v3.5.0...v3.6.0) (2023-06-16)
+
+
+### Features
+
+* I#find and #findAs support enum extension. ([a4d4e5c](https://github.com/teletha/sinobu/commit/a4d4e5c87f822c64eeec943ac7be91f2c26b9f34))
+
 ## [3.5.0](https://github.com/teletha/sinobu/compare/v3.4.0...v3.5.0) (2023-06-06)
 
 
