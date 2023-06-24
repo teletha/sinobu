@@ -2551,6 +2551,7 @@ public final class Signal<V> {
      */
     public final <A, R> Signal<R> scan(Collector<? super V, A, R> collector) {
         return scan(collector.supplier(), I.make(null, WiseBiFunction.class, (WiseBiConsumer<A, V>) collector.accumulator()::accept))
+                .map(x -> collector.combiner().apply(collector.supplier().get(), x))
                 .map(I.wiseF(collector.finisher()));
     }
 
