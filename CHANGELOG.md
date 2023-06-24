@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.6.2](https://github.com/teletha/sinobu/compare/v3.6.1...v3.6.2) (2023-06-24)
+
+
+### Bug Fixes
+
+* Signal#scan(Collector) must make new container each accumulation. ([3cd0aae](https://github.com/teletha/sinobu/commit/3cd0aae3f174b94ad30a46dad0524e1291b5bbc9))
+
 ## [3.6.1](https://github.com/teletha/sinobu/compare/v3.6.0...v3.6.1) (2023-06-16)
 
 
