@@ -153,6 +153,11 @@ class CodecTest {
     }
 
     @Test
+    void bigdecimalPlainString() {
+        assert I.transform(new BigDecimal("2e+1"), String.class).equals("20");
+    }
+
+    @Test
     void locale() {
         assert codec(Locale.ENGLISH);
     }

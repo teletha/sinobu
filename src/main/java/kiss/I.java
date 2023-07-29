@@ -283,6 +283,8 @@ public class I {
             switch (type.getName().hashCode()) {
             case -530663260: // java.lang.Class
                 return (Encoder<Class>) Class::getName;
+            case -1405464277: // java.math.BigDecimal
+                return (Encoder<BigDecimal>) BigDecimal::toPlainString;
             default:
                 return String::valueOf;
             }
