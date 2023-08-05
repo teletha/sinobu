@@ -17,6 +17,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Arrays;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
@@ -37,6 +38,16 @@ class CopyTest {
         assert Arrays.equals(bytes, out.toByteArray());
     }
 
+    @Test
+    void copyInputStreamNull() {
+        byte[] bytes = {0, 1, 2, 3};
+        ByteArrayInputStream in = new ByteArrayInputStream(bytes);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        Assertions.assertThrows(NullPointerException.class, () -> I.copy(null, out, true));
+        Assertions.assertThrows(NullPointerException.class, () -> I.copy(in, null, true));
+    }
+
     /**
      * @see I#copy(Readable, Appendable, boolean)
      */
@@ -49,5 +60,15 @@ class CopyTest {
         I.copy(in, out, true);
 
         assert out.toString().equals(value);
+    }
+
+    @Test
+    void copyReadableNull() {
+        String value = "test";
+        StringReader in = new StringReader(value);
+        StringWriter out = new StringWriter();
+
+        Assertions.assertThrows(NullPointerException.class, () -> I.copy(null, out, true));
+        Assertions.assertThrows(NullPointerException.class, () -> I.copy(in, null, true));
     }
 }
