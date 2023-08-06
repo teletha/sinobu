@@ -9,32 +9,35 @@
  */
 package kiss.core;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
 
-/**
- * @version 2017/03/05 11:18:14
- */
-public class TypeTest {
+class TypeTest {
 
     @Test
-    public void primitive() {
+    void primitive() {
         assert I.type("int") == int.class;
     }
 
     @Test
-    public void primitiveArray() {
+    void primitiveArray() {
         assert I.type("[I") == int[].class;
     }
 
     @Test
-    public void system() {
+    void system() {
         assert I.type("java.lang.String") == String.class;
     }
 
     @Test
-    public void systemArray() {
+    void systemArray() {
         assert I.type("[Ljava.lang.String;") == String[].class;
+    }
+
+    @Test
+    void invalid() {
+        Assertions.assertThrows(NullPointerException.class, () -> I.type(null));
     }
 }
