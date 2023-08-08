@@ -38,9 +38,6 @@ import org.junit.jupiter.api.Test;
 
 import kiss.I;
 
-/**
- * @version 2018/10/04 21:48:56
- */
 class TransformTest {
 
     @Test
