@@ -29,6 +29,7 @@ import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilder;
 import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilderFactory;
 import org.apache.logging.log4j.core.config.builder.api.LoggerComponentBuilder;
 import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
+import org.slf4j.LoggerFactory;
 import org.tinylog.TaggedLogger;
 import org.tinylog.configuration.Configuration;
 
@@ -216,10 +217,9 @@ public class LogBenchmark {
     }
 
     static void performLogback(Benchmark benchmark) throws Exception {
-        ch.qos.logback.classic.LoggerContext context = new ch.qos.logback.classic.LoggerContext();
-
         perform((execution, caller) -> {
             String name = execution + "-" + caller;
+            ch.qos.logback.classic.LoggerContext context = (ch.qos.logback.classic.LoggerContext) LoggerFactory.getILoggerFactory();
 
             PatternLayoutEncoder layout = new PatternLayoutEncoder();
             layout.setContext(context);

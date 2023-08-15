@@ -9,7 +9,7 @@
  */
 package kiss;
 
-import static bee.api.License.*;
+import static bee.api.License.MIT;
 
 import javax.lang.model.SourceVersion;
 
@@ -71,7 +71,6 @@ public class Project extends bee.api.Project {
         require("com.lmax", "disruptor", "3.4.4").atTest();
         require("org.tinylog", "tinylog-impl").atTest();
         require("ch.qos.logback", "logback-classic").atTest();
-        require("org.slf4j", "slf4j-nop").atTest();
 
         versionControlSystem("https://github.com/teletha/sinobu");
     }
