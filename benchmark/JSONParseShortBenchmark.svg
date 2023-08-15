@@ -52,33 +52,33 @@
     <text x="435" y="232">GC</text>
   </g>
 
-  <rect x="175" y="20" width="146.142209" rx="2" ry="2" class="call"/>
-  <rect x="175" y="34" width="32.989691" rx="2" ry="2" class="gc"/>
-  <text x="160" y="37" text-anchor="end">Sinobu</text>
-  <text x="160" y="47" text-anchor="end" class="desc">3.3.0</text>
-  <text x="328.142209" y="30" class="desc">276</text>
-  <text x="214.989691" y="44" class="desc">12</text>
+  <rect x="175" y="20" width="137.745098" rx="2" ry="2" class="call"/>
+  <rect x="175" y="34" width="62.921348" rx="2" ry="2" class="gc"/>
+  <text x="160" y="37" text-anchor="end">FastJson</text>
+  <text x="160" y="47" text-anchor="end" class="desc">2.0.39.android4</text>
+  <text x="319.745098" y="30" class="desc">281</text>
+  <text x="244.921348" y="44" class="desc">22</text>
 
-  <rect x="175" y="68" width="158.850227" rx="2" ry="2" class="call"/>
-  <rect x="175" y="82" width="53.092784" rx="2" ry="2" class="gc"/>
-  <text x="160" y="85" text-anchor="end">FastJson</text>
-  <text x="160" y="95" text-anchor="end" class="desc">2.0.33</text>
-  <text x="340.850227" y="78" class="desc">300</text>
-  <text x="235.092784" y="92" class="desc">20</text>
+  <rect x="175" y="68" width="138.235294" rx="2" ry="2" class="call"/>
+  <rect x="175" y="82" width="35.393258" rx="2" ry="2" class="gc"/>
+  <text x="160" y="85" text-anchor="end">Sinobu</text>
+  <text x="160" y="95" text-anchor="end" class="desc">3.6.2</text>
+  <text x="320.235294" y="78" class="desc">282</text>
+  <text x="217.393258" y="92" class="desc">12</text>
 
-  <rect x="175" y="116" width="236.157337" rx="2" ry="2" class="call"/>
-  <rect x="175" y="130" width="70.618557" rx="2" ry="2" class="gc"/>
+  <rect x="175" y="116" width="217.156863" rx="2" ry="2" class="call"/>
+  <rect x="175" y="130" width="77.528090" rx="2" ry="2" class="gc"/>
   <text x="160" y="133" text-anchor="end">Jackson</text>
   <text x="160" y="143" text-anchor="end" class="desc">2.15.2</text>
-  <text x="418.157337" y="126" class="desc">446</text>
-  <text x="252.618557" y="140" class="desc">27</text>
+  <text x="399.156863" y="126" class="desc">443</text>
+  <text x="259.528090" y="140" class="desc">27</text>
 
   <rect x="175" y="164" width="350.000000" rx="2" ry="2" class="call"/>
   <rect x="175" y="178" width="150.000000" rx="2" ry="2" class="gc"/>
   <text x="160" y="181" text-anchor="end">Gson</text>
   <text x="160" y="191" text-anchor="end" class="desc">2.10.1</text>
-  <text x="532.000000" y="174" class="desc">661</text>
-  <text x="332.000000" y="188" class="desc">58</text>
+  <text x="532.000000" y="174" class="desc">714</text>
+  <text x="332.000000" y="188" class="desc">53</text>
 
   <text x="175" y="252" class="desc">Java: 19</text>
   <text x="245" y="252" class="desc">Memory: 4072MB</text>
