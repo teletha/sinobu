@@ -11,7 +11,6 @@ package kiss.model;
 
 import java.util.List;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class NestedGenericModelTest {
@@ -37,7 +36,6 @@ class NestedGenericModelTest {
     }
 
     @Test
-    @Disabled
     void nested2() {
         Model personalized = Model.of(PersonalizedRoot.class);
         assert personalized.type == PersonalizedRoot.class;

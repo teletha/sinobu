@@ -9,7 +9,11 @@
  */
 package kiss.model;
 
-import static java.lang.reflect.Modifier.*;
+import static java.lang.reflect.Modifier.FINAL;
+import static java.lang.reflect.Modifier.NATIVE;
+import static java.lang.reflect.Modifier.PRIVATE;
+import static java.lang.reflect.Modifier.PUBLIC;
+import static java.lang.reflect.Modifier.STATIC;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Repeatable;
@@ -203,7 +207,9 @@ public class Model<M> {
                                     || (isRecord && (PRIVATE & modifier) == PRIVATE)) {
                                 field.setAccessible(true);
                                 try {
+
                                     Model fieldModel = of(field.getGenericType(), type);
+                                    System.out.println(field.getGenericType() + "    " + type + "   " + fieldModel);
                                     if (Variable.class.isAssignableFrom(fieldModel.type)) {
                                         // variable
                                         Property property = new Property(of(collectParameters(field
@@ -424,7 +430,10 @@ public class Model<M> {
             }
 
             // ClassModel
-            return of(clazz);
+            Model model = new GenericModel(clazz, parameterized.getActualTypeArguments(), base);
+            model.init();
+
+            return model;
         }
 
         // wildcard type
