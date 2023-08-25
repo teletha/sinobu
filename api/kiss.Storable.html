@@ -7,10 +7,10 @@
 		<script src="mimic.js" type="module"></script>
 		<link href="main.css" rel="stylesheet"/>
 	</head>
-	<body class="O">
-		<header class="P">
-			<h1 class="Z" date="Use saved searches to filter your results more quickly" ver="3.6.2"><code>Sinobu</code></h1>
-			<nav class="Y"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
+	<body class="N">
+		<header class="c">
+			<h1 class="O" date="Use saved searches to filter your results more quickly" ver="3.6.2"><code>Sinobu</code></h1>
+			<nav class="l"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#text"/>
 					</svg>Document</a><a href="api/"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#package"/>
@@ -21,7 +21,7 @@
 					</svg>Activity</a><a href="https://github.com/teletha/sinobu" target="_blank"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#github"/>
 					</svg>Repository</a></nav>
-			<div class="i" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
+			<div class="m" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#sun"/>
 					</svg>
 				</a><a id="dark" title="Change to a darker color scheme"><svg class="A svg" viewBox="0 0 24 24">
@@ -29,14 +29,14 @@
 					</svg>
 				</a></div>
 		</header>
-		<main class="Q">
-			<nav class="H">
+		<main class="Y">
+			<nav class="U">
 				<div></div>
 			</nav>
-			<article class="h" id="Article">
-				<section class="L"><code class="X">kiss</code>
-					<h2 class="Interface d"><code class="j">Storable</code><code class="U">&#60;<code>Self</code>&#62;</code></h2>
-					<div class="W">
+			<article class="I" id="Article">
+				<section class="Z"><code class="K">kiss</code>
+					<h2 class="Interface M"><code class="T">Storable</code><code class="a">&#60;<code>Self</code>&#62;</code></h2>
+					<div class="H">
 						<ul class="C D">
 							<li><code>Self</code></li>
 						</ul>
@@ -44,54 +44,54 @@
  <code><a href="api/kiss.Storable.html#locate()">#locate()</a></code> method. The other is to specify a value for &#34;PreferenceDirectory&#34; in global
  application environment (see <code><a href="api/kiss.I.html#env(java.lang.String)">I#env(String)</a></code>).</p>
 					</span></section>
-				<section class="L" id="restore()">
-					<h2 class="R"><i class="DEFAULT"><i class="PUBLIC"></i></i><code class="j">restore</code><code class="U">()</code><i class="l"><code>Self</code></i></h2>
-					<table class="g">
-						<tr class="T">
+				<section class="Z" id="restore()">
+					<h2 class="i"><i class="DEFAULT"><i class="PUBLIC"></i></i><code class="T">restore</code><code class="a">()</code><i class="e"><code>Self</code></i></h2>
+					<table class="S">
+						<tr class="f">
 							<td><code>Self</code></td>
 							<td><span><p>Chainable API.</p>
 								</span></td>
 						</tr>
 					</table><span class="B"><p>Restore all properties from persistence domain.</p>
 					</span></section>
-				<section class="L" id="store()">
-					<h2 class="R"><i class="DEFAULT"><i class="PUBLIC"></i></i><code class="j">store</code><code class="U">()</code><i class="l"><code>Self</code></i></h2>
-					<table class="g">
-						<tr class="T">
+				<section class="Z" id="store()">
+					<h2 class="i"><i class="DEFAULT"><i class="PUBLIC"></i></i><code class="T">store</code><code class="a">()</code><i class="e"><code>Self</code></i></h2>
+					<table class="S">
+						<tr class="f">
 							<td><code>Self</code></td>
 							<td><span><p>Chainable API.</p>
 								</span></td>
 						</tr>
 					</table><span class="B"><p>Store all properties to persistence domain.</p>
 					</span></section>
-				<section class="L" id="auto()">
-					<h2 class="R"><i class="DEFAULT"><i class="PUBLIC"></i></i><code class="j">auto</code><code class="U">()</code><i class="l"><code><a href="api/kiss.Disposable.html">Disposable</a></code></i></h2>
-					<table class="g">
-						<tr class="T">
+				<section class="Z" id="auto()">
+					<h2 class="i"><i class="DEFAULT"><i class="PUBLIC"></i></i><code class="T">auto</code><code class="a">()</code><i class="e"><code><a href="api/kiss.Disposable.html">Disposable</a></code></i></h2>
+					<table class="S">
+						<tr class="f">
 							<td><code><a href="api/kiss.Disposable.html">Disposable</a></code></td>
 							<td><span><p>Call <code><a href="api/kiss.Disposable.html#dispose()">Disposable#dispose()</a></code> to stop automatic save.</p>
 								</span></td>
 						</tr>
 					</table><span class="B"><p>Make this <code><a href="api/kiss.Storable.html">Storable</a></code> save automatically.</p>
 					</span></section>
-				<section class="L" id="auto(java.util.function.Function)">
-					<h2 class="R"><i class="DEFAULT"><i class="PUBLIC"></i></i><code class="j">auto</code><code class="U">(<code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/function/Function.html">Function</a><code class="parameters"><code><a href="api/kiss.Signal.html">Signal</a></code>, <code><a href="api/kiss.Signal.html">Signal</a></code></code></code> <code class="parameterName">timing</code>)</code><i class="l"><code><a href="api/kiss.Disposable.html">Disposable</a></code></i></h2>
-					<table class="g">
-						<tr class="f">
+				<section class="Z" id="auto(java.util.function.Function)">
+					<h2 class="i"><i class="DEFAULT"><i class="PUBLIC"></i></i><code class="T">auto</code><code class="a">(<code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/function/Function.html">Function</a><code class="parameters"><code><a href="api/kiss.Signal.html">Signal</a></code>, <code><a href="api/kiss.Signal.html">Signal</a></code></code></code> <code class="parameterName">timing</code>)</code><i class="e"><code><a href="api/kiss.Disposable.html">Disposable</a></code></i></h2>
+					<table class="S">
+						<tr class="g">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/function/Function.html">Function</a><code class="parameters"><code><a href="api/kiss.Signal.html">Signal</a></code>, <code><a href="api/kiss.Signal.html">Signal</a></code></code></code> <code>timing</code></td>
 							<td></td>
 						</tr>
-						<tr class="T">
+						<tr class="f">
 							<td><code><a href="api/kiss.Disposable.html">Disposable</a></code></td>
 							<td><span><p>Call <code><a href="api/kiss.Disposable.html#dispose()">Disposable#dispose()</a></code> to stop automatic save.</p>
 								</span></td>
 						</tr>
 					</table><span class="B"><p>Make this <code><a href="api/kiss.Storable.html">Storable</a></code> save automatically.</p>
 					</span></section>
-				<section class="L" id="locate()">
-					<h2 class="R"><i class="DEFAULT"><i class="PUBLIC"></i></i><code class="j">locate</code><code class="U">()</code><i class="l"><code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/String.html">String</a></code></i></h2>
-					<table class="g">
-						<tr class="T">
+				<section class="Z" id="locate()">
+					<h2 class="i"><i class="DEFAULT"><i class="PUBLIC"></i></i><code class="T">locate</code><code class="a">()</code><i class="e"><code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/String.html">String</a></code></i></h2>
+					<table class="S">
+						<tr class="f">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/String.html">String</a></code></td>
 							<td><span><p>An identifier of persistence location.</p>
 								</span></td>
@@ -101,15 +101,15 @@
  </p>
 					</span></section>
 			</article>
-			<aside class="K" id="SubNavi">
-				<div class="e">
-					<h5 class="V">Methods</h5>
+			<aside class="d" id="SubNavi">
+				<div class="h">
+					<h5 class="X">Methods</h5>
 					<ul>
-						<li><i class="DEFAULT"><i class="PUBLIC"></i></i><code><a href="api/kiss.Storable.html#restore()">restore</a></code><code class="U">()</code><i class="M"><code>Self</code></i></li>
-						<li><i class="DEFAULT"><i class="PUBLIC"></i></i><code><a href="api/kiss.Storable.html#store()">store</a></code><code class="U">()</code><i class="M"><code>Self</code></i></li>
-						<li><i class="DEFAULT"><i class="PUBLIC"></i></i><code><a href="api/kiss.Storable.html#auto()">auto</a></code><code class="U">()</code><i class="M"><code><a href="api/kiss.Disposable.html">Disposable</a></code></i></li>
-						<li><i class="DEFAULT"><i class="PUBLIC"></i></i><code><a href="api/kiss.Storable.html#auto(java.util.function.Function)">auto</a></code><code class="U">(<code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/function/Function.html">Function</a><code class="parameters"><code><a href="api/kiss.Signal.html">Signal</a></code>, <code><a href="api/kiss.Signal.html">Signal</a></code></code></code> <code class="parameterName">timing</code>)</code><i class="M"><code><a href="api/kiss.Disposable.html">Disposable</a></code></i></li>
-						<li><i class="DEFAULT"><i class="PUBLIC"></i></i><code><a href="api/kiss.Storable.html#locate()">locate</a></code><code class="U">()</code><i class="M"><code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/String.html">String</a></code></i></li>
+						<li><i class="DEFAULT"><i class="PUBLIC"></i></i><code><a href="api/kiss.Storable.html#restore()">restore</a></code><code class="a">()</code><i class="R"><code>Self</code></i></li>
+						<li><i class="DEFAULT"><i class="PUBLIC"></i></i><code><a href="api/kiss.Storable.html#store()">store</a></code><code class="a">()</code><i class="R"><code>Self</code></i></li>
+						<li><i class="DEFAULT"><i class="PUBLIC"></i></i><code><a href="api/kiss.Storable.html#auto()">auto</a></code><code class="a">()</code><i class="R"><code><a href="api/kiss.Disposable.html">Disposable</a></code></i></li>
+						<li><i class="DEFAULT"><i class="PUBLIC"></i></i><code><a href="api/kiss.Storable.html#auto(java.util.function.Function)">auto</a></code><code class="a">(<code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/function/Function.html">Function</a><code class="parameters"><code><a href="api/kiss.Signal.html">Signal</a></code>, <code><a href="api/kiss.Signal.html">Signal</a></code></code></code> <code class="parameterName">timing</code>)</code><i class="R"><code><a href="api/kiss.Disposable.html">Disposable</a></code></i></li>
+						<li><i class="DEFAULT"><i class="PUBLIC"></i></i><code><a href="api/kiss.Storable.html#locate()">locate</a></code><code class="a">()</code><i class="R"><code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/String.html">String</a></code></i></li>
 					</ul>
 				</div>
 			</aside>
