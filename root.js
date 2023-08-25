@@ -308,8 +308,7 @@ const root = {
 	],
 	"modules": [],
 	"packages": [
-		"kiss",
-		"kiss.model"
+		"kiss"
 	],
 	"types": [
 		{
@@ -379,7 +378,7 @@ const root = {
 			"modifiers": {
 				"#": "java.util.Collections$UnmodifiableSet",},
 			"name": "Model",
-			"packageName": "kiss.model",
+			"packageName": "kiss",
 			"type": "Class"
 		},
 		{
@@ -400,7 +399,7 @@ const root = {
 			"modifiers": {
 				"#": "java.util.Collections$UnmodifiableSet",},
 			"name": "Property",
-			"packageName": "kiss.model",
+			"packageName": "kiss",
 			"type": "Class"
 		},
 		{
