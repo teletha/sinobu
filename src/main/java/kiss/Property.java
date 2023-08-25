@@ -7,17 +7,12 @@
  *
  *          https://opensource.org/licenses/MIT
  */
-package kiss.model;
+package kiss;
 
 import static java.lang.reflect.Modifier.TRANSIENT;
 
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Member;
-
-import kiss.Managed;
-import kiss.Signal;
-import kiss.WiseBiFunction;
-import kiss.WiseFunction;
 
 /**
  * This class represents a property of object model.

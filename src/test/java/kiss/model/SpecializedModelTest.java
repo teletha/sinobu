@@ -13,6 +13,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import kiss.Model;
+
 class SpecializedModelTest {
 
     static class Person<X> {

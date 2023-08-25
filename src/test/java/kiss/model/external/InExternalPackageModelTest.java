@@ -11,7 +11,7 @@ package kiss.model.external;
 
 import org.junit.jupiter.api.Test;
 
-import kiss.model.Model;
+import kiss.Model;
 
 class InExternalPackageModelTest {
 

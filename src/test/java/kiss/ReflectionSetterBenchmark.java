@@ -7,7 +7,7 @@
  *
  *          https://opensource.org/licenses/MIT
  */
-package kiss.model;
+package kiss;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -16,6 +16,7 @@ import java.lang.reflect.Method;
 
 import antibug.profiler.Benchmark;
 import kiss.I;
+import kiss.Model;
 import kiss.WiseBiConsumer;
 
 public class ReflectionSetterBenchmark {

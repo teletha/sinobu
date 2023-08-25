@@ -20,7 +20,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
-import kiss.model.Model;
+import kiss.Model;
 import kiss.sample.bean.GenericBoundedBean;
 import kiss.sample.bean.Person;
 import kiss.sample.bean.School;

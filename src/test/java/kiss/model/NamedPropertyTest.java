@@ -12,6 +12,7 @@ package kiss.model;
 import org.junit.jupiter.api.Test;
 
 import kiss.Managed;
+import kiss.Model;
 
 class NamedPropertyTest {
 

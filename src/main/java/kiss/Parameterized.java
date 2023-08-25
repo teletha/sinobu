@@ -7,7 +7,7 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss.model;
+package kiss;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;

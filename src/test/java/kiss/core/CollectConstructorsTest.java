@@ -19,7 +19,7 @@ import java.util.HashMap;
 import org.junit.jupiter.api.Test;
 
 import kiss.Managed;
-import kiss.model.Model;
+import kiss.Model;
 
 class CollectConstructorsTest {
 

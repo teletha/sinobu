@@ -16,9 +16,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import kiss.model.Model;
-import kiss.model.Property;
-
 /**
  * Annotation that is managed by some domain.
  * <p>

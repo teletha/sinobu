@@ -18,8 +18,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.Function;
 
-import kiss.model.Model;
-
 /**
  * There are two main ways to change the default save location. One is specified by overriding the
  * {@link #locate()} method. The other is to specify a value for "PreferenceDirectory" in global

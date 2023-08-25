@@ -11,6 +11,9 @@ package kiss.model;
 
 import org.junit.jupiter.api.Test;
 
+import kiss.Model;
+import kiss.Property;
+
 class RecordPropertyTest {
 
     @Test
@@ -20,7 +23,7 @@ class RecordPropertyTest {
 
         Model<Point> model = Model.of(Point.class);
         assert model.type == Point.class;
-        assert model.properties.size() == 2;
+        assert model.properties().size() == 2;
 
         Property propertyX = model.property("x");
         assert propertyX.name.equals("x");
@@ -33,12 +36,12 @@ class RecordPropertyTest {
 
     @Test
     void generic() {
-        record Generic<T> (T value) {
+        record Generic<T>(T value) {
         }
 
         Model<Generic> model = Model.of(Generic.class);
         assert model.type == Generic.class;
-        assert model.properties.size() == 1;
+        assert model.properties().size() == 1;
 
         Property propertyX = model.property("value");
         assert propertyX.name.equals("value");

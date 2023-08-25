@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 
 import antibug.powerassert.PowerAssertOff;
 import kiss.I;
+import kiss.Model;
 
 /**
  * @version 2018/08/14 23:26:32

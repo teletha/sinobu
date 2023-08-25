@@ -21,7 +21,7 @@ import java.util.Map.Entry;
 
 import org.junit.jupiter.api.Test;
 
-import kiss.model.Model;
+import kiss.Model;
 import kiss.sample.annotation.RepeatableAnnotation;
 
 class CollectAnnotaionsTest {

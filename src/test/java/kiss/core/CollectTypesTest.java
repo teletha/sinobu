@@ -14,7 +14,7 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
-import kiss.model.Model;
+import kiss.Model;
 
 /**
  * @version 2016/05/04 2:14:41

@@ -7,12 +7,10 @@
  *
  *          https://opensource.org/licenses/MIT
  */
-package kiss.model;
+package kiss;
 
 import java.lang.reflect.Type;
 import java.util.List;
-
-import kiss.WiseTriConsumer;
 
 /**
  * {@link Model} for general {@link List}.

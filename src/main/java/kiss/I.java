@@ -101,9 +101,6 @@ import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.helpers.DefaultHandler;
 
-import kiss.model.Model;
-import kiss.model.Property;
-
 /**
  * <p>
  * Sinobu is not obsolete framework but utility, which can manipulate objects as a

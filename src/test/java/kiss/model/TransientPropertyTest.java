@@ -11,6 +11,8 @@ package kiss.model;
 
 import org.junit.jupiter.api.Test;
 
+import kiss.Model;
+import kiss.Property;
 import kiss.sample.bean.TransientBean;
 
 class TransientPropertyTest {

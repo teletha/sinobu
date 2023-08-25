@@ -7,7 +7,7 @@
  *
  *          https://opensource.org/licenses/MIT
  */
-package kiss.model;
+package kiss;
 
 import static java.lang.reflect.Modifier.FINAL;
 import static java.lang.reflect.Modifier.NATIVE;
@@ -48,17 +48,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
-
-import kiss.Decoder;
-import kiss.Encoder;
-import kiss.I;
-import kiss.Managed;
-import kiss.Signal;
-import kiss.Variable;
-import kiss.WiseBiConsumer;
-import kiss.WiseFunction;
-import kiss.WiseTriConsumer;
-import kiss.Ⅱ;
 
 /**
  * {@link Model} is the advanced representation of {@link Class} in Sinobu.
@@ -230,6 +219,7 @@ public class Model<M> {
                                         if (isRecord) {
                                             property.setter = (m, v) -> {
                                                 Constructor c = collectConstructors(type)[0];
+                                                c.setAccessible(true);
                                                 Parameter[] params = c.getParameters();
                                                 Object[] values = new Object[params.length];
                                                 for (int i = 0; i < params.length; i++) {

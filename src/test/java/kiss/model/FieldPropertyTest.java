@@ -17,6 +17,8 @@ import java.util.Objects;
 import org.junit.jupiter.api.Test;
 
 import kiss.Managed;
+import kiss.Model;
+import kiss.Property;
 
 @SuppressWarnings("unused")
 class FieldPropertyTest {
@@ -37,7 +39,7 @@ class FieldPropertyTest {
         }
 
         Model model = Model.of(Declare.class);
-        assert model.properties.size() == 0;
+        assert model.properties().size() == 0;
     }
 
     @Test
@@ -47,7 +49,7 @@ class FieldPropertyTest {
         }
 
         Model model = Model.of(Declare.class);
-        assert model.properties.size() == 0;
+        assert model.properties().size() == 0;
     }
 
     @Test
@@ -57,7 +59,7 @@ class FieldPropertyTest {
         }
 
         Model model = Model.of(Declare.class);
-        assert model.properties.size() == 0;
+        assert model.properties().size() == 0;
     }
 
     @Test
@@ -369,8 +371,8 @@ class FieldPropertyTest {
      */
     private boolean validatePropertyAccess(Object instance, Object expectedCurrentValue, Object newValue) {
         Model model = Model.of(instance);
-        assert model.properties.size() == 1;
-        Property p = (Property) model.properties.values().iterator().next();
+        assert model.properties().size() == 1;
+        Property p = (Property) model.properties().iterator().next();
         if (!p.model.type.isPrimitive()) {
             assert p.model.type.isInstance(newValue);
         }

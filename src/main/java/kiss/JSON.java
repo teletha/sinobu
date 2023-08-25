@@ -24,9 +24,6 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
 
-import kiss.model.Model;
-import kiss.model.Property;
-
 public class JSON {
 
     /** The root object. */

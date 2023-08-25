@@ -12,6 +12,8 @@ package kiss.model;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import kiss.Model;
+import kiss.Property;
 import kiss.Variable;
 import kiss.sample.bean.EnumProperty;
 import kiss.sample.bean.GenericStringBean;

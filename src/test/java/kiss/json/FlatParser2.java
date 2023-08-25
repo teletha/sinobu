@@ -17,10 +17,10 @@ import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import kiss.I;
+import kiss.Model;
+import kiss.Property;
 import kiss.WiseFunction;
 import kiss.Ⅱ;
-import kiss.model.Model;
-import kiss.model.Property;
 
 public class FlatParser2 {
 

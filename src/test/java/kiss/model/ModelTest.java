@@ -14,10 +14,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
+import kiss.Model;
+import kiss.Property;
 import kiss.sample.bean.CompatibleKeyMap;
 import kiss.sample.bean.GenericBean;
 import kiss.sample.bean.GenericBoundedTypedBean;
@@ -62,11 +63,6 @@ class ModelTest {
         assert propertyType == property.model.type;
         assert property.getter != null;
         assert property.setter != null;
-    }
-
-    @Test
-    void nullInput() {
-        Assertions.assertThrows(NullPointerException.class, () -> new Model(null));
     }
 
     @Test
@@ -125,7 +121,7 @@ class ModelTest {
         property = model.property("string");
         assert property != null;
 
-        assert 2 == model.properties.size();
+        assert 2 == model.properties().size();
     }
 
     @Test
@@ -164,9 +160,9 @@ class ModelTest {
         }
 
         Model<FinalFieldProperty> model = Model.of(FinalFieldProperty.class);
-        assert model.properties.size() == 1;
+        assert model.properties().size() == 1;
 
-        Property person = model.properties.values().iterator().next();
+        Property person = model.properties().iterator().next();
         assert person.model.type == Person.class;
 
         FinalFieldProperty instance = I.make(FinalFieldProperty.class);
@@ -185,7 +181,7 @@ class ModelTest {
         Model model = Model.of(ProtectedAccessor.class);
         assert model != null;
 
-        Collection<Property> list = model.properties.values();
+        Collection<Property> list = model.properties();
         assert 3 == list.size();
 
         ProtectedAccessor accessor = I.make(ProtectedAccessor.class);
@@ -207,7 +203,7 @@ class ModelTest {
         Model model = Model.of(PackagePrivateAccessor.class);
         assert model != null;
 
-        Collection<Property> list = model.properties.values();
+        Collection<Property> list = model.properties();
         assert 3 == list.size();
 
         PackagePrivateAccessor accessor = I.make(PackagePrivateAccessor.class);
@@ -229,7 +225,7 @@ class ModelTest {
         Model model = Model.of(PrivateAccessor.class);
         assert model != null;
 
-        Collection<Property> list = model.properties.values();
+        Collection<Property> list = model.properties();
         assert 3 == list.size();
 
         PrivateAccessor accessor = I.make(PrivateAccessor.class);
@@ -251,7 +247,7 @@ class ModelTest {
         Model model = Model.of(FinalAccessor.class);
         assert model != null;
 
-        Collection<Property> list = model.properties.values();
+        Collection<Property> list = model.properties();
         assert 3 == list.size();
 
         FinalAccessor accessor = I.make(FinalAccessor.class);
@@ -273,7 +269,7 @@ class ModelTest {
         Model model = Model.of(OverrideFinalAccessor.class);
         assert model != null;
 
-        Collection<Property> list = model.properties.values();
+        Collection<Property> list = model.properties();
         assert 3 == list.size();
     }
 
@@ -505,13 +501,13 @@ class ModelTest {
     @Test
     void list() {
         Model model = Model.of(StringList.class);
-        assert model instanceof ListModel;
+        assert model.getClass().getSimpleName().equals("ListModel");
     }
 
     @Test
     void map() {
         Model model = Model.of(StringMap.class);
-        assert model instanceof MapModel;
+        assert model.getClass().getSimpleName().equals("MapModel");
     }
 
     @Test
@@ -556,7 +552,7 @@ class ModelTest {
         Model model = Model.of(OnlyGetter.class);
         assert model != null;
 
-        Collection<Property> list = model.properties.values();
+        Collection<Property> list = model.properties();
         assert 0 == list.size();
     }
 
@@ -568,7 +564,7 @@ class ModelTest {
         Model model = Model.of(OnlySetter.class);
         assert model != null;
 
-        Collection<Property> list = model.properties.values();
+        Collection<Property> list = model.properties();
         assert 0 == list.size();
     }
 
@@ -580,7 +576,7 @@ class ModelTest {
         Model model = Model.of(StaticAccessor.class);
         assert model != null;
 
-        Collection<Property> list = model.properties.values();
+        Collection<Property> list = model.properties();
         assert 0 == list.size();
     }
 
@@ -588,7 +584,7 @@ class ModelTest {
     void proxy() {
         ProxyModel proxy = I.make(ProxyModel.class, (p, m, a) -> null);
         Model model = Model.of(proxy);
-        Collection<Property> properties = model.properties.values();
+        Collection<Property> properties = model.properties();
 
         assert properties.size() == 1;
     }

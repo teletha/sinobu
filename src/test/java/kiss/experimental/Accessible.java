@@ -11,7 +11,7 @@ package kiss.experimental;
 
 import java.lang.invoke.MethodHandle;
 
-import kiss.model.Model;
+import kiss.Model;
 
 public interface Accessible {
 

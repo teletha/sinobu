@@ -26,8 +26,8 @@ import org.junit.jupiter.api.parallel.ExecutionMode;
 
 import kiss.I;
 import kiss.JSON;
-import kiss.model.Model;
-import kiss.model.Property;
+import kiss.Model;
+import kiss.Property;
 import kiss.sample.bean.BuiltinBean;
 import kiss.sample.bean.ChainBean;
 import kiss.sample.bean.NestingList;
