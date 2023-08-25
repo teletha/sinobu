@@ -101,7 +101,7 @@ public class Ⅱ<Param1, Param2> {
      */
     @Override
     public final int hashCode() {
-        return Arrays.hashCode(values());
+        return Arrays.deepHashCode(values());
     }
 
     /**
@@ -109,7 +109,7 @@ public class Ⅱ<Param1, Param2> {
      */
     @Override
     public final boolean equals(Object obj) {
-        return obj instanceof Ⅱ ? Arrays.equals(values(), ((Ⅱ) obj).values()) : false;
+        return obj instanceof Ⅱ ? Arrays.deepEquals(values(), ((Ⅱ) obj).values()) : false;
     }
 
     /**
@@ -117,7 +117,7 @@ public class Ⅱ<Param1, Param2> {
      */
     @Override
     public final String toString() {
-        return Arrays.toString(values());
+        return Arrays.deepToString(values());
     }
 
     /**

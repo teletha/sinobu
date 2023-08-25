@@ -58,6 +58,7 @@ import kiss.Variable;
 import kiss.WiseBiConsumer;
 import kiss.WiseFunction;
 import kiss.WiseTriConsumer;
+import kiss.Ⅱ;
 
 /**
  * {@link Model} is the advanced representation of {@link Class} in Sinobu.
@@ -65,7 +66,7 @@ import kiss.WiseTriConsumer;
 public class Model<M> {
 
     /** The model repository. */
-    static final Map<Class, Model> models = new ConcurrentHashMap();
+    static final Map<Ⅱ<Class, Type[]>, Model> models = new ConcurrentHashMap();
 
     /** The {@link Class} which is represented by this {@link Model}. */
     public final Class<M> type;
@@ -100,7 +101,7 @@ public class Model<M> {
     /**
      * Initialize this {@link Model} only once.
      */
-    private synchronized void init() {
+    private synchronized void init(Type... hints) {
         if (properties == null) {
             properties = Collections.EMPTY_MAP;
             try {
@@ -207,9 +208,8 @@ public class Model<M> {
                                     || (isRecord && (PRIVATE & modifier) == PRIVATE)) {
                                 field.setAccessible(true);
                                 try {
-
-                                    Model fieldModel = of(field.getGenericType(), type);
-                                    System.out.println(field.getGenericType() + "    " + type + "   " + fieldModel);
+                                    Model fieldModel = of(specialize(field.getGenericType(), field.getDeclaringClass()
+                                            .getTypeParameters(), hints), type);
                                     if (Variable.class.isAssignableFrom(fieldModel.type)) {
                                         // variable
                                         Property property = new Property(of(collectParameters(field
@@ -262,6 +262,22 @@ public class Model<M> {
                 throw I.quiet(e);
             }
         }
+    }
+
+    private Type specialize(Type target, TypeVariable[] virtuals, Type[] actuals) {
+        if (actuals.length != 0) {
+            if (target instanceof ParameterizedType param) {
+                Parameterized p = new Parameterized(param, actuals);
+                return p;
+            }
+        }
+
+        for (int i = 0; i < actuals.length; i++) {
+            if (virtuals[i] == target) {
+                return actuals[i] instanceof TypeVariable ? Object.class : actuals[i];
+            }
+        }
+        return target;
     }
 
     /**
@@ -365,6 +381,8 @@ public class Model<M> {
         return of((Class<M>) modelType.getClass());
     }
 
+    private static final Type[] N = new Type[0];
+
     /**
      * Utility method to retrieve the cached model. If the model of the given class is not found,
      * {@link IllegalArgumentException} will be thrown.
@@ -381,8 +399,10 @@ public class Model<M> {
      * @throws IllegalArgumentException If the given model class is not found.
      */
     public static <M> Model<M> of(Class<? super M> modelClass) {
+        Ⅱ<Class, Type[]> key = I.pair(modelClass, N);
+
         // check cache
-        Model model = models.get(modelClass);
+        Model model = models.get(key);
         if (model == null) {
             if (List.class.isAssignableFrom(modelClass)) {
                 model = new ListModel(modelClass, Model.collectParameters(modelClass, List.class), List.class);
@@ -390,10 +410,10 @@ public class Model<M> {
                 model = new MapModel(modelClass, Model.collectParameters(modelClass, Map.class), Map.class);
             } else {
                 // To resolve cyclic reference, try to retrive from cache.
-                model = models.computeIfAbsent(modelClass, Model::new);
+                model = models.computeIfAbsent(key, x -> new Model(modelClass));
                 model.init();
             }
-            models.put(modelClass, model);
+            models.put(key, model);
         }
         return model;
     }
@@ -430,8 +450,9 @@ public class Model<M> {
             }
 
             // ClassModel
-            Model model = new GenericModel(clazz, parameterized.getActualTypeArguments(), base);
-            model.init();
+            // To resolve cyclic reference, try to retrive from cache.
+            Model model = models.computeIfAbsent(I.pair(clazz, parameterized.getActualTypeArguments()), x -> new Model(clazz));
+            model.init(parameterized.getActualTypeArguments());
 
             return model;
         }

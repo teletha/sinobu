@@ -489,7 +489,7 @@ class ModelTest {
 
         property = property.model.property("0");
         assert property != null;
-        assert Object.class == property.model.type; // holy xxx
+        assert String.class == property.model.type;
     }
 
     @SuppressWarnings("unused")

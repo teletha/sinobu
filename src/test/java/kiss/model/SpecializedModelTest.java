@@ -13,48 +13,71 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-class NestedGenericModelTest {
+class SpecializedModelTest {
+
+    static class Person<X> {
+        public X name;
+    }
+
+    static class Root {
+        public Person<String> person;
+    }
 
     @Test
-    void nested1() {
+    void specializedType() {
         Model root = Model.of(Root.class);
         assert root.type == Root.class;
+
+        Model person = root.property("person").model;
+        assert person.type == Person.class;
+
+        Model name = person.property("name").model;
+        assert name.type == String.class;
+    }
+
+    @Test
+    void specializedList() {
+        Model root = Model.of(ListRoot.class);
+        assert root.type == ListRoot.class;
 
         Model list = root.property("list").model;
         assert list.type == List.class;
 
         Model person = list.property("0").model;
         assert person.type == Person.class;
+
+        Model name = person.property("name").model;
+        assert name.type == Integer.class;
+
     }
 
-    static class Person {
-        public String name;
-    }
-
-    static class Root {
-        public List<Person> list;
+    static class ListRoot {
+        public List<Person<Integer>> list;
     }
 
     @Test
-    void nested2() {
+    void specializedGenericList() {
         Model personalized = Model.of(PersonalizedRoot.class);
         assert personalized.type == PersonalizedRoot.class;
 
         Model generic = personalized.property("persons").model;
-        assert generic.type == GenericRoot.class;
+        assert generic.type == GenericListRoot.class;
 
         Model list = generic.property("list").model;
         assert list.type == List.class;
 
         Model person = list.property("0").model;
         assert person.type == Person.class;
+
+        Model name = person.property("name").model;
+        assert name.type == Long.class;
     }
 
-    static class GenericRoot<T> {
+    static class GenericListRoot<T> {
         public List<T> list;
     }
 
     static class PersonalizedRoot {
-        public GenericRoot<Person> persons;
+        public GenericListRoot<Person<Long>> persons;
     }
 }

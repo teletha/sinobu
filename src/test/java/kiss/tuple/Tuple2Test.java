@@ -62,4 +62,22 @@ class Tuple2Test {
         assert value.hashCode() == other.hashCode();
         assert value.hashCode() != inverse.hashCode();
     }
+
+    @Test
+    void equalityArray() {
+        Ⅱ<String, String[]> value = I.pair("test", new String[] {"1", "2"});
+        Ⅱ<String, String[]> other = I.pair("test", new String[] {"1", "2"});
+        Ⅱ<String, String> inverse = I.pair("value", "test");
+        assert value.equals(other);
+        assert value.equals(inverse) == false;
+    }
+
+    @Test
+    void hashArray() {
+        Ⅱ<String, String[]> value = I.pair("test", new String[] {"1", "2"});
+        Ⅱ<String, String[]> other = I.pair("test", new String[] {"1", "2"});
+        Ⅱ<String, String> inverse = I.pair("value", "test");
+        assert value.hashCode() == other.hashCode();
+        assert value.hashCode() != inverse.hashCode();
+    }
 }

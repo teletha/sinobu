@@ -42,4 +42,21 @@ class Tuple3Test {
         assert value.hashCode() == other.hashCode();
         assert value.hashCode() != inverse.hashCode();
     }
+
+    void equalityArray() {
+        Ⅲ<String, Integer, long[]> value = I.pair("String", 10, new long[] {1, 20});
+        Ⅲ<String, Integer, long[]> other = I.pair("String", 10, new long[] {1, 20});
+        Ⅲ<Long, Integer, String> inverse = I.pair(30L, 10, "String");
+        assert value.equals(other);
+        assert value.equals(inverse) == false;
+    }
+
+    @Test
+    void hashArray() {
+        Ⅲ<String, Integer, long[]> value = I.pair("String", 10, new long[] {1, 20});
+        Ⅲ<String, Integer, long[]> other = I.pair("String", 10, new long[] {1, 20});
+        Ⅲ<Long, Integer, String> inverse = I.pair(30L, 10, "String");
+        assert value.hashCode() == other.hashCode();
+        assert value.hashCode() != inverse.hashCode();
+    }
 }
