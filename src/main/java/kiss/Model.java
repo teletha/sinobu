@@ -257,7 +257,8 @@ public class Model<M> {
     private Type specialize(Type target, TypeVariable[] virtuals, Type[] actuals) {
         if (actuals.length != 0) {
             if (target instanceof ParameterizedType param) {
-                Parameterized p = new Parameterized(param, actuals);
+                Subscriber<Type> p = new Subscriber();
+                p.types = I.pair(param.getRawType(), param.getOwnerType(), actuals);
                 return p;
             }
         }
