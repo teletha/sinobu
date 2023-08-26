@@ -1,5 +1,21 @@
 # Changelog
 
+## [3.7.0](https://github.com/teletha/sinobu/compare/v3.6.2...v3.7.0) (2023-08-26)
+
+
+### Features
+
+* Remove model package. ([3b4dca2](https://github.com/teletha/sinobu/commit/3b4dca2c9fb746b43bd1fbd559fdbe7c892822f9))
+* Remove Parameterized. ([498d391](https://github.com/teletha/sinobu/commit/498d391f1a1f08ffa12035b2d9d51849819a0d8e))
+* Support nested parameterized type. ([0fcc443](https://github.com/teletha/sinobu/commit/0fcc4434e2bd4417ba4e412eed6e3bc6623d0a08))
+* Support the partial typed map. ([b69ef97](https://github.com/teletha/sinobu/commit/b69ef97e1a451f58b9e26843fe81ebb7e56922cc))
+
+
+### Bug Fixes
+
+* Don't use exponential notation on BigDecimal. ([f944cf2](https://github.com/teletha/sinobu/commit/f944cf2cc9718959c0ac794ba9753a571e26959e))
+* logback benckmark is broken. ([5263d1d](https://github.com/teletha/sinobu/commit/5263d1dbd64b8cd4dc7068caa39402e21d09a170))
+
 ## [3.6.2](https://github.com/teletha/sinobu/compare/v3.6.1...v3.6.2) (2023-06-24)
 
 
