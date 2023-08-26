@@ -355,8 +355,6 @@ public class Model<M> {
         return of((Class<M>) modelType.getClass());
     }
 
-    private static final Type[] N = new Type[0];
-
     /**
      * Utility method to retrieve the cached model. If the model of the given class is not found,
      * {@link IllegalArgumentException} will be thrown.
@@ -373,7 +371,7 @@ public class Model<M> {
      * @throws IllegalArgumentException If the given model class is not found.
      */
     public static <M> Model<M> of(Class<? super M> modelClass) {
-        Ⅱ<Class, Type[]> key = I.pair(modelClass, N);
+        Ⅱ<Class, Type[]> key = I.pair(modelClass, new Type[0]);
 
         // check cache
         Model model = models.get(key);
