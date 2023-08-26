@@ -15,9 +15,6 @@ import java.lang.invoke.MethodType;
 import java.lang.reflect.Method;
 
 import antibug.profiler.Benchmark;
-import kiss.I;
-import kiss.Model;
-import kiss.WiseBiConsumer;
 
 public class ReflectionSetterBenchmark {
 

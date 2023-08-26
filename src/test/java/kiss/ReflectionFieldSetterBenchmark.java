@@ -20,7 +20,6 @@ import java.lang.reflect.Field;
 import java.util.function.BiConsumer;
 
 import antibug.profiler.Benchmark;
-import kiss.I;
 
 public class ReflectionFieldSetterBenchmark {
 

@@ -471,34 +471,6 @@ class ModelTest {
     }
 
     @Test
-    void outerGenericTypeAppliesToInnerGenericType() {
-        Model model = Model.of(Root.class);
-        assert model != null;
-
-        Property property = model.property("outer");
-        assert property != null;
-        assert Outer.class == property.model.type;
-
-        property = property.model.property("inner");
-        assert property != null;
-        assert List.class == property.model.type;
-
-        property = property.model.property("0");
-        assert property != null;
-        assert String.class == property.model.type;
-    }
-
-    @SuppressWarnings("unused")
-    private static class Root {
-        public Outer<String> outer;
-    }
-
-    @SuppressWarnings("unused")
-    private static class Outer<O> {
-        public List<O> inner;
-    }
-
-    @Test
     void list() {
         Model model = Model.of(StringList.class);
         assert model.getClass().getSimpleName().equals("ListModel");

@@ -15,7 +15,6 @@ import java.lang.invoke.MethodType;
 import java.lang.reflect.Constructor;
 
 import antibug.profiler.Benchmark;
-import kiss.I;
 
 public class ReflectionConstructorBenchmark {
 

@@ -254,23 +254,6 @@ public class Model<M> {
         }
     }
 
-    private Type specialize(Type target, TypeVariable[] virtuals, Type[] actuals) {
-        if (actuals.length != 0) {
-            if (target instanceof ParameterizedType param) {
-                Subscriber<Type> p = new Subscriber();
-                p.types = I.pair(param.getRawType(), param.getOwnerType(), actuals);
-                return p;
-            }
-        }
-
-        for (int i = 0; i < actuals.length; i++) {
-            if (virtuals[i] == target) {
-                return actuals[i] instanceof TypeVariable ? Object.class : actuals[i];
-            }
-        }
-        return target;
-    }
-
     /**
      * List up all properties.
      * 
@@ -714,6 +697,34 @@ public class Model<M> {
             }
         }
         return parameters;
+    }
+
+    /**
+     * Specialize the {@link TypeVariable}.
+     * 
+     * @param type A target type to be specialized.
+     * @param vars A definition of type variables.
+     * @param specials An actual types.
+     * @return
+     */
+    private static Type specialize(Type type, TypeVariable[] vars, Type[] specials) {
+        if (type instanceof ParameterizedType param) {
+            Type[] params = param.getActualTypeArguments();
+            for (int i = 0; i < params.length; i++) {
+                params[i] = specialize(params[i], vars, specials);
+            }
+
+            Subscriber<Type> p = new Subscriber();
+            p.types = I.pair(param.getRawType(), param.getOwnerType(), params);
+            return p;
+        } else if (type instanceof TypeVariable) {
+            for (int i = 0; i < specials.length; i++) {
+                if (vars[i] == type) {
+                    return specials[i] instanceof TypeVariable ? Object.class : specials[i];
+                }
+            }
+        }
+        return type;
     }
 
     // static WiseSupplier createConstructor(Constructor constructor) throws Throwable {

@@ -9,7 +9,11 @@
  */
 package kiss.model;
 
+import java.time.LocalDate;
+import java.util.Currency;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
@@ -21,12 +25,29 @@ class SpecializedModelTest {
         public X name;
     }
 
-    static class Root {
-        public Person<String> person;
+    static class GenericList<T> {
+        public List<T> list;
+    }
+
+    static class GenericMap<K, V> {
+        public Map<K, V> map;
+    }
+
+    static class GenericStringKeyMap<V> {
+        public Map<String, V> map;
+    }
+
+    static class GenericStringValueMap<K> {
+        public Map<K, Person<LocalDate>> map;
     }
 
     @Test
     void specializedType() {
+        class Root {
+            @SuppressWarnings("unused")
+            public Person<String> person;
+        }
+
         Model root = Model.of(Root.class);
         assert root.type == Root.class;
 
@@ -39,8 +60,13 @@ class SpecializedModelTest {
 
     @Test
     void specializedList() {
-        Model root = Model.of(ListRoot.class);
-        assert root.type == ListRoot.class;
+        class Root {
+            @SuppressWarnings("unused")
+            public List<Person<Integer>> list;
+        }
+
+        Model root = Model.of(Root.class);
+        assert root.type == Root.class;
 
         Model list = root.property("list").model;
         assert list.type == List.class;
@@ -53,17 +79,18 @@ class SpecializedModelTest {
 
     }
 
-    static class ListRoot {
-        public List<Person<Integer>> list;
-    }
-
     @Test
     void specializedGenericList() {
-        Model personalized = Model.of(PersonalizedRoot.class);
-        assert personalized.type == PersonalizedRoot.class;
+        class Root {
+            @SuppressWarnings("unused")
+            public GenericList<Person<Long>> persons;
+        }
 
-        Model generic = personalized.property("persons").model;
-        assert generic.type == GenericListRoot.class;
+        Model root = Model.of(Root.class);
+        assert root.type == Root.class;
+
+        Model generic = root.property("persons").model;
+        assert generic.type == GenericList.class;
 
         Model list = generic.property("list").model;
         assert list.type == List.class;
@@ -75,11 +102,72 @@ class SpecializedModelTest {
         assert name.type == Long.class;
     }
 
-    static class GenericListRoot<T> {
-        public List<T> list;
+    @Test
+    void specializedGenericMap() {
+        class Root {
+            @SuppressWarnings("unused")
+            public GenericMap<String, Person<Locale>> persons;
+        }
+
+        Model root = Model.of(Root.class);
+        assert root.type == Root.class;
+
+        Model generic = root.property("persons").model;
+        assert generic.type == GenericMap.class;
+
+        Model list = generic.property("map").model;
+        assert list.type == Map.class;
+
+        Model person = list.property("key").model;
+        assert person.type == Person.class;
+
+        Model name = person.property("name").model;
+        assert name.type == Locale.class;
     }
 
-    static class PersonalizedRoot {
-        public GenericListRoot<Person<Long>> persons;
+    @Test
+    void specializedKeyMap() {
+        class Root {
+            @SuppressWarnings("unused")
+            public GenericStringKeyMap<Person<Currency>> persons;
+        }
+
+        Model root = Model.of(Root.class);
+        assert root.type == Root.class;
+
+        Model generic = root.property("persons").model;
+        assert generic.type == GenericStringKeyMap.class;
+
+        Model map = generic.property("map").model;
+        assert map.type == Map.class;
+
+        Model person = map.property("key").model;
+        assert person.type == Person.class;
+
+        Model name = person.property("name").model;
+        assert name.type == Currency.class;
+    }
+
+    @Test
+    void specializedValueMap() {
+        class Root {
+            @SuppressWarnings("unused")
+            public GenericStringValueMap<String> persons;
+        }
+
+        Model root = Model.of(Root.class);
+        assert root.type == Root.class;
+
+        Model generic = root.property("persons").model;
+        assert generic.type == GenericStringValueMap.class;
+
+        Model map = generic.property("map").model;
+        assert map.type == Map.class;
+
+        Model person = map.property("key").model;
+        assert person.type == Person.class;
+
+        Model name = person.property("name").model;
+        assert name.type == LocalDate.class;
     }
 }
