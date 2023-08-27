@@ -9,6 +9,7 @@
  */
 package kiss.model;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -32,7 +33,6 @@ import kiss.sample.bean.StringMap;
 import kiss.sample.bean.StringMapProperty;
 import kiss.sample.bean.Student;
 import kiss.sample.bean.WildcardBean;
-import kiss.sample.bean.WildcardTypeSetter;
 import kiss.sample.bean.modifiers.FinalAccessor;
 import kiss.sample.bean.modifiers.InheritanceBean;
 import kiss.sample.bean.modifiers.OnlyGetter;
@@ -511,9 +511,25 @@ class ModelTest {
 
     @Test
     void testWildcardTypeSetterBean() {
-        Model model = Model.of(WildcardTypeSetter.class);
+        @SuppressWarnings("unused")
+        class Wildcard {
 
-        assertProperty(model, "list", List.class);
+            List<Serializable> getList() {
+                return null;
+            }
+
+            void setList(List<? extends Serializable> list) {
+            }
+        }
+
+        Model wild = Model.of(Wildcard.class);
+        assert wild.type == Wildcard.class;
+
+        Model list = wild.property("list").model;
+        assert list.type == List.class;
+
+        Model item = list.property("0").model;
+        assert item.type == Serializable.class;
     }
 
     /**
