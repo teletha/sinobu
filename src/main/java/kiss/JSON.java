@@ -341,7 +341,7 @@ public class JSON {
      */
     <T> T parse(Reader reader, String text, Class<T> type) throws IOException {
         Ⅱ<char[], StringBuilder> b = P.poll();
-        if (b == null) b = I.pair(new char[1024 * 4], new StringBuilder());
+        if (b == null) b = I.pair(new char[4096], new StringBuilder());
 
         this.buffer = b.ⅰ;
         this.capture = b.ⅱ;

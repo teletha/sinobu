@@ -648,7 +648,13 @@ public class Model<M> {
         }
 
         // compute actual class
-        Class raw = clazz instanceof Class ? (Class) clazz : Model.of(clazz, base).type;
+        //
+        // If Model.of(Type, Type) is used to detect the raw class, the target Model will be
+        // defined first when the Decorder or Encoder definition class is loaded, which will
+        // adversely affect the determination of whether the Model is atomic or not. Do not use
+        // Model.of(Type,Type).
+        Class raw = (Class) (clazz instanceof Class ? clazz
+                : clazz instanceof ParameterizedType ? ((ParameterizedType) clazz).getRawType() : Object.class);
 
         // collect all types
         Set<Type> types = new HashSet();
