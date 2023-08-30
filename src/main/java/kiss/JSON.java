@@ -386,7 +386,7 @@ public class JSON {
 
         // string
         case '"':
-            return string();
+            return string(false);
 
         // array
         case '[':
@@ -418,7 +418,7 @@ public class JSON {
             }
             do {
                 if (current != '"') expected('"');
-                String name = string();
+                String name = string(true);
                 if (current != ':') expected(":");
                 readUnspace();
                 if (model == null) {
@@ -467,7 +467,7 @@ public class JSON {
                 if (current == '+' || current == '-') read();
                 digit();
             }
-            return endCapture();
+            return endCapture(false);
 
         // End of Text
         case 0x00:
@@ -520,7 +520,7 @@ public class JSON {
      * @return A parsed string.
      * @throws IOException
      */
-    private String string() throws IOException {
+    private String string(boolean useCache) throws IOException {
         captureStart = index;
 
         read();
@@ -573,7 +573,7 @@ public class JSON {
                 read();
             }
         }
-        String string = endCapture();
+        String string = endCapture(useCache);
         readUnspace();
         return string;
     }
@@ -666,12 +666,14 @@ public class JSON {
     /**
      * Stop text capturing.
      */
-    private String endCapture() {
+    private String endCapture(boolean useCache) {
         int end = index - 1;
         String captured;
         if (capture.length() > 0) {
             captured = capture.append(buffer, captureStart, end - captureStart).toString();
             capture.setLength(0);
+        } else if (!useCache) {
+            captured = new String(buffer, captureStart, end - captureStart);
         } else {
             int hash = 0;
             for (int i = captureStart; i < end; i++) {
