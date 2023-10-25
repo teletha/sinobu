@@ -2128,25 +2128,19 @@ public final class Signal<V> {
         }
 
         return new Signal<>((observer, disposer) -> {
-            AtomicInteger count = new AtomicInteger(1);
-
+            int[] countable = {1};
             return to(v -> {
-                count.incrementAndGet();
-                System.out.println("Start " + v);
+                countable[0]++;
                 scheduler.accept(() -> {
-                    System.out.println("Invoke " + v);
                     observer.accept(v);
-
-                    if (count.decrementAndGet() == 0) {
+                    if (--countable[0] == 0) {
                         observer.complete();
-                        System.out.println("Complete " + v + "  " + count);
                     }
-                    System.out.println("Finish " + v + "   " + count);
                 });
             }, e -> {
                 scheduler.accept(I.wiseC(observer::error).bind(e));
             }, () -> {
-                if (count.decrementAndGet() == 0) {
+                if (--countable[0] == 0) {
                     scheduler.accept(observer::complete);
                 }
             }, disposer, false);

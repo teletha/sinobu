@@ -11,7 +11,6 @@ package kiss.signal;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
@@ -81,12 +80,10 @@ class OnTest extends SignalTester {
     }
 
     @Test
-    void completeEventMustInvokeAfterAllValueEvents() {
+    void completeEventMustInvokeAfterAllNextEvents() {
+        int[] delay = {1000};
         List values = new ArrayList();
-        I.signal(1, 2, 3).on(runner -> scheduler.schedule(runner, 150, ms)).map(x -> {
-            scheduler.await(50, TimeUnit.MILLISECONDS);
-            return x;
-        }).to(values::add, e -> {
+        I.signal(1, 2, 3).on(runner -> scheduler.schedule(runner, delay[0] -= 200, ms)).to(values::add, e -> {
             values.add("ERROR");
         }, () -> {
             values.add("COMPLETE");
@@ -94,9 +91,9 @@ class OnTest extends SignalTester {
 
         assert values.isEmpty();
         scheduler.await();
-        assert values.get(0) instanceof Integer;
-        assert values.get(1) instanceof Integer;
-        assert values.get(2) instanceof Integer;
+        assert values.get(0).equals(3);
+        assert values.get(1).equals(2);
+        assert values.get(2).equals(1);
         assert values.get(3).equals("COMPLETE");
     }
 }
