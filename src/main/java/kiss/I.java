@@ -282,6 +282,8 @@ public class I {
                 return (Encoder<Class>) Class::getName;
             case -1405464277: // java.math.BigDecimal
                 return (Encoder<BigDecimal>) BigDecimal::toPlainString;
+            case -1165211622: // java.util.Locale
+                return (Encoder<Locale>) Locale::getLanguage;
             default:
                 return String::valueOf;
             }
