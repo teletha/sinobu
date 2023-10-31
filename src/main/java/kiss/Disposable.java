@@ -15,7 +15,6 @@ import java.util.concurrent.Future;
 /**
  * The {@link Disposable} interface is used when components need to deallocate and dispose resources
  * prior to their destruction.
- * 
  */
 public interface Disposable {
 
@@ -80,7 +79,9 @@ public interface Disposable {
      * @return A composed {@link Disposable}.
      */
     default Disposable add(Future next) {
-        return next == null ? this : add(() -> next.cancel(true));
+        return next == null ? this : add(() -> {
+            next.cancel(false);
+        });
     }
 
     /**
