@@ -187,6 +187,32 @@ class VariableTest {
     }
 
     @Test
+    void flipSupplier() {
+        Supplier<Integer> size = () -> 10;
+        assert string.flip(size).isAbsent();
+        assert empty.flip(size).is(10);
+    }
+
+    @Test
+    void flipSupplierNull() {
+        assert string.flip((Supplier) null).isAbsent();
+        assert empty.flip((Supplier) null).isAbsent();
+    }
+
+    @Test
+    void flatFlip() {
+        Supplier<Variable<Integer>> size = () -> Variable.of(10);
+        assert string.flatFlip(size).isAbsent();
+        assert empty.flatFlip(size).is(10);
+    }
+
+    @Test
+    void flatFlipNull() {
+        assert string.flatFlip(null).isAbsent();
+        assert empty.flatFlip(null).isAbsent();
+    }
+
+    @Test
     void correctHashAndEqual() {
         Variable<String> one = Variable.of("one");
         Variable<String> other = Variable.of("one");

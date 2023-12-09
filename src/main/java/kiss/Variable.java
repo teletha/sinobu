@@ -213,14 +213,31 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
     }
 
     /**
+     * Perform the specified action if the value is absent.
+     *
+     * @param then An action to perform.
+     * @return The computed {@link Variable}.
+     */
+    public final <R> Variable<R> flip(Supplier<? extends R> then) {
+        if (v == null && then != null) {
+            try {
+                return of(then.get());
+            } catch (Throwable e) {
+                // ignore
+            }
+        }
+        return empty();
+    }
+
+    /**
      * If a value is present, returns the result of applying the given {@link Variable}-bearing
      * mapping function to the value, otherwise returns an empty {@link Variable}.
      *
      * @param mapper The mapping function to apply to a value, if present.
      * @return The computed {@link Variable}.
      */
-    public final <R> Variable<R> flatMap(Function<V, Variable<R>> mapper) {
-        return v == null || mapper == null ? new Variable(null) : mapper.apply(v);
+    public final <R> Variable<R> flatFlip(Supplier<Variable<R>> mapper) {
+        return v != null || mapper == null ? new Variable(null) : mapper.get();
     }
 
     /**
@@ -238,6 +255,17 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
             }
         }
         return empty();
+    }
+
+    /**
+     * If a value is present, returns the result of applying the given {@link Variable}-bearing
+     * mapping function to the value, otherwise returns an empty {@link Variable}.
+     *
+     * @param mapper The mapping function to apply to a value, if present.
+     * @return The computed {@link Variable}.
+     */
+    public final <R> Variable<R> flatMap(Function<V, Variable<R>> mapper) {
+        return v == null || mapper == null ? new Variable(null) : mapper.apply(v);
     }
 
     /**
