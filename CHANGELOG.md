@@ -1,5 +1,21 @@
 # Changelog
 
+## [3.8.0](https://github.com/teletha/sinobu/compare/v3.7.0...v3.8.0) (2023-12-09)
+
+
+### Features
+
+* Add Variable#flip and #flatFlip. ([bfedf8e](https://github.com/teletha/sinobu/commit/bfedf8ecefb24a82dc21c3a5fcd2f6700c765e29))
+
+
+### Bug Fixes
+
+* Don't interrupt the executing task. ([e0ae8c4](https://github.com/teletha/sinobu/commit/e0ae8c4fc6e3ca45e983987d800a6e0f332c44de))
+* JSON parser use the symbol table for key only. ([c4d83e2](https://github.com/teletha/sinobu/commit/c4d83e2f54c7a9f0452ca2d5f670a9cfea48a993))
+* Locale encoder should use language tag only. ([8aa158f](https://github.com/teletha/sinobu/commit/8aa158f79d7dac5df3413b05ca5d1ee8dc47c6f2))
+* Model is not defined when parameter variables are detected. ([13a430c](https://github.com/teletha/sinobu/commit/13a430c632a32aee7109b90f3b8e4618cd8e93b2))
+* Signal#on ensures that the complete event is invoked at last. ([8416522](https://github.com/teletha/sinobu/commit/8416522cf46a666391a7a640ab5cb7551ba5c5f7))
+
 ## [3.7.0](https://github.com/teletha/sinobu/compare/v3.6.2...v3.7.0) (2023-08-26)
 
 
