@@ -343,7 +343,7 @@ public class Signal<V> {
      * 
      * @param <K> The type of the keys.
      * @param keyGenerator The classifier function mapping input elements to keys.
-     * @return A grouping {@link Map} by your lassification.
+     * @return A grouping {@link Map} by your classification.
      */
     public <K> Map<K, List<V>> toGroup(Function<V, K> keyGenerator) {
         return to(Collectors.groupingBy(keyGenerator));
@@ -391,7 +391,7 @@ public class Signal<V> {
     }
 
     /**
-     * Returns {@link Signal} that emits a Boolean that indicates whether all of the items emitted
+     * Returns {@link Signal} that emits a Boolean that indicates whether all the items emitted
      * by the source {@link Signal} satisfy a condition.
      * 
      * @param condition A condition that evaluates an item and returns a Boolean.
@@ -597,7 +597,7 @@ public class Signal<V> {
      * @see <a href="https://reactivex.io/documentation/operators/buffer.html">ReactiveX buffer</a>
      */
     public Signal<List<V>> buffer(Signal<?> timing) {
-        return buffer(timing, (Supplier<List<V>>) ArrayList::new, List<V>::add).skip(List::isEmpty);
+        return buffer(timing, (Supplier<List<V>>) ArrayList::new, List::add).skip(List::isEmpty);
     }
 
     /**
@@ -620,7 +620,7 @@ public class Signal<V> {
      * @param timing A timing {@link Signal}.
      * @param supplier A factory function that returns a container instance to be used and returned
      *            as the buffer.
-     * @param assigner A operation function that assigns a value to the buffer.
+     * @param assigner An operation function that assigns a value to the buffer.
      * @return {ChainableAPI}
      * @see <a href="https://reactivex.io/documentation/operators/buffer.html">ReactiveX buffer</a>
      */
@@ -635,7 +635,7 @@ public class Signal<V> {
      * @param timing A timing {@link Signal}.
      * @param supplier A factory function that returns an instance of the collection subclass to be
      *            used and returned as the buffer.
-     * @param assigner A operation function that assigns a value to the buffer.
+     * @param assigner An operation function that assigns a value to the buffer.
      * @param ignoreRemaining A flag whether completion event emits the remaining values or not.
      * @return {ChainableAPI}
      */
@@ -668,7 +668,7 @@ public class Signal<V> {
      * ─────[①❶]─[②❷]─[③❸]──[④❹]──╂
      * </pre>
      *
-     * @param other An other {@link Signal} to combine.
+     * @param other Another {@link Signal} to combine.
      * @return A {@link Signal} that emits items that are the result of combining the items emitted
      *         by source {@link Signal} by means of the given aggregation function.
      * @see <a href="https://reactivex.io/documentation/operators/zip.html">ReactiveX zip</a>
@@ -696,14 +696,14 @@ public class Signal<V> {
      * ────[①❶Ⓐ]─[②❷Ⓑ]─────[③❸Ⓒ]─╂
      * </pre>
      *
-     * @param other An other {@link Signal} to combine.
+     * @param other Another {@link Signal} to combine.
      * @param another An another {@link Signal} to combine.
      * @return A {@link Signal} that emits items that are the result of combining the items emitted
      *         by source {@link Signal} by means of the given aggregation function.
      * @see <a href="https://reactivex.io/documentation/operators/zip.html">ReactiveX zip</a>
      */
     public <O, A> Signal<Ⅲ<V, O, A>> combine(Signal<O> other, Signal<A> another) {
-        return combine(other, I::<V, O> pair).combine(another, Ⅱ<V, O>::<A> ⅲ);
+        return combine(other, I::pair).combine(another, Ⅱ<V, O>::<A> ⅲ);
     }
 
     /**
@@ -723,7 +723,7 @@ public class Signal<V> {
      * ─────①───❷──⓷────❹──╂
      * </pre>
      *
-     * @param other An other {@link Signal} to combine.
+     * @param other Another {@link Signal} to combine.
      * @param combiner An aggregation function used to combine the items emitted by the source
      *            {@link Signal}.
      * @return A {@link Signal} that emits items that are the result of combining the items emitted
@@ -737,7 +737,7 @@ public class Signal<V> {
             boolean[] completes = new boolean[2];
 
             return to(value -> {
-                if (completes[0] == false) {
+                if (!completes[0]) {
                     if (otherValue.isEmpty()) {
                         baseValue.add(value);
                     } else {
@@ -751,7 +751,7 @@ public class Signal<V> {
                     observer.complete();
                 }
             }, disposer, false).add(other.to(value -> {
-                if (completes[1] == false) {
+                if (!completes[1]) {
                     if (baseValue.isEmpty()) {
                         otherValue.add(value);
                     } else {
@@ -821,7 +821,7 @@ public class Signal<V> {
      * ────[②❶]─[②❷]─[③❷]─[④❷]──╂
      * </pre>
      *
-     * @param other An other {@link Signal} to combine.
+     * @param other Another {@link Signal} to combine.
      * @return An {@link Signal} that emits items that are the result of combining the items emitted
      *         by the source {@link Signal} by means of the given aggregation function
      */
@@ -848,13 +848,13 @@ public class Signal<V> {
      * ────[②❶Ⓐ]─[②❷Ⓐ]─[③❷Ⓐ]─[③❷Ⓑ]╂
      * </pre>
      *
-     * @param other An other {@link Signal} to combine.
+     * @param other Another {@link Signal} to combine.
      * @param another An another {@link Signal} to combine.
      * @return An {@link Signal} that emits items that are the result of combining the items emitted
      *         by the source {@link Signal} by means of the given aggregation function
      */
     public <O, A> Signal<Ⅲ<V, O, A>> combineLatest(Signal<O> other, Signal<A> another) {
-        return combineLatest(other, I::<V, O> pair).combineLatest(another, Ⅱ<V, O>::<A> ⅲ);
+        return combineLatest(other, I::pair).combineLatest(another, Ⅱ<V, O>::<A> ⅲ);
     }
 
     /**
@@ -874,7 +874,7 @@ public class Signal<V> {
      * ─────⓶───❷──❸──③④─╂
      * </pre>
      *
-     * @param other An other {@link Signal} to combine.
+     * @param other Another {@link Signal} to combine.
      * @param function An aggregation function used to combine the items emitted by the source
      *            {@link Signal}.
      * @return An {@link Signal} that emits items that are the result of combining the items emitted
@@ -993,12 +993,12 @@ public class Signal<V> {
             return this;
         }
 
-        return new Signal<V>((observer, disposer) -> {
+        return new Signal<>((observer, disposer) -> {
             Iterator<Signal<? extends V>> signals = I.signal(others).skipNull().startWith(this).toList().iterator();
 
             I.recurse(self -> {
                 if (signals.hasNext()) {
-                    signals.next().to(observer::accept, observer::error, self, disposer.sub(), true);
+                    signals.next().to(observer, observer::error, self, disposer.sub(), true);
                 } else {
                     observer.complete();
                 }
@@ -1117,7 +1117,7 @@ public class Signal<V> {
             return map(List::of);
         }
 
-        return new Signal<List<V>>((observer, disposer) -> {
+        return new Signal<>((observer, disposer) -> {
             AtomicReference<Disposable> latest = new AtomicReference();
             AtomicReference<List<V>> list = new AtomicReference(new ArrayList());
 
@@ -1245,19 +1245,19 @@ public class Signal<V> {
      * distinct from their immediate predecessors when compared preassign each other via the
      * provided comparator function.
      *
-     * @param comparer The function that receives the previous item and the current item and is
+     * @param compare The function that receives the previous item and the current item and is
      *            expected to return true if the two are equal, thus skipping the current value.
      * @return {@link Signal} that emits those items from the source {@link Signal} that are
      *         distinct from their immediate predecessors.
      * @see #diff()
      */
-    public Signal<V> diff(BiPredicate<V, V> comparer) {
+    public Signal<V> diff(BiPredicate<V, V> compare) {
         // ignore invalid parameter
-        if (comparer == null) {
+        if (compare == null) {
             return this;
         }
 
-        return skip((V) null, (prev, now) -> prev == null || now == null ? prev == now : comparer.test(prev, now));
+        return skip((V) null, (prev, now) -> prev == null || now == null ? prev == now : compare.test(prev, now));
     }
 
     /**
@@ -1865,21 +1865,21 @@ public class Signal<V> {
 
     /**
      * Returns {@link Signal} that emits <code>true</code> that indicates whether the source
-     * {@link Signal} is errored.
+     * {@link Signal} is erred.
      * 
      * @return A {@link Signal} that emits <code>true</code> when the source {@link Signal} is
-     *         errored.
+     *         erred.
      */
-    public Signal<Boolean> isErrored() {
+    public Signal<Boolean> isErred() {
         return signal(null, FALSE, true, TRUE, true, FALSE);
     }
 
     /**
      * Returns {@link Signal} that emits <code>true</code> that indicates whether the source
-     * {@link Signal} is emitted, errored or completed.
+     * {@link Signal} is emitted, erred or completed.
      * 
      * @return A {@link Signal} that emits <code>true</code> when the source {@link Signal} is
-     *         emitted, errored or completed.
+     *         emitted, erred or completed.
      */
     public Signal<Boolean> isSignaled() {
         return signal(I::accept, TRUE, true, TRUE, true, TRUE);
@@ -1887,10 +1887,10 @@ public class Signal<V> {
 
     /**
      * Returns {@link Signal} that emits <code>true</code> that indicates whether the source
-     * {@link Signal} is errored or completed.
+     * {@link Signal} is erred or completed.
      * 
      * @return A {@link Signal} that emits <code>true</code> when the source {@link Signal} is
-     *         errored or completed.
+     *         erred or completed.
      */
     public Signal<Boolean> isTerminated() {
         return signal(null, FALSE, true, TRUE, true, TRUE);
@@ -1916,7 +1916,7 @@ public class Signal<V> {
      */
     public <R> Signal<R> joinAll(WiseFunction<V, R> function, ExecutorService executor) {
         return map(function::bind).buffer()
-                .flatIterable(v -> I.signal((executor == null ? I.scheduler : executor).invokeAll(v)).map(Future<R>::get).toList());
+                .flatIterable(v -> I.signal((executor == null ? I.scheduler : executor).invokeAll(v)).map(Future::get).toList());
     }
 
     /**
@@ -2085,15 +2085,15 @@ public class Signal<V> {
                 if (disposer.isDisposed()) {
                     break;
                 }
-                signal.to(observer::accept, observer::error, completer::complete, disposer.sub(), true);
+                signal.to(observer, observer::error, completer::complete, disposer.sub(), true);
             }
             return disposer;
         });
     }
 
     /**
-     * Returns {@link Signal} that emits a Boolean that indicates whether all of the items emitted
-     * by the source {@link Signal} unsatisfy a condition.
+     * Returns {@link Signal} that emits a Boolean that indicates whether all the items emitted
+     * by the source {@link Signal} unsatisfying a condition.
      * 
      * @param condition A condition that evaluates an item and returns a Boolean.
      * @return A {@link Signal} that emits false if all items emitted by the source {@link Signal}
@@ -2203,7 +2203,7 @@ public class Signal<V> {
      * @return A chained {@link Signal}.
      */
     public Signal<Ⅱ<V, V>> pair(V initial) {
-        return map(() -> new AtomicReference<V>(initial), (a, v) -> I.pair(a.getAndSet(v), v));
+        return map(() -> new AtomicReference<>(initial), (a, v) -> I.pair(a.getAndSet(v), v));
     }
 
     /**
@@ -2273,7 +2273,7 @@ public class Signal<V> {
      */
     public Signal<V> recurseMap(WiseFunction<Signal<V>, Signal<V>> recurse, Executor executor) {
         // DON'T use the recursive call, it will throw StackOverflowError.
-        return flatMap(init -> new Signal<V>((observer, disposer) -> {
+        return flatMap(init -> new Signal<>((observer, disposer) -> {
             (executor == null ? I.scheduler : executor).execute(() -> {
                 try {
                     LinkedList<V> values = new LinkedList(); // LinkedList accepts null
@@ -2320,7 +2320,7 @@ public class Signal<V> {
      * <ul>
      * <li>Next - Replace source error and propagate values to source signal.</li>
      * <li>Error - Propagate to source error and dispose them.</li>
-     * <li>Complete - Terminate notifier signal. Souce signal will never recover errors.</li>
+     * <li>Complete - Terminate notifier signal. Source signal will never recover errors.</li>
      * </ul>
      * 
      * @param flow An error notifier to define recovering flow.
@@ -2363,7 +2363,7 @@ public class Signal<V> {
             });
 
             // delegate error to the notifier
-            return to(observer::accept, sub, observer::complete, disposer, false);
+            return to(observer, sub, observer::complete, disposer, false);
         });
     }
 
@@ -2378,7 +2378,7 @@ public class Signal<V> {
 
     /**
      * Returns an {@link Signal} that emits the same values as the source signal preassign the
-     * exception of an {@link Observer#error(Throwable)}. An error notification from the source will
+     * exception to an {@link Observer#error(Throwable)}. An error notification from the source will
      * result in the emission of a Throwable item to the {@link Signal} provided as an argument to
      * the notificationHandler function. If that {@link Signal} calls {@link Observer#complete()} or
      * {@link Observer#error(Throwable)} then retry will call {@link Observer#complete()} or
@@ -2417,7 +2417,7 @@ public class Signal<V> {
                     do {
                         // dispose previous and reconnect
                         sub.disposer.dispose();
-                        sub.disposer = to(observer::accept, observer::error, complete, disposer.sub(), true);
+                        sub.disposer = to(observer, observer::error, complete, disposer.sub(), true);
                     } while (remaining.decrementAndGet() != 0);
                 }
             }, observer::error, () -> {
@@ -2431,15 +2431,15 @@ public class Signal<V> {
             });
 
             // connect preassign complete handling flow
-            sub.disposer = to(observer::accept, observer::error, complete, disposer.sub(), true);
+            sub.disposer = to(observer, observer::error, complete, disposer.sub(), true);
 
-            // API difinition
+            // API definition
             return disposer;
         });
     }
 
     /**
-     * Retry the source {@link Signal} infinitely whenever any error is occured.
+     * Retry the source {@link Signal} infinitely whenever any error is occurred.
      *
      * @return {ChainableAPI}
      */
@@ -2449,14 +2449,14 @@ public class Signal<V> {
 
     /**
      * <p>
-     * Retry the source {@link Signal} when the specified error is occured. Unspecified errors will
+     * Retry the source {@link Signal} when the specified error is occurred. Unspecified errors will
      * pass through the source {@link Signal}.
      * </p>
      * <h>When the notifier signal emits event</h>
      * <ul>
      * <li>Next - Retry source {@link Signal}.</li>
      * <li>Error - Propagate to source error and dispose them.</li>
-     * <li>Complete - Terminate notifier signal. Souce signal will never retry errors.</li>
+     * <li>Complete - Terminate notifier signal. Source signal will never retry errors.</li>
      * </ul>
      * 
      * @param flow An error notifier to define retrying flow.
@@ -2481,7 +2481,7 @@ public class Signal<V> {
                 sub.observer.accept(sub.obj = e);
             };
 
-            // number of remaining retrys
+            // number of remaining retry
             AtomicInteger remaining = new AtomicInteger();
             // previous retry operation
             sub.disposer = Disposable.empty();
@@ -2495,7 +2495,7 @@ public class Signal<V> {
                     do {
                         // dispose previous and reconnect
                         sub.disposer.dispose();
-                        sub.disposer = to(observer::accept, sub, observer::complete, disposer.sub(), true);
+                        sub.disposer = to(observer, sub, observer::complete, disposer.sub(), true);
                     } while (remaining.decrementAndGet() != 0);
                 }
             }, observer::error, () -> {
@@ -2513,7 +2513,7 @@ public class Signal<V> {
             });
 
             // connect preassign error handling flow
-            sub.disposer = to(observer::accept, sub, observer::complete, disposer.sub(), true);
+            sub.disposer = to(observer, sub, observer::complete, disposer.sub(), true);
 
             // API definition
             return disposer;
@@ -2542,7 +2542,7 @@ public class Signal<V> {
      * @return {ChainableAPI}
      */
     public Signal<V> sample(Signal<?> sampler) {
-        return buffer(sampler, AtomicReference<V>::new, AtomicReference<V>::set, true).map(AtomicReference<V>::get);
+        return buffer(sampler, AtomicReference::new, AtomicReference<V>::set, true).map(AtomicReference::get);
     }
 
     /**
@@ -2615,7 +2615,7 @@ public class Signal<V> {
     /**
      * Maps a sequence of values into {@link Signal} and concatenates these {@link Signal} eagerly
      * into a single {@link Signal}. Eager concatenation means that once a subscriber subscribes,
-     * this operator subscribes to all of the source {@link Signal}. The operator buffers the values
+     * this operator subscribes to all the source {@link Signal}. The operator buffers the values
      * emitted by these {@link Signal} and then drains them in order, each one after the previous
      * one completes.
      * 
@@ -2641,7 +2641,7 @@ public class Signal<V> {
                         }
 
                         // this indexed buffer has been completed already, step into next buffer
-                        if (next.ⅰ.get() == true) {
+                        if (next.ⅰ.get()) {
                             self.accept(processing.get());
                         }
                     }
@@ -2799,7 +2799,7 @@ public class Signal<V> {
      * Returns a specified index values from the start of an {@link Signal} sequence.
      * </p>
      * 
-     * @param condition A index condition of values to emit.
+     * @param condition An index condition of values to emit.
      * @return {ChainableAPI}
      */
     public Signal<V> skipAt(LongPredicate condition) {
@@ -2917,7 +2917,7 @@ public class Signal<V> {
     }
 
     /**
-     * Buffer all items until complete event and then soted items will be emitted sequentially.
+     * Buffer all items until complete event and then sorted items will be emitted sequentially.
      * 
      * @param comparator
      * @return {ChainableAPI}
@@ -3006,10 +3006,8 @@ public class Signal<V> {
         return new Signal<>((observer, disposer) -> {
             Iterator<V> iterator = values.iterator();
 
-            if (iterator != null) {
-                while (iterator.hasNext() && disposer.isDisposed() == false) {
-                    observer.accept(iterator.next());
-                }
+            while (iterator.hasNext() && !disposer.isDisposed()) {
+                observer.accept(iterator.next());
             }
             return to(observer, disposer);
         });
@@ -3091,7 +3089,7 @@ public class Signal<V> {
             disposables[0] = to(value -> {
                 end.index++;
                 disposables[1].dispose();
-                disposables[1] = function.apply(value).to(observer::accept, end::error, I.NoOP, disposer.sub().add(end::complete), true);
+                disposables[1] = function.apply(value).to(observer, end::error, I.NoOP, disposer.sub().add(end::complete), true);
             }, observer::error, end::complete, disposer.sub(), false);
             return disposer.add(() -> {
                 disposables[0].dispose();
@@ -3258,7 +3256,7 @@ public class Signal<V> {
      *            instruction.
      * @return {ChainableAPI}
      */
-    private final Signal<V> take(Signal<Boolean> condition, boolean init, boolean expect) {
+    private Signal<V> take(Signal<Boolean> condition, boolean init, boolean expect) {
         // ignore invalid parameter
         if (condition == null) {
             return this;
@@ -3280,7 +3278,7 @@ public class Signal<V> {
      * Returns a specified index values from the start of an {@link Signal} sequence.
      * </p>
      * 
-     * @param condition A index condition of values to emit.
+     * @param condition An index condition of values to emit.
      * @return {ChainableAPI}
      */
     public Signal<V> takeAt(LongPredicate condition) {
@@ -3375,16 +3373,16 @@ public class Signal<V> {
         }
 
         return new Signal<>((observer, disposer) -> {
-            // Normally, Signal will be diposed automatically after a COMPLETE event is sent. But it
+            // Normally, Signal will be disposed automatically after a COMPLETE event is sent. But it
             // is not immediately disposed if the COMPLETE event itself is delayed for some
-            // reason (#delay, #interval or #on, etc).
+            // reason (#delay, #interval or #on, etc.).
             // In that case, even though the current signal has already stopped event propagation,
             // it is possible to propagate the subsequent event to the next signal.
             // There are several ways to avoid this.
             //
             // 1. Execute "dispose" immediately at the same time as the complete event
             // Although this way seems to work at first glance, problems will arise in #repeat or
-            // #recover and so on because invokeing "dispose" forcedly.
+            // #recover and so on because invoking "dispose" forcibly.
             //
             // 2. The sender transmits the event while sequentially checking Disposable#isDisposed.
             // The DISPOSE event itself is delayed and issued, so it can not be used.
@@ -3395,7 +3393,7 @@ public class Signal<V> {
             C context = contextSupplier == null ? null : contextSupplier.get();
 
             return to(value -> {
-                if (stopped.get() == false) {
+                if (!stopped.get()) {
                     if (condition.test(context, value) == expected) {
                         observer.accept(value);
                     } else {
@@ -3407,7 +3405,7 @@ public class Signal<V> {
                     }
                 }
             }, observer::error, () -> {
-                if (stopped.get() == false) {
+                if (!stopped.get()) {
                     observer.complete();
                 }
             }, disposer, false);
@@ -3415,7 +3413,7 @@ public class Signal<V> {
     }
 
     /**
-     * Returns an Signal that mirrors the source Signal but applies a timeout policy for each
+     * Returns a Signal that mirrors the source Signal but applies a timeout policy for each
      * emitted item. If the next item isn't emitted preassignin the specified timeout duration
      * starting from its predecessor, the resulting Signal terminates and notifies observers of a
      * {@link TimeoutException}.
@@ -3443,7 +3441,7 @@ public class Signal<V> {
             WiseConsumer<Object> effect = v -> {
                 d.getAndSet(v == null ? null : I.schedule(time, unit, scheduler).to(timeout)).dispose();
             };
-            return effect(effect.bind(this)).effectOnTerminate(effect.bind((V) null)).to(observer, disposer);
+            return effect(effect.bind(this)).effectOnTerminate(effect.bind(null)).to(observer, disposer);
         });
     }
 
@@ -3552,7 +3550,7 @@ public class Signal<V> {
 
             try {
                 CountDownLatch latch = new CountDownLatch(1);
-                to(observer::accept, I.bundle(error, I.wiseC(latch::countDown)), I.bundle(latch::countDown, observer::complete), disposer
+                to(observer, I.bundle(error, I.wiseC(latch::countDown)), I.bundle(latch::countDown, observer::complete), disposer
                         .add(latch::countDown), false);
                 latch.await();
             } catch (Throwable e) {
@@ -3579,21 +3577,21 @@ public class Signal<V> {
     /**
      * Create countable completer.
      * 
-     * @param delgator A complete action.
+     * @param delegator A complete action.
      * @param count A complete count.
      * @return {ChainableAPI}
      */
-    private Subscriber countable(Observer delgator, int count) {
+    private Subscriber countable(Observer delegator, int count) {
         Subscriber<?> completer = new Subscriber();
         completer.index = count;
         completer.error = e -> {
             completer.index = -1;
-            delgator.error(e);
+            delegator.error(e);
         };
         completer.complete = () -> {
             completer.index--;
             if (completer.index == 0) {
-                delgator.complete();
+                delegator.complete();
             }
         };
         return completer;
@@ -3607,10 +3605,10 @@ public class Signal<V> {
      * @param acceptError
      * @param errorOutput
      * @param acceptComplete
-     * @param completeOuput
+     * @param completeOutput
      * @return {ChainableAPI}
      */
-    private <T> Signal<T> signal(Predicate<? super V> emitCondition, T emitOutput, boolean acceptError, T errorOutput, boolean acceptComplete, T completeOuput) {
+    private <T> Signal<T> signal(Predicate<? super V> emitCondition, T emitOutput, boolean acceptError, T errorOutput, boolean acceptComplete, T completeOutput) {
         return new Signal<>((observer, disposer) -> {
             Subscriber end = countable(observer, 1);
             Disposable sub = disposer.sub();
@@ -3630,7 +3628,7 @@ public class Signal<V> {
                     observer.error(e);
                 }
             }, () -> {
-                if (acceptComplete && completeOuput != null) observer.accept(completeOuput);
+                if (acceptComplete && completeOutput != null) observer.accept(completeOutput);
                 end.complete();
                 sub.dispose();
             }, sub, false);
@@ -3639,7 +3637,7 @@ public class Signal<V> {
 
     // /**
     // * <p>
-    // * Append the current time to each events.
+    // * Append the current time to each event.
     // * </p>
     // *
     // * @return Chainable API.

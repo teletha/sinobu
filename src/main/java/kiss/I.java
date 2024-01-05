@@ -510,7 +510,7 @@ public class I {
      * buffering internally, so you do not need to do the buffering explicitly.
      *
      * @param input {@link InputStream} to which data will be read from.
-     * @param output {@link OutputStream} to which data will be write to.
+     * @param output {@link OutputStream} to which data will be written to.
      * @param close Whether input and output streams will be closed automatically or not.
      * @throws NullPointerException If the input or output is null.
      */
@@ -532,7 +532,7 @@ public class I {
      * internally, so you do not need to do the buffering explicitly.
      *
      * @param input {@link Readable} to which data will be read from.
-     * @param output {@link Appendable} to which data will be write to.
+     * @param output {@link Appendable} to which data will be written to.
      * @param close Whether input and output streams will be closed automatically or not.
      * @throws NullPointerException If the input or output is null.
      */
@@ -667,9 +667,9 @@ public class I {
      */
     public static String express(String text, String open, String close, Object[] contexts, WiseTriFunction<Model, Object, String, Object>... resolvers) {
         StringBuilder builder = new StringBuilder();
-        int openStart = 0;
-        int openEnd = 0;
-        int closeStart = 0;
+        int openStart;
+        int openEnd;
+        int closeStart;
         int closeEnd = 0;
 
         while ((openStart = text.indexOf(open, closeEnd)) != -1) {
@@ -834,7 +834,7 @@ public class I {
      *            <a href="Extensible#ExtensionPoint">Extension Point</a> class is only accepted,
      *            otherwise this method will return <code>null</code>.
      * @param key An <a href="Extensible.html#ExtensionKey">Extension Key</a> class.
-     * @return A associated Extension of the given Extension Point and the given Extension Key or
+     * @return An associated Extension of the given Extension Point and the given Extension Key or
      *         <code>null</code>.
      */
     public static <E extends Extensible> E find(Class<E> extensionPoint, Class key) {
@@ -844,7 +844,7 @@ public class I {
             // In the majority of cases, a search query for an extension uses the extension key
             // itself, and rarely a subclass of the extension key is used. Since it is very costly
             // to obtain all types of extension key, we try to save computation resource by
-            // performing a searc with the specified extension key at the beginning.
+            // performing a search with the specified extension key at the beginning.
             Lifestyle<E> lifestyle = extensions.ⅱ.get(key);
             if (lifestyle != null) return lifestyle.get();
 
@@ -1148,7 +1148,7 @@ public class I {
     /**
      * Create {@link ArrayList} with the specified items.
      * 
-     * @param items A list of itmes.
+     * @param items A list of items.
      * @return The new created {@link ArrayList}.
      */
     public static <V> List<V> list(V... items) {
@@ -1200,7 +1200,7 @@ public class I {
 
     /**
      * <p>
-     * Load all {@link Extensible} typs from the specified source.
+     * Load all {@link Extensible} types from the specified source.
      * </p>
      * <p>
      * You can create the special service loader file "META-INF/services/kiss.Extensible" which
@@ -1306,8 +1306,8 @@ public class I {
                     // the lifestyle emits changes twice on "load" and "unload"
                     // event from the point of view of the user.
                     // So the previous data becomes all but meaningless for a
-                    // cacheable lifestyles (e.g. Singleton and ThreadSpecifiec).
-                    // Therefore we we completely refresh lifestyles associated with
+                    // cacheable lifestyles (e.g. Singleton and ThreadSpecific).
+                    // Therefore, we completely refresh lifestyles associated with
                     // this extension key class.
                     if (extensionPoint == Lifestyle.class) {
                         lifestyles.remove(clazz);
@@ -1321,8 +1321,8 @@ public class I {
     /**
      * Register extension with key.
      * 
-     * @param extensionPoint A extension point.
-     * @param extensionKey A extension key,
+     * @param extensionPoint An extension point.
+     * @param extensionKey An extension key,
      * @param extension A extension to register.
      * @return A disposer to unregister.
      */
@@ -1509,7 +1509,7 @@ public class I {
      *
      * @param <T> A model type.
      * @param modelClass A target class to create instance.
-     * @return A instance of the specified model class. This instance is managed by Sinobu.
+     * @return An instance of the specified model class. This instance is managed by Sinobu.
      * @throws NullPointerException If the model class is <code>null</code>.
      * @throws IllegalArgumentException If the model class is non-accessible or final class.
      * @throws UnsupportedOperationException If the model class is inner-class.
@@ -1580,7 +1580,7 @@ public class I {
      * </p>
      *
      * @param <M> A model class.
-     * @return A instance of the specified model class. This instance is managed by Sinobu.
+     * @return An instance of the specified model class. This instance is managed by Sinobu.
      * @throws NullPointerException If the model class is <code>null</code>.
      * @throws IllegalArgumentException If the model class is non-accessible or final class.
      * @throws UnsupportedOperationException If the model class is anonymous-class.
@@ -1602,7 +1602,7 @@ public class I {
         // The model class have some preconditions to have to meet.
         if (modelClass.isAnonymousClass()) throw new UnsupportedOperationException(modelClass + " is  inner class.");
 
-        // Construct dependency graph for the current thraed.
+        // Construct dependency graph for the current thread.
         Deque<Class> dependency = dependencies.get();
         dependency.add(modelClass);
 
@@ -1752,14 +1752,14 @@ public class I {
      *
      * private void methodQuietly() {
      *     try {
-     *         // throw some cheched exception
+     *         // throw some checked exception
      *     } catch (CheckedException e) {
      *         throw I.quiet(e); // rethrow checked exception quietly
      *     }
      * }
      * </pre>
      *
-     * @param object A exception to throw quietly or a object to close quietly.
+     * @param object An exception to throw quietly or an object to close quietly.
      * @return A pseudo unchecked exception.
      * @throws NullPointerException If the specified exception is <code>null</code>.
      */
@@ -1771,7 +1771,7 @@ public class I {
             if (throwable instanceof InvocationTargetException) throwable = throwable.getCause();
 
             // throw quietly
-            return I.<RuntimeException> quiet(throwable);
+            return I. quiet(throwable);
         }
 
         if (object instanceof AutoCloseable) {
@@ -1787,7 +1787,7 @@ public class I {
     }
 
     /**
-     * Deceive complier that the specified checked exception is unchecked exception.
+     * Deceive compiler that the specified checked exception is unchecked exception.
      *
      * @param <T> A dummy type for {@link RuntimeException}.
      * @param throwable Any error.
@@ -1955,13 +1955,13 @@ public class I {
     }
 
     /**
-     * Returns an {@link Signal} that emits long value (1) after the delay time and ever increasing
+     * Returns an {@link Signal} that emits long value (1) after the delay time and ever-increasing
      * numbers after each interval time of time thereafter.
      * 
      * @param delayTime The initial delay time to wait before emitting the first value of 1L
      * @param intervalTime The period of time between emissions of the subsequent numbers
      * @param unit the time unit for both delay time and interval time
-     * @return {@link Signal} that emits long value (1) after the delay time and ever increasing
+     * @return {@link Signal} that emits long value (1) after the delay time and ever-increasing
      *         numbers after each interval time of time thereafter
      */
     public static Signal<Long> schedule(long delayTime, long intervalTime, TimeUnit unit, boolean fixedRate, ScheduledExecutorService... scheduler) {
@@ -1970,14 +1970,14 @@ public class I {
 
     /**
      * Create a time-based periodic executable scheduler. It will be executed at regular intervals
-     * starting from a specified base time. (For example, if the base time is 00:05 and the interval
+     * starting from a specified base time. For example, if the base time is 00:05 and the interval
      * is 30 minutes, the actual execution time will be 00:05, 00:30, 01:05, 01:35, and so on.
      * 
      * @param time The base time.
      * @param interval The period of time between emissions of the subsequent numbers
      * @param unit The interval time unit.
      * @param scheduler The task scheduler.
-     * @return {@link Signal} that emits long value (1) at the time and ever increasing numbers
+     * @return {@link Signal} that emits long value (1) at the time and ever-increasing numbers
      *         after each interval of time thereafter
      */
     public static Signal<Long> schedule(LocalTime time, long interval, TimeUnit unit, ScheduledExecutorService... scheduler) {
@@ -1992,13 +1992,13 @@ public class I {
     }
 
     /**
-     * Returns an {@link Signal} that emits long value (1) after the delay time and ever increasing
+     * Returns an {@link Signal} that emits long value (1) after the delay time and ever-increasing
      * numbers after each interval time of time thereafter.
      * 
      * @param delayTime The initial delay time to wait before emitting the first value of 1L
      * @param intervalTime The period of time between emissions of the subsequent numbers
      * @param unit the time unit for both delay time and interval time
-     * @return {@link Signal} that emits long value (1) after the delay time and ever increasing
+     * @return {@link Signal} that emits long value (1) after the delay time and ever-increasing
      *         numbers after each interval time of time thereafter
      */
     private static Signal<Long> schedule(LongSupplier delayTime, long intervalTime, TimeUnit unit, boolean fixedRate, ScheduledExecutorService... scheduler) {
@@ -2026,7 +2026,7 @@ public class I {
     /**
      * Create {@link HashSet} with the specified items.
      * 
-     * @param items A list of itmes.
+     * @param items A list of items.
      * @return The new created {@link HashSet}.
      */
     public static <V> Set<V> set(V... items) {
@@ -2037,7 +2037,7 @@ public class I {
      * Signal the specified values.
      *
      * @param values A list of values to emit.
-     * @return The {@link Signal} to emit sequencial values.
+     * @return The {@link Signal} to emit sequential values.
      */
     public static <V> Signal<V> signal(V... values) {
         return new Signal<V>((observer, disposer) -> {
@@ -2050,7 +2050,7 @@ public class I {
      * Signal the specified values.
      *
      * @param values A list of values to emit.
-     * @return The {@link Signal} to emit sequencial values.
+     * @return The {@link Signal} to emit sequential values.
      */
     public static <V> Signal<V> signal(Iterable<V> values) {
         return I.signal((V[]) null).startWith(values);
@@ -2060,7 +2060,7 @@ public class I {
      * {@link Signal} the specified values.
      *
      * @param value A value to emit.
-     * @return The {@link Signal} to emit sequencial values.
+     * @return The {@link Signal} to emit sequential values.
      */
     public static <V> Signal<V> signal(Supplier<V> value) {
         return I.signal((V[]) null).startWith(value);
@@ -2102,7 +2102,7 @@ public class I {
     /**
      * Transform any type object into the specified type if possible.
      *
-     * @param <In> A input type you want to transform from.
+     * @param <In> An input type you want to transform from.
      * @param <Out> An output type you want to transform into.
      * @param input A target object.
      * @param output A target type.
@@ -2155,7 +2155,7 @@ public class I {
             if ("en".equals(lang)) return I.signal(text);
 
             // The next step is to check for already translated text from
-            // the locally stored bundle files. Iit can help reduce translationresources.
+            // the locally stored bundle files. Iit can help reduce translation resources.
             Subscriber<?> bundle = bundles.computeIfAbsent(lang, Subscriber::new);
             String cached = bundle.messages.get(text);
             if (cached != null) return I.signal(cached);
@@ -2217,7 +2217,7 @@ public class I {
      * Cast from {@link Runnable} to {@link WiseRunnable}.
      * 
      * @param lambda A target function.
-     * @return A casted function.
+     * @return A cast function.
      */
     public static WiseRunnable wiseR(Runnable lambda) {
         return lambda instanceof WiseRunnable ? (WiseRunnable) lambda : lambda::run;
@@ -2227,7 +2227,7 @@ public class I {
      * Cast from {@link Consumer} to {@link WiseConsumer}.
      * 
      * @param lambda A target function.
-     * @return A casted function.
+     * @return A cast function.
      */
     public static <A> WiseConsumer<A> wiseC(Consumer<A> lambda) {
         return lambda instanceof WiseConsumer ? (WiseConsumer) lambda : lambda::accept;
@@ -2238,7 +2238,7 @@ public class I {
      * the right side. All additional caller arguments are ignored.
      * 
      * @param lambda A target function.
-     * @return A casted function.
+     * @return A cast function.
      */
     public static <A> WiseConsumer<A> wiseC(Runnable lambda) {
         return make(null, WiseConsumer.class, I.wiseR(lambda));
@@ -2248,7 +2248,7 @@ public class I {
      * Cast from {@link Supplier} to {@link WiseSupplier}.
      * 
      * @param lambda A target function.
-     * @return A casted function.
+     * @return A cast function.
      */
     public static <R> WiseSupplier<R> wiseS(Supplier<R> lambda) {
         return lambda instanceof WiseSupplier ? (WiseSupplier) lambda : lambda::get;
@@ -2268,7 +2268,7 @@ public class I {
      * Cast from {@link Function} to {@link WiseFunction}.
      * 
      * @param lambda A target function.
-     * @return A casted function.
+     * @return A cast function.
      */
     public static <A, R> WiseFunction<A, R> wiseF(Function<A, R> lambda) {
         return lambda instanceof WiseFunction ? (WiseFunction) lambda : lambda::apply;
@@ -2279,7 +2279,7 @@ public class I {
      * the right side. All additional caller arguments are ignored.
      * 
      * @param lambda A target function.
-     * @return A casted function.
+     * @return A cast function.
      */
     public static <A, R> WiseFunction<A, R> wiseF(Supplier<R> lambda) {
         return make(null, WiseFunction.class, I.wiseS(lambda));
@@ -2366,7 +2366,7 @@ public class I {
             // traverse object as json
             new JSON(out).write(model, new Property(model, "", null), input);
         } finally {
-            // close carefuly
+            // close carefully
             I.quiet(out);
         }
     }
