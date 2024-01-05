@@ -102,7 +102,7 @@ import java.util.stream.Collectors;
  *               actual processing, you need to execute the termination operation (toXXX method,
  *               i.e. {@link Signal#to()} or {@link Signal#to(Consumer)}).
  */
-public final class Signal<V> {
+public class Signal<V> {
 
     /**
      * For reuse.
@@ -112,7 +112,7 @@ public final class Signal<V> {
     /**
      * For reuse.
      */
-    public static final <R> Signal<R> never() {
+    public static <R> Signal<R> never() {
         return new Signal<>(UNDEF);
     }
 
@@ -162,7 +162,7 @@ public final class Signal<V> {
      * @param next A delegator method of {@link Observer#accept(Object)}.
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
-    public final Disposable to(Runnable next) {
+    public Disposable to(Runnable next) {
         return to(I.wiseC(next), null, null);
     }
 
@@ -173,7 +173,7 @@ public final class Signal<V> {
      * @param next A delegator method of {@link Observer#accept(Object)}.
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
-    public final Disposable to(Consumer<? super V> next) {
+    public Disposable to(Consumer<? super V> next) {
         return to(next, null, null);
     }
 
@@ -185,7 +185,7 @@ public final class Signal<V> {
      * @param error A delegator method of {@link Observer#error(Throwable)}.
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
-    public final Disposable to(Consumer<? super V> next, Consumer<Throwable> error) {
+    public Disposable to(Consumer<? super V> next, Consumer<Throwable> error) {
         return to(next, error, null);
     }
 
@@ -197,7 +197,7 @@ public final class Signal<V> {
      * @param complete A delegator method of {@link Observer#complete()}.
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
-    public final Disposable to(Consumer<? super V> next, Runnable complete) {
+    public Disposable to(Consumer<? super V> next, Runnable complete) {
         return to(next, null, complete);
     }
 
@@ -209,7 +209,7 @@ public final class Signal<V> {
      * @param complete A delegator method of {@link Observer#complete()}.
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
-    public final Disposable to(Runnable next, Consumer<Throwable> error, Runnable complete) {
+    public Disposable to(Runnable next, Consumer<Throwable> error, Runnable complete) {
         return to(I.wiseC(next), error, complete);
     }
 
@@ -221,7 +221,7 @@ public final class Signal<V> {
      * @param complete A delegator method of {@link Observer#complete()}.
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
-    public final Disposable to(Consumer<? super V> next, Consumer<Throwable> error, Runnable complete) {
+    public Disposable to(Consumer<? super V> next, Consumer<Throwable> error, Runnable complete) {
         return to(next, error, complete, Disposable.empty(), true);
     }
 
@@ -231,7 +231,7 @@ public final class Signal<V> {
      * @param observer A value observer of this {@link Signal}.
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
-    public final Disposable to(Observer<? super V> observer) {
+    public Disposable to(Observer<? super V> observer) {
         Subscriber subscriber = new Subscriber();
         subscriber.index = 1;
         subscriber.disposer = Disposable.empty();
@@ -265,7 +265,7 @@ public final class Signal<V> {
      * @param observer A value observer of this {@link Signal}.
      * @return Calling {@link Disposable#dispose()} will dispose this subscription.
      */
-    public final Disposable to(Observer<V> observer, Disposable disposer) {
+    public Disposable to(Observer<V> observer, Disposable disposer) {
         try {
             return subscriber.apply(observer, disposer == null ? Disposable.empty() : disposer);
         } catch (Throwable e) {
@@ -279,7 +279,7 @@ public final class Signal<V> {
      *
      * @return A {@link Variable} as value receiver.
      */
-    public final Variable<V> to() {
+    public Variable<V> to() {
         return to(Variable.empty(), Variable::set);
     }
 
@@ -288,7 +288,7 @@ public final class Signal<V> {
      *
      * @return A {@link Variable} as value receiver.
      */
-    public final <A, R> R to(Collector<? super V, A, R> receiver) {
+    public <A, R> R to(Collector<? super V, A, R> receiver) {
         return receiver.finisher().apply(to(receiver.supplier().get(), receiver.accumulator()::accept));
     }
 
@@ -299,7 +299,7 @@ public final class Signal<V> {
      * @param assigner A value assigner.
      * @return A value receiver.
      */
-    public final <R> R to(R receiver, WiseBiConsumer<R, V> assigner) {
+    public <R> R to(R receiver, WiseBiConsumer<R, V> assigner) {
         // start receiving values
         to(assigner.bind(receiver));
 
@@ -313,7 +313,7 @@ public final class Signal<V> {
      *
      * @return A {@link Set} as value receiver.
      */
-    public final Set<V> toAlternate() {
+    public Set<V> toAlternate() {
         return to(new HashSet(), (set, value) -> {
 
             if (!set.add(value)) {
@@ -327,7 +327,7 @@ public final class Signal<V> {
      *
      * @return A {@link Collection} as value receiver.
      */
-    public final <C extends Collection<? super V>> C toCollection(C collection) {
+    public <C extends Collection<? super V>> C toCollection(C collection) {
         return to(collection, Collection::add);
     }
 
@@ -345,7 +345,7 @@ public final class Signal<V> {
      * @param keyGenerator The classifier function mapping input elements to keys.
      * @return A grouping {@link Map} by your lassification.
      */
-    public final <K> Map<K, List<V>> toGroup(Function<V, K> keyGenerator) {
+    public <K> Map<K, List<V>> toGroup(Function<V, K> keyGenerator) {
         return to(Collectors.groupingBy(keyGenerator));
     }
 
@@ -354,7 +354,7 @@ public final class Signal<V> {
      *
      * @return A {@link List} as value receiver.
      */
-    public final List<V> toList() {
+    public List<V> toList() {
         return toCollection(new ArrayList());
     }
 
@@ -364,7 +364,7 @@ public final class Signal<V> {
      * @param keyGenerator A {@link Map} key generator.
      * @return A {@link Map} as value receiver.
      */
-    public final <Key> Map<Key, V> toMap(Function<V, Key> keyGenerator) {
+    public <Key> Map<Key, V> toMap(Function<V, Key> keyGenerator) {
         return toMap(keyGenerator, Function.identity());
     }
 
@@ -375,7 +375,7 @@ public final class Signal<V> {
      * @param valueGenerator A {@link Map} value generator.
      * @return A {@link Map} as value receiver.
      */
-    public final <Key, Value> Map<Key, Value> toMap(Function<V, Key> keyGenerator, Function<V, Value> valueGenerator) {
+    public <Key, Value> Map<Key, Value> toMap(Function<V, Key> keyGenerator, Function<V, Value> valueGenerator) {
         // When compiling with ECJ, this is not a problem, but when compiling with JDK, an error
         // will occur unless you explicitly specify the generic type.
         return to(Collectors.toMap(keyGenerator, valueGenerator, (BinaryOperator<Value>) UNDEF));
@@ -386,7 +386,7 @@ public final class Signal<V> {
      *
      * @return A {@link Set} as value receiver.
      */
-    public final Set<V> toSet() {
+    public Set<V> toSet() {
         return toCollection(new HashSet());
     }
 
@@ -397,7 +397,7 @@ public final class Signal<V> {
      * @param condition A condition that evaluates an item and returns a Boolean.
      * @return {ChainableAPI}
      */
-    public final Signal<Boolean> all(Predicate<? super V> condition) {
+    public Signal<Boolean> all(Predicate<? super V> condition) {
         return signal(condition.negate(), FALSE, false, FALSE, true, TRUE);
     }
 
@@ -410,7 +410,7 @@ public final class Signal<V> {
      * @return A {@link Signal} that emits a Boolean that indicates whether any item emitted by the
      *         source {@link Signal} satisfies the predicate.
      */
-    public final Signal<Boolean> any(Predicate<? super V> condition) {
+    public Signal<Boolean> any(Predicate<? super V> condition) {
         return signal(Objects.requireNonNull(condition), TRUE, false, FALSE, true, FALSE);
     }
 
@@ -421,7 +421,7 @@ public final class Signal<V> {
      * @return {ChainableAPI}
      * @throws NullPointerException If the type is {@code null}.
      */
-    public final <R> Signal<R> as(Class<? extends R>... type) {
+    public <R> Signal<R> as(Class<? extends R>... type) {
         if (type == null || type.length == 0) {
             return (Signal<R>) this;
         }
@@ -457,7 +457,7 @@ public final class Signal<V> {
      * @return {ChainableAPI}
      * @see <a href="https://reactivex.io/documentation/operators/buffer.html">ReactiveX buffer</a>
      */
-    public final Signal<List<V>> buffer() {
+    public Signal<List<V>> buffer() {
         return buffer(never());
     }
 
@@ -481,7 +481,7 @@ public final class Signal<V> {
      * @return {ChainableAPI}
      * @see <a href="https://reactivex.io/documentation/operators/buffer.html">ReactiveX buffer</a>
      */
-    public final Signal<List<V>> buffer(int size) {
+    public Signal<List<V>> buffer(int size) {
         return buffer(size, size);
     }
 
@@ -508,7 +508,7 @@ public final class Signal<V> {
      * @return {ChainableAPI}
      * @see <a href="https://reactivex.io/documentation/operators/buffer.html">ReactiveX buffer</a>
      */
-    public final Signal<List<V>> buffer(int size, int interval) {
+    public Signal<List<V>> buffer(int size, int interval) {
         int creationSize = 0 < size ? size : 1;
         int creationInterval = 0 < interval ? interval : 1;
 
@@ -570,7 +570,7 @@ public final class Signal<V> {
      * @return {ChainableAPI}
      * @see <a href="https://reactivex.io/documentation/operators/buffer.html">ReactiveX buffer</a>
      */
-    public final Signal<List<V>> buffer(long time, TimeUnit unit, ScheduledExecutorService... scheduler) {
+    public Signal<List<V>> buffer(long time, TimeUnit unit, ScheduledExecutorService... scheduler) {
         return buffer(I.schedule(time, time, unit, true, scheduler));
     }
 
@@ -596,7 +596,7 @@ public final class Signal<V> {
      * @return {ChainableAPI}
      * @see <a href="https://reactivex.io/documentation/operators/buffer.html">ReactiveX buffer</a>
      */
-    public final Signal<List<V>> buffer(Signal<?> timing) {
+    public Signal<List<V>> buffer(Signal<?> timing) {
         return buffer(timing, (Supplier<List<V>>) ArrayList::new, List<V>::add).skip(List::isEmpty);
     }
 
@@ -624,7 +624,7 @@ public final class Signal<V> {
      * @return {ChainableAPI}
      * @see <a href="https://reactivex.io/documentation/operators/buffer.html">ReactiveX buffer</a>
      */
-    public final <B> Signal<B> buffer(Signal<?> timing, Supplier<B> supplier, BiConsumer<B, V> assigner) {
+    public <B> Signal<B> buffer(Signal<?> timing, Supplier<B> supplier, BiConsumer<B, V> assigner) {
         return buffer(timing, supplier, assigner, false);
     }
 
@@ -673,7 +673,7 @@ public final class Signal<V> {
      *         by source {@link Signal} by means of the given aggregation function.
      * @see <a href="https://reactivex.io/documentation/operators/zip.html">ReactiveX zip</a>
      */
-    public final <O> Signal<Ⅱ<V, O>> combine(Signal<O> other) {
+    public <O> Signal<Ⅱ<V, O>> combine(Signal<O> other) {
         return combine(other, I::pair);
     }
 
@@ -702,7 +702,7 @@ public final class Signal<V> {
      *         by source {@link Signal} by means of the given aggregation function.
      * @see <a href="https://reactivex.io/documentation/operators/zip.html">ReactiveX zip</a>
      */
-    public final <O, A> Signal<Ⅲ<V, O, A>> combine(Signal<O> other, Signal<A> another) {
+    public <O, A> Signal<Ⅲ<V, O, A>> combine(Signal<O> other, Signal<A> another) {
         return combine(other, I::<V, O> pair).combine(another, Ⅱ<V, O>::<A> ⅲ);
     }
 
@@ -730,7 +730,7 @@ public final class Signal<V> {
      *         by source {@link Signal} by means of the given aggregation function.
      * @see <a href="https://reactivex.io/documentation/operators/zip.html">ReactiveX zip</a>
      */
-    public final <O, R> Signal<R> combine(Signal<O> other, BiFunction<V, O, R> combiner) {
+    public <O, R> Signal<R> combine(Signal<O> other, BiFunction<V, O, R> combiner) {
         return new Signal<>((observer, disposer) -> {
             LinkedList<V> baseValue = new LinkedList();
             LinkedList<O> otherValue = new LinkedList();
@@ -793,7 +793,7 @@ public final class Signal<V> {
      *         by source {@link Signal} by means of the given aggregation function.
      * @see <a href="https://reactivex.io/documentation/operators/zip.html">ReactiveX zip</a>
      */
-    public final Signal<V> combine(Signal<V>[] others, BinaryOperator<V> operator) {
+    public Signal<V> combine(Signal<V>[] others, BinaryOperator<V> operator) {
         Signal<V> base = this;
 
         if (others != null) {
@@ -825,7 +825,7 @@ public final class Signal<V> {
      * @return An {@link Signal} that emits items that are the result of combining the items emitted
      *         by the source {@link Signal} by means of the given aggregation function
      */
-    public final <O> Signal<Ⅱ<V, O>> combineLatest(Signal<O> other) {
+    public <O> Signal<Ⅱ<V, O>> combineLatest(Signal<O> other) {
         return combineLatest(other, I::pair);
     }
 
@@ -853,7 +853,7 @@ public final class Signal<V> {
      * @return An {@link Signal} that emits items that are the result of combining the items emitted
      *         by the source {@link Signal} by means of the given aggregation function
      */
-    public final <O, A> Signal<Ⅲ<V, O, A>> combineLatest(Signal<O> other, Signal<A> another) {
+    public <O, A> Signal<Ⅲ<V, O, A>> combineLatest(Signal<O> other, Signal<A> another) {
         return combineLatest(other, I::<V, O> pair).combineLatest(another, Ⅱ<V, O>::<A> ⅲ);
     }
 
@@ -880,7 +880,7 @@ public final class Signal<V> {
      * @return An {@link Signal} that emits items that are the result of combining the items emitted
      *         by the source {@link Signal} by means of the given aggregation function
      */
-    public final <O, R> Signal<R> combineLatest(Signal<O> other, BiFunction<V, O, R> function) {
+    public <O, R> Signal<R> combineLatest(Signal<O> other, BiFunction<V, O, R> function) {
         return new Signal<>((observer, disposer) -> {
             AtomicReference<V> baseValue = new AtomicReference(UNDEF);
             AtomicReference<O> otherValue = new AtomicReference(UNDEF);
@@ -928,7 +928,7 @@ public final class Signal<V> {
      * @return An {@link Signal} that emits items that are the result of combining the items emitted
      *         by the source {@link Signal} by means of the given aggregation function
      */
-    public final Signal<V> combineLatest(Signal<V>[] others, BinaryOperator<V> operator) {
+    public Signal<V> combineLatest(Signal<V>[] others, BinaryOperator<V> operator) {
         Signal<V> base = this;
 
         if (others != null) {
@@ -959,7 +959,7 @@ public final class Signal<V> {
      * @return {ChainableAPI}
      * @see <a href="https://reactivex.io/documentation/operators/concat.html">ReeactiveX concat</a>
      */
-    public final Signal<V> concat(Signal<? extends V>... others) {
+    public Signal<V> concat(Signal<? extends V>... others) {
         // ignore invalid parameters
         if (others == null || others.length == 0) {
             return this;
@@ -987,7 +987,7 @@ public final class Signal<V> {
      * @return {ChainableAPI}
      * @see <a href="https://reactivex.io/documentation/operators/concat.html">ReeactiveX concat</a>
      */
-    public final Signal<V> concat(Iterable<Signal<? extends V>> others) {
+    public Signal<V> concat(Iterable<Signal<? extends V>> others) {
         // ignore invalid parameters
         if (others == null) {
             return this;
@@ -1019,7 +1019,7 @@ public final class Signal<V> {
      *            {@link Signal}, returns an {@link Signal}
      * @return {ChainableAPI}
      */
-    public final <R> Signal<R> concatMap(WiseFunction<V, Signal<R>> function) {
+    public <R> Signal<R> concatMap(WiseFunction<V, Signal<R>> function) {
         Objects.requireNonNull(function);
 
         return new Signal<>((observer, disposer) -> {
@@ -1057,7 +1057,7 @@ public final class Signal<V> {
      * @return {@link Signal} that emits a single item: the number of items emitted by the source
      *         {@link Signal} as a 64-bit Long item
      */
-    public final Signal<Long> count() {
+    public Signal<Long> count() {
         return map(AtomicLong::new, (counter, v) -> counter.incrementAndGet());
     }
 
@@ -1070,7 +1070,7 @@ public final class Signal<V> {
      * @param scheduler
      * @return {ChainableAPI}
      */
-    public final Signal<V> debounce(long time, TimeUnit unit, ScheduledExecutorService... scheduler) {
+    public Signal<V> debounce(long time, TimeUnit unit, ScheduledExecutorService... scheduler) {
         return debounce(time, unit, false, scheduler);
     }
 
@@ -1085,7 +1085,7 @@ public final class Signal<V> {
      * @param scheduler
      * @return {ChainableAPI}
      */
-    public final Signal<V> debounce(long time, TimeUnit unit, boolean acceptFirst, ScheduledExecutorService... scheduler) {
+    public Signal<V> debounce(long time, TimeUnit unit, boolean acceptFirst, ScheduledExecutorService... scheduler) {
         return debounceX(time, unit, acceptFirst, scheduler).flatMap(v -> I.signal(v).last());
     }
 
@@ -1098,7 +1098,7 @@ public final class Signal<V> {
      * @param scheduler
      * @return {ChainableAPI}
      */
-    public final Signal<List<V>> debounceAll(long time, TimeUnit unit, ScheduledExecutorService... scheduler) {
+    public Signal<List<V>> debounceAll(long time, TimeUnit unit, ScheduledExecutorService... scheduler) {
         return debounceX(time, unit, false, scheduler);
     }
 
@@ -1153,7 +1153,7 @@ public final class Signal<V> {
      * @return The source {@link Signal} shifted in time by the specified delay.
      * @see #wait(long, TimeUnit)
      */
-    public final Signal<V> delay(long time, TimeUnit unit, ScheduledExecutorService... scheduler) {
+    public Signal<V> delay(long time, TimeUnit unit, ScheduledExecutorService... scheduler) {
         if (unit == null) {
             return this;
         }
@@ -1168,7 +1168,7 @@ public final class Signal<V> {
      * @param time The delay to shift the source by.
      * @return The source {@link Signal} shifted in time by the specified delay.
      */
-    public final Signal<V> delay(Duration time, ScheduledExecutorService... scheduler) {
+    public Signal<V> delay(Duration time, ScheduledExecutorService... scheduler) {
         // ignore invalid parameters
         if (time == null || time.isNegative() || time.isZero()) {
             return this;
@@ -1184,7 +1184,7 @@ public final class Signal<V> {
      * @param time The delay to shift the source by.
      * @return The source {@link Signal} shifted in time by the specified delay.
      */
-    public final Signal<V> delay(Function<V, Duration> time, ScheduledExecutorService... scheduler) {
+    public Signal<V> delay(Function<V, Duration> time, ScheduledExecutorService... scheduler) {
         // ignore invalid parameters
         if (time == null) {
             return this;
@@ -1236,7 +1236,7 @@ public final class Signal<V> {
      *         distinct from their immediate predecessors.
      * @see #diff(BiPredicate)
      */
-    public final Signal<V> diff() {
+    public Signal<V> diff() {
         return skip((V) null, Objects::equals);
     }
 
@@ -1251,7 +1251,7 @@ public final class Signal<V> {
      *         distinct from their immediate predecessors.
      * @see #diff()
      */
-    public final Signal<V> diff(BiPredicate<V, V> comparer) {
+    public Signal<V> diff(BiPredicate<V, V> comparer) {
         // ignore invalid parameter
         if (comparer == null) {
             return this;
@@ -1267,7 +1267,7 @@ public final class Signal<V> {
      * @return {ChainableAPI}
      * @see #distinct(WiseFunction)
      */
-    public final Signal<V> distinct() {
+    public Signal<V> distinct() {
         return distinct(I.wiseF(Function.identity()));
     }
 
@@ -1278,7 +1278,7 @@ public final class Signal<V> {
      * @return {ChainableAPI}
      * @see #distinct()
      */
-    public final Signal<V> distinct(WiseFunction<V, ?> keySelector) {
+    public Signal<V> distinct(WiseFunction<V, ?> keySelector) {
         if (keySelector == null) {
             return this;
         }
@@ -1299,7 +1299,7 @@ public final class Signal<V> {
      * @see #effectOnDispose(WiseRunnable)
      * @see #effectOnObserve(WiseConsumer)
      */
-    public final Signal<V> effect(WiseRunnable effect) {
+    public Signal<V> effect(WiseRunnable effect) {
         // ignore invalid parameter
         if (effect == null) {
             return this;
@@ -1321,7 +1321,7 @@ public final class Signal<V> {
      * @see #effectOnDispose(WiseRunnable)
      * @see #effectOnObserve(WiseConsumer)
      */
-    public final Signal<V> effect(WiseConsumer<? super V> effect) {
+    public Signal<V> effect(WiseConsumer<? super V> effect) {
         // ignore invalid parameter
         if (effect == null) {
             return this;
@@ -1349,7 +1349,7 @@ public final class Signal<V> {
      * @see #effectOnDispose(WiseRunnable)
      * @see #effectOnObserve(WiseConsumer)
      */
-    public final Signal<V> effectAfter(WiseRunnable effect) {
+    public Signal<V> effectAfter(WiseRunnable effect) {
         // ignore invalid parameter
         if (effect == null) {
             return this;
@@ -1371,7 +1371,7 @@ public final class Signal<V> {
      * @see #effectOnDispose(WiseRunnable)
      * @see #effectOnObserve(WiseConsumer)
      */
-    public final Signal<V> effectAfter(WiseConsumer<? super V> effect) {
+    public Signal<V> effectAfter(WiseConsumer<? super V> effect) {
         // ignore invalid parameter
         if (effect == null) {
             return this;
@@ -1399,7 +1399,7 @@ public final class Signal<V> {
      * @see #effectOnDispose(WiseRunnable)
      * @see #effectOnObserve(WiseConsumer)
      */
-    public final Signal<V> effectOnce(WiseRunnable effect) {
+    public Signal<V> effectOnce(WiseRunnable effect) {
         // ignore invalid parameter
         if (effect == null) {
             return this;
@@ -1421,7 +1421,7 @@ public final class Signal<V> {
      * @see #effectOnDispose(WiseRunnable)
      * @see #effectOnObserve(WiseConsumer)
      */
-    public final Signal<V> effectOnce(WiseConsumer<? super V> effect) {
+    public Signal<V> effectOnce(WiseConsumer<? super V> effect) {
         // ignore invalid parameter
         if (effect == null) {
             return this;
@@ -1453,7 +1453,7 @@ public final class Signal<V> {
      * @see #effectOnDispose(WiseRunnable)
      * @see #effectOnObserve(WiseConsumer)
      */
-    public final Signal<V> effectOnComplete(WiseRunnable effect) {
+    public Signal<V> effectOnComplete(WiseRunnable effect) {
         // ignore invalid parameter
         if (effect == null) {
             return this;
@@ -1481,7 +1481,7 @@ public final class Signal<V> {
      * @see #effectOnDispose(WiseRunnable)
      * @see #effectOnObserve(WiseConsumer)
      */
-    public final Signal<V> effectOnDispose(WiseRunnable effect) {
+    public Signal<V> effectOnDispose(WiseRunnable effect) {
         // ignore invalid parameter
         if (effect == null) {
             return this;
@@ -1506,7 +1506,7 @@ public final class Signal<V> {
      * @see #effectOnDispose(WiseRunnable)
      * @see #effectOnObserve(WiseConsumer)
      */
-    public final Signal<V> effectOnError(WiseRunnable effect) {
+    public Signal<V> effectOnError(WiseRunnable effect) {
         // ignore invalid parameter
         if (effect == null) {
             return this;
@@ -1528,7 +1528,7 @@ public final class Signal<V> {
      * @see #effectOnDispose(WiseRunnable)
      * @see #effectOnObserve(WiseConsumer)
      */
-    public final Signal<V> effectOnError(WiseConsumer<Throwable> effect) {
+    public Signal<V> effectOnError(WiseConsumer<Throwable> effect) {
         // ignore invalid parameter
         if (effect == null) {
             return this;
@@ -1556,7 +1556,7 @@ public final class Signal<V> {
      * @see #effectOnDispose(WiseRunnable)
      * @see #effectOnObserve(WiseConsumer)
      */
-    public final Signal<V> effectOnLifecycle(WiseFunction<Disposable, WiseConsumer<V>> effect) {
+    public Signal<V> effectOnLifecycle(WiseFunction<Disposable, WiseConsumer<V>> effect) {
         if (effect == null) {
             return this;
         }
@@ -1582,7 +1582,7 @@ public final class Signal<V> {
      * @see #effectOnDispose(WiseRunnable)
      * @see #effectOnObserve(WiseConsumer)
      */
-    public final Signal<V> effectOnObserve(WiseRunnable effect) {
+    public Signal<V> effectOnObserve(WiseRunnable effect) {
         // ignore invalid parameter
         if (effect == null) {
             return this;
@@ -1606,7 +1606,7 @@ public final class Signal<V> {
      * @see #effectOnDispose(WiseRunnable)
      * @see #effectOnObserve(WiseConsumer)
      */
-    public final Signal<V> effectOnObserve(WiseConsumer<? super Disposable> effect) {
+    public Signal<V> effectOnObserve(WiseConsumer<? super Disposable> effect) {
         // ignore invalid parameter
         if (effect == null) {
             return this;
@@ -1632,7 +1632,7 @@ public final class Signal<V> {
      * @see #effectOnDispose(WiseRunnable)
      * @see #effectOnObserve(WiseConsumer)
      */
-    public final Signal<V> effectOnTerminate(WiseRunnable effect) {
+    public Signal<V> effectOnTerminate(WiseRunnable effect) {
         return effectOnError(effect).effectOnComplete(effect);
     }
 
@@ -1642,7 +1642,7 @@ public final class Signal<V> {
      * 
      * @return {ChainableAPI}
      */
-    public final Signal<V> first() {
+    public Signal<V> first() {
         return signal(I::accept, null, FALSE, null, TRUE, null);
     }
 
@@ -1657,7 +1657,7 @@ public final class Signal<V> {
      *         each item emitted by the source {@link Signal} and merging the results of the
      *         {@link Signal} obtained from this transformation.
      */
-    public final <R> Signal<R> flatArray(WiseFunction<V, R[]> function) {
+    public <R> Signal<R> flatArray(WiseFunction<V, R[]> function) {
         Objects.requireNonNull(function);
 
         // There are two reasons why you should not use the following code.
@@ -1684,7 +1684,7 @@ public final class Signal<V> {
      *         each item emitted by the source {@link Signal} and merging the results of the
      *         {@link Signal} obtained from this transformation.
      */
-    public final <R> Signal<R> flatIterable(WiseFunction<V, ? extends Iterable<R>> function) {
+    public <R> Signal<R> flatIterable(WiseFunction<V, ? extends Iterable<R>> function) {
         return flatMap(I.wiseF(function.andThen(I::signal)));
     }
 
@@ -1699,7 +1699,7 @@ public final class Signal<V> {
      *         each item emitted by the source {@link Signal} and merging the results of the
      *         {@link Signal} obtained from this transformation.
      */
-    public final <R> Signal<R> flatMap(WiseFunction<V, Signal<R>> function) {
+    public <R> Signal<R> flatMap(WiseFunction<V, Signal<R>> function) {
         return flatMap(Variable.of(Objects.requireNonNull(function)), WiseFunction::apply);
     }
 
@@ -1714,7 +1714,7 @@ public final class Signal<V> {
      *         each item emitted by the source {@link Signal} and merging the results of the
      *         {@link Signal} obtained from this transformation.
      */
-    public final <C, R> Signal<R> flatMap(Supplier<C> context, WiseBiFunction<C, V, Signal<R>> function) {
+    public <C, R> Signal<R> flatMap(Supplier<C> context, WiseBiFunction<C, V, Signal<R>> function) {
         Objects.requireNonNull(function);
 
         return new Signal<>((observer, disposer) -> {
@@ -1740,7 +1740,7 @@ public final class Signal<V> {
      *         each item emitted by the source {@link Signal} and merging the results of the
      *         {@link Signal} obtained from this transformation.
      */
-    public final <R> Signal<R> flatVariable(WiseFunction<V, Variable<R>> function) {
+    public <R> Signal<R> flatVariable(WiseFunction<V, Variable<R>> function) {
         Objects.requireNonNull(function);
 
         Signal<V> share = share();
@@ -1753,7 +1753,7 @@ public final class Signal<V> {
      * @param start A starting index number.
      * @return {ChainableAPI}
      */
-    public final Signal<Ⅱ<V, Long>> index(long start) {
+    public Signal<Ⅱ<V, Long>> index(long start) {
         return map(((WiseFunction<Long, AtomicLong>) AtomicLong::new)
                 .bind(start), (context, value) -> I.pair(value, context.getAndIncrement()));
     }
@@ -1766,7 +1766,7 @@ public final class Signal<V> {
      *            instruction.
      * @return {ChainableAPI}
      */
-    public final Signal<V> interval(long interval, TimeUnit unit, ScheduledExecutorService... scheduler) {
+    public Signal<V> interval(long interval, TimeUnit unit, ScheduledExecutorService... scheduler) {
         // ignore invalid parameters
         if (interval <= 0 || unit == null) {
             return this;
@@ -1785,7 +1785,7 @@ public final class Signal<V> {
      * @param value A value to be compared.
      * @return {ChainableAPI}
      */
-    public final Signal<Boolean> is(V value) {
+    public Signal<Boolean> is(V value) {
         return is(value == null ? Objects::isNull : value::equals);
     }
 
@@ -1799,7 +1799,7 @@ public final class Signal<V> {
      *            {@link Signal}.
      * @return {ChainableAPI}
      */
-    public final Signal<Boolean> is(Predicate<? super V> condition) {
+    public Signal<Boolean> is(Predicate<? super V> condition) {
         return map(condition::test);
     }
 
@@ -1812,7 +1812,7 @@ public final class Signal<V> {
      * @param value An expected value.
      * @return {ChainableAPI}
      */
-    public final Signal<Boolean> isNot(V value) {
+    public Signal<Boolean> isNot(V value) {
         return isNot(value == null ? Objects::isNull : value::equals);
     }
 
@@ -1826,7 +1826,7 @@ public final class Signal<V> {
      *            {@link Signal}.
      * @return {ChainableAPI}
      */
-    public final Signal<Boolean> isNot(Predicate<? super V> condition) {
+    public Signal<Boolean> isNot(Predicate<? super V> condition) {
         return is(condition.negate());
     }
 
@@ -1837,7 +1837,7 @@ public final class Signal<V> {
      * @return A {@link Signal} that emits <code>true</code> when the source {@link Signal} is
      *         completed.
      */
-    public final Signal<Boolean> isCompleted() {
+    public Signal<Boolean> isCompleted() {
         return signal(null, FALSE, false, FALSE, true, TRUE);
     }
 
@@ -1848,7 +1848,7 @@ public final class Signal<V> {
      * @return A {@link Signal} that emits <code>true</code> when the source {@link Signal} emits
      *         any value.
      */
-    public final Signal<Boolean> isEmitted() {
+    public Signal<Boolean> isEmitted() {
         return signal(I::accept, TRUE, true, FALSE, true, FALSE);
     }
 
@@ -1859,7 +1859,7 @@ public final class Signal<V> {
      * @return A {@link Signal} that emits <code>true</code> when the source {@link Signal} is
      *         completed preassignout any value emitted.
      */
-    public final Signal<Boolean> isEmpty() {
+    public Signal<Boolean> isEmpty() {
         return signal(I::accept, FALSE, true, FALSE, true, TRUE);
     }
 
@@ -1870,7 +1870,7 @@ public final class Signal<V> {
      * @return A {@link Signal} that emits <code>true</code> when the source {@link Signal} is
      *         errored.
      */
-    public final Signal<Boolean> isErrored() {
+    public Signal<Boolean> isErrored() {
         return signal(null, FALSE, true, TRUE, true, FALSE);
     }
 
@@ -1881,7 +1881,7 @@ public final class Signal<V> {
      * @return A {@link Signal} that emits <code>true</code> when the source {@link Signal} is
      *         emitted, errored or completed.
      */
-    public final Signal<Boolean> isSignaled() {
+    public Signal<Boolean> isSignaled() {
         return signal(I::accept, TRUE, true, TRUE, true, TRUE);
     }
 
@@ -1892,7 +1892,7 @@ public final class Signal<V> {
      * @return A {@link Signal} that emits <code>true</code> when the source {@link Signal} is
      *         errored or completed.
      */
-    public final Signal<Boolean> isTerminated() {
+    public Signal<Boolean> isTerminated() {
         return signal(null, FALSE, true, TRUE, true, TRUE);
     }
 
@@ -1903,7 +1903,7 @@ public final class Signal<V> {
      * @param function A mapper function.
      * @return {ChainableAPI}
      */
-    public final <R> Signal<R> joinAll(WiseFunction<V, R> function) {
+    public <R> Signal<R> joinAll(WiseFunction<V, R> function) {
         return joinAll(function, null);
     }
 
@@ -1914,7 +1914,7 @@ public final class Signal<V> {
      * @param function A mapper function.
      * @return {ChainableAPI}
      */
-    public final <R> Signal<R> joinAll(WiseFunction<V, R> function, ExecutorService executor) {
+    public <R> Signal<R> joinAll(WiseFunction<V, R> function, ExecutorService executor) {
         return map(function::bind).buffer()
                 .flatIterable(v -> I.signal((executor == null ? I.scheduler : executor).invokeAll(v)).map(Future<R>::get).toList());
     }
@@ -1926,7 +1926,7 @@ public final class Signal<V> {
      * @param function A mapper function.
      * @return {ChainableAPI}
      */
-    public final <R> Signal<R> joinAny(WiseFunction<V, R> function) {
+    public <R> Signal<R> joinAny(WiseFunction<V, R> function) {
         return joinAny(function, null);
     }
 
@@ -1937,7 +1937,7 @@ public final class Signal<V> {
      * @param function A mapper function.
      * @return {ChainableAPI}
      */
-    public final <R> Signal<R> joinAny(WiseFunction<V, R> function, ExecutorService executor) {
+    public <R> Signal<R> joinAny(WiseFunction<V, R> function, ExecutorService executor) {
         return map(function::bind).buffer().map((executor == null ? I.scheduler : executor)::invokeAny);
     }
 
@@ -1952,7 +1952,7 @@ public final class Signal<V> {
      *         each item emitted by the source {@link Signal} and merging the results of the
      *         {@link Signal} obtained from this transformation.
      */
-    public final <R> Signal<Map<V, R>> keyMap(WiseFunction<V, Signal<R>> function) {
+    public <R> Signal<Map<V, R>> keyMap(WiseFunction<V, Signal<R>> function) {
         Objects.requireNonNull(function);
 
         return flatMap(ConcurrentHashMap<V, R>::new, (map, v) -> {
@@ -1969,7 +1969,7 @@ public final class Signal<V> {
      * 
      * @return {ChainableAPI}
      */
-    public final Signal<V> last() {
+    public Signal<V> last() {
         return buffer(never(), AtomicReference<V>::new, AtomicReference::set).map(AtomicReference::get).skipNull();
     }
 
@@ -1992,7 +1992,7 @@ public final class Signal<V> {
      *            {@code null} will ignore this instruction.
      * @return {ChainableAPI}
      */
-    public final <R> Signal<R> map(WiseFunction<? super V, R> function) {
+    public <R> Signal<R> map(WiseFunction<? super V, R> function) {
         return map(Variable.of(Objects.requireNonNull(function)), WiseFunction::apply);
     }
 
@@ -2015,7 +2015,7 @@ public final class Signal<V> {
      *            {@code null} will ignore this instruction.
      * @return {ChainableAPI}
      */
-    public final <C, R> Signal<R> map(Supplier<C> context, WiseBiFunction<C, ? super V, R> function) {
+    public <C, R> Signal<R> map(Supplier<C> context, WiseBiFunction<C, ? super V, R> function) {
         Objects.requireNonNull(function);
 
         return new Signal<>((observer, disposer) -> {
@@ -2034,7 +2034,7 @@ public final class Signal<V> {
      * @param constant A constant to apply to each value emitted by this {@link Signal}.
      * @return {ChainableAPI}
      */
-    public final <R> Signal<R> mapTo(R constant) {
+    public <R> Signal<R> mapTo(R constant) {
         return map(I.wiseF(constant));
     }
 
@@ -2058,7 +2058,7 @@ public final class Signal<V> {
      * @param others A target {@link Signal} to merge. {@code null} will be ignored.
      * @return {ChainableAPI}
      */
-    public final Signal<V> merge(Signal<? extends V>... others) {
+    public Signal<V> merge(Signal<? extends V>... others) {
         return merge(Arrays.asList(others));
     }
 
@@ -2071,7 +2071,7 @@ public final class Signal<V> {
      * @param others A target {@link Signal} set to merge. {@code null} will be ignored.
      * @return {ChainableAPI}
      */
-    public final Signal<V> merge(Iterable<Signal<? extends V>> others) {
+    public Signal<V> merge(Iterable<Signal<? extends V>> others) {
         // ignore invalid parameters
         if (others == null) {
             return this;
@@ -2099,7 +2099,7 @@ public final class Signal<V> {
      * @return A {@link Signal} that emits false if all items emitted by the source {@link Signal}
      *         satisfy the predicate; otherwise, true.
      */
-    public final Signal<Boolean> none(Predicate<? super V> condition) {
+    public Signal<Boolean> none(Predicate<? super V> condition) {
         return signal(Objects.requireNonNull(condition), FALSE, false, FALSE, true, TRUE);
     }
 
@@ -2121,7 +2121,7 @@ public final class Signal<V> {
      * @param scheduler A new context
      * @return {ChainableAPI}
      */
-    public final Signal<V> on(Consumer<Runnable> scheduler) {
+    public Signal<V> on(Consumer<Runnable> scheduler) {
         // ignore invalid parameters
         if (scheduler == null) {
             return this;
@@ -2154,7 +2154,7 @@ public final class Signal<V> {
      *
      * @return {ChainableAPI}
      */
-    public final Signal<V> or(V value) {
+    public Signal<V> or(V value) {
         return or(I.signal(value));
     }
 
@@ -2165,7 +2165,7 @@ public final class Signal<V> {
      *
      * @return {ChainableAPI}
      */
-    public final Signal<V> or(Supplier<V> value) {
+    public Signal<V> or(Supplier<V> value) {
         return or(I.signal(value));
     }
 
@@ -2176,7 +2176,7 @@ public final class Signal<V> {
      *
      * @return {ChainableAPI}
      */
-    public final Signal<V> or(Signal<V> values) {
+    public Signal<V> or(Signal<V> values) {
         return new Signal<>((observer, disposer) -> {
             Subscriber sub = new Subscriber();
             sub.observer = observer;
@@ -2192,7 +2192,7 @@ public final class Signal<V> {
      * 
      * @return A chained {@link Signal}.
      */
-    public final Signal<Ⅱ<V, V>> pair() {
+    public Signal<Ⅱ<V, V>> pair() {
         return pair(null);
     }
 
@@ -2202,7 +2202,7 @@ public final class Signal<V> {
      * 
      * @return A chained {@link Signal}.
      */
-    public final Signal<Ⅱ<V, V>> pair(V initial) {
+    public Signal<Ⅱ<V, V>> pair(V initial) {
         return map(() -> new AtomicReference<V>(initial), (a, v) -> I.pair(a.getAndSet(v), v));
     }
 
@@ -2213,7 +2213,7 @@ public final class Signal<V> {
      * @param plug A chain builder to insert.
      * @return A chained {@link Signal}.
      */
-    public final <O> Signal<O> plug(Function<Signal<V>, Signal<O>> plug) {
+    public <O> Signal<O> plug(Function<Signal<V>, Signal<O>> plug) {
         return plug.apply(this);
     }
 
@@ -2227,7 +2227,7 @@ public final class Signal<V> {
      * @param recurse A mapper function to enumerate values recursively.
      * @return {ChainableAPI}
      */
-    public final Signal<V> recurse(WiseFunction<V, V> recurse) {
+    public Signal<V> recurse(WiseFunction<V, V> recurse) {
         return recurse(recurse, Runnable::run);
     }
 
@@ -2242,7 +2242,7 @@ public final class Signal<V> {
      * @param executor An execution context.
      * @return {ChainableAPI}
      */
-    public final Signal<V> recurse(WiseFunction<V, V> recurse, Executor executor) {
+    public Signal<V> recurse(WiseFunction<V, V> recurse, Executor executor) {
         return recurseMap(e -> e.map(recurse), executor);
     }
 
@@ -2256,7 +2256,7 @@ public final class Signal<V> {
      * @param recurse A mapper function to enumerate values recursively.
      * @return {ChainableAPI}
      */
-    public final Signal<V> recurseMap(WiseFunction<Signal<V>, Signal<V>> recurse) {
+    public Signal<V> recurseMap(WiseFunction<Signal<V>, Signal<V>> recurse) {
         return recurseMap(recurse, Runnable::run);
     }
 
@@ -2271,7 +2271,7 @@ public final class Signal<V> {
      * @param executor An execution context.
      * @return {ChainableAPI}
      */
-    public final Signal<V> recurseMap(WiseFunction<Signal<V>, Signal<V>> recurse, Executor executor) {
+    public Signal<V> recurseMap(WiseFunction<Signal<V>, Signal<V>> recurse, Executor executor) {
         // DON'T use the recursive call, it will throw StackOverflowError.
         return flatMap(init -> new Signal<V>((observer, disposer) -> {
             (executor == null ? I.scheduler : executor).execute(() -> {
@@ -2307,7 +2307,7 @@ public final class Signal<V> {
      * @param value A value to replace error.
      * @return Chainable API
      */
-    public final Signal<V> recover(V value) {
+    public Signal<V> recover(V value) {
         return recover(e -> e.mapTo(value));
     }
 
@@ -2326,7 +2326,7 @@ public final class Signal<V> {
      * @param flow An error notifier to define recovering flow.
      * @return Chainable API
      */
-    public final <E extends Throwable> Signal<V> recover(WiseFunction<Signal<E>, Signal<V>> flow) {
+    public <E extends Throwable> Signal<V> recover(WiseFunction<Signal<E>, Signal<V>> flow) {
         // ignore invalid parameter
         if (flow == null) {
             return this;
@@ -2372,7 +2372,7 @@ public final class Signal<V> {
      *
      * @return {ChainableAPI}
      */
-    public final Signal<V> repeat() {
+    public Signal<V> repeat() {
         return repeat(I.wiseF(Function.identity()));
     }
 
@@ -2389,7 +2389,7 @@ public final class Signal<V> {
      *            or error, aborting the retry.
      * @return Chainable API
      */
-    public final Signal<V> repeat(WiseFunction<Signal<?>, Signal<?>> flow) {
+    public Signal<V> repeat(WiseFunction<Signal<?>, Signal<?>> flow) {
         // ignore invalid parameter
         if (flow == null) {
             return this;
@@ -2443,7 +2443,7 @@ public final class Signal<V> {
      *
      * @return {ChainableAPI}
      */
-    public final Signal<V> retry() {
+    public Signal<V> retry() {
         return retry(Signal::skipNull);
     }
 
@@ -2462,7 +2462,7 @@ public final class Signal<V> {
      * @param flow An error notifier to define retrying flow.
      * @return Chainable API
      */
-    public final <E extends Throwable> Signal<V> retry(WiseFunction<Signal<E>, Signal<?>> flow) {
+    public <E extends Throwable> Signal<V> retry(WiseFunction<Signal<E>, Signal<?>> flow) {
         // ignore invalid parameter
         if (flow == null) {
             return this;
@@ -2527,7 +2527,7 @@ public final class Signal<V> {
      * 
      * @return {ChainableAPI}
      */
-    public final Signal<V> reverse() {
+    public Signal<V> reverse() {
         return buffer(never(), LinkedList<V>::new, Deque::addFirst).flatIterable(I.wiseF(Function.identity()));
     }
 
@@ -2541,7 +2541,7 @@ public final class Signal<V> {
      * @param sampler An {@link Signal} to use for sampling the source {@link Signal}.
      * @return {ChainableAPI}
      */
-    public final Signal<V> sample(Signal<?> sampler) {
+    public Signal<V> sample(Signal<?> sampler) {
         return buffer(sampler, AtomicReference<V>::new, AtomicReference<V>::set, true).map(AtomicReference<V>::get);
     }
 
@@ -2560,7 +2560,7 @@ public final class Signal<V> {
      * @return An {@link Signal} that emits initial value followed by the results of each call to
      *         the accumulator function.
      */
-    public final <A, R> Signal<R> scan(Collector<? super V, A, R> collector) {
+    public <A, R> Signal<R> scan(Collector<? super V, A, R> collector) {
         return scan(collector.supplier(), I.make(null, WiseBiFunction.class, (WiseBiConsumer<A, V>) collector.accumulator()::accept))
                 .map(x -> collector.combiner().apply(collector.supplier().get(), x))
                 .map(I.wiseF(collector.finisher()));
@@ -2582,7 +2582,7 @@ public final class Signal<V> {
      * @return An {@link Signal} that emits initial value followed by the results of each call to
      *         the accumulator function.
      */
-    public final <R> Signal<R> scan(Supplier<R> init, WiseBiFunction<R, V, R> function) {
+    public <R> Signal<R> scan(Supplier<R> init, WiseBiFunction<R, V, R> function) {
         return scan(function.bindLazily(init), function);
     }
 
@@ -2602,7 +2602,7 @@ public final class Signal<V> {
      * @return An {@link Signal} that emits initial value followed by the results of each call to
      *         the accumulator function.
      */
-    public final <R> Signal<R> scan(WiseFunction<V, R> first, WiseBiFunction<R, V, R> others) {
+    public <R> Signal<R> scan(WiseFunction<V, R> first, WiseBiFunction<R, V, R> others) {
         return new Signal<>((observer, disposer) -> {
             AtomicReference<R> ref = new AtomicReference(UNDEF);
 
@@ -2623,7 +2623,7 @@ public final class Signal<V> {
      *            that will be eagerly concatenated.
      * @return {ChainableAPI}
      */
-    public final <R> Signal<R> sequenceMap(WiseFunction<V, Signal<R>> function) {
+    public <R> Signal<R> sequenceMap(WiseFunction<V, Signal<R>> function) {
         Objects.requireNonNull(function);
 
         return new Signal<>((observer, disposer) -> {
@@ -2680,7 +2680,7 @@ public final class Signal<V> {
      * 
      * @return {ChainableAPI}
      */
-    public final Signal<V> share() {
+    public Signal<V> share() {
         Signaling<V> share = new Signaling();
         Disposable[] root = new Disposable[1];
 
@@ -2712,7 +2712,7 @@ public final class Signal<V> {
      *            instruction.
      * @return {ChainableAPI}
      */
-    public final Signal<V> skip(long count) {
+    public Signal<V> skip(long count) {
         // ignore invalid parameter
         if (count <= 0) {
             return this;
@@ -2728,7 +2728,7 @@ public final class Signal<V> {
      * @param excludes A collection of skip items.
      * @return {ChainableAPI}
      */
-    public final Signal<V> skip(V... excludes) {
+    public Signal<V> skip(V... excludes) {
         return skip(I.set(excludes)::contains);
     }
 
@@ -2740,7 +2740,7 @@ public final class Signal<V> {
      * @param condition A skip condition.
      * @return {ChainableAPI}
      */
-    public final Signal<V> skip(Predicate<? super V> condition) {
+    public Signal<V> skip(Predicate<? super V> condition) {
         // ignore invalid parameter
         if (condition == null) {
             return this;
@@ -2756,7 +2756,7 @@ public final class Signal<V> {
      * @param condition A skip condition.
      * @return {ChainableAPI}
      */
-    public final Signal<V> skip(V init, BiPredicate<? super V, ? super V> condition) {
+    public Signal<V> skip(V init, BiPredicate<? super V, ? super V> condition) {
         // ignore invalid parameter
         if (condition == null) {
             return this;
@@ -2772,7 +2772,7 @@ public final class Signal<V> {
      *            {@code null} will ignore this instruction.
      * @return {ChainableAPI}
      */
-    public final <C> Signal<V> skip(Supplier<C> contextSupplier, BiPredicate<C, ? super V> condition) {
+    public <C> Signal<V> skip(Supplier<C> contextSupplier, BiPredicate<C, ? super V> condition) {
         // ignore invalid parameters
         if (condition == null) {
             return this;
@@ -2790,7 +2790,7 @@ public final class Signal<V> {
      *            instruction.
      * @return {ChainableAPI}
      */
-    public final Signal<V> skip(Signal<Boolean> condition) {
+    public Signal<V> skip(Signal<Boolean> condition) {
         return take(condition, false, false);
     }
 
@@ -2802,7 +2802,7 @@ public final class Signal<V> {
      * @param condition A index condition of values to emit.
      * @return {ChainableAPI}
      */
-    public final Signal<V> skipAt(LongPredicate condition) {
+    public Signal<V> skipAt(LongPredicate condition) {
         return takeAt(condition.negate());
     }
 
@@ -2818,7 +2818,7 @@ public final class Signal<V> {
      *         the specified condition after each item, and then completes if the condition is not
      *         signaled.
      */
-    public final Signal<V> skipIf(Function<V, Signal<?>> condition) {
+    public Signal<V> skipIf(Function<V, Signal<?>> condition) {
         return skip(v -> condition.apply(v).isEmitted().to().v);
     }
 
@@ -2829,7 +2829,7 @@ public final class Signal<V> {
      * @return {@link Signal} which ignores the specified error.
      * @see #stopError(Class...)
      */
-    public final Signal<V> skipError(Class<? extends Throwable>... types) {
+    public Signal<V> skipError(Class<? extends Throwable>... types) {
         return recover(e -> e.as(types).mapTo((V) null).skip(I::accept));
     }
 
@@ -2838,7 +2838,7 @@ public final class Signal<V> {
      * 
      * @return {@link Signal} which ignores complete event.
      */
-    public final Signal<V> skipComplete() {
+    public Signal<V> skipComplete() {
         return new Signal<>((observer, disposer) -> {
             Subscriber o = new Subscriber();
             o.observer = observer;
@@ -2852,7 +2852,7 @@ public final class Signal<V> {
      *
      * @return {ChainableAPI}
      */
-    public final Signal<V> skipNull() {
+    public Signal<V> skipNull() {
         return skip(Objects::isNull);
     }
 
@@ -2865,7 +2865,7 @@ public final class Signal<V> {
      * @return An {@link Signal} that begins emitting items emitted by the source {@link Signal}
      *         when the specified predicate becomes false.
      */
-    public final Signal<V> skipUntil(Predicate<? super V> predicate) {
+    public Signal<V> skipUntil(Predicate<? super V> predicate) {
         // ignore invalid parameter
         if (predicate == null) {
             return this;
@@ -2893,7 +2893,7 @@ public final class Signal<V> {
      * @return An {@link Signal} that skips items from the source {@link Signal} until the second
      *         {@link Signal} emits an item, then emits the remaining items.
      */
-    public final Signal<V> skipUntil(Signal timing) {
+    public Signal<V> skipUntil(Signal timing) {
         // ignore invalid parameter
         if (timing == null) {
             return this;
@@ -2912,7 +2912,7 @@ public final class Signal<V> {
      * @return An {@link Signal} that begins emitting items emitted by the source {@link Signal}
      *         when the specified predicate becomes false.
      */
-    public final Signal<V> skipWhile(Predicate<? super V> predicate) {
+    public Signal<V> skipWhile(Predicate<? super V> predicate) {
         return skipUntil(predicate.negate());
     }
 
@@ -2922,7 +2922,7 @@ public final class Signal<V> {
      * @param comparator
      * @return {ChainableAPI}
      */
-    public final Signal<V> sort(Comparator<? super V> comparator) {
+    public Signal<V> sort(Comparator<? super V> comparator) {
         return buffer().flatIterable(e -> {
             e.sort(comparator);
             return e;
@@ -2946,7 +2946,7 @@ public final class Signal<V> {
      * @param values The values that contains the items you want to emit first.
      * @return {ChainableAPI}
      */
-    public final Signal<V> startWith(V... values) {
+    public Signal<V> startWith(V... values) {
         return values == null || values.length == 0 ? this : startWith(Arrays.asList(values));
     }
 
@@ -2967,7 +2967,7 @@ public final class Signal<V> {
      * @param value The values that contains the items you want to emit first.
      * @return {ChainableAPI}
      */
-    public final Signal<V> startWith(Supplier<V> value) {
+    public Signal<V> startWith(Supplier<V> value) {
         if (value == null) {
             return this;
         }
@@ -2997,7 +2997,7 @@ public final class Signal<V> {
      * @param values The values that contains the items you want to emit first.
      * @return {ChainableAPI}
      */
-    public final Signal<V> startWith(Iterable<V> values) {
+    public Signal<V> startWith(Iterable<V> values) {
         // ignore invalid parameter
         if (values == null) {
             return this;
@@ -3022,7 +3022,7 @@ public final class Signal<V> {
      * @param values The initial values.
      * @return {ChainableAPI}
      */
-    public final Signal<V> startWith(Signal<V> values) {
+    public Signal<V> startWith(Signal<V> values) {
         return values == null ? this : values.concat(this);
     }
 
@@ -3031,7 +3031,7 @@ public final class Signal<V> {
      * 
      * @return {ChainableAPI}
      */
-    public final Signal<V> startWithNull() {
+    public Signal<V> startWithNull() {
         return startWith((V) null);
     }
 
@@ -3042,7 +3042,7 @@ public final class Signal<V> {
      * @return {@link Signal} which replaces the specified error by complete event.
      * @see #skipError(Class...)
      */
-    public final Signal<V> stopError(Class<? extends Throwable>... types) {
+    public Signal<V> stopError(Class<? extends Throwable>... types) {
         return recover(e -> (Signal<V>) e.as(types).mapTo(UNDEF));
     }
 
@@ -3052,7 +3052,7 @@ public final class Signal<V> {
      * @param scheduler You specify which scheduler this operator will use.
      * @return {ChainableAPI}
      */
-    public final Signal<V> subscribeOn(Consumer<Runnable> scheduler) {
+    public Signal<V> subscribeOn(Consumer<Runnable> scheduler) {
         // ignore invalid parameters
         if (scheduler == null) {
             return this;
@@ -3081,7 +3081,7 @@ public final class Signal<V> {
      *         each item emitted by the source {@link Signal} and merging the results of the
      *         {@link Signal} obtained from this transformation.
      */
-    public final <R> Signal<R> switchMap(WiseFunction<V, Signal<R>> function) {
+    public <R> Signal<R> switchMap(WiseFunction<V, Signal<R>> function) {
         Objects.requireNonNull(function);
 
         return new Signal<>((observer, disposer) -> {
@@ -3114,7 +3114,7 @@ public final class Signal<V> {
      *         each item emitted by the source {@link Signal} and merging the results of the
      *         {@link Signal} obtained from this transformation.
      */
-    public final <R> Signal<R> switchVariable(WiseFunction<V, Variable<R>> function) {
+    public <R> Signal<R> switchVariable(WiseFunction<V, Variable<R>> function) {
         Objects.requireNonNull(function);
 
         Signal<V> share = share();
@@ -3130,7 +3130,7 @@ public final class Signal<V> {
      * @return {ChainableAPI}
      * @throws NullPointerException Timing is null.
      */
-    public final Signal<V> switchOff(Signal<Boolean> timing) {
+    public Signal<V> switchOff(Signal<Boolean> timing) {
         return switchOn(timing.map(Boolean.FALSE::equals));
     }
 
@@ -3143,7 +3143,7 @@ public final class Signal<V> {
      * @return {ChainableAPI}
      * @throws NullPointerException Timing is null.
      */
-    public final Signal<V> switchOn(Signal<Boolean> timing) {
+    public Signal<V> switchOn(Signal<Boolean> timing) {
         return new Signal<>((observer, disposer) -> {
             Disposable[] root = {Disposable.empty()};
 
@@ -3166,7 +3166,7 @@ public final class Signal<V> {
      *            instruction.
      * @return {ChainableAPI}
      */
-    public final Signal<V> take(long count) {
+    public Signal<V> take(long count) {
         return take(AtomicLong::new, (context, value) -> context.incrementAndGet() < count, true, true, 0 < count);
     }
 
@@ -3178,7 +3178,7 @@ public final class Signal<V> {
      * @param includes A collection of take items.
      * @return {ChainableAPI}
      */
-    public final Signal<V> take(V... includes) {
+    public Signal<V> take(V... includes) {
         return take(I.set(includes)::contains);
     }
 
@@ -3193,7 +3193,7 @@ public final class Signal<V> {
      *            instruction.
      * @return {ChainableAPI}
      */
-    public final Signal<V> take(Predicate<? super V> condition) {
+    public Signal<V> take(Predicate<? super V> condition) {
         // ignore invalid parameters
         if (condition == null) {
             return this;
@@ -3212,7 +3212,7 @@ public final class Signal<V> {
      *            instruction.
      * @return {ChainableAPI}
      */
-    public final Signal<V> take(V init, BiPredicate<? super V, ? super V> condition) {
+    public Signal<V> take(V init, BiPredicate<? super V, ? super V> condition) {
         // ignore invalid parameters
         if (condition == null) {
             return this;
@@ -3230,7 +3230,7 @@ public final class Signal<V> {
      *            {@code null} will ignore this instruction.
      * @return {ChainableAPI}
      */
-    public final <C> Signal<V> take(Supplier<C> contextSupplier, BiPredicate<C, ? super V> condition) {
+    public <C> Signal<V> take(Supplier<C> contextSupplier, BiPredicate<C, ? super V> condition) {
         return take(contextSupplier, condition, true, false, false);
     }
 
@@ -3244,7 +3244,7 @@ public final class Signal<V> {
      *            instruction.
      * @return {ChainableAPI}
      */
-    public final Signal<V> take(Signal<Boolean> condition) {
+    public Signal<V> take(Signal<Boolean> condition) {
         return take(condition, false, true);
     }
 
@@ -3283,7 +3283,7 @@ public final class Signal<V> {
      * @param condition A index condition of values to emit.
      * @return {ChainableAPI}
      */
-    public final Signal<V> takeAt(LongPredicate condition) {
+    public Signal<V> takeAt(LongPredicate condition) {
         // ignore invalid parameter
         if (condition == null) {
             return this;
@@ -3303,7 +3303,7 @@ public final class Signal<V> {
      *         the specified condition after each item, and then completes if the condition is
      *         signaled.
      */
-    public final Signal<V> takeIf(Function<V, Signal<?>> condition) {
+    public Signal<V> takeIf(Function<V, Signal<?>> condition) {
         return take(v -> condition.apply(v).isEmitted().to().v);
     }
 
@@ -3319,7 +3319,7 @@ public final class Signal<V> {
      *         the specified condition after each item, and then completes if the condition is
      *         satisfied.
      */
-    public final Signal<V> takeUntil(Predicate<? super V> condition) {
+    public Signal<V> takeUntil(Predicate<? super V> condition) {
         return take(null, (context, value) -> condition.test(value), false, true, true);
     }
 
@@ -3332,7 +3332,7 @@ public final class Signal<V> {
      * @return A {@link Signal} that emits the items emitted by the source {@link Signal} until such
      *         time as other emits its first item.
      */
-    public final Signal<V> takeUntil(Signal timing) {
+    public Signal<V> takeUntil(Signal timing) {
         // ignore invalid parameter
         if (timing == null) {
             return this;
@@ -3355,7 +3355,7 @@ public final class Signal<V> {
      *         the specified condition after each item, and then completes if the condition is
      *         satisfied.
      */
-    public final Signal<V> takeWhile(Predicate<? super V> condition) {
+    public Signal<V> takeWhile(Predicate<? super V> condition) {
         return take(null, (context, value) -> condition.test(value), true, true, false);
     }
 
@@ -3426,7 +3426,7 @@ public final class Signal<V> {
      * @param scheduler An event scheduler.
      * @return {ChainableAPI}
      */
-    public final Signal<V> timeout(long time, TimeUnit unit, ScheduledExecutorService... scheduler) {
+    public Signal<V> timeout(long time, TimeUnit unit, ScheduledExecutorService... scheduler) {
         // ignore invalid parameters
         if (time <= 0 || unit == null) {
             return this;
@@ -3463,7 +3463,7 @@ public final class Signal<V> {
      *            instruction.
      * @return {ChainableAPI}
      */
-    public final Signal<V> throttle(long time, TimeUnit unit) {
+    public Signal<V> throttle(long time, TimeUnit unit) {
         return throttle(time, unit, System::nanoTime);
     }
 
@@ -3484,7 +3484,7 @@ public final class Signal<V> {
      * @param nanoClock A nano-time stamp provider.
      * @return {ChainableAPI}
      */
-    public final Signal<V> throttle(long time, TimeUnit unit, LongSupplier nanoClock) {
+    public Signal<V> throttle(long time, TimeUnit unit, LongSupplier nanoClock) {
         // ignore invalid parameters
         if (time <= 0 || unit == null || nanoClock == null) {
             return this;
@@ -3509,7 +3509,7 @@ public final class Signal<V> {
      * @param values A list of constants to apply to each value emitted by this {@link Signal}.
      * @return {ChainableAPI}
      */
-    public final <E> Signal<E> toggle(E... values) {
+    public <E> Signal<E> toggle(E... values) {
         if (values.length == 0) {
             return never();
         }
@@ -3532,7 +3532,7 @@ public final class Signal<V> {
      * @return The source {@link Signal} shifted in time by the specified delay.
      * @see #delay(long, TimeUnit, ScheduledExecutorService...)
      */
-    public final Signal<V> wait(long time, TimeUnit unit) {
+    public Signal<V> wait(long time, TimeUnit unit) {
         // ignore invalid parameters
         if (time <= 0 || unit == null) {
             return this;
@@ -3546,7 +3546,7 @@ public final class Signal<V> {
      * 
      * @return
      */
-    public final Signal<V> waitForTerminate() {
+    public Signal<V> waitForTerminate() {
         return new Signal<>((observer, disposer) -> {
             Variable<Throwable> error = Variable.empty();
 
@@ -3572,7 +3572,7 @@ public final class Signal<V> {
      *         each item emitted by the source {@link Signal} and merging the results of the
      *         {@link Signal} obtained from this transformation.
      */
-    public final <R> Signal<R> $(WiseFunction<V, Signal<R>> function) {
+    public <R> Signal<R> $(WiseFunction<V, Signal<R>> function) {
         return flatMap(function);
     }
 
@@ -3644,7 +3644,7 @@ public final class Signal<V> {
     // *
     // * @return Chainable API.
     // */
-    // public final Signal<Ⅱ<V, Instant>> timeStamp() {
+    // public Signal<Ⅱ<V, Instant>> timeStamp() {
     // return map(value -> I.pair(value, Instant.now()));
     // }
     //
@@ -3655,7 +3655,7 @@ public final class Signal<V> {
     // *
     // * @return Chainable API.
     // */
-    // public final Signal<Ⅱ<V, Duration>> timeInterval() {
+    // public Signal<Ⅱ<V, Duration>> timeInterval() {
     // return timeStamp().map((Ⅱ) null, (prev, now) -> I.pair(now.ⅰ, Duration.between(prev == null ?
     // now.ⅱ : prev.ⅱ, now.ⅱ)));
     // }
@@ -3667,7 +3667,7 @@ public final class Signal<V> {
     // *
     // * @return Chainable API.
     // */
-    // public final Signal<Ⅱ<V, Duration>> timeElapsed() {
+    // public Signal<Ⅱ<V, Duration>> timeElapsed() {
     // return map(Variable::<Instant> empty, (context, value) -> {
     // Instant prev = context.let(Instant::now);
     //

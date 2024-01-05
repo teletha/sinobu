@@ -215,7 +215,7 @@ public class Model<M> {
                                     } else if ((fieldModel.atomic && notFinal) || !fieldModel.atomic || isRecord) {
                                         Property property = new Property(fieldModel, field.getName(), field);
 
-                                        property.getter = m -> field.get(m);
+                                        property.getter = field::get;
                                         if (isRecord) {
                                             property.setter = (m, v) -> {
                                                 Constructor c = collectConstructors(type)[0];
@@ -240,7 +240,6 @@ public class Model<M> {
                                         properties.put(property.name, property);
                                     }
                                 } catch (Throwable e) {
-                                    e.printStackTrace();
                                     throw I.quiet(e);
                                 }
                             }

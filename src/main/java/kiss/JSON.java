@@ -155,7 +155,7 @@ public class JSON {
      * @return A result.
      */
     public boolean has(String key) {
-        return root instanceof Map ? ((Map) root).containsKey(key) : false;
+        return root instanceof Map && ((Map) root).containsKey(key);
     }
 
     /**
@@ -282,6 +282,7 @@ public class JSON {
             }
         }
 
+        // don't use items.replaceAll to reduce code size and execution speed
         for (int i = 0; i < items.size(); i++) {
             items.set(i, as(type, items.get(i)));
         }
@@ -527,7 +528,7 @@ public class JSON {
         while (current != '"') {
             if (current == '\\') {
                 // pause capture
-                int end = current == -1 ? index : index - 1;
+                int end = index - 1;
                 capture.append(buffer, captureStart, end - captureStart);
                 captureStart = -1;
 

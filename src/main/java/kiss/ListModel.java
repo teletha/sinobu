@@ -47,7 +47,7 @@ class ListModel<V> extends Model<List<V>> {
     @Override
     public Object get(List object, Property property) {
         try {
-            int index = Integer.valueOf(property.name);
+            int index = Integer.parseInt(property.name);
 
             return object.size() <= index ? null : object.get(index);
         } catch (NumberFormatException e) {
@@ -60,7 +60,7 @@ class ListModel<V> extends Model<List<V>> {
      */
     @Override
     public List set(List object, Property property, Object value) {
-        int id = Integer.valueOf(property.name);
+        int id = Integer.parseInt(property.name);
 
         if (object.size() <= id) {
             int o = id - object.size() + 1;

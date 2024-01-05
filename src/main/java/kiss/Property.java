@@ -24,10 +24,10 @@ import java.lang.reflect.Member;
  */
 public class Property {
 
-    /** The assosiated object model with this {@link Property}. */
+    /** The associated object model with this {@link Property}. */
     public final Model model;
 
-    /** The human readable identifier of this {@link Property}. */
+    /** The human-readable identifier of this {@link Property}. */
     public final String name;
 
     /** Whether this {@link Property} is transient or not. */
@@ -39,7 +39,7 @@ public class Property {
     /** The property accessor. */
     public WiseBiFunction setter;
 
-    /** The property ovserver. */
+    /** The property observer. */
     WiseFunction<Object, Signal> observer;
 
     /**

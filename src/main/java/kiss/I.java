@@ -716,7 +716,7 @@ public class I {
 
                 // Optimization : In the case of single-pass, the regular expression-based
                 // segmentation process is skipped to speed up the process.
-                String[] e = path.indexOf('.') != -1 ? path.split("[\\.\\s　]+") : new String[] {path};
+                String[] e = path.indexOf('.') != -1 ? path.split("[.\\s　]+") : new String[] {path};
 
                 // Evaluate each context. (first context has high priority)
                 if (contexts != null) {
@@ -1533,7 +1533,7 @@ public class I {
         // Objects.requireNonNull(handler);
 
         // check null (type : implicitly) (handler : in Proxy#newProxyInstance)
-        if (type.isInterface() == false) throw new IllegalArgumentException("Type must be interface.");
+        if (!type.isInterface()) throw new IllegalArgumentException("Type must be interface.");
         return (T) Proxy.newProxyInstance(I.class.getClassLoader(), new Class[] {type}, handler);
     }
 
