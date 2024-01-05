@@ -2074,7 +2074,7 @@ public class I {
      * @return The {@link Signal} to emit error.
      */
     public static <V> Signal<V> signalError(Throwable error) {
-        return new Signal<V>((observer, disposer) -> {
+        return new Signal<>((observer, disposer) -> {
             observer.error(error);
             return disposer;
         });

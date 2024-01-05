@@ -47,7 +47,7 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
     List<T> list;
 
     /**
-     * {@link Subscriber} must have this constructor only. Dont use instance field initialization to
+     * {@link Subscriber} must have this constructor only. Don't use instance field initialization to
      * reduce creation cost.
      */
     Subscriber() {
@@ -73,7 +73,7 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
      */
     @Override
     public void complete() {
-        if (disposer == null || disposer.isDisposed() == false) {
+        if (disposer == null || !disposer.isDisposed()) {
             if (complete != null) {
                 complete.run();
             } else if (observer != null) {
@@ -88,7 +88,7 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
      */
     @Override
     public void error(Throwable e) {
-        if (disposer == null || disposer.isDisposed() == false) {
+        if (disposer == null || !disposer.isDisposed()) {
             if (error != null) {
                 error.accept(e);
             } else if (observer != null) {
@@ -146,7 +146,7 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
     // ======================================================================
     // Anonymous Disposable Instance Manager
     // ======================================================================
-    private static Map<Disposable, Subscriber> cache = new WeakHashMap();
+    private static final Map<Disposable, Subscriber> cache = new WeakHashMap();
 
     static synchronized Subscriber of(Disposable disposable) {
         if (disposable instanceof Subscriber) {
