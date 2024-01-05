@@ -44,9 +44,7 @@ public interface Narrow<FirstBinded, First, LastBinded, Last> extends Wise {
     default FirstBinded bindLazily(Supplier<First> param) {
         Objects.requireNonNull(param);
 
-        return I.make(this, Narrow.class, args -> {
-            return invoke(I.array(new Object[] {param.get()}, args));
-        });
+        return I.make(this, Narrow.class, args -> invoke(I.array(new Object[] {param.get()}, args)));
     }
 
     /**
@@ -76,8 +74,6 @@ public interface Narrow<FirstBinded, First, LastBinded, Last> extends Wise {
     default LastBinded bindLastLazily(Supplier<Last> param) {
         Objects.requireNonNull(param);
 
-        return I.make(this, Narrow.class, args -> {
-            return invoke(I.array(args, param.get()));
-        });
+        return I.make(this, Narrow.class, args -> invoke(I.array(args, param.get())));
     }
 }
