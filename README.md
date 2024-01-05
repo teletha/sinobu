@@ -8,7 +8,7 @@
 
 
 ## Summary
-Sinobu is not obsolete framework but utility, which can manipulate objects as a extremely-condensed facade.
+Sinobu is not obsolete framework but utility, which can manipulate objects as an extremely-condensed facade.
 This is extremely lightweight at approximately 104 KB without relying on other libraries, and its various operations are designed to run as fast as other competing libraries.
 
 This library aims to simplify and highly condense the functions related to domains that are frequently encountered in real-world development projects, making them easier to use.

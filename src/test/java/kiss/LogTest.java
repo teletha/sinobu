@@ -42,7 +42,7 @@ class LogTest {
     private Log log;
 
     @RegisterExtension
-    CleanRoom room = new CleanRoom();
+   static CleanRoom room = new CleanRoom();
 
     private static class Log extends PrintStream {
 

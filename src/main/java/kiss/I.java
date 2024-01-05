@@ -405,7 +405,7 @@ public class I {
     /**
      * Accept any value. Use with method reference.
      * 
-     * @return
+     * @return Always true.
      */
     public static <A> boolean accept(A a) {
         return true;
@@ -414,7 +414,7 @@ public class I {
     /**
      * Accept any value. Use with method reference.
      * 
-     * @return
+     * @return Always true.
      */
     public static <A, B> boolean accept(A a, B b) {
         return true;
@@ -1524,7 +1524,7 @@ public class I {
      * 
      * @param type A model type.
      * @param handler A proxy handler.
-     * @return
+     * @return Proxy instance for the given interface.
      * @throws NullPointerException Any parameter is null.
      */
     public static <T> T make(Class<T> type, InvocationHandler handler) {
@@ -1539,11 +1539,6 @@ public class I {
 
     /**
      * Create wise function interface.
-     * 
-     * @param o
-     * @param target
-     * @param handler
-     * @return
      */
     static <F> F make(Object o, Class target, Wise handler) {
         Type type = o == null ? target : Model.collectParameters(o.getClass().getInterfaces()[0], target)[0];
@@ -1636,7 +1631,7 @@ public class I {
      *
      * @param param1 A first parameter.
      * @param param2 A second parameter.
-     * @return
+     * @return A created tuple.
      */
     public static <A, B> Ⅱ<A, B> pair(A param1, B param2) {
         return new Ⅱ(param1, param2);
@@ -1648,7 +1643,7 @@ public class I {
      * @param param1 A first parameter.
      * @param param2 A second parameter.
      * @param param3 A third parameter.
-     * @return
+     * @return A created tuple.
      */
     public static <A, B, C> Ⅲ<A, B, C> pair(A param1, B param2, C param3) {
         return new Ⅲ(param1, param2, param3);
@@ -1915,7 +1910,7 @@ public class I {
     /**
      * Reject any value. Use with method reference.
      * 
-     * @return
+     * @return Always false.
      */
     public static <A> boolean reject(A a) {
         return false;
@@ -1924,7 +1919,7 @@ public class I {
     /**
      * Reject any value. Use with method reference.
      * 
-     * @return
+     * @return Always false.
      */
     public static <A, B> boolean reject(A a, B b) {
         return false;

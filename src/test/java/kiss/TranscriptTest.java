@@ -26,7 +26,7 @@ class TranscriptTest {
     static String originalLanguage;
 
     @RegisterExtension
-    final CleanRoom room = new CleanRoom();
+    static final CleanRoom room = new CleanRoom();
 
     @BeforeEach
     void initialize() {

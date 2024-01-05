@@ -17,9 +17,9 @@ import kiss.I;
 
 class ClassCodecTest {
 
-    private Decoder<Class> decoder = I.find(Decoder.class, Class.class);
+    private final Decoder<Class<?>> decoder = I.find(Decoder.class, Class.class);
 
-    private Encoder<Class> encoder = I.find(Encoder.class, Class.class);
+    private final Encoder<Class<?>> encoder = I.find(Encoder.class, Class.class);
 
     @Test
     void systemClass() {
@@ -52,13 +52,9 @@ class ClassCodecTest {
     }
 
     /**
-     * <p>
      * Helper method to test.
-     * </p>
-     * 
-     * @param clazz
      */
-    private void assertClass(Class clazz) {
+    private void assertClass(Class<?> clazz) {
         String encoded = encoder.encode(clazz);
         assert encoded != null;
         assert decoder.decode(encoded) == clazz;

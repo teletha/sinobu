@@ -221,7 +221,7 @@ public class DocumentDoc {
                     new Thread(() -> {
                         User user3 = I.make(User.class);
                         assert user1 != user3; // different
-                    }).run();
+                    }).start();
                 }
             }
 

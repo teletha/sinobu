@@ -90,12 +90,12 @@ class TransformTest {
     }
 
     @Test
-    void url() throws MalformedURLException {
+    void url() throws MalformedURLException, URISyntaxException {
         URL value = new URL("http://localhost:8888/");
         String text = "http://localhost:8888/";
 
         assert I.transform(value, String.class).equals(text);
-        assert I.transform(text, URL.class).equals(value);
+        assert I.transform(text, URL.class).toURI().equals(value.toURI());
     }
 
     @Test
