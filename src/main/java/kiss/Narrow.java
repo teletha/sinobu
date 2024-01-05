@@ -15,10 +15,10 @@ import java.util.function.Supplier;
 /**
  * Provide the partial application functionality.
  */
-public interface Narrow<FirstBinded, First, LastBinded, Last> extends Wise {
+public interface Narrow<FirstBound, First, LastBound, Last> extends Wise {
 
     /**
-     * Apply first parameter partialy.
+     * Apply first parameter partially.
      * 
      * @param param A fixed parameter. (accept null)
      * @return A partial applied function.
@@ -26,12 +26,12 @@ public interface Narrow<FirstBinded, First, LastBinded, Last> extends Wise {
      * @see #bindLast(Object)
      * @see #bindLastLazily(Supplier)
      */
-    default FirstBinded bind(First param) {
+    default FirstBound bind(First param) {
         return bindLazily(Variable.of(param));
     }
 
     /**
-     * Apply first parameter partialy. Unlike {@link #bind(Object)}, null parameter will throw
+     * Apply first parameter partially. Unlike {@link #bind(Object)}, null parameter will throw
      * {@link NullPointerException}.
      * 
      * @param param A fixed parameter. (reject null)
@@ -41,14 +41,14 @@ public interface Narrow<FirstBinded, First, LastBinded, Last> extends Wise {
      * @see #bindLast(Object)
      * @see #bindLastLazily(Supplier)
      */
-    default FirstBinded bindLazily(Supplier<First> param) {
+    default FirstBound bindLazily(Supplier<First> param) {
         Objects.requireNonNull(param);
 
         return I.make(this, Narrow.class, args -> invoke(I.array(new Object[] {param.get()}, args)));
     }
 
     /**
-     * Apply last parameter partialy.
+     * Apply last parameter partially.
      * 
      * @param param A fixed parameter. (accept null)
      * @return A partial applied function.
@@ -56,12 +56,12 @@ public interface Narrow<FirstBinded, First, LastBinded, Last> extends Wise {
      * @see #bindLazily(Supplier)
      * @see #bindLastLazily(Supplier)
      */
-    default LastBinded bindLast(Last param) {
+    default LastBound bindLast(Last param) {
         return bindLastLazily(Variable.of(param));
     }
 
     /**
-     * Apply last parameter partialy. Unlike {@link #bindLast(Object)}, null parameter will throw
+     * Apply last parameter partially. Unlike {@link #bindLast(Object)}, null parameter will throw
      * {@link NullPointerException}.
      * 
      * @param param A fixed parameter. (reject null)
@@ -71,7 +71,7 @@ public interface Narrow<FirstBinded, First, LastBinded, Last> extends Wise {
      * @see #bindLazily(Supplier)
      * @see #bindLast(Object)
      */
-    default LastBinded bindLastLazily(Supplier<Last> param) {
+    default LastBound bindLastLazily(Supplier<Last> param) {
         Objects.requireNonNull(param);
 
         return I.make(this, Narrow.class, args -> invoke(I.array(args, param.get())));
