@@ -17,7 +17,7 @@ import java.util.List;
  */
 class ListModel<V> extends Model<List<V>> {
 
-    /** The prameterized item of this model. */
+    /** The parameterized item of this model. */
     private final Model itemModel;
 
     /**

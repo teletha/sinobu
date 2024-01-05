@@ -12,7 +12,7 @@ package kiss;
 /**
  * Codec for interconversion of object and {@link String}.
  * <p>
- * This class provides all-purpose codec for literalization and provids the default encoder which
+ * This class provides all-purpose codec for literalization and provides the default encoder which
  * uses {@link String#valueOf(Object)}.
  *
  * @param <M> A model class to decode and encode.
@@ -24,8 +24,8 @@ public interface Encoder<M> extends Extensible {
      * Encode the model object to {@link String}.
      * 
      * @param value A model object to encode.
-     * @return A encoded {@link String} representation.
+     * @return An encoded {@link String} representation.
      * @throws IllegalArgumentException If the given value is illegal format.
      */
-    public String encode(M value);
+    String encode(M value);
 }

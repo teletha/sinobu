@@ -60,7 +60,7 @@ public class Model<M> {
     /** The {@link Class} which is represented by this {@link Model}. */
     public final Class<M> type;
 
-    /** Whether this {@link Model} is an atomic type or a object type. */
+    /** Whether this {@link Model} is an atomic type or object type. */
     public final boolean atomic;
 
     /** The associated decoder. */
@@ -189,9 +189,9 @@ public class Model<M> {
                         // reject the field which modifier is static or native
                         if (((STATIC | NATIVE) & modifier) == 0) {
                             // accept fields which
-                            // -- is public modifier (implicitely)
-                            // -- is annotated by Managed (explicitely)
-                            // -- is Record component (implicitely)
+                            // -- is public modifier (implicitly)
+                            // -- is annotated by Managed (explicitly)
+                            // -- is Record component (implicitly)
                             if ((PUBLIC & modifier) == PUBLIC //
                                     || field.isAnnotationPresent(Managed.class) //
                                     || (isRecord && (PRIVATE & modifier) == PRIVATE)) {
@@ -276,7 +276,7 @@ public class Model<M> {
     /**
      * Returns the value of the given property in the given object.
      * 
-     * @param object A object as source. This value must not be <code>null</code>.
+     * @param object An object as source. This value must not be <code>null</code>.
      * @param property A property. This value must not be <code>null</code>.
      * @return A resolved property value. This value may be <code>null</code>.
      * @throws IllegalArgumentException If the given object can't resolve the given property.
@@ -291,7 +291,7 @@ public class Model<M> {
     /**
      * Change the given property in the given object to the given new property value.
      * 
-     * @param object A object as source. This value must not be <code>null</code>.
+     * @param object An object as source. This value must not be <code>null</code>.
      * @param property A property. This value must not be <code>null</code>.
      * @param value A new property value that you want to set. This value accepts <code>null</code>.
      * @throws IllegalArgumentException If the given object can't resolve the given property.
@@ -306,7 +306,7 @@ public class Model<M> {
     /**
      * Observe the given property in the given object.
      * 
-     * @param object A object as source. This value must not be <code>null</code>.
+     * @param object An object as source. This value must not be <code>null</code>.
      * @param property A property. This value must not be <code>null</code>.
      * @return A property observer.
      * @throws IllegalArgumentException If the given object can't resolve the given property.
@@ -320,10 +320,10 @@ public class Model<M> {
     }
 
     /**
-     * Iterate over all properties in the given object and propagate the property and it's value to
+     * Iterate over all properties in the given object and propagate the property, and it's value to
      * the given property walker.
      * 
-     * @param object A object as source. This value must not be <code>null</code>,
+     * @param object An object as source. This value must not be <code>null</code>,
      * @param walker A property iterator. This value accepts <code>null</code>.
      */
     public void walk(M object, WiseTriConsumer<Model<M>, Property, Object> walker) {
@@ -380,7 +380,7 @@ public class Model<M> {
             } else if (Map.class.isAssignableFrom(modelClass)) {
                 model = new MapModel(modelClass, Model.collectParameters(modelClass, Map.class), Map.class);
             } else {
-                // To resolve cyclic reference, try to retrive from cache.
+                // To resolve cyclic reference, try to retrieve from cache.
                 model = models.computeIfAbsent(key, x -> new Model(modelClass));
                 model.init();
             }
@@ -421,7 +421,7 @@ public class Model<M> {
             }
 
             // ClassModel
-            // To resolve cyclic reference, try to retrive from cache.
+            // To resolve cyclic reference, try to retrieve from cache.
             Model model = models.computeIfAbsent(I.pair(clazz, parameterized.getActualTypeArguments()), x -> new Model(clazz));
             model.init(parameterized.getActualTypeArguments());
 
@@ -480,10 +480,10 @@ public class Model<M> {
     }
 
     /**
-     * Collect all annotated methods and thire annotations.
+     * Collect all annotated methods and their annotations.
      * 
      * @param clazz A target class.
-     * @return A table of method and annnotations.
+     * @return A table of method and annotations.
      */
     public static Map<Method, List<Annotation>> collectAnnotatedMethods(Class clazz) {
         Map<Method, List<Annotation>> table = new HashMap();
@@ -565,7 +565,7 @@ public class Model<M> {
      */
     public static <T> Constructor<T>[] collectConstructors(Class<T> clazz) {
         Constructor[] cc = clazz.getDeclaredConstructors();
-        Arrays.sort(cc, Comparator.<Constructor> comparingInt(c -> {
+        Arrays.sort(cc, Comparator.comparingInt(c -> {
             for (Annotation a : c.getAnnotations()) {
                 if (a.annotationType() == Managed.class || a.annotationType().getSimpleName().equals("Inject")) {
                     return -1;
@@ -649,7 +649,7 @@ public class Model<M> {
         // compute actual class
         //
         // If Model.of(Type, Type) is used to detect the raw class, the target Model will be
-        // defined first when the Decorder or Encoder definition class is loaded, which will
+        // defined first when the Decoder or Encoder definition class is loaded, which will
         // adversely affect the determination of whether the Model is atomic or not. Do not use
         // Model.of(Type,Type).
         Class raw = (Class) (clazz instanceof Class ? clazz
@@ -742,7 +742,7 @@ public class Model<M> {
     // .invokeExact();
     // }
 
-    static WiseFunction createGetter(Method method) throws Throwable {
+    static WiseFunction createGetter(Method method)  {
         try {
             Lookup lookup = MethodHandles.privateLookupIn(method.getDeclaringClass(), MethodHandles.lookup());
             MethodHandle mh = lookup.unreflect(method);
@@ -756,7 +756,7 @@ public class Model<M> {
         }
     }
 
-    static WiseBiConsumer createSetter(Method method) throws Throwable {
+    static WiseBiConsumer createSetter(Method method)  {
         try {
             Lookup lookup = MethodHandles.privateLookupIn(method.getDeclaringClass(), MethodHandles.lookup());
             MethodHandle mh = lookup.unreflect(method);

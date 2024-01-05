@@ -166,7 +166,7 @@ public class JSON {
      * @return A result.
      */
     public boolean has(String key, Object value) {
-        return root instanceof Map ? Objects.equals(((Map) root).get(key), String.valueOf(value)) : false;
+        return root instanceof Map && Objects.equals(((Map) root).get(key), String.valueOf(value));
     }
 
     /**
@@ -243,7 +243,7 @@ public class JSON {
      * Get all objects pointed to by the property path starting from this JSON. The property path
      * can use the property name and the wildcard "*".
      * 
-     * @param type The convertion type.
+     * @param type The conversion type.
      * @param path A property path.
      * @return A result set.
      * @throws NullPointerException If type or path is null.
@@ -335,7 +335,7 @@ public class JSON {
      * 
      * @param <T>
      * @param reader A input stream.
-     * @param text A input text.
+     * @param text An input text.
      * @param type A model type.
      * @return
      * @throws IOException
@@ -686,7 +686,7 @@ public class JSON {
             // difference between a char[] reference and a String reference allows another thread to
             // rewrite the String cache.
             // So the char[] reference and the String reference must be obtained completely
-            // atomically. However, using the usual syncronize block will sacrifice speed.
+            // atomically. However, using the usual synchronize block will sacrifice speed.
             // By using tuples, we can ensure atomicity in obtaining both references.
             Ⅱ<String, char[]> cache = S[hash & 65535];
             if (cache != null && Arrays.equals(buffer, captureStart, end, cache.ⅱ, 0, cache.ⅱ.length)) {
@@ -712,7 +712,7 @@ public class JSON {
     // ===========================================================
     // Writer API
     // ===========================================================
-    /** The charcter sequence for output as JSON. */
+    /** The character sequence for output as JSON. */
     private Appendable out;
 
     /**

@@ -18,10 +18,10 @@ import java.util.Map.Entry;
  */
 class MapModel<K, V> extends Model<Map<K, V>> {
 
-    /** The prameterized key of this model. */
+    /** The parameterized key of this model. */
     private final Model<K> key;
 
-    /** The prameterized value of this model. */
+    /** The parameterized value of this model. */
     private final Model<V> value;
 
     /**

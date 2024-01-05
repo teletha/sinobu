@@ -36,7 +36,7 @@ public interface Observer<V> extends Consumer<V> {
      * The {@link Signal} will not call this closure if it calls {@link #error(Throwable)}.
      * </p>
      */
-    public default void complete() {
+    default void complete() {
         // do nothing
     }
 
@@ -51,7 +51,7 @@ public interface Observer<V> extends Consumer<V> {
      * 
      * @param e An object that provides additional information about the error.
      */
-    public default void error(Throwable e) {
+     default void error(Throwable e) {
         UncaughtExceptionHandler handler = Thread.getDefaultUncaughtExceptionHandler();
         if (handler != null) {
             handler.uncaughtException(Thread.currentThread(), e);
