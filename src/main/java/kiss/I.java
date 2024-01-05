@@ -118,7 +118,7 @@ import org.xml.sax.helpers.DefaultHandler;
  * <p>
  * We do not provides the functionalities related to object lifecycle through Sinobu, because we
  * believe that it is better to use functionalities equipped in Java as much as possible. For
- * example, if you want to receive initialization callbacks, it is better to use constructor.
+ * example, if you want to receive initialization callback, it is better to use constructor.
  * </p>
  * </dd>
  * <dt>Dependency Injection</dt>
@@ -151,7 +151,7 @@ public class I {
     //
     // annotate accept alert allow approve associate avoid attend affect agree acquire add afford
     // bind bundle
-    // create class copy collect config convert
+    // create class copy collect configure convert
     // delete define deny describe detach dispatch drive drop dub depend die disrupt draw decline
     // edit error ensure examine exclude exist embed enhance enter evolve exchange expect extend
     // enregister
@@ -180,7 +180,7 @@ public class I {
     /** No Operation */
     public static final WiseRunnable NoOP = new Subscriber()::vandalize;
 
-    /** The default language in this vm environment. */
+    /** The default language in this VM environment. */
     public static final Variable<String> Lang = Variable.of(Locale.getDefault().getLanguage());
 
     /** The user-defined extra log appender. */
@@ -195,7 +195,7 @@ public class I {
     /** The document builder. */
     static final DocumentBuilder dom;
 
-    /** The xpath evaluator. */
+    /** The XPath evaluator. */
     static final XPath xpath;
 
     /** The logger manager. */
@@ -232,7 +232,7 @@ public class I {
     /** The cached environment variables. */
     private static final Properties env = new Properties();
 
-    /** The reusable http client. */
+    /** The reusable HTTP client. */
     private static final HttpClient client = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(15))
             .followRedirects(Redirect.ALWAYS)
@@ -247,7 +247,7 @@ public class I {
         lifestyles.put(Locale.class, Locale::getDefault);
 
         try {
-            // configure dom builder
+            // configure DOM builder
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setNamespaceAware(true);
             // factory.setXIncludeAware(false); // default setting is false
@@ -256,7 +256,7 @@ public class I {
 
             // Setting disallow-doctype-decl will prevent XXE attacks because any inline DOCTYPE
             // declarations in the untrusted XML will cause the parser to throw an exception.
-            // So we can commnet out disabling external-general-entities and
+            // So we can comment out disabling external-general-entities and
             // external-parameter-entities features.
             factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             // factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
@@ -493,7 +493,7 @@ public class I {
      *            {@link List} and {@link Set} interfaces may be specified as exceptions.
      * @param <V> The type of the {@link Collection}'s items.
      * @param type A {@link Collection} type.
-     * @param items A list of itmes.
+     * @param items A list of items.
      * @return The new created {@link Collection}.
      * @see #list(Object...)
      * @see #set(Object...)
@@ -616,7 +616,7 @@ public class I {
      * 
      * @param msg A message log.
      */
-    public static <X extends Object & Supplier<String>> void error(Object msg) {
+    public static void error(Object msg) {
         log("system", msg, 5, 2);
     }
 
