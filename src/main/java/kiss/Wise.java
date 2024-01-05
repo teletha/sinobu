@@ -15,11 +15,11 @@ package kiss;
 public interface Wise {
 
     /**
-     * Invoke method with the specified parameters and return some value (may be null). This method
+     * Invoke method with the specified parameters and return some value (maybe null). This method
      * doesn't check type correctness, so runtime may be going to throw {@link ClassCastException}.
      * 
      * @param params A list of parameters.
-     * @return A some value (may be null).
+     * @return A some value (maybe null).
      */
     Object invoke(Object... params);
 }

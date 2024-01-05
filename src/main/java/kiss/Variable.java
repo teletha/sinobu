@@ -22,16 +22,17 @@ import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 /**
- * A reassignable container object which may or may not contain a non-null value. If a value is
+ * A re-assignable container object which may or may not contain a non-null value. If a value is
  * present, {@link #isPresent()} returns true. If no value is present, the object is considered
  * empty and {@link #isPresent()} returns false. Unlike {@link Optional}, this container is
- * reassignable.
+ * re-assignable.
  * <p>
  * Additional methods that depend on the presence or absence of a contained value are provided, such
  * as {@link #or(Object)} (returns a default value if no value is present) and {@link #to(Consumer)}
  * (performs an action if a value is present).
  * <p>
  */
+@SuppressWarnings("UnusedReturnValue")
 public class Variable<V> implements Consumer<V>, Supplier<V> {
 
     /** The modifier base. */
@@ -126,7 +127,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
     /**
      * Intercept the value modification.
      * 
-     * @param interceptor A interceptor for value modification. First parameter is the current
+     * @param interceptor An interceptor for value modification. First parameter is the current
      *            value, Second parameter is the new value.
      * @return Chainable API.
      */
@@ -152,7 +153,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @return A result of validation.
      */
     public final boolean is(Predicate<V> condition) {
-        return condition == null ? false : condition.test(v);
+        return condition != null && condition.test(v);
     }
 
     /**
@@ -194,7 +195,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
     }
 
     /**
-     * Chech whether the value is fiexed or not.
+     * Check whether the value is fixed or not.
      * 
      * @return A result.
      */
@@ -307,7 +308,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      * @return The {@link Signal} which notifies value modification.
      */
     public final Signal<V> observing() {
-        return observe().startWith(this::get);
+        return observe().startWith(this);
     }
 
     /**
@@ -351,7 +352,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
     public synchronized final V set(V value) {
         V prev = v;
 
-        if (fix == false) {
+        if (!fix) {
             try {
                 if (interceptor != null) {
                     value = interceptor.apply(this.v, value);
@@ -430,7 +431,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      */
     @Override
     public final boolean equals(Object obj) {
-        if (obj instanceof Variable == false) {
+        if (!(obj instanceof Variable)) {
             return false;
         }
         return ((Variable) obj).is(v);

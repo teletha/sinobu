@@ -109,7 +109,7 @@ public class Ⅱ<Param1, Param2> {
      */
     @Override
     public final boolean equals(Object obj) {
-        return obj instanceof Ⅱ ? Arrays.deepEquals(values(), ((Ⅱ) obj).values()) : false;
+        return obj instanceof Ⅱ && Arrays.deepEquals(values(), ((Ⅱ) obj).values());
     }
 
     /**

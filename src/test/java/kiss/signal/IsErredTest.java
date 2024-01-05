@@ -9,13 +9,14 @@
  */
 package kiss.signal;
 
+import kiss.Signal;
 import org.junit.jupiter.api.Test;
 
 class IsErredTest extends SignalTester {
 
     @Test
     void value() {
-        monitor(Object.class, Boolean.class, signal -> signal.isErred());
+        monitor(Object.class, Boolean.class, Signal::isErred);
 
         assert main.emit(1, 2, 3).value();
         assert main.isNotCompleted();
@@ -24,7 +25,7 @@ class IsErredTest extends SignalTester {
 
     @Test
     void error() {
-        monitor(Object.class, Boolean.class, signal -> signal.isErred());
+        monitor(Object.class, Boolean.class, Signal::isErred);
 
         assert main.emit(1, 2, 3).value();
         assert main.emit(Error.class).value(true);
@@ -34,7 +35,7 @@ class IsErredTest extends SignalTester {
 
     @Test
     void complete() {
-        monitor(Object.class, Boolean.class, signal -> signal.isErred());
+        monitor(Object.class, Boolean.class, Signal::isErred);
 
         assert main.emit(1, 2, 3).value();
         assert main.emit(Complete).value(false);

@@ -48,7 +48,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      * </pre>
      */
     private static final Pattern SELECTOR = Pattern
-            .compile("([>~+<, ]*)?((?:(?:\\w+|\\*)\\|)?(?:[\\w\\-]+(?:\\\\.[\\w\\-]*)*|\\*))?(?:#([\\w\\-\\\\]+))?((?:\\.[\\w\\-\\\\]+)*)(?:\\[\\s?([\\w:]+)(?:\\s*([=~^$*|])?=\\s*[\"]([^\"]*)[\"])?\\s?\\])?(?::([\\w-]+)(?:\\((odd|even|(\\d*)(n)?(?:\\+(\\d+))?|(?:.*))\\))?)?");
+            .compile("([>~+<, ]*)?((?:(?:\\w+|\\*)\\|)?(?:[\\w\\-]+(?:\\\\.[\\w\\-]*)*|\\*))?(?:#([\\w\\-\\\\]+))?((?:\\.[\\w\\-\\\\]+)*)(?:\\[\\s?([\\w:]+)(?:\\s*([=~^$*|])?=\\s*\"([^\"]*)\")?\\s?])?(?::([\\w-]+)(?:\\((odd|even|(\\d*)(n)?(?:\\+(\\d+))?|.*)\\))?)?");
 
     /** The cache for compiled selectors. */
     private static final Map<String, XPathExpression> selectors = new ConcurrentHashMap();
@@ -88,7 +88,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      * elements.
      * </p>
      *
-     * @param xml A element set to append.
+     * @param xml An element set to append.
      * @return Chainable API.
      */
     public XML append(Object xml) {
@@ -108,7 +108,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      * matched elements.
      * </p>
      *
-     * @param xml A element set to prepend.
+     * @param xml An element set to prepend.
      * @return Chainable API.
      */
     public XML prepend(Object xml) {
@@ -128,7 +128,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      * elements.
      * </p>
      *
-     * @param xml A element set to add.
+     * @param xml An element set to add.
      * @return Chainable API.
      */
     public XML before(Object xml) {
@@ -148,7 +148,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      * elements.
      * </p>
      *
-     * @param xml A element set to add
+     * @param xml An element set to add
      * @return Chainable API.
      */
     public XML after(Object xml) {
@@ -206,7 +206,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      * Wrap an HTML structure around each element in the set of matched elements.
      * </p>
      *
-     * @param xml A element set to wrap.
+     * @param xml An element set to wrap.
      * @return Chainable API.
      */
     public XML wrap(Object xml) {
@@ -225,7 +225,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      * Wrap an HTML structure around all elements in the set of matched elements.
      * </p>
      *
-     * @param xml A element set to wrap.
+     * @param xml An element set to wrap.
      * @return Chainable API.
      */
     public XML wrapAll(Object xml) {
@@ -507,7 +507,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
     /**
      * Get the first child element of each element in the current set of matched elements.
      * 
-     * @return A set of fisrt elements.
+     * @return A set of first elements.
      */
     public final XML firstChild() {
         return find(">*:first-child");
@@ -969,7 +969,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
                             // Represents an element with the att attribute whose value is a
                             // whitespace-separated list of words, one of which is exactly
                             // "val". If "val" contains whitespace, it will never represent
-                            // anything (since the words are separated by spaces). Also if "val"
+                            // anything (since the words are separated by spaces). Also, if "val"
                             // is the empty string, it will never represent anything.
                             xpath.append("[contains(concat(' ',@").append(match).append(",' '),' ").append(value).append(" ')]");
                             break;
@@ -1141,12 +1141,12 @@ public class XML implements Iterable<XML>, Consumer<XML> {
     // =======================================================================
     // HTML Parser for building XML
     // =======================================================================
-    /** The defiened empty elements. */
+    /** The defined empty elements. */
     private static final String[] empties = {"area", "base", "br", "col", "command", "device", "embed", "frame", "hr", "img", "input",
             "keygen", "link", "meta", "param", "source", "track", "wbr"};
 
-    /** The defiened data elements. */
-    private static final String[] datas = {"noframes", "script", "style", "textarea", "title"};
+    /** The defined data elements. */
+    private static final String[] data = {"noframes", "script", "style", "textarea", "title"};
 
     /** The position for something. */
     private int pos;
@@ -1167,7 +1167,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
         // Initialization
         // ====================
         XML xml = this;
-        html = new String(raw, 0, raw.length, encoding);
+        html = new String(raw, encoding);
         pos = 0;
 
         // If crazy html provides multiple meta element for character encoding,
@@ -1256,10 +1256,10 @@ public class XML implements Iterable<XML>, Consumer<XML> {
                 // close start element
                 if (next(">").length() == 0 && Arrays.binarySearch(empties, name) < 0) {
                     // container element
-                    if (0 <= Arrays.binarySearch(datas, name)) {
+                    if (0 <= Arrays.binarySearch(data, name)) {
                         // text data only element - add contents as text
 
-                        // At first, we find the end element, but the some html provides crazy
+                        // At first, we find the end element, but some html provides crazy
                         // element pair like <div></DIV>. So we should search by case-insensitive,
                         // don't use find("</" + name + ">").
                         int start = pos;
@@ -1271,7 +1271,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
                         next(">");
 
                         child.text(html.substring(start, pos - 3 - name.length()));
-                        // don't update current elment
+                        // don't update current element
                     } else {
                         // mixed element
                         // update current element into child
@@ -1300,11 +1300,11 @@ public class XML implements Iterable<XML>, Consumer<XML> {
                                     return parse(raw, detect);
                                 }
                             } catch (Exception e) {
-                                // unkwnown encoding name
+                                // unknown encoding name
                             }
                         }
                     }
-                    // don't update current elment
+                    // don't update current element
                 }
             } else {
                 // =====================
@@ -1318,7 +1318,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
                     xml.append(xml.doc.createTextNode(text));
                 }
 
-                // If the current positon is not end of document, we should continue to parse
+                // If the current position is not end of document, we should continue to parse
                 // next elements. So rollback position(1) for the "<" next start element.
                 if (pos != html.length()) {
                     pos--;
@@ -1350,7 +1350,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
 
     /**
      * <p>
-     * Consume the next run of characters until the specified sequence will be appered.
+     * Consume the next run of characters until the specified sequence will be appeared.
      * </p>
      * 
      * @param until A target character sequence. (include this sequence)
