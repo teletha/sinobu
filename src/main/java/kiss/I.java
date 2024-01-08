@@ -1692,9 +1692,10 @@ public class I {
      * @param model A model type.
      * @param injector A injector for parameters. The default injector is {@link I#make(Class)}.
      * @return A built {@link Lifestyle} that creates a new instance every time demanded.
+     * @throws NullPointerException Any parameter is null.
      * @see Singleton
      */
-    public static <M, P> Lifestyle<M> prototype(Class<M> model, WiseFunction<Class<P>, P> injector) {
+    public static <M, P> Lifestyle<M> prototype(Class<M> model, WiseFunction<Class, Object> injector) {
         // find default constructor as instantiator
         Constructor constructor = Model.collectConstructors(model)[0];
         constructor.setAccessible(true);
