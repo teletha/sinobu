@@ -1670,6 +1670,31 @@ public class I {
      * @see Singleton
      */
     public static <M> Lifestyle<M> prototype(Class<M> model) {
+        return prototype(model, I::make);
+    }
+
+    /**
+     * Build prototype-like {@link Lifestyle} that creates a new instance every time demanded. This
+     * is default lifestyle in Sinobu.
+     * <p>
+     * The created {@link Lifestyle} has the functionality of Dependency Injection. The Lifestyle
+     * attempts to create an instance using the first constructor declared with the fewest number of
+     * arguments. If the argument contains a {@link Managed} type, an instance of that type will
+     * also be created automatically. This dependency injection is done at the same time when the
+     * model is instantiated. But if you want to delay the creation of the dependency until it is
+     * needed, you can set the argument type to Lifestyle<DEPENDENCY_TYPE>.
+     * <p>
+     * You may also specify a {@link Class} type as an argument if you need the currently processing
+     * model type. This feature is mainly available when implementing the special generic
+     * {@link Lifestyle}.
+     * 
+     * @param <M> A {@link Managed} class.
+     * @param model A model type.
+     * @param injector A injector for parameters. The default injector is {@link I#make(Class)}.
+     * @return A built {@link Lifestyle} that creates a new instance every time demanded.
+     * @see Singleton
+     */
+    public static <M, P> Lifestyle<M> prototype(Class<M> model, WiseFunction<Class<P>, P> injector) {
         // find default constructor as instantiator
         Constructor constructor = Model.collectConstructors(model)[0];
         constructor.setAccessible(true);
@@ -1694,7 +1719,7 @@ public class I {
                     } else if (types[i].isPrimitive()) {
                         params[i] = Array.get(Array.newInstance(types[i], 1), 0);
                     } else {
-                        params[i] = I.make(types[i]);
+                        params[i] = injector.apply(types[i]);
                     }
                 }
             }
@@ -1766,7 +1791,7 @@ public class I {
             if (throwable instanceof InvocationTargetException) throwable = throwable.getCause();
 
             // throw quietly
-            return I. quiet(throwable);
+            return I.quiet(throwable);
         }
 
         if (object instanceof AutoCloseable) {
