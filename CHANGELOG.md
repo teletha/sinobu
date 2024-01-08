@@ -1,5 +1,23 @@
 # Changelog
 
+## [3.9.0](https://github.com/teletha/sinobu/compare/v3.8.0...v3.9.0) (2024-01-08)
+
+
+### Features
+
+* add I#prototype(type, injector) ([b854d64](https://github.com/teletha/sinobu/commit/b854d649d1926c851c948e5811accd90ec31ad45))
+
+
+### Bug Fixes
+
+* reduce code size ([d299c41](https://github.com/teletha/sinobu/commit/d299c415fae5e231dfb8f65b2f15dae2a1a749df))
+* replace method reference by function ([7169c46](https://github.com/teletha/sinobu/commit/7169c469dc53a91dd7c009f8c0a49b484e4c67f6))
+* typo ([c44ab24](https://github.com/teletha/sinobu/commit/c44ab24ab8ea560dcb956ea8f58f6585c530b132))
+* typo ([000876f](https://github.com/teletha/sinobu/commit/000876f4038fd9ba35fa3f97110514bdfd7570d3))
+* typo ([3c42136](https://github.com/teletha/sinobu/commit/3c42136e7177a5b3ef7a286465e592b3c787ec05))
+* typo ([6315629](https://github.com/teletha/sinobu/commit/63156294d5abb6d97f6abbece2781d26627b913a))
+* update license ([59856e6](https://github.com/teletha/sinobu/commit/59856e6b8c54f54ce7eb1a1095b171de15a3a11f))
+
 ## [3.8.0](https://github.com/teletha/sinobu/compare/v3.7.0...v3.8.0) (2023-12-09)
 
 
