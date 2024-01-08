@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.9.1](https://github.com/teletha/sinobu/compare/v3.9.0...v3.9.1) (2024-01-08)
+
+
+### Bug Fixes
+
+* update ci process ([f0b41af](https://github.com/teletha/sinobu/commit/f0b41af53b1c6335cad66105a4a01f6c19030663))
+
 ## [3.9.0](https://github.com/teletha/sinobu/compare/v3.8.0...v3.9.0) (2024-01-08)
 
 
