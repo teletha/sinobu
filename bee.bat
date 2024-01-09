@@ -1,6 +1,6 @@
 @echo off
 setlocal enabledelayedexpansion
-set "version=0.43.0"
+set "version=0.44.0"
 set "bee=bee-%version%.far"
 
 if not exist !bee! (
