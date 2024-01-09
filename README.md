@@ -8,7 +8,7 @@
 
 
 ## Summary
-Sinobu is not obsolete framework but utility, which can manipulate objects as an extremely-condensed facade.
+Sinobu is not obsolete framework but utility, which can manipulate objects as a extremely-condensed facade.
 This is extremely lightweight at approximately 104 KB without relying on other libraries, and its various operations are designed to run as fast as other competing libraries.
 
 This library aims to simplify and highly condense the functions related to domains that are frequently encountered in real-world development projects, making them easier to use.
@@ -189,7 +189,7 @@ Add it into in the dependencies element like so:
 <dependency>
     <groupId>com.github.teletha</groupId>
     <artifactId>sinobu</artifactId>
-    <version>3.6.0</version>
+    <version>3.9.1</version>
 </dependency>
 ```
 #### [Gradle](https://gradle.org/)
@@ -202,7 +202,7 @@ repositories {
 Add it into the dependencies section like so:
 ```gradle
 dependencies {
-    implementation 'com.github.teletha:sinobu:3.6.0'
+    implementation 'com.github.teletha:sinobu:3.9.1'
 }
 ```
 #### [SBT](https://www.scala-sbt.org/)
@@ -212,7 +212,7 @@ resolvers += "jitpack" at "https://jitpack.io"
 ```
 Add it into the libraryDependencies section like so:
 ```scala
-libraryDependencies += "com.github.teletha" % "sinobu" % "3.6.0"
+libraryDependencies += "com.github.teletha" % "sinobu" % "3.9.1"
 ```
 #### [Leiningen](https://leiningen.org/)
 Add JitPack repository at the end of repositories in your project.clj:
@@ -221,12 +221,12 @@ Add JitPack repository at the end of repositories in your project.clj:
 ```
 Add it into the dependencies section like so:
 ```clj
-:dependencies [[com.github.teletha/sinobu "3.6.0"]]
+:dependencies [[com.github.teletha/sinobu "3.9.1"]]
 ```
 #### [Bee](https://teletha.github.io/bee)
 Add it into your project definition class like so:
 ```java
-require("com.github.teletha", "sinobu", "3.6.0");
+require("com.github.teletha", "sinobu", "3.9.1");
 ```
 <p align="right"><a href="#top">back to top</a></p>
 
@@ -259,7 +259,7 @@ Sinobu depends on the following products on runtime.
 
 
 ## License
-Copyright (C) 2023 The SINOBU Development Team
+Copyright (C) 2024 The SINOBU Development Team
 
 MIT License
 
