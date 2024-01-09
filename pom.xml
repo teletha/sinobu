@@ -173,14 +173,14 @@ With a few exceptions, Sinobu and its APIs are designed to be simple to use and 
 	</issueManagement>
 	<developers>
 		<developer>
-			<name>teletha</name>
-			<email/>
-			<url>https://github.com/teletha</url>
-		</developer>
-		<developer>
 			<name/>
 			<email/>
 			<url>https://github.com/apps/github-actions</url>
+		</developer>
+		<developer>
+			<name>teletha</name>
+			<email/>
+			<url>https://github.com/teletha</url>
 		</developer>
 	</developers>
 	<build>
