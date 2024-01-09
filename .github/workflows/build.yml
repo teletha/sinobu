@@ -41,3 +41,8 @@ jobs:
       with:
         release-type: simple
         package-name: sinobu
+
+    - name: Auto commit
+      uses: stefanzweifel/git-auto-commit-action@v5
+      with:
+        commit_message: update repository information
