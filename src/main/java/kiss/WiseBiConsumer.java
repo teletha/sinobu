@@ -15,9 +15,7 @@ public interface WiseBiConsumer<Param1, Param2>
         extends BiConsumer<Param1, Param2>, Narrow<WiseConsumer<Param2>, Param1, WiseConsumer<Param1>, Param2> {
 
     /**
-     * <p>
      * Internal API.
-     * </p>
      * 
      * @param param1 A proxy parameter.
      * @param param2 A proxy parameter.

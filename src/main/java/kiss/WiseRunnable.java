@@ -12,9 +12,7 @@ package kiss;
 public interface WiseRunnable extends Runnable, Wise {
 
     /**
-     * <p>
      * Internal API.
-     * </p>
      * 
      * @throws Throwable A sneaky exception for lambda.
      */

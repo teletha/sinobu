@@ -11,15 +11,10 @@ package kiss;
 
 import java.util.function.Consumer;
 
-/**
- * @version 2018/04/02 8:35:45
- */
 public interface WiseConsumer<Param> extends Consumer<Param>, Narrow<WiseRunnable, Param, WiseRunnable, Param> {
 
     /**
-     * <p>
      * Internal API.
-     * </p>
      * 
      * @param param A proxy parameter.
      * @throws Throwable A sneaky exception for lambda.

@@ -13,8 +13,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Simple {@link Signal} support subject.
- * 
- * @version 2018/04/28 1:58:42
  */
 public class Signaling<V> implements Observer<V> {
 
