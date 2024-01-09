@@ -17,42 +17,38 @@ import org.junit.jupiter.api.Test;
 import kiss.I;
 import kiss.XML;
 
-/**
- * @version 2017/03/31 11:30:20
- */
-public class EncodingTest {
+class EncodingTest {
+
     @Test
-    public void xmlEncoding() throws Exception {
+    void xmlEncoding() throws Exception {
         XML xml = parse("<m><text>てすと</text></m>", StandardCharsets.UTF_8.displayName());
 
         assert xml.find("text").text().equals("てすと");
     }
 
     @Test
-    public void htmlEncoding() throws Exception {
+    void htmlEncoding() throws Exception {
         XML xml = parse("<html><head><meta charset='euc-jp'><title>てすと</title></head></html>", "euc-jp");
 
         assert xml.find("title").text().equals("てすと");
     }
 
     @Test
-    public void htmlEncodingMultiple() throws Exception {
+    void htmlEncodingMultiple() throws Exception {
         XML xml = parse("<html><head><meta no/><meta charset='euc-jp'/><meta charset='shift_jis'><title>てすと</title></head></html>", "euc-jp");
 
         assert xml.find("title").text().equals("てすと");
     }
 
     @Test
-    public void htmlEncodingInvalid() throws Exception {
+    void htmlEncodingInvalid() throws Exception {
         XML xml = parse("<html><head><meta charset='uft-invalid'><title>てすと</title></head></html>", "utf-8");
 
         assert xml.find("title").text().equals("てすと");
     }
 
     /**
-     * <p>
      * Parse with encoding.
-     * </p>
      */
     private XML parse(String xml, String encoding) {
         try {
