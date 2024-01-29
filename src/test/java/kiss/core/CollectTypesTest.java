@@ -9,35 +9,29 @@
  */
 package kiss.core;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
 import kiss.Model;
 
-/**
- * @version 2016/05/04 2:14:41
- */
-public class CollectTypesTest {
+class CollectTypesTest {
 
     @Test
-    public void collect() {
+    void collect() {
         Set<Class> classes = Model.collectTypes(ExtendClass.class);
-        assert 11 == classes.size();
+        assert 7 == classes.size();
         assert classes.contains(ExtendClass.class);
     }
 
     @Test
-    public void nullParameter() {
+    void nullParameter() {
         Set<Class> classes = Model.collectTypes(null);
         assert 0 == classes.size();
     }
 
-    /**
-     * @version 2016/05/04 2:15:08
-     */
-    private static class ExtendClass extends ArrayList {
+    private static class ExtendClass extends HashMap {
 
         private static final long serialVersionUID = -5962628342667538716L;
     }
