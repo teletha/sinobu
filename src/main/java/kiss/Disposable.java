@@ -33,16 +33,18 @@ public interface Disposable {
         // dispose children
         Subscriber<Disposable> subscriber = Subscriber.of(this);
 
-        if (subscriber.list != null) {
-            subscriber.list.forEach(Disposable::dispose);
-            subscriber.list = null;
+        if (subscriber.index == 0) {
+            // mark as disposed
+            subscriber.index++;
+
+            if (subscriber.list != null) {
+                subscriber.list.forEach(Disposable::dispose);
+                subscriber.list = null;
+            }
+
+            // dispose self
+            vandalize();
         }
-
-        // dispose self
-        vandalize();
-
-        // mark as disposed
-        subscriber.index++;
     }
 
     /**
