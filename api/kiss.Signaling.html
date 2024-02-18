@@ -1,16 +1,20 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 	<head>
 		<meta charset="UTF-8"/>
+		<meta content="width=device-width, initial-scale=1" name="viewport"/>
+		<meta content="Explains how to use Sinobu and its API. " name="description"/>
+		<link href="https://fonts.googleapis.com" rel="preconnect"/>
+		<link href="https://cdn.jsdelivr.net" rel="preconnect"/>
 		<title>Sinobu API</title>
 		<base href="../"/>
 		<script src="mimic.js" type="module"></script>
 		<link href="main.css" rel="stylesheet"/>
 	</head>
-	<body class="J">
-		<header class="f">
-			<h1 class="e" date="Use saved searches to filter your results more quickly" ver="3.9.1"><code>Sinobu</code></h1>
-			<nav class="m"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
+	<body class="S">
+		<header class="K">
+			<h1 class="k" date="2024-01-08" ver="3.9.1"><code>Sinobu</code></h1>
+			<nav class="P"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#text"/>
 					</svg>Document</a><a href="api/"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#package"/>
@@ -21,7 +25,7 @@
 					</svg>Activity</a><a href="https://github.com/teletha/sinobu" target="_blank"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#github"/>
 					</svg>Repository</a></nav>
-			<div class="l" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
+			<div class="O" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#sun"/>
 					</svg>
 				</a><a id="dark" title="Change to a darker color scheme"><svg class="A svg" viewBox="0 0 24 24">
@@ -29,14 +33,14 @@
 					</svg>
 				</a></div>
 		</header>
-		<main class="a">
-			<nav class="W">
+		<main class="I">
+			<nav class="c">
 				<div></div>
 			</nav>
-			<article class="S" id="Article">
-				<section class="g"><code class="I">kiss</code>
-					<h2 class="Class c"><code class="d">Signaling</code><code class="H">&#60;<code>V</code>&#62;</code></h2>
-					<div class="Z">
+			<article class="U" id="Article">
+				<section class="L"><code class="V">kiss</code>
+					<h2 class="Class R"><code class="Z">Signaling</code><code class="m">&#60;<code>V</code>&#62;</code></h2>
+					<div class="N">
 						<ul class="C D">
 							<li><code>V</code></li>
 						</ul>
@@ -46,49 +50,49 @@
 						</ul>
 					</div><span class="B"><p>Simple <code><a href="api/kiss.Signal.html">Signal</a></code> support subject.</p>
 					</span></section>
-				<section class="g" id="expose">
-					<h2 class="Q"><i class="FINAL"><i class="PUBLIC"></i></i><code class="d">expose</code><i class="Y"><code class="return"><a href="api/kiss.Signal.html">Signal</a><code class="parameters"><code>V</code></code></code></i></h2><span class="B"><p>The exposed interface.</p>
+				<section class="L" id="expose">
+					<h2 class="h"><i class="FINAL"><i class="PUBLIC"></i></i><code class="Z">expose</code><i class="H"><code class="return"><a href="api/kiss.Signal.html">Signal</a><code class="parameters"><code>V</code></code></code></i></h2><span class="B"><p>The exposed interface.</p>
 					</span></section>
-				<section class="g" id="Signaling()">
-					<h2 class="Q"><i class="PUBLIC"></i><code class="d">Signaling</code><code class="H">()</code></h2>
+				<section class="L" id="Signaling()">
+					<h2 class="h"><i class="PUBLIC"></i><code class="Z">Signaling</code><code class="m">()</code></h2>
 				</section>
-				<section class="g" id="accept(java.lang.Object)">
-					<h2 class="Q"><i class="OVERRIDE PUBLIC"></i><code class="d">accept</code><code class="H">(<code>V</code> <code class="parameterName">value</code>)</code><i class="Y"><code>void</code></i></h2>
-					<table class="K">
-						<tr class="M">
+				<section class="L" id="accept(java.lang.Object)">
+					<h2 class="h"><i class="OVERRIDE PUBLIC"></i><code class="Z">accept</code><code class="m">(<code>V</code> <code class="parameterName">value</code>)</code><i class="H"><code>void</code></i></h2>
+					<table class="d">
+						<tr class="g">
 							<td><code>V</code> <code>value</code></td>
 							<td></td>
 						</tr>
 					</table>
 				</section>
-				<section class="g" id="complete()">
-					<h2 class="Q"><i class="OVERRIDE PUBLIC"></i><code class="d">complete</code><code class="H">()</code><i class="Y"><code>void</code></i></h2>
+				<section class="L" id="complete()">
+					<h2 class="h"><i class="OVERRIDE PUBLIC"></i><code class="Z">complete</code><code class="m">()</code><i class="H"><code>void</code></i></h2>
 				</section>
-				<section class="g" id="error(java.lang.Throwable)">
-					<h2 class="Q"><i class="OVERRIDE PUBLIC"></i><code class="d">error</code><code class="H">(<code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Throwable.html">Throwable</a></code> <code class="parameterName">error</code>)</code><i class="Y"><code>void</code></i></h2>
-					<table class="K">
-						<tr class="M">
+				<section class="L" id="error(java.lang.Throwable)">
+					<h2 class="h"><i class="OVERRIDE PUBLIC"></i><code class="Z">error</code><code class="m">(<code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Throwable.html">Throwable</a></code> <code class="parameterName">error</code>)</code><i class="H"><code>void</code></i></h2>
+					<table class="d">
+						<tr class="g">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Throwable.html">Throwable</a></code> <code>error</code></td>
 							<td></td>
 						</tr>
 					</table>
 				</section>
 			</article>
-			<aside class="k" id="SubNavi">
-				<div class="X">
-					<h5 class="b">Constructors</h5>
+			<aside class="X" id="SubNavi">
+				<div class="i">
+					<h5 class="J">Constructors</h5>
 					<ul>
-						<li><i class="PUBLIC"></i><code><a href="api/kiss.Signaling.html#Signaling()">Signaling</a></code><code class="H">()</code></li>
+						<li><i class="PUBLIC"></i><code><a href="api/kiss.Signaling.html#Signaling()">Signaling</a></code><code class="m">()</code></li>
 					</ul>
-					<h5 class="b">Fields</h5>
+					<h5 class="J">Fields</h5>
 					<ul>
-						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Signaling.html#expose">expose</a></code><i class="N"><code class="return"><a href="api/kiss.Signal.html">Signal</a><code class="parameters"><code>V</code></code></code></i></li>
+						<li><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Signaling.html#expose">expose</a></code><i class="e"><code class="return"><a href="api/kiss.Signal.html">Signal</a><code class="parameters"><code>V</code></code></code></i></li>
 					</ul>
-					<h5 class="b">Methods</h5>
+					<h5 class="J">Methods</h5>
 					<ul>
-						<li><i class="OVERRIDE PUBLIC"></i><code><a href="api/kiss.Signaling.html#accept(java.lang.Object)">accept</a></code><code class="H">(<code>V</code> <code class="parameterName">value</code>)</code><i class="N"><code>void</code></i></li>
-						<li><i class="OVERRIDE PUBLIC"></i><code><a href="api/kiss.Signaling.html#complete()">complete</a></code><code class="H">()</code><i class="N"><code>void</code></i></li>
-						<li><i class="OVERRIDE PUBLIC"></i><code><a href="api/kiss.Signaling.html#error(java.lang.Throwable)">error</a></code><code class="H">(<code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Throwable.html">Throwable</a></code> <code class="parameterName">error</code>)</code><i class="N"><code>void</code></i></li>
+						<li><i class="OVERRIDE PUBLIC"></i><code><a href="api/kiss.Signaling.html#accept(java.lang.Object)">accept</a></code><code class="m">(<code>V</code> <code class="parameterName">value</code>)</code><i class="e"><code>void</code></i></li>
+						<li><i class="OVERRIDE PUBLIC"></i><code><a href="api/kiss.Signaling.html#complete()">complete</a></code><code class="m">()</code><i class="e"><code>void</code></i></li>
+						<li><i class="OVERRIDE PUBLIC"></i><code><a href="api/kiss.Signaling.html#error(java.lang.Throwable)">error</a></code><code class="m">(<code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Throwable.html">Throwable</a></code> <code class="parameterName">error</code>)</code><i class="e"><code>void</code></i></li>
 					</ul>
 				</div>
 			</aside>
