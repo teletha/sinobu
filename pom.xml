@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.teletha</groupId>
 	<artifactId>sinobu</artifactId>
-	<version>3.9.1</version>
+	<version>3.9.2</version>
 	<packaging>jar</packaging>
 	<name>sinobu</name>
 	<description>Sinobu is not obsolete framework but utility, which can manipulate objects as a extremely-condensed facade.
@@ -124,7 +124,7 @@ With a few exceptions, Sinobu and its APIs are designed to be simple to use and 
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
-			<version>1.4.14</version>
+			<version>1.5.0</version>
 			<scope>test</scope>
 			<exclusions/>
 		</dependency>
