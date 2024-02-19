@@ -9,7 +9,7 @@
  */
 package kiss;
 
-import static bee.api.License.MIT;
+import static bee.api.License.*;
 
 import javax.lang.model.SourceVersion;
 
@@ -23,26 +23,26 @@ public class Project extends bee.api.Project {
                 This is extremely lightweight at approximately 104 KB without relying on other libraries, and its various operations are designed to run as fast as other competing libraries.
 
                 This library aims to simplify and highly condense the functions related to domains that are frequently encountered in real-world development projects, making them easier to use.
-                * Dependency Injection
-                * Object lifecycle management
-                * JavaBeans-like property based type modeling
-                * HTTP(S)
-                * JSON
-                * HTML(XML)
-                * Reactive Programming (Rx)
-                * Asynchronous processing
-                * Parallel processing
-                * Multilingualization
-                * Template Engine (Mustache)
-                * Dynamic plug-in mechanism
-                * Object Persistence
-                * Logging
+                - Dependency Injection
+                - Object lifecycle management
+                - JavaBeans-like property based type modeling
+                - HTTP(S)
+                - JSON
+                - HTML(XML)
+                - Reactive Programming (Rx)
+                - Asynchronous processing
+                - Parallel processing
+                - Multilingualization
+                - Template Engine (Mustache)
+                - Dynamic plug-in mechanism
+                - Object Persistence
+                - Logging
 
                 With a few exceptions, Sinobu and its APIs are designed to be simple to use and easy to understand by adhering to the following principles.
-                * Keep it stupid simple
-                * Less is more
-                * Type safety
-                * Refactoring safety
+                - Keep it stupid simple
+                - Less is more
+                - Type safety
+                - Refactoring safety
                 """);
 
         require(SourceVersion.RELEASE_19, SourceVersion.RELEASE_17);
