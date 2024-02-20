@@ -79,14 +79,41 @@ const root = {
 			"path": "doc/doc.DocumentDoc.Dependency_Injection.html",
 			"subs": [
 				{
-					"path": "doc/doc.DocumentDoc.Dependency_Injection.html#doc.DocumentDoc.Dependency_Injection.The_need_for_Dependency_Injection",
-					"subs": [],
-					"title": "The need for Dependency Injection"
+					"path": "doc/doc.DocumentDoc.Dependency_Injection.html#doc.DocumentDoc.Dependency_Injection.The_concept",
+					"subs": [
+						{
+							"path": "doc/doc.DocumentDoc.Dependency_Injection.html#doc.DocumentDoc.Dependency_Injection.The_concept.DI_Container",
+							"subs": [],
+							"title": "DI Container"
+						},
+						{
+							"path": "doc/doc.DocumentDoc.Dependency_Injection.html#doc.DocumentDoc.Dependency_Injection.The_concept.Injection_Type",
+							"subs": [],
+							"title": "Injection Type"
+						}
+					],
+					"title": "The concept"
 				},
 				{
-					"path": "doc/doc.DocumentDoc.Dependency_Injection.html#doc.DocumentDoc.Dependency_Injection.Circular_Reference",
-					"subs": [],
-					"title": "Circular Reference"
+					"path": "doc/doc.DocumentDoc.Dependency_Injection.html#doc.DocumentDoc.Dependency_Injection.Constructor_Injection",
+					"subs": [
+						{
+							"path": "doc/doc.DocumentDoc.Dependency_Injection.html#doc.DocumentDoc.Dependency_Injection.Constructor_Injection.Injectable_Type",
+							"subs": [],
+							"title": "Injectable Type"
+						},
+						{
+							"path": "doc/doc.DocumentDoc.Dependency_Injection.html#doc.DocumentDoc.Dependency_Injection.Constructor_Injection.Priority",
+							"subs": [],
+							"title": "Priority"
+						},
+						{
+							"path": "doc/doc.DocumentDoc.Dependency_Injection.html#doc.DocumentDoc.Dependency_Injection.Constructor_Injection.Circular_Reference",
+							"subs": [],
+							"title": "Circular Reference"
+						}
+					],
+					"title": "Constructor Injection"
 				}
 			],
 			"title": "Dependency Injection"
@@ -275,11 +302,6 @@ const root = {
 					"path": "doc/doc.DocumentDoc.Plugin.html#doc.DocumentDoc.Plugin.Dynamic_Loading",
 					"subs": [],
 					"title": "Dynamic Loading"
-				},
-				{
-					"path": "doc/doc.DocumentDoc.Plugin.html#doc.DocumentDoc.Plugin.Query_Extension",
-					"subs": [],
-					"title": "Query Extension"
 				}
 			],
 			"title": "Plugin"
