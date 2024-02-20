@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.9.2](https://github.com/teletha/sinobu/compare/v3.9.1...v3.9.2) (2024-02-18)
+
+
+### Bug Fixes
+
+* Disposable forbids multiplex dispose call ([61d4343](https://github.com/teletha/sinobu/commit/61d4343de1b72ca89cc810baf9aca68fa0662b4d))
+
 ## [3.9.1](https://github.com/teletha/sinobu/compare/v3.9.0...v3.9.1) (2024-01-08)
 
 
