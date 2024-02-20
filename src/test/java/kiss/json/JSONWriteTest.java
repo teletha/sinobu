@@ -12,8 +12,27 @@ package kiss.json;
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
+import kiss.JSON;
 
 public class JSONWriteTest {
+
+    @Test
+    public void write() {
+        JSON json = new JSON();
+        json.set("key", "value");
+
+        assertJSON(json, """
+                {
+                    "key": "value"
+                }
+                """);
+    }
+
+    private void assertJSON(JSON one, String other) {
+        one = one.strip().replaceAll("\\t", "    ");
+        other = other.strip().replaceAll("\\t", "    ");
+        assert one.equals(other);
+    }
 
     @Test
     public void testName() {
