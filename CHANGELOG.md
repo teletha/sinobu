@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.9.3](https://github.com/teletha/sinobu/compare/v3.9.2...v3.9.3) (2024-02-20)
+
+
+### Bug Fixes
+
+* non-static inner class with Lifestyle dependency throws error ([a90c3b1](https://github.com/teletha/sinobu/commit/a90c3b1387117b662d6df58b95d3a247c975ae1c))
+
 ## [3.9.2](https://github.com/teletha/sinobu/compare/v3.9.1...v3.9.2) (2024-02-18)
 
 
