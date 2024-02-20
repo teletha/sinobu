@@ -144,12 +144,12 @@ public class ManipulateTest {
     }
 
     @Test
-    void set() {
+    public void setValue() {
         JSON json = I.json("""
                 { "key" : "value" }
                 """);
-        assert json.set("set", "new") == json;
-        assert json.get(String.class, "set").equals("new");
+        assert json.set("newKey", "newValue") == json;
+        assert json.get(String.class, "newKey").equals("newValue");
     }
 
     @Test

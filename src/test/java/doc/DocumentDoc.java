@@ -20,6 +20,9 @@ import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+
 import doc.ExtensionTest.Codec;
 import doc.ExtensionTest.LocalDateCodec;
 import doc.MustacheTest.Person;
@@ -28,60 +31,62 @@ import kiss.I;
 import kiss.Lifestyle;
 import kiss.Managed;
 import kiss.Singleton;
+import kiss.instantiation.ConstructorInjectionTest;
+import kiss.instantiation.ConstructorInjectionTest.CircularLifestyleA;
+import kiss.instantiation.ConstructorInjectionTest.CircularLifestyleB;
 import kiss.json.ManipulateTest;
 import kiss.lifestyle.PrototypeTest;
 import kiss.lifestyle.SingletonTest;
 
 public class DocumentDoc {
 
+    static {
+        I.load(DocumentDoc.class);
+    }
+
+    @Nested
     public class Introduction {
         /**
-         * <p>
+         * 
+         * Sinobu is not obsolete framework but utility, which can manipulate objects as a
+         * extremely-condensed facade.
+         * This is extremely lightweight at approximately 106 KB without relying on other libraries,
+         * and its various operations are designed to run as fast as other competing libraries.
+         * 
          * This library aims to simplify and highly condense the functions related to domains that
          * are frequently encountered in real-world development projects, making them easier to use.
          * Some specific domains are listed below.
-         * </p>
-         * <ul>
-         * <li><a href="https://en.wikipedia.org/wiki/Dependency_injection">Dependency
-         * Injection</a></li>
-         * <li>Object lifecycle management</li>
-         * <li><a href="https://en.wikipedia.org/wiki/JavaBeans">JavaBeans</a>-like property based
-         * type modeling</li>
-         * <li>HTTP(S)</li>
-         * <li><a href="https://en.wikipedia.org/wiki/JSON">JSON</a></li>
-         * <li><a href="https://en.wikipedia.org/wiki/HTML">HTML</a>(<a href=
-         * "https://en.wikipedia.org/wiki/XML">XML</a>)</li>
-         * <li>Reactive Programming (<a href="http://reactivex.io/">Rx</a>)</li>
-         * <li>Asynchronous processing</li>
-         * <li>Parallel processing</li>
-         * <li>Multilingualization</li>
-         * <li>Template
-         * engine(<a href="https://mustache.github.io/mustache.5.html">Mustache</a>)</li>
-         * <li>Dynamic plug-in mechanism</li>
-         * <li>Object Persistence</li>
-         * <li>Logging</li>
-         * </ul>
-         * <p>
+         * 
+         * - [Dependency Injection](https://en.wikipedia.org/wiki/Dependency_injection)
+         * - Object lifecycle management
+         * - Property based object modeling
+         * - HTTP(S)
+         * - [JSON](https://en.wikipedia.org/wiki/JSON)
+         * - [HTML](https://en.wikipedia.org/wiki/HTML) (including Tag Soup)
+         * - [XML](https://en.wikipedia.org/wiki/XML)
+         * - Reactive Programming ([Rx](http://reactivex.io))
+         * - Asynchronous & Parallel processing
+         * - Multilingualization
+         * - Template Engine ([Mustache](https://mustache.github.io/mustache.5.html))
+         * - Dynamic plug-in mechanism
+         * - Object persistence
+         * - Logging
+         * 
          * With a few exceptions, Sinobu and its APIs are designed to be simple to use and easy to
          * understand by adhering to the following principles.
-         * </p>
-         * <ul>
-         * <li><a href="https://en.wikipedia.org/wiki/KISS_principle">Keep it stupid simple</a></li>
-         * <li><a href="https://en.wikipedia.org/wiki/Less_is_more_(architecture)">Less is
-         * more</a></li>
-         * <li><a href="https://en.wikipedia.org/wiki/Type_safety">Type safety</a></li>
-         * <li>Refactoring safety</li>
-         * </ul>
+         * 
+         * - [Keep it stupid simple](https://en.wikipedia.org/wiki/KISS_principle)
+         * - [Less is more](https://en.wikipedia.org/wiki/Less_is_more_(architecture))
+         * - [Type safety](https://en.wikipedia.org/wiki/Type_safety)
+         * - Refactoring safety
          */
         public class Purpose_of_use {
         }
 
         /**
-         * <p>
          * It is probably easiest to use a build tool such as
-         * <a href="https://maven.apache.org/">Maven</a> or
-         * <a href="https://gradle.org/">Gradle</a>.
-         * </p>
+         * [Maven](https://maven.apache.org) or [Gradle](https://gradle.org).
+         * 
          * {@snippet lang = xml :
          * <dependency>
          *     <groupId>{@var project}</groupId>
@@ -94,40 +99,35 @@ public class DocumentDoc {
         }
     }
 
+    @Nested
     public class Managing_object_lifestyle {
 
         /**
-         * <p>
          * In Sinobu, lifestyle refers to the way an object is created and managed, corresponding to
          * the scope in terms of DI containers such as SpringFramework and Guice, but without the
          * process of registering with the container or destroying the object.
-         * </p>
          */
         public class What_do_you_mean_by_lifestyle_ {
 
             /**
-             * <p>
              * In Java, it is common to use the new operator on the constructor to create a new
              * object. In many cases, this is sufficient, but in the following situations, it is a
              * bit insufficient.
-             * </p>
-             * <ul>
-             * <li>To manage the number of objects to be created.</li>
-             * <li>To create objects associated with a specific context.</li>
-             * <li>To generate objects with complex dependencies.</li>
-             * <li>The type of the object to be generated is not statically determined.</li>
-             * </ul>
-             * <p>
+             * 
+             * - To manage the number of objects to be created.
+             * - To create objects associated with a specific context.
+             * - To generate objects with complex dependencies.
+             * - The type of the object to be generated is not statically determined.
+             * 
              * While DI containers such as SpringFramework or Guice are commonly used to deal with
              * such problems, Sinobu comes with its own very simple DI container. The following code
              * shows the creation of an object using DI container.
-             * </p>
+             * 
              * {@link #createObject() @}
-             * <p>
+             * 
              * As you can see from the above code, there is no actual container object; Sinobu has
              * only one global container in the JVM, and that object cannot be accessed directly. In
              * order to create an object from a container, we need to call {@link I#make(Class)}.
-             * </p>
              */
             public class Creating_an_object {
 
@@ -142,52 +142,46 @@ public class DocumentDoc {
         }
 
         /**
-         * <p>
          * In order to define a lifestyle, you need to implement Lifestyle interface. This interface
          * is essentially equivalent to Callable. It is called when container requests the specific
          * type. It makes the following 3 decisions:
-         * </p>
-         * <ol>
-         * <li>Which class to instantiate actually.</li>
-         * <li>How to instantiate it.</li>
-         * <li>How to manage the instances.</li>
-         * </ol>
-         * <p>
+         * 
+         * 1. Which class to instantiate actually.
+         * 2. How to instantiate it.
+         * 3. How to manage the instances.
+         * 
          * Sinobu defines two lifestyles that are frequently used. One is the prototype pattern and
          * the other is the singleton pattern.
-         * </p>
          */
         public class Defining_lifestyle {
 
             /**
-             * <p>
              * The default lifestyle is Prototype, it creates a new instance on demand. This is
              * applied automatically and you have to configure nothing.
-             * </p>
+             * 
              * {@link PrototypeTest#prototype() @}
              */
             public class Prototype {
             }
 
             /**
-             * <p>
              * The other is the singleton lifestyle, which keeps a single instance in the JVM and
              * always returns it. This time, the lifestyle is applied with annotations when defining
              * the class.
-             * </p>
+             * 
              * {@link SingletonTest#singleton() @}
              */
             public class Singleton {
             }
 
             /**
-             * <p>
              * You can also implement lifestyles tied to specific contexts. Custom class requires to
              * implement the Lifestyle interface and receive the requested type in the constructor.
              * I'm using {@link I#prototype(Class)} here to make Dependency Injection work, but you
              * can use any instantiation technique.
-             * </p>
-             * {@link PerThread @}{@link #perThread() @}
+             * 
+             * {@link PerThread @}
+             * {@link #perThread() @}
              */
             public class Custom_lifestyle {
 
@@ -226,37 +220,28 @@ public class DocumentDoc {
             }
 
             /**
-             * <p>
              * Sinobu has built-in defined lifestyles for specific types.
-             * </p>
-             * <dl>
-             * <dt>{@link List}
-             * <dd>Create new instance each time. ({@link ArrayList})</dd>
-             * <dt>{@link Set}
-             * <dd>Create new instance each time. ({@link HashSet})</dd>
-             * <dt>{@link Map}
-             * <dd>Create new instance each time. ({@link HashMap})</dd>
-             * <dt>{@link Locale}
-             * <dd>Always returns the instance retrieved from {@link Locale#getDefault()}.</dd>
-             * </dl>
+             * 
+             * - {@link List} - Create new instance each time. ({@link ArrayList})
+             * - {@link Set} - Create new instance each time. ({@link HashSet})
+             * - {@link Map} - Create new instance each time. ({@link HashMap})
+             * - {@link Locale} - Always returns the instance retrieved from
+             * {@link Locale#getDefault()}.
              */
             public class Builtin_lifestyles {
             }
         }
 
         /**
-         * <p>
          * To apply a non-prototype lifestyle, you need to configure each class individually. There
          * are two ways to do this.
-         * </p>
          */
         public class Applying_lifestyle {
 
             /**
-             * <p>
              * One is to use {@link Managed} annotation. This method is useful if you want to apply
              * lifestyle to classes that are under your control.
-             * </p>
+             * 
              * {@link UnderYourControl @}
              */
             public class Use_Managed_annotation {
@@ -267,12 +252,12 @@ public class DocumentDoc {
             }
 
             /**
-             * <p>
              * Another is to load the Lifestyle implementation. Sinobu has a wide variety of
              * extension points, and Lifestyle is one of them. This method is useful if you want to
              * apply lifestyle to classes that are not under your control.
-             * </p>
-             * {@link GlobalThreadPool @} {@link #loadLifestyle() @}
+             * 
+             * {@link GlobalThreadPool @}
+             * {@link #loadLifestyle() @}
              */
             public class Use_Lifestyle_extension {
                 class GlobalThreadPool implements Lifestyle<Executor> {
@@ -292,24 +277,115 @@ public class DocumentDoc {
         }
     }
 
+    @Nested
     public class Dependency_Injection {
         /**
-         * <p>
          * Dependency Injection (DI) is a mechanism that solves various problems related to
-         * component dependencies in "a nice way". Component dependency refers to the relationship
+         * component dependencies in 'a nice way'. Component dependency refers to the relationship
          * from upper layer to lower layer, such as Controller → Service → Repository in a general
-         * layered architecture. "A nice way" means that the framework will take care of the problem
-         * without the developer having to work hard manually. In modern Java application
-         * development, DI is an almost indispensable mechanism.
-         * </p>
+         * layered architecture.
+         * 'A nice way' means that the framework will take care of the problem without the developer
+         * having to work hard manually.
+         * 
+         * In modern Java application development, DI is an almost indispensable mechanism.
+         * The detailed explanation of the DI concept is left to [another
+         * website](https://en.wikipedia.org/wiki/Dependency_injection).
          */
-        public class The_need_for_Dependency_Injection {
+        public class The_concept {
+
+            /**
+             * Unlike other DI frameworks, there is no explicit DI container in Sinobu. It has only
+             * one container implicitly inside, but the user is not aware of it. Therefore, there is
+             * also no need to define dependencies explicitly by means of code or external files.
+             * All dependencies are automatically resolved based on type.
+             */
+            public class DI_Container {
+            }
+
+            /**
+             * Commonly, there are four main types in which a client can receive injected services.
+             * 
+             * - Constructor injection, where dependencies are provided through a client's class
+             * constructor.
+             * - Setter injection, where the client exposes a setter method which accepts the
+             * dependency.
+             * - Field injection, where the client exposes a field which accepts the dependency.
+             * - Interface injection, where the dependency's interface provides an injector method
+             * that will inject the dependency into any client passed to it.
+             * 
+             * Of these, **only constructor injection is supported** by Sinobu. Other injection
+             * types will **not be supported in the future** due to their significant disruption
+             * to object safety.
+             */
+            public class Injection_Type {
+            }
         }
 
-        public class Circular_Reference {
+        /**
+         * The most common form of dependency injection is for a class to request its
+         * dependencies through its constructor. This ensures the client is always in a valid
+         * state, since it cannot be instantiated without its necessary dependencies.
+         * 
+         * {@link ConstructorInjectionTest#objectInjection() @}
+         */
+        public class Constructor_Injection {
+
+            /**
+             * Any type can be injectable, but there are a few types that receive special treatment.
+             * 
+             * - Primitives - A default value (0 for int, false for boolean) is assigned.
+             * {@link ConstructorInjectionTest#primitiveIntInjection() @}
+             * {@link ConstructorInjectionTest#primitiveBooleanInjection() @}
+             * - {@link Lifestyle} - The resolution of dependencies can be delayed until the user
+             * actually needs it. Type variables must be correctly specified.
+             * {@link ConstructorInjectionTest#objectLazyInjection() @}
+             * - {@link Class} - The currently processing model type. This feature is mainly
+             * available when implementing the special generic {@link Lifestyle}.
+             * {@link ConstructorInjectionTest#typeInjection() @}
+             * 
+             */
+            public class Injectable_Type {
+            }
+
+            /**
+             * If only one constructor is defined for the class being injected, it is used. If more
+             * than one constructor is defined, it must detect which constructor is to be used.
+             * 
+             * The constructor with the {@link Managed} annotation has the highest priority.
+             * {@link ConstructorInjectionTest#priorityManaged() @}
+             * 
+             * Next priority is given to constructors with the Inject annotation. The Inject
+             * annotation targets all annotations with the simple name 'Inject', so annotations such
+             * as jakarta.inject.Inject used in JSR330 etc. can also be used.
+             * {@link ConstructorInjectionTest#priorityInject() @}
+             * 
+             * If no annotation is found, the constructor with the lowest number of arguments is
+             * used.
+             * {@link ConstructorInjectionTest#priorityMinParam() @}
+             * 
+             * If several constructors with the smallest number of arguments are defined, the first
+             * constructor found among them is used. (which is implementation-dependent in the JDK)
+             * {@link ConstructorInjectionTest#priorityMinParams() @}
+             */
+            public class Priority {
+            }
+
+            /**
+             * One of the problems with constructor injection is that it cannot resolve circular
+             * dependencies. To partially solve this problem, Sinobu provides a delayed dependency
+             * injection method, but it does not completely solve any situation. If a solution is
+             * not possible, an error will occur.
+             * 
+             * {@link CircularLifestyleA @}
+             * {@link CircularLifestyleB @}
+             * {@link ConstructorInjectionTest#circularDependenciesWithProvider() @}
+             */
+            public class Circular_Reference {
+            }
         }
     }
 
+    @Nested
     public class HTTP {
         public class Request_and_Response {
         }
@@ -324,40 +400,39 @@ public class DocumentDoc {
         }
     }
 
+    @Nested
     public class JSON {
 
         /**
-         * <p>
          * You can read JSON from strings, files, and various inputs. All data will be expanded into
          * memory in a tree format. It is not a streaming format, so please be careful when parsing
          * very large JSON.
-         * </p>
          */
         public class Reading_JSON {
 
             /**
-             * <p>
              * You can access the value by specifying the key.
-             * </p>
+             * 
              * {@link ManipulateTest#readValue() @}
              */
             public class Access_to_the_value {
             }
 
             /**
-             * <p>
              * You can specify a key multiple times to access nested values.
-             * </p>
              * {@link ManipulateTest#readNestedValue() @}
-             * <p>
+             * 
              * You can also find all values by the sequential keys.
-             * </p>
              * {@link ManipulateTest#readNestedValueBySequentialKeys() @}
              */
             public class Access_to_the_nested_value {
             }
         }
 
+        /**
+         * You can write JSON from property-based model.
+         * 
+         */
         public class Writing_JSON {
         }
 
@@ -368,6 +443,7 @@ public class DocumentDoc {
         }
     }
 
+    @Nested
     public class HTML {
         public class Parsing {
         }
@@ -385,6 +461,7 @@ public class DocumentDoc {
         }
     }
 
+    @Nested
     public class ReactiveX {
 
         public class Signal {
@@ -400,6 +477,7 @@ public class DocumentDoc {
         }
     }
 
+    @Nested
     public class Template_Literal {
 
         /**
@@ -414,64 +492,51 @@ public class DocumentDoc {
          * "logic-less" because there are no if statements, else clauses, or for loops. Instead
          * there are only tags. Some tags are replaced with a value, some nothing, and others a
          * series of values.
-         * </p>
-         * <p>
+         * 
          * Java19 does not yet have a language built-in template syntax. Therefore, Sinobu provides
          * a mechanism to parse <a href="https://mustache.github.io/">Mustache</a> syntax instead.
-         * </p>
          */
         public class Mustache {
 
             /**
-             * <p>
              * To use Mustache, you must first create a Mustache template, which is written using a
              * markup language such as HTML or XML. In template, you use special symbols called
              * Mustache delimiters to specify where the data should be inserted. Mustache delimiters
              * are written in the following format:
-             * </p>
              * {@code {placeholder} @}
-             * </p>
-             * <p>
+             * 
              * As you can see, Mustache delimiter is a string of characters enclosed in single
              * brace, such as "&#123;placeholder&#125;". This string specifies the location where
              * the data should be inserted. For example, consider the following Mustache template:
-             * </p>
              * {@link MustacheTest#template @}
-             * <p>
+             * 
              * When using this template, you need to provide data for placeholders. For instance,
              * you might have the following JavaBean object as data:
-             * </p>
              * {@link Person @}
-             * <p>
+             * 
              * Passing the template string and context data to method
              * {@link I#express(String, Object...)}, we get a string in which the various
              * placeholders are replaced by its data.
-             * </p>
              * {@linkplain MustacheTest#use() @}
-             * <p>
+             * 
              * Next, within the program that uses the Mustache template, the Mustache engine is
              * initialized. At this point, the Mustache engine is passed the template and the data.
              * The data is written using data structures such as JavaScript objects.
-             * </p>
-             * <p>
+             * 
              * Finally, the Mustache engine is used to render the Mustache template. At this time,
              * the Mustache engine replaces the Mustache specifier in the template and populates the
              * data to produce a finished HTML, XML, or other markup language document.
-             * </p>
-             * <p>
+             * 
              * The specific usage varies depending on the programming language and framework, but
              * the above steps are a rough outline of the basic procedure for using Mustache.
-             * </p>
              */
             public class Syntax {
             }
 
             /**
-             * <p>
              * In SInobu, Mustache can be used by calling the {@link I#express(String, Object...)}
              * method. This method parses the given string, reads the necessary variables from the
              * context, substitutes them, and returns the resulting string.
-             * </p>
              */
             public class Usage_at_Sinobu {
             }
@@ -484,6 +549,7 @@ public class DocumentDoc {
         }
     }
 
+    @Nested
     public class Plugin {
 
         /**
@@ -493,23 +559,20 @@ public class DocumentDoc {
         }
 
         /**
-         * <p>
          * Sinobu has a general-purpose plug-in mechanism for extending application functions. An
          * extensible place is called Extension Point, and its substance is a type (interface or
          * class) marked with the {@link Extensible} interface.
-         * </p>
-         * <p>
+         * 
          * We give a definition of <em>Extension Point</em> like the following.
-         * </p>
-         * <ul>
-         * <li>It implements {@link Extensible} interface directly.</li>
-         * </ul>
-         * {@link ThisIsExtensionPoint @} {@link ThisIsAlsoExtensionPoint @}
+         * 
+         * - It implements {@link Extensible} interface directly.
+         * 
+         * {@link ThisIsExtensionPoint @}
+         * {@link ThisIsAlsoExtensionPoint @}
          * {@link ThisIsNotExtensionPoint @}
-         * <p>
+         * 
          * In the usage example, Codec is the extension point that converts any object to a string
          * representation.
-         * </p>
          * {@link Codec @}
          */
         public class Extension_Point {
@@ -521,29 +584,28 @@ public class DocumentDoc {
             }
 
             class ThisIsAlsoExtensionPoint implements Extensible {
-                // This is both Extension Point and Extension.
+                // This class is both Extension Point and Extension.
             }
         }
 
         /**
-         * <p>
          * We give a definition of <em>Extension</em> like the following.
-         * </p>
-         * <ul>
-         * <li>It implements any Extension Point or is Extension Point itself.</li>
-         * <li>It must be concrete class and has a suitable constructor for Sinobu (see also
-         * {@link I#make(Class)} method).</li>
-         * </ul>
-         * {@link ThisIsExtension @}{@link ThisIsAlsoExtension @} {@link ThisIsNotExtension @}
-         * <p>
+         * 
+         * - It implements any Extension Point or is Extension Point itself.
+         * - It must be concrete class and has a suitable constructor for Sinobu (see also
+         * {@link I#make(Class)} method).
+         * 
+         * {@link ThisIsExtension @}
+         * {@link ThisIsAlsoExtension @}
+         * {@link ThisIsNotExtension @}
+         * 
          * In the usage example, LocalDateCodec is the extension that is special implementation for
          * {@link LocalDate}.
-         * </p>
          * {@link LocalDateCodec @}
          */
         public class Extension {
             class ThisIsExtension implements Extensible {
-                // This is both Extension Point and Extension.
+                // This class is both Extension Point and Extension.
             }
 
             class ThisIsAlsoExtension extends ThisIsExtension {
@@ -562,32 +624,39 @@ public class DocumentDoc {
         }
 
         /**
-         * <p>
-         * You can provide <em>Extension Key</em> for each Extensions by using parameter. The key
-         * makes easy finding an Extension you need (see also {@link I#find(Class, Class)}).
-         * </p>
-         * {@link ExtensionPointWithKey @} {@link ExtensionWithKey @}
-         * {@link ExtensionWithAnotherKey @}
+         * You can provide <em>Extension Key</em> for each Extensions by using parameter.
+         * 
+         * {@link ExtensionPointWithKey @}
+         * {@link ExtensionWithStringKey @}
+         * {@link ExtensionWithListKey @}
+         * 
+         * The key makes easy finding an Extension you need (see also {@link I#find(Class, Class)}).
+         * {@link Extension_Key#findExtensionByKey() @}
          */
+        @Nested
         public class Extension_Key {
             interface ExtensionPointWithKey<K> extends Extensible {
             }
 
-            class ExtensionWithKey implements ExtensionPointWithKey<String> {
+            class ExtensionWithStringKey implements ExtensionPointWithKey<String> {
                 // Associate this Extension with String class.
             }
 
-            class ExtensionWithAnotherKey implements ExtensionPointWithKey<List> {
+            class ExtensionWithListKey implements ExtensionPointWithKey<List> {
                 // Associate this Extension with List interface.
+            }
+
+            @Test
+            void findExtensionByKey() {
+                assert I.find(ExtensionPointWithKey.class, String.class) instanceof ExtensionWithStringKey;
             }
         }
 
         /**
-         * <p>
          * All extensions are not recognized automatically, you have to load them explicitly using
          * {@link I#load(Class)}.
-         * </p>
-         * {@link ExtensionUser @} {@link ApplicationMain @}
+         * {@link ExtensionUser @}
+         * {@link ApplicationMain @}
          */
         public class Dynamic_Loading {
             class ExtensionUser {
@@ -606,11 +675,9 @@ public class DocumentDoc {
                 }
             }
         }
-
-        public class Query_Extension {
-        }
     }
 
+    @Nested
     public class Persistence {
         public class Save_Data {
         }

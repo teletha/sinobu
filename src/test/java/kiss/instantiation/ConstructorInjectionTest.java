@@ -9,7 +9,8 @@
  */
 package kiss.instantiation;
 
-import java.util.List;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 import org.junit.jupiter.api.Test;
 
@@ -114,12 +115,26 @@ public class ConstructorInjectionTest {
         class Injection {
             private Lifestyle<Person> lazy;
 
-            Injection(Lifestyle<Person> injectable, List<String> item, int value) {
+            Injection(Lifestyle<Person> injectable) {
                 this.lazy = injectable;
             }
         }
 
         assert I.make(Injection.class).lazy.get() != null;
+    }
+
+    @Test
+    @SuppressWarnings("unused")
+    public void typeInjection() {
+        class Injection {
+            private Class type;
+
+            Injection(Class injectable) {
+                this.type = injectable;
+            }
+        }
+
+        assert I.make(Injection.class).type == null;
     }
 
     /**
@@ -270,5 +285,91 @@ public class ConstructorInjectionTest {
         private CircularMixB(Lifestyle<CircularMixA> other) {
             this.other = other;
         }
+    }
+
+    @Test
+    @SuppressWarnings("unused")
+    public void priorityManaged() {
+        class Injection {
+
+            private int value;
+
+            Injection() {
+                value = 10;
+            }
+
+            // This constructore is used.
+            @Managed
+            Injection(int injectable) {
+                this.value = injectable;
+            }
+        }
+
+        assert I.make(Injection.class).value == 0;
+    }
+
+    @Test
+    @SuppressWarnings("unused")
+    public void priorityInject() {
+        class Injection {
+
+            private int value;
+
+            Injection() {
+                value = 10;
+            }
+
+            // This constructore is used.
+            @Inject
+            Injection(int injectable) {
+                this.value = injectable;
+            }
+        }
+
+        assert I.make(Injection.class).value == 0;
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @interface Inject {
+    }
+
+    @Test
+    @SuppressWarnings("unused")
+    public void priorityMinParam() {
+        class Injection {
+
+            private int value;
+
+            // This constructore is used.
+            Injection() {
+                value = 10;
+            }
+
+            Injection(int injectable) {
+                this.value = injectable;
+            }
+        }
+
+        assert I.make(Injection.class).value == 10;
+    }
+
+    @Test
+    @SuppressWarnings("unused")
+    public void priorityMinParams() {
+        class Injection {
+
+            private int value;
+
+            // This constructore is used.
+            Injection(boolean injectable) {
+                value = injectable ? 1 : 10;
+            }
+
+            Injection(int injectable) {
+                this.value = injectable;
+            }
+        }
+
+        assert I.make(Injection.class).value == 10;
     }
 }
