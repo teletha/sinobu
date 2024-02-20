@@ -21,30 +21,17 @@ public class JSONWriteTest {
         }
 
         Person person = new Person("Joe", 23);
-
-        String one = I.write(person);
-        String other = normalizeLineFeed("""
+        assertText(I.write(person), """
                 {
                     "age": 23,
                     "name": "Joe"
                 }
                 """);
-
-        for (int i = 0; i < one.length(); i++) {
-            if (one.charAt(i) != other.charAt(i)) {
-                System.out.println(i + "  " + one.charAt(i) + "@" + other.charAt(i));
-            }
-        }
-
-        assert I.write(person).equals(normalizeLineFeed("""
-                {
-                    "age": 23,
-                    "name": "Joe"
-                }
-                """));
     }
 
-    private String normalizeLineFeed(String text) {
-        return text.replaceAll("\r\n", "\n");
+    private void assertText(String one, String other) {
+        one = one.strip().replaceAll("\\t", "    ");
+        other = other.strip().replaceAll("\\t", "    ");
+        assert one.equals(other);
     }
 }

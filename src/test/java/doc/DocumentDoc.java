@@ -34,6 +34,7 @@ import kiss.Singleton;
 import kiss.instantiation.ConstructorInjectionTest;
 import kiss.instantiation.ConstructorInjectionTest.CircularLifestyleA;
 import kiss.instantiation.ConstructorInjectionTest.CircularLifestyleB;
+import kiss.json.JSONWriteTest;
 import kiss.json.ManipulateTest;
 import kiss.lifestyle.PrototypeTest;
 import kiss.lifestyle.SingletonTest;
@@ -432,6 +433,7 @@ public class DocumentDoc {
         /**
          * You can write JSON from property-based model.
          * 
+         * {@link JSONWriteTest#testName() @}
          */
         public class Writing_JSON {
         }
