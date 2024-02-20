@@ -9,10 +9,9 @@
  */
 package kiss;
 
-import static java.lang.Boolean.FALSE;
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.time.format.DateTimeFormatter.ISO_DATE;
-import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+import static java.lang.Boolean.*;
+import static java.nio.charset.StandardCharsets.*;
+import static java.time.format.DateTimeFormatter.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -1713,8 +1712,13 @@ public class I {
 
                 for (int i = 0; i < params.length; i++) {
                     if (types[i] == Lifestyle.class) {
+                        // In the case of non-static inner classes, references to external classes
+                        // are implicitly added, but Executable#getParameterTypes returns an array
+                        // including them, whereas Executable#getGenericParameterTypes returns an
+                        // array ignoring them, so it is necessary to separate the cases.
+                        Type[] generics = constructor.getGenericParameterTypes();
                         params[i] = I.makeLifestyle((Class) Model
-                                .collectParameters(constructor.getGenericParameterTypes()[i], Lifestyle.class)[0]);
+                                .collectParameters(generics[types.length == generics.length ? i : i - 1], Lifestyle.class)[0]);
                     } else if (types[i] == Class.class) {
                         params[i] = I.dependencies.get().peekLast();
                     } else if (types[i].isPrimitive()) {

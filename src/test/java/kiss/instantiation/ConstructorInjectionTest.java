@@ -9,26 +9,117 @@
  */
 package kiss.instantiation;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
 import kiss.Lifestyle;
 import kiss.Managed;
 import kiss.Singleton;
+import kiss.sample.bean.Person;
 
-/**
- * @version 2017/04/21 21:09:43
- */
 public class ConstructorInjectionTest {
 
-    /**
-     * Test constructor injection.
-     */
     @Test
-    public void constructorInjection() {
-        ConstructorInjection test = I.make(ConstructorInjection.class);
-        assert test != null;
-        assert test.injected != null;
+    @SuppressWarnings("unused")
+    public void primitiveIntInjection() {
+        class Injection {
+            private int value;
+
+            Injection(int injectable) {
+                this.value = injectable;
+            }
+        }
+
+        assert I.make(Injection.class).value == 0;
+    }
+
+    @Test
+    @SuppressWarnings("unused")
+    public void primitiveLongInjection() {
+        class Injection {
+            private long value;
+
+            Injection(long injectable) {
+                this.value = injectable;
+            }
+        }
+
+        assert I.make(Injection.class).value == 0L;
+    }
+
+    @Test
+    @SuppressWarnings("unused")
+    public void primitiveFloatInjection() {
+        class Injection {
+            private float value;
+
+            Injection(float injectable) {
+                this.value = injectable;
+            }
+        }
+
+        assert I.make(Injection.class).value == 0f;
+    }
+
+    @Test
+    @SuppressWarnings("unused")
+    public void primitiveDoubleInjection() {
+        class Injection {
+            private double value;
+
+            Injection(double injectable) {
+                this.value = injectable;
+            }
+        }
+
+        assert I.make(Injection.class).value == 0d;
+    }
+
+    @Test
+    @SuppressWarnings("unused")
+    public void primitiveBooleanInjection() {
+        class Injection {
+            private boolean value;
+
+            Injection(boolean injectable) {
+                this.value = injectable;
+            }
+        }
+
+        assert I.make(Injection.class).value == false;
+    }
+
+    @Test
+    @SuppressWarnings("unused")
+    public void objectInjection() {
+        class Injectable {
+        }
+
+        class Injection {
+            private Injectable value;
+
+            Injection(Injectable injectable) {
+                this.value = injectable;
+            }
+        }
+
+        assert I.make(Injection.class).value != null;
+    }
+
+    @Test
+    @SuppressWarnings("unused")
+    public void objectLazyInjection() {
+        class Injection {
+            private Lifestyle<Person> lazy;
+
+            Injection(Lifestyle<Person> injectable, List<String> item, int value) {
+                this.lazy = injectable;
+            }
+        }
+
+        assert I.make(Injection.class).lazy.get() != null;
     }
 
     /**
@@ -56,22 +147,6 @@ public class ConstructorInjectionTest {
         TooManyConstructors test = I.make(TooManyConstructors.class);
         assert test != null;
         assert test.injected == null;
-    }
-
-    /**
-     * @version 2010/02/09 20:38:46
-     */
-    private static class ConstructorInjection {
-
-        /** The dependency, */
-        private Injected injected;
-
-        /**
-         * Create ConstructorInjection instance.
-         */
-        private ConstructorInjection(Injected injected) {
-            this.injected = injected;
-        }
     }
 
     /**
@@ -115,7 +190,7 @@ public class ConstructorInjectionTest {
     /**
      * @version 2010/02/09 20:38:57
      */
-    private static class Injected {
+    public static class Injected {
     }
 
     /**
@@ -152,7 +227,7 @@ public class ConstructorInjectionTest {
     /**
      * @version 2010/02/17 13:53:13
      */
-    private static class CircularLifestyleA {
+    public static class CircularLifestyleA {
 
         private Lifestyle<CircularLifestyleB> other;
 
@@ -164,7 +239,7 @@ public class ConstructorInjectionTest {
     /**
      * @version 2010/02/17 13:53:26
      */
-    private static class CircularLifestyleB {
+    public static class CircularLifestyleB {
 
         private Lifestyle<CircularLifestyleA> other;
 
