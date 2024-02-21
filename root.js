@@ -119,6 +119,48 @@ const root = {
 			"title": "Dependency Injection"
 		},
 		{
+			"path": "doc/doc.DocumentDoc.Model_and_Property.html",
+			"subs": [
+				{
+					"path": "doc/doc.DocumentDoc.Model_and_Property.html#doc.DocumentDoc.Model_and_Property.Concept",
+					"subs": [],
+					"title": "Concept"
+				},
+				{
+					"path": "doc/doc.DocumentDoc.Model_and_Property.html#doc.DocumentDoc.Model_and_Property.Models",
+					"subs": [],
+					"title": "Models"
+				},
+				{
+					"path": "doc/doc.DocumentDoc.Model_and_Property.html#doc.DocumentDoc.Model_and_Property.Property",
+					"subs": [
+						{
+							"path": "doc/doc.DocumentDoc.Model_and_Property.html#doc.DocumentDoc.Model_and_Property.Property.Define_by_Field",
+							"subs": [],
+							"title": "Define by Field"
+						},
+						{
+							"path": "doc/doc.DocumentDoc.Model_and_Property.html#doc.DocumentDoc.Model_and_Property.Property.Define_by_Variable_Field",
+							"subs": [],
+							"title": "Define by Variable Field"
+						},
+						{
+							"path": "doc/doc.DocumentDoc.Model_and_Property.html#doc.DocumentDoc.Model_and_Property.Property.Define_by_Method",
+							"subs": [],
+							"title": "Define by Method"
+						}
+					],
+					"title": "Property"
+				},
+				{
+					"path": "doc/doc.DocumentDoc.Model_and_Property.html#doc.DocumentDoc.Model_and_Property.Manipulation",
+					"subs": [],
+					"title": "Manipulation"
+				}
+			],
+			"title": "Model and Property"
+		},
+		{
 			"path": "doc/doc.DocumentDoc.HTTP.html",
 			"subs": [
 				{
