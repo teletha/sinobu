@@ -20,9 +20,6 @@ import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-
 import doc.ExtensionTest.Codec;
 import doc.ExtensionTest.LocalDateCodec;
 import doc.MustacheTest.Person;
@@ -30,7 +27,9 @@ import kiss.Extensible;
 import kiss.I;
 import kiss.Lifestyle;
 import kiss.Managed;
+import kiss.Model;
 import kiss.Singleton;
+import kiss.Variable;
 import kiss.instantiation.ConstructorInjectionTest;
 import kiss.instantiation.ConstructorInjectionTest.CircularLifestyleA;
 import kiss.instantiation.ConstructorInjectionTest.CircularLifestyleB;
@@ -45,7 +44,6 @@ public class DocumentDoc {
         I.load(DocumentDoc.class);
     }
 
-    @Nested
     public class Introduction {
         /**
          * 
@@ -100,7 +98,6 @@ public class DocumentDoc {
         }
     }
 
-    @Nested
     public class Managing_object_lifestyle {
 
         /**
@@ -278,7 +275,6 @@ public class DocumentDoc {
         }
     }
 
-    @Nested
     public class Dependency_Injection {
         /**
          * Dependency Injection (DI) is a mechanism that solves various problems related to
@@ -386,7 +382,198 @@ public class DocumentDoc {
         }
     }
 
-    @Nested
+    public class Model_and_Property {
+        /**
+         * In the context of Java programming, a 'property' generally refers to the characteristics
+         * or attributes of a class or object. These properties define the state of an object and
+         * encapsulate the data associated with it. In Java, properties are typically represented as
+         * private fields within a class, with corresponding getter and setter methods to access and
+         * modify their values.
+         * 
+         * Here's an example of a Java class with properties:
+         * {@link Person @}
+         * 
+         * In this example, the Person class has two properties: name and age. These properties are
+         * declared as private fields within the class to encapsulate their implementation details
+         * and prevent direct access from outside the class. Getter and setter methods (getName(),
+         * setName(), getAge(), setAge()) are provided to allow controlled access to these
+         * properties.
+         * 
+         * Using properties in Java classes promotes encapsulation, which is one of the fundamental
+         * principles of object-oriented programming (OOP). Encapsulation hides the internal state
+         * of an object and exposes only the necessary interfaces for interacting with it, improving
+         * code maintainability, reusability, and flexibility.
+         */
+        public class Concept {
+
+            class Person {
+                private String name; // Property: name
+
+                private int age; // Property: age
+
+                // Constructor
+                public Person(String name, int age) {
+                    this.name = name;
+                    this.age = age;
+                }
+
+                // Getter method for name property
+                public String getName() {
+                    return name;
+                }
+
+                // Setter method for name property
+                public void setName(String name) {
+                    this.name = name;
+                }
+
+                // Getter method for age property
+                public int getAge() {
+                    return age;
+                }
+
+                // Setter method for age property
+                public void setAge(int age) {
+                    this.age = age;
+                }
+            }
+        }
+
+        /**
+         * In Sinobu, model is a set of properties. If a class you define has properties, it is
+         * already a model.
+         * 
+         * Models can be retrieved from a class using the {@link kiss.Model#of(Class)} method, but
+         * there should not be many situations where the end user needs to retrieve the model
+         * directly.
+         * {@link Models#model @}
+         */
+        public class Models {
+
+            Model model = Model.of(Person.class);
+        }
+
+        /**
+         * In Sinobu, a property refers to a value accessible by name and defined by a field or
+         * method. Property name is arbitrary.
+         */
+        public class Property {
+
+            /**
+             * Property definition by field.
+             * {@link Define_by_Field#filedProperty @}
+             * 
+             * With the final modifier, the value cannot be changed and is therefore not treated as
+             * a property.
+             * {@link Define_by_Field#finalField @}
+             * 
+             * Access modifiers other than public are not treated as properties.
+             * {@link Define_by_Field#nonPublicField @}
+             * 
+             * If you want to treat fields with access modifiers other than public as properties,
+             * use the {@link Managed} annotation.
+             * {@link Define_by_Field#managedField @}
+             */
+            public class Define_by_Field {
+
+                public String filedProperty = "This is property";
+
+                public final String finalField = "This is NOT property";
+
+                protected String nonPublicField = "This is NOT property";
+
+                @Managed
+                protected String managedField = "This is property";
+            }
+
+            /**
+             * Property definition by {@link Variable} field.
+             * {@link Define_by_Variable_Field#variableField @}
+             * 
+             * Unlike normal fields, they are treated as properties even if they have final
+             * modifier.
+             * {@link Define_by_Variable_Field#finalField @}
+             * 
+             * Access modifiers other than public are not treated as properties.
+             * {@link Define_by_Variable_Field#nonPublicField @}
+             * 
+             * If you want to treat fields with access modifiers other than public as properties,
+             * use the {@link Managed} annotation.
+             * {@link Define_by_Variable_Field#managedField @}
+             */
+            public class Define_by_Variable_Field {
+
+                public Variable<String> variableField = Variable.of("This is property");
+
+                public final Variable<String> finalField = Variable.of("This is property");
+
+                protected Variable<String> nonPublicField = Variable.of("This is NOT property");
+
+                @Managed
+                protected Variable<String> managedField = Variable.of("This is property");
+            }
+
+            /**
+             * Property definition by method. The getter and setter methods must be defined
+             * according to the Java Bean naming conventions.
+             * {@link GetterAndSetter @}
+             * 
+             * The getter and setter methods do not need to have a public modifier.
+             * {@link NonPublicGetterAndSetter @}
+             */
+            public class Define_by_Method {
+
+                class GetterAndSetter {
+                    private String property = "This is property";
+
+                    public String getProperty() {
+                        return property;
+                    }
+
+                    public void setProperty(String property) {
+                        this.property = property;
+                    }
+                }
+
+                class NonPublicGetterAndSetter {
+                    private String property = "This is property";
+
+                    String getProperty() {
+                        return property;
+                    }
+
+                    void setProperty(String property) {
+                        this.property = property;
+                    }
+                }
+            }
+        }
+
+        /**
+         * Models and properties can be used to get, set and monitor property values. Assume the
+         * following Person model:
+         * {@link Manipulation#manipulateProperty() @}
+         */
+        public class Manipulation {
+
+            void manipulateProperty() {
+                record Person(String name, int age) {
+                }
+
+                Person person = new Person("Mine", 15);
+                Model<Person> model = Model.of(person);
+                kiss.Property property = model.property("name");
+
+                // get property
+                assert model.get(person, property).equals("Mine");
+
+                // set property
+                person = model.set(person, property, "New name");
+                assert person.name.equals("New name");
+            }
+        }
+    }
+
     public class HTTP {
         public class Request_and_Response {
         }
@@ -401,12 +588,13 @@ public class DocumentDoc {
         }
     }
 
-    @Nested
     public class JSON {
 
         /**
-         * You can read JSON from strings, files, and various inputs. All data will be expanded into
-         * memory in a tree format. It is not a streaming format, so please be careful when parsing
+         * You can read JSON from strings, files, and various inputs. All data will be expanded
+         * into
+         * memory in a tree format. It is not a streaming format, so please be careful when
+         * parsing
          * very large JSON.
          */
         public class Reading_JSON {
@@ -445,7 +633,6 @@ public class DocumentDoc {
         }
     }
 
-    @Nested
     public class HTML {
         public class Parsing {
         }
@@ -463,7 +650,6 @@ public class DocumentDoc {
         }
     }
 
-    @Nested
     public class ReactiveX {
 
         public class Signal {
@@ -479,7 +665,6 @@ public class DocumentDoc {
         }
     }
 
-    @Nested
     public class Template_Literal {
 
         /**
@@ -495,24 +680,31 @@ public class DocumentDoc {
          * there are only tags. Some tags are replaced with a value, some nothing, and others a
          * series of values.
          * 
-         * Java19 does not yet have a language built-in template syntax. Therefore, Sinobu provides
-         * a mechanism to parse <a href="https://mustache.github.io/">Mustache</a> syntax instead.
+         * Java19 does not yet have a language built-in template syntax. Therefore, Sinobu
+         * provides
+         * a mechanism to parse <a href="https://mustache.github.io/">Mustache</a> syntax
+         * instead.
          */
         public class Mustache {
 
             /**
-             * To use Mustache, you must first create a Mustache template, which is written using a
+             * To use Mustache, you must first create a Mustache template, which is written
+             * using a
              * markup language such as HTML or XML. In template, you use special symbols called
-             * Mustache delimiters to specify where the data should be inserted. Mustache delimiters
+             * Mustache delimiters to specify where the data should be inserted. Mustache
+             * delimiters
              * are written in the following format:
              * {@code {placeholder} @}
              * 
              * As you can see, Mustache delimiter is a string of characters enclosed in single
-             * brace, such as "&#123;placeholder&#125;". This string specifies the location where
-             * the data should be inserted. For example, consider the following Mustache template:
+             * brace, such as "&#123;placeholder&#125;". This string specifies the location
+             * where
+             * the data should be inserted. For example, consider the following Mustache
+             * template:
              * {@link MustacheTest#template @}
              * 
-             * When using this template, you need to provide data for placeholders. For instance,
+             * When using this template, you need to provide data for placeholders. For
+             * instance,
              * you might have the following JavaBean object as data:
              * {@link Person @}
              * 
@@ -522,22 +714,28 @@ public class DocumentDoc {
              * {@linkplain MustacheTest#use() @}
              * 
              * Next, within the program that uses the Mustache template, the Mustache engine is
-             * initialized. At this point, the Mustache engine is passed the template and the data.
+             * initialized. At this point, the Mustache engine is passed the template and the
+             * data.
              * The data is written using data structures such as JavaScript objects.
              * 
-             * Finally, the Mustache engine is used to render the Mustache template. At this time,
-             * the Mustache engine replaces the Mustache specifier in the template and populates the
+             * Finally, the Mustache engine is used to render the Mustache template. At this
+             * time,
+             * the Mustache engine replaces the Mustache specifier in the template and populates
+             * the
              * data to produce a finished HTML, XML, or other markup language document.
              * 
-             * The specific usage varies depending on the programming language and framework, but
+             * The specific usage varies depending on the programming language and framework,
+             * but
              * the above steps are a rough outline of the basic procedure for using Mustache.
              */
             public class Syntax {
             }
 
             /**
-             * In SInobu, Mustache can be used by calling the {@link I#express(String, Object...)}
-             * method. This method parses the given string, reads the necessary variables from the
+             * In SInobu, Mustache can be used by calling the
+             * {@link I#express(String, Object...)}
+             * method. This method parses the given string, reads the necessary variables from
+             * the
              * context, substitutes them, and returns the resulting string.
              */
             public class Usage_at_Sinobu {
@@ -551,7 +749,6 @@ public class DocumentDoc {
         }
     }
 
-    @Nested
     public class Plugin {
 
         /**
@@ -561,7 +758,8 @@ public class DocumentDoc {
         }
 
         /**
-         * Sinobu has a general-purpose plug-in mechanism for extending application functions. An
+         * Sinobu has a general-purpose plug-in mechanism for extending application functions.
+         * An
          * extensible place is called Extension Point, and its substance is a type (interface or
          * class) marked with the {@link Extensible} interface.
          * 
@@ -573,7 +771,8 @@ public class DocumentDoc {
          * {@link ThisIsAlsoExtensionPoint @}
          * {@link ThisIsNotExtensionPoint @}
          * 
-         * In the usage example, Codec is the extension point that converts any object to a string
+         * In the usage example, Codec is the extension point that converts any object to a
+         * string
          * representation.
          * {@link Codec @}
          */
@@ -601,7 +800,8 @@ public class DocumentDoc {
          * {@link ThisIsAlsoExtension @}
          * {@link ThisIsNotExtension @}
          * 
-         * In the usage example, LocalDateCodec is the extension that is special implementation for
+         * In the usage example, LocalDateCodec is the extension that is special implementation
+         * for
          * {@link LocalDate}.
          * {@link LocalDateCodec @}
          */
@@ -632,10 +832,11 @@ public class DocumentDoc {
          * {@link ExtensionWithStringKey @}
          * {@link ExtensionWithListKey @}
          * 
-         * The key makes easy finding an Extension you need (see also {@link I#find(Class, Class)}).
+         * The key makes easy finding an Extension you need (see also
+         * {@link I#find(Class, Class)}).
          * {@link Extension_Key#findExtensionByKey() @}
          */
-        @Nested
+
         public class Extension_Key {
             interface ExtensionPointWithKey<K> extends Extensible {
             }
@@ -648,14 +849,14 @@ public class DocumentDoc {
                 // Associate this Extension with List interface.
             }
 
-            @Test
             void findExtensionByKey() {
                 assert I.find(ExtensionPointWithKey.class, String.class) instanceof ExtensionWithStringKey;
             }
         }
 
         /**
-         * All extensions are not recognized automatically, you have to load them explicitly using
+         * All extensions are not recognized automatically, you have to load them explicitly
+         * using
          * {@link I#load(Class)}.
          * {@link ExtensionUser @}
          * {@link ApplicationMain @}
@@ -679,7 +880,6 @@ public class DocumentDoc {
         }
     }
 
-    @Nested
     public class Persistence {
         public class Save_Data {
         }

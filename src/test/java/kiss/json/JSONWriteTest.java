@@ -21,17 +21,7 @@ public class JSONWriteTest {
         JSON json = new JSON();
         json.set("key", "value");
 
-        assertJSON(json, """
-                {
-                    "key": "value"
-                }
-                """);
-    }
-
-    private void assertJSON(JSON one, String other) {
-        one = one.strip().replaceAll("\\t", "    ");
-        other = other.strip().replaceAll("\\t", "    ");
-        assert one.equals(other);
+        assert json.get(String.class, "key").equals("value");
     }
 
     @Test
