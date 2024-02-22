@@ -117,7 +117,7 @@ With a few exceptions, Sinobu and its APIs are designed to be simple to use and 
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
-			<version>3.0.0-beta1</version>
+			<version>3.0.0-beta2</version>
 			<scope>test</scope>
 			<exclusions/>
 		</dependency>
