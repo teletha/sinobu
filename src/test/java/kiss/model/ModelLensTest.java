@@ -9,6 +9,8 @@
  */
 package kiss.model;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -19,22 +21,24 @@ import kiss.sample.bean.EnumProperty;
 import kiss.sample.bean.GenericStringBean;
 import kiss.sample.bean.Person;
 
-class ModelLensTest {
+public class ModelLensTest {
 
     record Point(int x, double y) {
     }
 
     @Test
-    void getAtNonAccessibleInstance() {
+    public void getProperty() {
         Person person = new Person();
         person.setAge(1);
 
         Model model = Model.of(Person.class);
-        assert model.get(person, model.property("age")).equals(1);
+        Property property = model.property("age");
+
+        assert model.get(person, property).equals(1);
     }
 
     @Test
-    void getAtNonAccessibleGenericInstance() {
+    void getGenericProperty() {
         GenericStringBean bean = new GenericStringBean();
         bean.setGeneric("value");
 
@@ -63,16 +67,19 @@ class ModelLensTest {
     }
 
     @Test
-    void setAtNonAccessibleInstance() {
+    public void setProperty() {
         Person person = new Person();
         Model model = Model.of(Person.class);
-        model.set(person, model.property("age"), 1);
+        Property property = model.property("age");
+
+        // assign property value
+        model.set(person, property, 1);
 
         assert 1 == person.getAge();
     }
 
     @Test
-    void setAtNonAccessibleGenericInstance() {
+    void setGenericProperty() {
         GenericStringBean bean = new GenericStringBean();
         Model model = Model.of(GenericStringBean.class);
         model.set(bean, model.property("generic"), "value");
@@ -81,7 +88,7 @@ class ModelLensTest {
     }
 
     @Test
-    void setAtRecord() {
+    public void setAtRecord() {
         Point point = new Point(0, 0);
         Model<Point> model = Model.of(Point.class);
         point = model.set(point, model.property("x"), 10);
@@ -132,6 +139,25 @@ class ModelLensTest {
 
         assert instance.field == null;
         assert instance.fieldWithDefault == null;
+    }
+
+    @Test
+    public void observeVariableProperty() {
+        class Item {
+            public Variable<Integer> count = Variable.of(0);
+        }
+
+        Item item = new Item();
+        Model model = Model.of(Item.class);
+        List<Integer> values = model.observe(item, model.property("count")).toList();
+        assert values.isEmpty();
+
+        item.count.set(1);
+        item.count.set(2);
+        item.count.set(3);
+        assert values.get(0) == 1;
+        assert values.get(1) == 2;
+        assert values.get(2) == 3;
     }
 
     @Test

@@ -28,6 +28,8 @@ import kiss.I;
 import kiss.Lifestyle;
 import kiss.Managed;
 import kiss.Model;
+import kiss.Observer;
+import kiss.Signal;
 import kiss.Singleton;
 import kiss.Variable;
 import kiss.instantiation.ConstructorInjectionTest;
@@ -37,6 +39,7 @@ import kiss.json.JSONWriteTest;
 import kiss.json.ManipulateTest;
 import kiss.lifestyle.PrototypeTest;
 import kiss.lifestyle.SingletonTest;
+import kiss.model.ModelLensTest;
 
 public class DocumentDoc {
 
@@ -288,7 +291,7 @@ public class DocumentDoc {
          * The detailed explanation of the DI concept is left to [another
          * website](https://en.wikipedia.org/wiki/Dependency_injection).
          */
-        public class The_concept {
+        public class Concept {
 
             /**
              * Unlike other DI frameworks, there is no explicit DI container in Sinobu. It has only
@@ -461,20 +464,20 @@ public class DocumentDoc {
 
             /**
              * Property definition by field.
-             * {@link Define_by_Field#filedProperty @}
+             * {@link By_Field#filedProperty @}
              * 
              * With the final modifier, the value cannot be changed and is therefore not treated as
              * a property.
-             * {@link Define_by_Field#finalField @}
+             * {@link By_Field#finalField @}
              * 
              * Access modifiers other than public are not treated as properties.
-             * {@link Define_by_Field#nonPublicField @}
+             * {@link By_Field#nonPublicField @}
              * 
              * If you want to treat fields with access modifiers other than public as properties,
              * use the {@link Managed} annotation.
-             * {@link Define_by_Field#managedField @}
+             * {@link By_Field#managedField @}
              */
-            public class Define_by_Field {
+            public class By_Field {
 
                 public String filedProperty = "This is property";
 
@@ -488,20 +491,20 @@ public class DocumentDoc {
 
             /**
              * Property definition by {@link Variable} field.
-             * {@link Define_by_Variable_Field#variableField @}
+             * {@link By_Variable_Field#variableField @}
              * 
              * Unlike normal fields, they are treated as properties even if they have final
              * modifier.
-             * {@link Define_by_Variable_Field#finalField @}
+             * {@link By_Variable_Field#finalField @}
              * 
              * Access modifiers other than public are not treated as properties.
-             * {@link Define_by_Variable_Field#nonPublicField @}
+             * {@link By_Variable_Field#nonPublicField @}
              * 
              * If you want to treat fields with access modifiers other than public as properties,
              * use the {@link Managed} annotation.
-             * {@link Define_by_Variable_Field#managedField @}
+             * {@link By_Variable_Field#managedField @}
              */
-            public class Define_by_Variable_Field {
+            public class By_Variable_Field {
 
                 public Variable<String> variableField = Variable.of("This is property");
 
@@ -521,7 +524,7 @@ public class DocumentDoc {
              * The getter and setter methods do not need to have a public modifier.
              * {@link NonPublicGetterAndSetter @}
              */
-            public class Define_by_Method {
+            public class By_Method {
 
                 class GetterAndSetter {
                     private String property = "This is property";
@@ -550,27 +553,92 @@ public class DocumentDoc {
         }
 
         /**
-         * Models and properties can be used to get, set and monitor property values. Assume the
-         * following Person model:
-         * {@link Manipulation#manipulateProperty() @}
+         * Normally, end users do not use {@link Model} API to manipulate or traverse properties.
+         * The following is mainly required for framework and library production.
+         * 
+         * Models and properties can be used to get, set and monitor property values.
          */
         public class Manipulation {
 
-            void manipulateProperty() {
-                record Person(String name, int age) {
-                }
-
-                Person person = new Person("Mine", 15);
-                Model<Person> model = Model.of(person);
-                kiss.Property property = model.property("name");
-
-                // get property
-                assert model.get(person, property).equals("Mine");
-
-                // set property
-                person = model.set(person, property, "New name");
-                assert person.name.equals("New name");
+            /**
+             * Get the value by name.
+             * {@link ModelLensTest#getProperty() @}
+             */
+            public class Get {
             }
+
+            /**
+             * Set the value by name.
+             * {@link ModelLensTest#setProperty() @}
+             *
+             * If you set a property value, it is recommended that you reassign the return value to
+             * the object. This is necessary because the Record is immutable.
+             * {@link ModelLensTest#setAtRecord() @}
+             */
+            public class Set {
+            }
+
+            /**
+             * Monitor the {@link Variable} value.
+             * {@link ModelLensTest#observeVariableProperty() @}
+             */
+            public class Monitor {
+            }
+        }
+    }
+
+    public class ReactiveX {
+        /**
+         * The concept of ReactiveX is very well summarized on the official website, so it is better
+         * to read there.
+         * 
+         * - [ReactiveX](https://reactivex.io/intro.html)
+         * - [Observable](https://reactivex.io/documentation/observable.html)
+         * - [Operators](https://reactivex.io/documentation/operators.html)
+         * 
+         * The {@link Signal} class that implements the Reactive Pattern. This class provides
+         * methods for subscribing to the {@link Signal} as well as delegate methods to the various
+         * observers.
+         * 
+         * In Reactive Pattern an observer subscribes to a {@link Signal}. Then that observer reacts
+         * to whatever item or sequence of items the {@link Signal} emits. This pattern facilitates
+         * concurrent operations because it does not need to block while waiting for the
+         * {@link Signal}
+         * to emit objects, but instead it creates a sentry in the form of an observer that stands
+         * ready to react appropriately at whatever future time the {@link Signal} does so.
+         * 
+         * The subscribe method is how you connect an {@link Observer} to a {@link Signal}. Your
+         * {@link Observer} implements some subset of the following methods:
+         * 
+         * - {@link Observer#accept(Object)} - A {@link Signal} calls this method whenever the
+         * {@link Signal} emits an item. This method takes as a parameter the item emitted by the
+         * {@link Signal}.
+         * - {@link Observer#error(Throwable)} - A {@link Signal} calls this method to indicate that
+         * it has failed to generate the expected data or has encountered some other error. It will
+         * not make further calls to {@link Observer#error(Throwable)} or
+         * {@link Observer#complete()}. The {@link Observer#error(Throwable)} method takes as its
+         * parameter an indication of what caused the error.
+         * - {@link Observer#complete()} - A {@link Signal} calls this method after it has called
+         * {@link Observer#accept(Object)} for the final time, if it has not encountered any errors.
+         * 
+         * By the terms of the {@link Signal} contract, it may call {@link Observer#accept(Object)}
+         * zero or more times, and then may follow those calls with a call to either
+         * {@link Observer#complete()} or {@link Observer#error(Throwable)} but not both, which will
+         * be its last call. By convention, in this document, calls to
+         * {@link Observer#accept(Object)} are usually called &ldquo;emissions&rdquo; of items,
+         * whereas calls to {@link Observer#complete()} or {@link Observer#error(Throwable)} are
+         * called &ldquo;notifications.&rdquo;
+         */
+        public class Concept {
+        }
+
+        public class Subscribe {
+        }
+
+        public class Unsubscribe {
+        }
+
+        public class Operators {
         }
     }
 
@@ -647,21 +715,6 @@ public class DocumentDoc {
         }
 
         public class Traverse {
-        }
-    }
-
-    public class ReactiveX {
-
-        public class Signal {
-        }
-
-        public class Subscribe {
-        }
-
-        public class Unsubscribe {
-        }
-
-        public class Operators {
         }
     }
 
