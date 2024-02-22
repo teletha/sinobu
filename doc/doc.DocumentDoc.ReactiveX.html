@@ -11,9 +11,9 @@
 		<script src="mimic.js" type="module"></script>
 		<link href="main.css" rel="stylesheet"/>
 	</head>
-	<body class="b">
-		<header class="R">
-			<h1 class="J" date="2024-02-20" ver="3.9.3"><code>Sinobu</code></h1>
+	<body class="P">
+		<header class="J">
+			<h1 class="Q" date="2024-02-20" ver="3.9.3"><code>Sinobu</code></h1>
 			<nav class="W"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#text"/>
 					</svg>Document</a><a href="api/"><svg class="A svg" viewBox="0 0 24 24">
@@ -25,7 +25,7 @@
 					</svg>Activity</a><a href="https://github.com/teletha/sinobu" target="_blank"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#github"/>
 					</svg>Repository</a></nav>
-			<div class="I" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
+			<div class="O" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#sun"/>
 					</svg>
 				</a><a id="dark" title="Change to a darker color scheme"><svg class="A svg" viewBox="0 0 24 24">
@@ -33,13 +33,71 @@
 					</svg>
 				</a></div>
 		</header>
-		<main class="M">
-			<nav class="h">
+		<main class="h">
+			<nav class="M">
 				<div></div>
 			</nav>
-			<article class="K" id="Article"></article>
-			<aside class="L" id="SubNavi">
-				<div class="S"></div>
+			<article class="f" id="Article">
+				<section class="i B" id="doc.DocumentDoc.ReactiveX.Concept">
+					<header class="B Z">
+						<h2>Concept</h2>
+						<div class="a"><span class="perp Y"><svg class="A svg" viewBox="0 0 24 24">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet Y"><svg class="A svg" viewBox="0 0 24 24">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit Y" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L592-L630"><svg class="A svg" viewBox="0 0 24 24">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="B"><p>The concept of ReactiveX is very well summarized on the official website, so it is better
+to read there.</p>
+<ul>
+
+							<li><a href="https://reactivex.io/intro.html">ReactiveX</a></li>
+
+							<li><a href="https://reactivex.io/documentation/observable.html">Observable</a></li>
+
+							<li><a href="https://reactivex.io/documentation/operators.html">Operators</a></li>
+</ul>
+<p>The <code><a href="api/kiss.Signal.html">Signal</a></code> class that implements the Reactive Pattern. This class provides
+methods for subscribing to the <code><a href="api/kiss.Signal.html">Signal</a></code> as well as delegate methods to the various
+observers.</p>
+<p>In Reactive Pattern an observer subscribes to a <code><a href="api/kiss.Signal.html">Signal</a></code>. Then that observer reacts
+to whatever item or sequence of items the <code><a href="api/kiss.Signal.html">Signal</a></code> emits. This pattern facilitates
+concurrent operations because it does not need to block while waiting for the
+<code><a href="api/kiss.Signal.html">Signal</a></code>
+to emit objects, but instead it creates a sentry in the form of an observer that stands
+ready to react appropriately at whatever future time the <code><a href="api/kiss.Signal.html">Signal</a></code> does so.</p>
+<p>The subscribe method is how you connect an <code><a href="api/kiss.Observer.html">Observer</a></code> to a <code><a href="api/kiss.Signal.html">Signal</a></code>. Your
+<code><a href="api/kiss.Observer.html">Observer</a></code> implements some subset of the following methods:</p>
+<ul>
+
+							<li><code><a href="api/kiss.Observer.html#accept(java.lang.Object)">Observer#accept(Object)</a></code> - A <code><a href="api/kiss.Signal.html">Signal</a></code> calls this method whenever the
+<code><a href="api/kiss.Signal.html">Signal</a></code> emits an item. This method takes as a parameter the item emitted by the
+<code><a href="api/kiss.Signal.html">Signal</a></code>.</li>
+
+							<li><code><a href="api/kiss.Observer.html#error(java.lang.Throwable)">Observer#error(Throwable)</a></code> - A <code><a href="api/kiss.Signal.html">Signal</a></code> calls this method to indicate that
+it has failed to generate the expected data or has encountered some other error. It will
+not make further calls to <code><a href="api/kiss.Observer.html#error(java.lang.Throwable)">Observer#error(Throwable)</a></code> or
+<code><a href="api/kiss.Observer.html#complete()">Observer#complete()</a></code>. The <code><a href="api/kiss.Observer.html#error(java.lang.Throwable)">Observer#error(Throwable)</a></code> method takes as its
+parameter an indication of what caused the error.</li>
+
+							<li><code><a href="api/kiss.Observer.html#complete()">Observer#complete()</a></code> - A <code><a href="api/kiss.Signal.html">Signal</a></code> calls this method after it has called
+<code><a href="api/kiss.Observer.html#accept(java.lang.Object)">Observer#accept(Object)</a></code> for the final time, if it has not encountered any errors.</li>
+</ul>
+<p>By the terms of the <code><a href="api/kiss.Signal.html">Signal</a></code> contract, it may call <code><a href="api/kiss.Observer.html#accept(java.lang.Object)">Observer#accept(Object)</a></code>
+zero or more times, and then may follow those calls with a call to either
+<code><a href="api/kiss.Observer.html#complete()">Observer#complete()</a></code> or <code><a href="api/kiss.Observer.html#error(java.lang.Throwable)">Observer#error(Throwable)</a></code> but not both, which will
+be its last call. By convention, in this document, calls to
+<code><a href="api/kiss.Observer.html#accept(java.lang.Object)">Observer#accept(Object)</a></code> are usually called “emissions” of items,
+whereas calls to <code><a href="api/kiss.Observer.html#complete()">Observer#complete()</a></code> or <code><a href="api/kiss.Observer.html#error(java.lang.Throwable)">Observer#error(Throwable)</a></code> are
+called “notifications.”</p>
+</span></section>
+			</article>
+			<aside class="V" id="SubNavi">
+				<div class="j"></div>
 			</aside>
 		</main>
 		<script src="root.js"></script>

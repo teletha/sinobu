@@ -79,20 +79,20 @@ const root = {
 			"path": "doc/doc.DocumentDoc.Dependency_Injection.html",
 			"subs": [
 				{
-					"path": "doc/doc.DocumentDoc.Dependency_Injection.html#doc.DocumentDoc.Dependency_Injection.The_concept",
+					"path": "doc/doc.DocumentDoc.Dependency_Injection.html#doc.DocumentDoc.Dependency_Injection.Concept",
 					"subs": [
 						{
-							"path": "doc/doc.DocumentDoc.Dependency_Injection.html#doc.DocumentDoc.Dependency_Injection.The_concept.DI_Container",
+							"path": "doc/doc.DocumentDoc.Dependency_Injection.html#doc.DocumentDoc.Dependency_Injection.Concept.DI_Container",
 							"subs": [],
 							"title": "DI Container"
 						},
 						{
-							"path": "doc/doc.DocumentDoc.Dependency_Injection.html#doc.DocumentDoc.Dependency_Injection.The_concept.Injection_Type",
+							"path": "doc/doc.DocumentDoc.Dependency_Injection.html#doc.DocumentDoc.Dependency_Injection.Concept.Injection_Type",
 							"subs": [],
 							"title": "Injection Type"
 						}
 					],
-					"title": "The concept"
+					"title": "Concept"
 				},
 				{
 					"path": "doc/doc.DocumentDoc.Dependency_Injection.html#doc.DocumentDoc.Dependency_Injection.Constructor_Injection",
@@ -135,30 +135,72 @@ const root = {
 					"path": "doc/doc.DocumentDoc.Model_and_Property.html#doc.DocumentDoc.Model_and_Property.Property",
 					"subs": [
 						{
-							"path": "doc/doc.DocumentDoc.Model_and_Property.html#doc.DocumentDoc.Model_and_Property.Property.Define_by_Field",
+							"path": "doc/doc.DocumentDoc.Model_and_Property.html#doc.DocumentDoc.Model_and_Property.Property.By_Field",
 							"subs": [],
-							"title": "Define by Field"
+							"title": "By Field"
 						},
 						{
-							"path": "doc/doc.DocumentDoc.Model_and_Property.html#doc.DocumentDoc.Model_and_Property.Property.Define_by_Variable_Field",
+							"path": "doc/doc.DocumentDoc.Model_and_Property.html#doc.DocumentDoc.Model_and_Property.Property.By_Variable_Field",
 							"subs": [],
-							"title": "Define by Variable Field"
+							"title": "By Variable Field"
 						},
 						{
-							"path": "doc/doc.DocumentDoc.Model_and_Property.html#doc.DocumentDoc.Model_and_Property.Property.Define_by_Method",
+							"path": "doc/doc.DocumentDoc.Model_and_Property.html#doc.DocumentDoc.Model_and_Property.Property.By_Method",
 							"subs": [],
-							"title": "Define by Method"
+							"title": "By Method"
 						}
 					],
 					"title": "Property"
 				},
 				{
 					"path": "doc/doc.DocumentDoc.Model_and_Property.html#doc.DocumentDoc.Model_and_Property.Manipulation",
-					"subs": [],
+					"subs": [
+						{
+							"path": "doc/doc.DocumentDoc.Model_and_Property.html#doc.DocumentDoc.Model_and_Property.Manipulation.Get",
+							"subs": [],
+							"title": "Get"
+						},
+						{
+							"path": "doc/doc.DocumentDoc.Model_and_Property.html#doc.DocumentDoc.Model_and_Property.Manipulation.Set",
+							"subs": [],
+							"title": "Set"
+						},
+						{
+							"path": "doc/doc.DocumentDoc.Model_and_Property.html#doc.DocumentDoc.Model_and_Property.Manipulation.Monitor",
+							"subs": [],
+							"title": "Monitor"
+						}
+					],
 					"title": "Manipulation"
 				}
 			],
 			"title": "Model and Property"
+		},
+		{
+			"path": "doc/doc.DocumentDoc.ReactiveX.html",
+			"subs": [
+				{
+					"path": "doc/doc.DocumentDoc.ReactiveX.html#doc.DocumentDoc.ReactiveX.Concept",
+					"subs": [],
+					"title": "Concept"
+				},
+				{
+					"path": "doc/doc.DocumentDoc.ReactiveX.html#doc.DocumentDoc.ReactiveX.Subscribe",
+					"subs": [],
+					"title": "Subscribe"
+				},
+				{
+					"path": "doc/doc.DocumentDoc.ReactiveX.html#doc.DocumentDoc.ReactiveX.Unsubscribe",
+					"subs": [],
+					"title": "Unsubscribe"
+				},
+				{
+					"path": "doc/doc.DocumentDoc.ReactiveX.html#doc.DocumentDoc.ReactiveX.Operators",
+					"subs": [],
+					"title": "Operators"
+				}
+			],
+			"title": "ReactiveX"
 		},
 		{
 			"path": "doc/doc.DocumentDoc.HTTP.html",
@@ -253,32 +295,6 @@ const root = {
 				}
 			],
 			"title": "HTML"
-		},
-		{
-			"path": "doc/doc.DocumentDoc.ReactiveX.html",
-			"subs": [
-				{
-					"path": "doc/doc.DocumentDoc.ReactiveX.html#doc.DocumentDoc.ReactiveX.Signal",
-					"subs": [],
-					"title": "Signal"
-				},
-				{
-					"path": "doc/doc.DocumentDoc.ReactiveX.html#doc.DocumentDoc.ReactiveX.Subscribe",
-					"subs": [],
-					"title": "Subscribe"
-				},
-				{
-					"path": "doc/doc.DocumentDoc.ReactiveX.html#doc.DocumentDoc.ReactiveX.Unsubscribe",
-					"subs": [],
-					"title": "Unsubscribe"
-				},
-				{
-					"path": "doc/doc.DocumentDoc.ReactiveX.html#doc.DocumentDoc.ReactiveX.Operators",
-					"subs": [],
-					"title": "Operators"
-				}
-			],
-			"title": "ReactiveX"
 		},
 		{
 			"path": "doc/doc.DocumentDoc.Template_Literal.html",
