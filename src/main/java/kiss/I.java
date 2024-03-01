@@ -1744,11 +1744,11 @@ public class I {
      * AutoCloseable input = null;
      *
      * try {
-     *     // some IO action
+     * // some IO action
      * } catch (Exception e) {
-     *     throw e;
+     * throw e;
      * } finally {
-     *     I.quiet(input);
+     * I.quiet(input);
      * }
      * </pre>
      * <p>
@@ -1764,23 +1764,23 @@ public class I {
      * <p>
      * <pre>
      * private void callerWithoutErrorHandling() {
-     *     methodQuietly();
+     * methodQuietly();
      * }
      *
      * private void callerWithErrorHandling() {
-     *     try {
-     *         methodQuietly();
-     *     } catch (Exception e) {
-     *         // you can catch the checked exception here
-     *     }
+     * try {
+     * methodQuietly();
+     * } catch (Exception e) {
+     * // you can catch the checked exception here
+     * }
      * }
      *
      * private void methodQuietly() {
-     *     try {
-     *         // throw some checked exception
-     *     } catch (CheckedException e) {
-     *         throw I.quiet(e); // rethrow checked exception quietly
-     *     }
+     * try {
+     * // throw some checked exception
+     * } catch (CheckedException e) {
+     * throw I.quiet(e); // rethrow checked exception quietly
+     * }
      * }
      * </pre>
      *
@@ -1829,7 +1829,7 @@ public class I {
      * </p>
      * <pre>
      * I.recurse((self, param1, param2) -> {
-     *     // your function code
+     * // your function code
      * });
      * </pre>
      * 
@@ -1848,7 +1848,7 @@ public class I {
      * </p>
      * <pre>
      * I.recurse((self, param1, param2) -> {
-     *     // your function code
+     * // your function code
      * });
      * </pre>
      * 
@@ -1867,7 +1867,7 @@ public class I {
      * </p>
      * <pre>
      * I.recurse((self, param) -> {
-     *     // your function code
+     * // your function code
      * });
      * </pre>
      * 
@@ -1886,7 +1886,7 @@ public class I {
      * </p>
      * <pre>
      * I.recurse((self, param) -> {
-     *     // your function code
+     * // your function code
      * });
      * </pre>
      * 
@@ -1905,7 +1905,7 @@ public class I {
      * </p>
      * <pre>
      * I.recurse(self -> {
-     *     // your function code
+     * // your function code
      * });
      * </pre>
      * 
@@ -1924,7 +1924,7 @@ public class I {
      * </p>
      * <pre>
      * I.recurse(self -> {
-     *     // your function code
+     * // your function code
      * });
      * </pre>
      * 
@@ -1990,7 +1990,7 @@ public class I {
      *         numbers after each interval time of time thereafter
      */
     public static Signal<Long> schedule(long delayTime, long intervalTime, TimeUnit unit, boolean fixedRate, ScheduledExecutorService... scheduler) {
-        return schedule(() -> delayTime, intervalTime, unit, fixedRate, scheduler);
+        return schedule(time(delayTime), time(intervalTime), unit, fixedRate, scheduler);
     }
 
     /**
@@ -2013,7 +2013,11 @@ public class I {
                 start += unit.toMillis(interval);
             }
             return start - now;
-        }, unit.toMillis(interval), TimeUnit.MILLISECONDS, true, scheduler);
+        }, time(unit.toMillis(interval)), TimeUnit.MILLISECONDS, true, scheduler);
+    }
+
+    static LongSupplier time(long time) {
+        return () -> time;
     }
 
     /**
@@ -2026,23 +2030,24 @@ public class I {
      * @return {@link Signal} that emits long value (1) after the delay time and ever-increasing
      *         numbers after each interval time of time thereafter
      */
-    private static Signal<Long> schedule(LongSupplier delayTime, long intervalTime, TimeUnit unit, boolean fixedRate, ScheduledExecutorService... scheduler) {
+    static Signal<Long> schedule(LongSupplier delayTime, LongSupplier intervalTime, TimeUnit unit, boolean fixedRate, ScheduledExecutorService... scheduler) {
         Objects.requireNonNull(unit);
 
         return new Signal<>((observer, disposer) -> {
             long delay = delayTime.getAsLong();
+            long interval = intervalTime.getAsLong();
             Runnable task = I.wiseC(observer).bindLast(null);
             Future future;
 
             @SuppressWarnings("resource")
             ScheduledExecutorService exe = scheduler == null || scheduler.length == 0 || scheduler[0] == null ? I.scheduler : scheduler[0];
 
-            if (intervalTime <= 0) {
+            if (interval <= 0) {
                 future = delay <= 0 ? CompletableFuture.runAsync(task, Runnable::run) : exe.schedule(task, delay, unit);
             } else if (fixedRate) {
-                future = exe.scheduleAtFixedRate(task, delay, intervalTime, unit);
+                future = exe.scheduleAtFixedRate(task, delay, interval, unit);
             } else {
-                future = exe.scheduleWithFixedDelay(task, delay, intervalTime, unit);
+                future = exe.scheduleWithFixedDelay(task, delay, interval, unit);
             }
             return disposer.add(future);
         }).count();

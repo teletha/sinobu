@@ -9,6 +9,8 @@
  */
 package kiss.signal;
 
+import java.util.function.LongSupplier;
+
 import org.junit.jupiter.api.Test;
 
 class ThrottleTest extends SignalTester {
@@ -60,6 +62,27 @@ class ThrottleTest extends SignalTester {
     @Test
     void unitNull() {
         monitor(signal -> signal.throttle(10, null));
+
+        assert main.emit("null unit", "makes", "no effect").value("null unit", "makes", "no effect");
+    }
+
+    @Test
+    void supplierZero() {
+        monitor(signal -> signal.throttle(() -> 0, ms, System::nanoTime));
+
+        assert main.emit("null unit", "makes", "no effect").value("null unit", "makes", "no effect");
+    }
+
+    @Test
+    void supplierNegative() {
+        monitor(signal -> signal.throttle(() -> -30, ms, System::nanoTime));
+
+        assert main.emit("null unit", "makes", "no effect").value("null unit", "makes", "no effect");
+    }
+
+    @Test
+    void supplierNull() {
+        monitor(signal -> signal.throttle((LongSupplier) null, ms, System::nanoTime));
 
         assert main.emit("null unit", "makes", "no effect").value("null unit", "makes", "no effect");
     }

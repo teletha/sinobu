@@ -9,6 +9,8 @@
  */
 package kiss.signal;
 
+import java.util.function.LongSupplier;
+
 import org.junit.jupiter.api.Test;
 
 class DebounceTest extends SignalTester {
@@ -91,6 +93,27 @@ class DebounceTest extends SignalTester {
     @Test
     void unitNull() {
         monitor(signal -> signal.debounce(10, null));
+
+        assert main.emit("null unit", "makes", "no effect").value("null unit", "makes", "no effect");
+    }
+
+    @Test
+    void supplierZero() {
+        monitor(signal -> signal.debounce(() -> 0, ms, true));
+
+        assert main.emit("null unit", "makes", "no effect").value("null unit", "makes", "no effect");
+    }
+
+    @Test
+    void supplierNegative() {
+        monitor(signal -> signal.debounce(() -> -30, ms, true));
+
+        assert main.emit("null unit", "makes", "no effect").value("null unit", "makes", "no effect");
+    }
+
+    @Test
+    void supplierNull() {
+        monitor(signal -> signal.debounce((LongSupplier) null, ms, true));
 
         assert main.emit("null unit", "makes", "no effect").value("null unit", "makes", "no effect");
     }

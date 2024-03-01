@@ -9,9 +9,8 @@
  */
 package kiss;
 
-import static java.lang.Boolean.FALSE;
-import static java.lang.Boolean.TRUE;
-import static java.util.concurrent.TimeUnit.NANOSECONDS;
+import static java.lang.Boolean.*;
+import static java.util.concurrent.TimeUnit.*;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.Duration;
@@ -446,11 +445,11 @@ public class Signal<V> {
      * </p>
      * <pre class="marble-diagram" style="font: 11px/1.2 'Yu Gothic';">
      * ───①───②───③──╂
-     *    ↓   ↓   ↓  ↓
-     *  ┌─────────────┐
-     *   buffer (all)
-     *  └─────────────┘
-     *               ↓
+     * ↓ ↓ ↓ ↓
+     * ┌─────────────┐
+     * buffer (all)
+     * └─────────────┘
+     * ↓
      * ────────────[①②③]╂
      * </pre>
      *
@@ -469,11 +468,11 @@ public class Signal<V> {
      * </p>
      * <pre class="marble-diagram" style="font: 11px/1.2 'Yu Gothic';">
      * ───①─②─③─④─⑤─⑥─⑦╂
-     *    ↓ ↓ ↓ ↓ ↓ ↓ ↓
-     *  ┌──────────────┐
-     *   buffer (3)
-     *  └──────────────┘
-     *        ↓     ↓
+     * ↓ ↓ ↓ ↓ ↓ ↓ ↓
+     * ┌──────────────┐
+     * buffer (3)
+     * └──────────────┘
+     * ↓ ↓
      * ──────[①②③]──[④⑤⑥]─╂
      * </pre>
      *
@@ -493,11 +492,11 @@ public class Signal<V> {
      * </p>
      * <pre class="marble-diagram" style="font: 11px/1.2 'Yu Gothic';">
      * ───①───②───③───④───⑤─╂
-     *    ↓   ↓   ↓   ↓   ↓
-     *  ┌───────────────────┐
-     *   buffer (2, 1)
-     *  └───────────────────┘
-     *        ↓   ↓   ↓   ↓
+     * ↓ ↓ ↓ ↓ ↓
+     * ┌───────────────────┐
+     * buffer (2, 1)
+     * └───────────────────┘
+     * ↓ ↓ ↓ ↓
      * ───────[①②]─[②③]─[③④]─[④⑤]─╂
      * </pre>
      *
@@ -555,11 +554,11 @@ public class Signal<V> {
      * </p>
      * <pre class="marble-diagram" style="font: 11px/1.2 'Yu Gothic';">
      * ───①──②────③────────④⑤─────╂
-     *    ↓  ↓    ↓        ↓↓
-     *  ┌─────────────────────────┐
-     *   buffer (1, minute)
-     *  └─────────────────────────┘
-     *       ↓     ↓     ↓     ↓
+     * ↓ ↓ ↓ ↓↓
+     * ┌─────────────────────────┐
+     * buffer (1, minute)
+     * └─────────────────────────┘
+     * ↓ ↓ ↓ ↓
      * ─────[①②]────[③]──────────[④⑤]╂
      * </pre>
      *
@@ -582,13 +581,13 @@ public class Signal<V> {
      * </p>
      * <pre class="marble-diagram" style="font: 11px/1.2 'Yu Gothic';">
      * ────────▽──────────▽─╂ timing
-     *         ↓          ↓
+     * ↓ ↓
      * ───①──②────③────④⑤───╂ signal
-     *    ↓  ↓    ↓    ↓↓
-     *  ┌───────────────────┐
-     *   buffer (timing)
-     *  └───────────────────┘
-     *         ↓          ↓
+     * ↓ ↓ ↓ ↓↓
+     * ┌───────────────────┐
+     * buffer (timing)
+     * └───────────────────┘
+     * ↓ ↓
      * ───────[①②]────────[③④⑤]╂
      * </pre>
      * 
@@ -607,13 +606,13 @@ public class Signal<V> {
      * </p>
      * <pre class="marble-diagram" style="font: 11px/1.2 'Yu Gothic';">
      * ────────▽──────────▽─╂ timing
-     *         ↓          ↓
+     * ↓ ↓
      * ───①──②────③────④⑤───╂ signal
-     *    ↓  ↓    ↓    ↓↓
-     *  ┌───────────────────┐
-     *   buffer (timing)
-     *  └───────────────────┘
-     *         ↓          ↓
+     * ↓ ↓ ↓ ↓↓
+     * ┌───────────────────┐
+     * buffer (timing)
+     * └───────────────────┘
+     * ↓ ↓
      * ───────[①②]────────[③④⑤]╂
      * </pre>
      * 
@@ -658,13 +657,13 @@ public class Signal<V> {
      * </p>
      * <pre class="marble-diagram" style="font: 11px/1.2 'Yu Gothic';">
      * ───①②──────③─────④⑤──╂ signal
-     *    ↓↓      ↓     ↓↓
+     * ↓↓ ↓ ↓↓
      * ─────❶───❷──❸──❹─────╂ other
-     *      ↓   ↓  ↓  ↓
-     *  ┌───────────────────┐
-     *   combine (other)
-     *  └───────────────────┘
-     *      ↓   ↓  ↓    ↓
+     * ↓ ↓ ↓ ↓
+     * ┌───────────────────┐
+     * combine (other)
+     * └───────────────────┘
+     * ↓ ↓ ↓ ↓
      * ─────[①❶]─[②❷]─[③❸]──[④❹]──╂
      * </pre>
      *
@@ -684,15 +683,15 @@ public class Signal<V> {
      * </p>
      * <pre class="marble-diagram" style="font: 11px/1.2 'Yu Gothic';">
      * ───①②──────③─────④⑤──╂ signal
-     *    ↓↓      ↓     ↓↓
+     * ↓↓ ↓ ↓↓
      * ─────❶───❷──❸──❹─────╂ other
-     *      ↓   ↓  ↓  ↓
+     * ↓ ↓ ↓ ↓
      * ──Ⓐ───────Ⓑ────────Ⓒ─╂ another
-     *   ↓       ↓        ↓
-     *  ┌───────────────────┐
-     *   combine (other, another)
-     *  └───────────────────┘
-     *      ↓    ↓        ↓
+     * ↓ ↓ ↓
+     * ┌───────────────────┐
+     * combine (other, another)
+     * └───────────────────┘
+     * ↓ ↓ ↓
      * ────[①❶Ⓐ]─[②❷Ⓑ]─────[③❸Ⓒ]─╂
      * </pre>
      *
@@ -713,13 +712,13 @@ public class Signal<V> {
      * </p>
      * <pre class="marble-diagram" style="font: 11px/1.2 'Yu Gothic';">
      * ───①②──────③─────④⑤─╂ signal
-     *    ↓↓      ↓     ↓↓
+     * ↓↓ ↓ ↓↓
      * ─────○───●──◎──●────╂ other
-     *      ↓   ↓  ↓  ↓
-     *  ┌──────────────────┐
-     *   combine (other, a & b)
-     *  └──────────────────┘
-     *      ↓   ↓  ↓    ↓
+     * ↓ ↓ ↓ ↓
+     * ┌──────────────────┐
+     * combine (other, a & b)
+     * └──────────────────┘
+     * ↓ ↓ ↓ ↓
      * ─────①───❷──⓷────❹──╂
      * </pre>
      *
@@ -775,13 +774,13 @@ public class Signal<V> {
      * </p>
      * <pre class="marble-diagram" style="font: 11px/1.2 'Yu Gothic';">
      * ───①②──────③─────④⑤─╂ signal
-     *    ↓↓      ↓     ↓↓
+     * ↓↓ ↓ ↓↓
      * ─────○───●──◎──●────╂ other
-     *      ↓   ↓  ↓  ↓
-     *  ┌──────────────────┐
-     *   combine (other, a & b)
-     *  └──────────────────┘
-     *      ↓   ↓  ↓    ↓
+     * ↓ ↓ ↓ ↓
+     * ┌──────────────────┐
+     * combine (other, a & b)
+     * └──────────────────┘
+     * ↓ ↓ ↓ ↓
      * ─────①───❷──⓷────❹──╂
      * </pre>
      *
@@ -811,13 +810,13 @@ public class Signal<V> {
      * </p>
      * <pre class="marble-diagram" style="font: 11px/1.2 'Yu Gothic';">
      * ───①②───────③───④──╂ signal
-     *    ↓↓       ↓   ↓
+     * ↓↓ ↓ ↓
      * ─────❶───❷─────────╂ other
-     *      ↓   ↓
-     *  ┌─────────────────┐
-     *   combineLatest (other)
-     *  └─────────────────┘
-     *      ↓   ↓  ↓   ↓
+     * ↓ ↓
+     * ┌─────────────────┐
+     * combineLatest (other)
+     * └─────────────────┘
+     * ↓ ↓ ↓ ↓
      * ────[②❶]─[②❷]─[③❷]─[④❷]──╂
      * </pre>
      *
@@ -836,15 +835,15 @@ public class Signal<V> {
      * </p>
      * <pre class="marble-diagram" style="font: 11px/1.2 'Yu Gothic';">
      * ───①②─────────③──────╂ signal
-     *    ↓↓         ↓   
+     * ↓↓ ↓
      * ─────❶────❷──────────╂ other
-     *      ↓    ↓      
+     * ↓ ↓
      * ──Ⓐ────────────────Ⓑ─╂ another
-     *   ↓                ↓
-     *  ┌───────────────────┐
-     *   combineLatest (other, another)
-     *  └───────────────────┘
-     *      ↓    ↓   ↓    ↓
+     * ↓ ↓
+     * ┌───────────────────┐
+     * combineLatest (other, another)
+     * └───────────────────┘
+     * ↓ ↓ ↓ ↓
      * ────[②❶Ⓐ]─[②❷Ⓐ]─[③❷Ⓐ]─[③❷Ⓑ]╂
      * </pre>
      *
@@ -864,13 +863,13 @@ public class Signal<V> {
      * </p>
      * <pre class="marble-diagram" style="font: 11px/1.2 'Yu Gothic';">
      * ───①②───────③───④──╂ signal
-     *    ↓↓       ↓   ↓
+     * ↓↓ ↓ ↓
      * ─────◎───●─────○───╂ other
-     *      ↓   ↓     ↓
-     *  ┌─────────────────┐
-     *   combineLatest (other, A & B)
-     *  └─────────────────┘
-     *      ↓   ↓  ↓  ↓↓
+     * ↓ ↓ ↓
+     * ┌─────────────────┐
+     * combineLatest (other, A & B)
+     * └─────────────────┘
+     * ↓ ↓ ↓ ↓↓
      * ─────⓶───❷──❸──③④─╂
      * </pre>
      *
@@ -912,13 +911,13 @@ public class Signal<V> {
      * </p>
      * <pre class="marble-diagram" style="font: 11px/1.2 'Yu Gothic';">
      * ───①②───────③───④──╂ signal
-     *    ↓↓       ↓   ↓
+     * ↓↓ ↓ ↓
      * ─────◎───●─────○───╂ other
-     *      ↓   ↓     ↓
-     *  ┌─────────────────┐
-     *   combineLatest (others, A & B)
-     *  └─────────────────┘
-     *      ↓   ↓  ↓  ↓↓
+     * ↓ ↓ ↓
+     * ┌─────────────────┐
+     * combineLatest (others, A & B)
+     * └─────────────────┘
+     * ↓ ↓ ↓ ↓↓
      * ─────⓶───❷──❸──③④──╂
      * </pre>
      *
@@ -945,13 +944,13 @@ public class Signal<V> {
      * </p>
      * <pre class="marble-diagram" style="font: 11px/1.2 'Yu Gothic';">
      * ───①②──③──╂ signal
-     *    ↓↓  ↓  ↓
-     *           ─④───⑤⑥─╂ other
-     *            ↓   ↓↓       ↓
-     *  ┌─────────────────┐
-     *   concat (other)
-     *  └─────────────────┘
-     *    ↓↓  ↓   ↓   ↓↓
+     * ↓↓ ↓ ↓
+     * ─④───⑤⑥─╂ other
+     * ↓ ↓↓ ↓
+     * ┌─────────────────┐
+     * concat (other)
+     * └─────────────────┘
+     * ↓↓ ↓ ↓ ↓↓
      * ───①②──③───④───⑤⑥─╂
      * </pre>
      * 
@@ -973,13 +972,13 @@ public class Signal<V> {
      * </p>
      * <pre class="marble-diagram" style="font: 11px/1.2 'Yu Gothic';">
      * ───①②──③──╂ signal
-     *    ↓↓  ↓  ↓
-     *           ─④───⑤⑥─╂ other
-     *            ↓   ↓↓       ↓
-     *  ┌─────────────────┐
-     *   concat (other)
-     *  └─────────────────┘
-     *    ↓↓  ↓   ↓   ↓↓
+     * ↓↓ ↓ ↓
+     * ─④───⑤⑥─╂ other
+     * ↓ ↓↓ ↓
+     * ┌─────────────────┐
+     * concat (other)
+     * └─────────────────┘
+     * ↓↓ ↓ ↓ ↓↓
      * ───①②──③───④───⑤⑥─╂
      * </pre>
      * 
@@ -1086,6 +1085,21 @@ public class Signal<V> {
      * @return {ChainableAPI}
      */
     public Signal<V> debounce(long time, TimeUnit unit, boolean acceptFirst, ScheduledExecutorService... scheduler) {
+        return debounce(I.time(time), unit, acceptFirst, scheduler);
+    }
+
+    /**
+     * Drops values that are followed by newer values before a timeout. The timer resets on each
+     * value emission.
+     *
+     * @param time A time value. Zero or negative number will ignore this instruction.
+     * @param unit A time unit. {@code null} will ignore this instruction.
+     * @param acceptFirst Determines whether to pass the first element or not. It is useful to get
+     *            the beginning and end of a sequence of events.
+     * @param scheduler
+     * @return {ChainableAPI}
+     */
+    public Signal<V> debounce(LongSupplier time, TimeUnit unit, boolean acceptFirst, ScheduledExecutorService... scheduler) {
         return debounceX(time, unit, acceptFirst, scheduler).flatMap(v -> I.signal(v).last());
     }
 
@@ -1099,6 +1113,19 @@ public class Signal<V> {
      * @return {ChainableAPI}
      */
     public Signal<List<V>> debounceAll(long time, TimeUnit unit, ScheduledExecutorService... scheduler) {
+        return debounceAll(I.time(time), unit, scheduler);
+    }
+
+    /**
+     * Collect values that are followed by newer values before a timeout. The timer resets on each
+     * value emission.
+     *
+     * @param time A time value. Zero or negative number will ignore this instruction.
+     * @param unit A time unit. {@code null} will ignore this instruction.
+     * @param scheduler
+     * @return {ChainableAPI}
+     */
+    public Signal<List<V>> debounceAll(LongSupplier time, TimeUnit unit, ScheduledExecutorService... scheduler) {
         return debounceX(time, unit, false, scheduler);
     }
 
@@ -1111,9 +1138,9 @@ public class Signal<V> {
      * @param scheduler
      * @return {ChainableAPI}
      */
-    private Signal<List<V>> debounceX(long time, TimeUnit unit, boolean acceptFirst, ScheduledExecutorService... scheduler) {
+    private Signal<List<V>> debounceX(LongSupplier time, TimeUnit unit, boolean acceptFirst, ScheduledExecutorService... scheduler) {
         // ignore invalid parameters
-        if (time <= 0 || unit == null) {
+        if (time == null || time.getAsLong() <= 0 || unit == null) {
             return map(List::of);
         }
 
@@ -1134,7 +1161,7 @@ public class Signal<V> {
                     d.dispose();
                 }
 
-                latest.set(I.schedule(time, unit, scheduler).to(() -> {
+                latest.set(I.schedule(time, I.time(0), unit, false, scheduler).to(() -> {
                     latest.set(null);
                     observer.accept(list.getAndSet(new ArrayList<>()));
                 }));
@@ -1980,11 +2007,11 @@ public class Signal<V> {
      * </p>
      * <pre class="marble-diagram" style="font: 11px/1.2 'Yu Gothic';">
      * ───①───②───③───④───⑤──┼
-     *    ↓   ↓   ↓   ↓   ↓  ↓
-     *  ┌────────────────────┐
-     *   map ○→●
-     *  └────────────────────┘
-     *    ↓   ↓   ↓   ↓   ↓  ↓
+     * ↓ ↓ ↓ ↓ ↓ ↓
+     * ┌────────────────────┐
+     * map ○→●
+     * └────────────────────┘
+     * ↓ ↓ ↓ ↓ ↓ ↓
      * ───❶───❷───❸───❹───❺──┼
      * </pre>
      *
@@ -2002,11 +2029,11 @@ public class Signal<V> {
      * </p>
      * <pre class="marble-diagram" style="font: 11px/1.2 'Yu Gothic';">
      * ───①───②───③───④───⑤──┼
-     *    ↓   ↓   ↓   ↓   ↓
-     *  ┌────────────────────┐
-     *   map ○→●
-     *  └────────────────────┘
-     *    ↓   ↓   ↓   ↓   ↓  ↓
+     * ↓ ↓ ↓ ↓ ↓
+     * ┌────────────────────┐
+     * map ○→●
+     * └────────────────────┘
+     * ↓ ↓ ↓ ↓ ↓ ↓
      * ───❶───❷───❸───❹───❺──┼
      * </pre>
      * 
@@ -2045,13 +2072,13 @@ public class Signal<V> {
      * </p>
      * <pre class="marble-diagram" style="font: 11px/1.2 'Yu Gothic';">
      * ───①───②───③───④───⑤──┼
-     *    ↓   ↓   ↓   ↓   ↓
+     * ↓ ↓ ↓ ↓ ↓
      * ─────❶────❷────❸────┼
-     *      ↓    ↓    ↓
-     *  ┌────────────────────┐
-     *   merge
-     *  └────────────────────┘
-     *    ↓ ↓ ↓  ↓↓   ↓   ↓  ↓
+     * ↓ ↓ ↓
+     * ┌────────────────────┐
+     * merge
+     * └────────────────────┘
+     * ↓ ↓ ↓ ↓↓ ↓ ↓ ↓
      * ───①─❶─②──❷③───④❸──⑤──┼
      * </pre>
      *
@@ -2109,14 +2136,14 @@ public class Signal<V> {
      * Switch event stream context.
      * </p>
      * <pre class="marble-diagram" style="font: 11px/1.2 'Yu Gothic';">
-    * ───①───②───③───④───⑤──┼
-    *    ↓   ↓   ↓   ↓   ↓
-    *  ┌────────────────────┐
-    *   on ━
-    *  └────────────────────┘
-    *    ↓   ↓   ↓   ↓   ↓  ↓
-    * ━━━❶━━━❷━━━❸━━━❹━━━❺━━╋
-    * </pre>
+     * ───①───②───③───④───⑤──┼
+     * ↓ ↓ ↓ ↓ ↓
+     * ┌────────────────────┐
+     * on ━
+     * └────────────────────┘
+     * ↓ ↓ ↓ ↓ ↓ ↓
+     * ━━━❶━━━❷━━━❸━━━❹━━━❺━━╋
+     * </pre>
      * 
      * @param scheduler A new context
      * @return {ChainableAPI}
@@ -3373,7 +3400,8 @@ public class Signal<V> {
         }
 
         return new Signal<>((observer, disposer) -> {
-            // Normally, Signal will be disposed automatically after a COMPLETE event is sent. But it
+            // Normally, Signal will be disposed automatically after a COMPLETE event is sent. But
+            // it
             // is not immediately disposed if the COMPLETE event itself is delayed for some
             // reason (#delay, #interval or #on, etc.).
             // In that case, even though the current signal has already stopped event propagation,
@@ -3483,16 +3511,36 @@ public class Signal<V> {
      * @return {ChainableAPI}
      */
     public Signal<V> throttle(long time, TimeUnit unit, LongSupplier nanoClock) {
+        return throttle(I.time(time), unit, nanoClock);
+    }
+
+    /**
+     * <p>
+     * Throttles by skipping values until "skipDuration" passes and then emits the next received
+     * value.
+     * </p>
+     * <p>
+     * Ignores the values from an {@link Signal} sequence which are followed by another value before
+     * due time preassign the specified source and time.
+     * </p>
+     *
+     * @param time Time to wait before sending another item after emitting the last item. Zero or
+     *            negative number will ignore this instruction.
+     * @param unit A unit of time for the specified timeout. {@code null} will ignore this
+     *            instruction.
+     * @param nanoClock A nano-time stamp provider.
+     * @return {ChainableAPI}
+     */
+    public Signal<V> throttle(LongSupplier time, TimeUnit unit, LongSupplier nanoClock) {
         // ignore invalid parameters
-        if (time <= 0 || unit == null || nanoClock == null) {
+        if (time == null || unit == null || nanoClock == null) {
             return this;
         }
 
-        long delay = unit.toNanos(time);
         return take(AtomicLong::new, (context, value) -> {
             long now = nanoClock.getAsLong();
 
-            if (context.get() + delay <= now) {
+            if (context.get() + unit.toNanos(time.getAsLong()) <= now) {
                 context.set(now);
                 return true;
             }
