@@ -61,7 +61,7 @@ With a few exceptions, Sinobu and its APIs are designed to be simple to use and 
 		<dependency>
 			<groupId>com.alibaba.fastjson2</groupId>
 			<artifactId>fastjson2</artifactId>
-			<version>2.0.46.android8</version>
+			<version>2.0.47.android8</version>
 			<scope>test</scope>
 			<exclusions/>
 		</dependency>
@@ -82,14 +82,14 @@ With a few exceptions, Sinobu and its APIs are designed to be simple to use and 
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>2.16.1</version>
+			<version>2.17.0-rc1</version>
 			<scope>test</scope>
 			<exclusions/>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.module</groupId>
 			<artifactId>jackson-module-afterburner</artifactId>
-			<version>2.16.1</version>
+			<version>2.17.0-rc1</version>
 			<scope>test</scope>
 			<exclusions/>
 		</dependency>
@@ -124,7 +124,7 @@ With a few exceptions, Sinobu and its APIs are designed to be simple to use and 
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
-			<version>1.5.0</version>
+			<version>1.5.1</version>
 			<scope>test</scope>
 			<exclusions/>
 		</dependency>
