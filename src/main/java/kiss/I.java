@@ -2016,6 +2016,12 @@ public class I {
         }, time(unit.toMillis(interval)), TimeUnit.MILLISECONDS, true, scheduler);
     }
 
+    /**
+     * 
+     * 
+     * @param time
+     * @return
+     */
     static LongSupplier time(long time) {
         return () -> time;
     }
@@ -2031,8 +2037,6 @@ public class I {
      *         numbers after each interval time of time thereafter
      */
     static Signal<Long> schedule(LongSupplier delayTime, LongSupplier intervalTime, TimeUnit unit, boolean fixedRate, ScheduledExecutorService... scheduler) {
-        Objects.requireNonNull(unit);
-
         return new Signal<>((observer, disposer) -> {
             long delay = delayTime.getAsLong();
             long interval = intervalTime.getAsLong();
