@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.10.1](https://github.com/teletha/sinobu/compare/v3.10.0...v3.10.1) (2024-03-01)
+
+
+### Bug Fixes
+
+* remove null check ([3d3ed9a](https://github.com/teletha/sinobu/commit/3d3ed9a31c76c495c56262420c4b7b71c18edb3a))
+* update ci ([bfd27a1](https://github.com/teletha/sinobu/commit/bfd27a1f3967d0bef42a20ea43c3858d930ee4ea))
+
 ## [3.10.0](https://github.com/teletha/sinobu/compare/v3.9.3...v3.10.0) (2024-03-01)
 
 
