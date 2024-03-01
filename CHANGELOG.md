@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.10.0](https://github.com/teletha/sinobu/compare/v3.9.3...v3.10.0) (2024-03-01)
+
+
+### Features
+
+* Signal#throttle and #debounce support lazy time resolver ([a487680](https://github.com/teletha/sinobu/commit/a487680dc7d31588266f2502874c21e049c98572))
+
 ## [3.9.3](https://github.com/teletha/sinobu/compare/v3.9.2...v3.9.3) (2024-02-20)
 
 
