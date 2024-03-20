@@ -11,7 +11,6 @@ package kiss;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.http.WebSocket;
 import java.nio.ByteBuffer;
@@ -32,7 +31,7 @@ import java.util.zip.InflaterInputStream;
  * class. Fields should only be initialized if they are needed in the constructor. If you initialize
  * a field at the time of its declaration, even unnecessary fields will be initialized.
  */
-class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Storable<Subscriber>, ParameterizedType {
+class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Storable<Subscriber> {
 
     /** Generic counter. */
     volatile long index;
@@ -47,7 +46,8 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
     List<T> list;
 
     /**
-     * {@link Subscriber} must have this constructor only. Don't use instance field initialization to
+     * {@link Subscriber} must have this constructor only. Don't use instance field initialization
+     * to
      * reduce creation cost.
      */
     Subscriber() {
@@ -269,33 +269,4 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
     // Logging
     // ======================================================================
     CharBuffer chars;
-
-    // ======================================================================
-    // Parameterized Type
-    // ======================================================================
-    Ⅲ<Type, Type, Type[]> types;
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Type[] getActualTypeArguments() {
-        return types.ⅲ;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Type getRawType() {
-        return types.ⅰ;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Type getOwnerType() {
-        return types.ⅱ;
-    }
 }

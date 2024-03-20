@@ -144,7 +144,7 @@ import org.xml.sax.helpers.DefaultHandler;
  * </dd>
  * </dl>
  */
-public class I {
+public class I implements ParameterizedType {
 
     // Candidates of Method Name
     //
@@ -396,9 +396,9 @@ public class I {
     }
 
     /**
-     * Initialize environment.
+     * Hide construction.
      */
-    private I() {
+    I() {
     }
 
     /**
@@ -2192,7 +2192,7 @@ public class I {
 
             // The next step is to check for already translated text from
             // the locally stored bundle files. Iit can help reduce translation resources.
-            Subscriber<?> bundle = bundles.computeIfAbsent(lang, Subscriber::new);
+            Subscriber<String> bundle = bundles.computeIfAbsent(lang, Subscriber::new);
             String cached = bundle.messages.get(text);
             if (cached != null) return I.signal(cached);
 
@@ -2514,5 +2514,34 @@ public class I {
         } catch (Exception e) {
             throw I.quiet(e);
         }
+    }
+
+    // ======================================================================
+    // Parameterized Type
+    // ======================================================================
+    Ⅲ<Type, Type, Type[]> par;
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Type[] getActualTypeArguments() {
+        return par.ⅲ;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Type getRawType() {
+        return par.ⅰ;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Type getOwnerType() {
+        return par.ⅱ;
     }
 }

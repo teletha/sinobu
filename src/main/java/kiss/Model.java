@@ -9,11 +9,7 @@
  */
 package kiss;
 
-import static java.lang.reflect.Modifier.FINAL;
-import static java.lang.reflect.Modifier.NATIVE;
-import static java.lang.reflect.Modifier.PRIVATE;
-import static java.lang.reflect.Modifier.PUBLIC;
-import static java.lang.reflect.Modifier.STATIC;
+import static java.lang.reflect.Modifier.*;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Repeatable;
@@ -717,8 +713,8 @@ public class Model<M> {
                 params[i] = specialize(params[i], vars, specials);
             }
 
-            Subscriber<Type> p = new Subscriber();
-            p.types = I.pair(param.getRawType(), param.getOwnerType(), params);
+            I p = new I();
+            p.par = I.pair(param.getRawType(), param.getOwnerType(), params);
             return p;
         } else if (type instanceof TypeVariable) {
             for (int i = 0; i < specials.length; i++) {
@@ -742,7 +738,7 @@ public class Model<M> {
     // .invokeExact();
     // }
 
-    static WiseFunction createGetter(Method method)  {
+    static WiseFunction createGetter(Method method) {
         try {
             Lookup lookup = MethodHandles.privateLookupIn(method.getDeclaringClass(), MethodHandles.lookup());
             MethodHandle mh = lookup.unreflect(method);
@@ -756,7 +752,7 @@ public class Model<M> {
         }
     }
 
-    static WiseBiConsumer createSetter(Method method)  {
+    static WiseBiConsumer createSetter(Method method) {
         try {
             Lookup lookup = MethodHandles.privateLookupIn(method.getDeclaringClass(), MethodHandles.lookup());
             MethodHandle mh = lookup.unreflect(method);
