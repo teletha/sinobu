@@ -426,13 +426,18 @@ public class SignalTester {
         boolean isNotCompleted();
 
         /**
-         * <p>
          * Cehck this subscription has error or not.
-         * </p>
          * 
          * @return A result.
          */
         boolean isError();
+
+        /**
+         * Cehck this subscription has error or not.
+         * 
+         * @return A result.
+         */
+        boolean isError(Class<? extends Throwable> type);
 
         /**
          * <p>
@@ -525,6 +530,17 @@ public class SignalTester {
         public boolean isError() {
             assert error != null;
             assert completed == false;
+            return true;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean isError(Class type) {
+            assert error != null;
+            assert completed == false;
+            assert type.isInstance(error);
             return true;
         }
 
@@ -640,6 +656,14 @@ public class SignalTester {
         @Override
         public boolean isError() {
             return log.isError();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public boolean isError(Class type) {
+            return log.isError(type);
         }
 
         /**
@@ -790,6 +814,13 @@ public class SignalTester {
          */
         public boolean isError() {
             return result == null ? errored : result.isError();
+        }
+
+        /**
+         * @return
+         */
+        public boolean isError(Class<? extends Throwable> type) {
+            return result == null ? errored : result.isError(type);
         }
 
         /**

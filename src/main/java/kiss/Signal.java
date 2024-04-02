@@ -2053,10 +2053,22 @@ public class Signal<V> {
     }
 
     /**
-     * <p>
+     * 
+     * 
+     * @param function
+     * @return
+     */
+    public Signal<V> mapError(WiseFunction<Throwable, Throwable> function) {
+        Objects.requireNonNull(function);
+
+        return new Signal<>((observer, disposer) -> {
+            return to(observer::accept, e -> observer.error(function.apply(e)), observer::complete, disposer, false);
+        });
+    }
+
+    /**
      * Returns an {@link Signal} that applies the given constant to each item emitted by an
      * {@link Signal} and emits the result.
-     * </p>
      *
      * @param constant A constant to apply to each value emitted by this {@link Signal}.
      * @return {ChainableAPI}
