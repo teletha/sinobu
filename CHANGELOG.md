@@ -1,5 +1,18 @@
 # Changelog
 
+## [3.11.0](https://github.com/teletha/sinobu/compare/v3.10.1...v3.11.0) (2024-04-02)
+
+
+### Features
+
+* add Signal#mapError ([bb31643](https://github.com/teletha/sinobu/commit/bb3164370d5649b53748cbe7350ffff6044c4948))
+
+
+### Bug Fixes
+
+* reduce code size and memory size on runtime ([34fa56c](https://github.com/teletha/sinobu/commit/34fa56c37d3f4181f90b7e0c0d7e350c4a02a2be))
+* revert null check ([97e0113](https://github.com/teletha/sinobu/commit/97e0113667879c46d0802fede683b75f065a2712))
+
 ## [3.10.1](https://github.com/teletha/sinobu/compare/v3.10.0...v3.10.1) (2024-03-01)
 
 
