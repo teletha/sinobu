@@ -186,6 +186,9 @@ public class I implements ParameterizedType {
     /** The user-defined extra log appender. */
     public static WiseTriConsumer<String, Level, CharBuffer> Logger;
 
+    /** The marker for {@link UncaughtExceptionHandler} processing. */
+    static final Throwable Q = new Throwable();
+
     /** The automatic saver references. */
     static final WeakHashMap<Object, Disposable> autosaver = new WeakHashMap();
 
@@ -206,9 +209,6 @@ public class I implements ParameterizedType {
 
     /** Coordinator of bundle save timing */
     static final Signaling<Subscriber> translate = new Signaling();
-
-    /** Coordinator of async error handling . */
-    static final Signaling<Throwable> error = new Signaling();
 
     /** The parallel task scheduler. */
     static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(5, run -> {
@@ -273,15 +273,6 @@ public class I implements ParameterizedType {
             // it is not efficient to save the translation results every time you get them, so
             // it is necessary to process them in batches over a period of time.
             translate.expose.debounce(1, TimeUnit.MINUTES).to(Subscriber::store);
-
-            // Signal is a mechanism that flushes errors to the caller's error stream if an error
-            // occurs when it is subscribed. Therefore, if an error occurs in a flow where multiple
-            // Subscribers are nested, the same error may propagate to the UncaughtExceptionHandler
-            // multiple times. This should be ignored if the same error is continuously propagated.
-            error.expose.diff().to(e -> {
-                UncaughtExceptionHandler handler = Thread.getDefaultUncaughtExceptionHandler();
-                if (handler != null) handler.uncaughtException(Thread.currentThread(), e);
-            });
         } catch (Exception e) {
             throw I.quiet(e);
         }
