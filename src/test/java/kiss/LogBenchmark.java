@@ -29,6 +29,7 @@ import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilder;
 import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilderFactory;
 import org.apache.logging.log4j.core.config.builder.api.LoggerComponentBuilder;
 import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
+import org.apache.logging.log4j.core.impl.Log4jPropertyKey;
 import org.slf4j.LoggerFactory;
 import org.tinylog.TaggedLogger;
 import org.tinylog.configuration.Configuration;
@@ -65,7 +66,7 @@ public class LogBenchmark {
     private static final String message = "Write your message! This is comparison of  logging libraries";
 
     public static void main(String[] args) throws Exception {
-        Benchmark benchmark = new Benchmark().limit(500000).visualize();
+        Benchmark benchmark = new Benchmark().visualize();
 
         if (output == OutputType.Console) {
             benchmark.discardSystemOutput();
@@ -106,7 +107,7 @@ public class LogBenchmark {
             logger.addHandler(handler);
 
             benchmark.measure("JUL " + logger.getName(), () -> {
-                logger.info(message);
+                logger.severe(message);
                 return -1;
             });
         });
@@ -153,6 +154,7 @@ public class LogBenchmark {
     }
 
     static void performLog4j(Benchmark benchmark) throws Exception {
+        System.setProperty(Log4jPropertyKey.ASYNC_LOGGER_DISCARD_THRESHOLD.getKey(), "OFF");
         ConfigurationBuilder<BuiltConfiguration> builder = ConfigurationBuilderFactory.newConfigurationBuilder();
 
         perform((execution, caller) -> {
@@ -182,7 +184,7 @@ public class LogBenchmark {
 
             org.apache.logging.log4j.Logger logger = context.getLogger(name);
             benchmark.measure("Log4j " + name, () -> {
-                logger.info(message);
+                logger.error(message);
                 return -1;
             });
         });
@@ -210,7 +212,7 @@ public class LogBenchmark {
 
             TaggedLogger logger = org.tinylog.Logger.tag(name);
             benchmark.measure("TinyLog " + name, () -> {
-                logger.info(message);
+                logger.error(message);
                 return -1;
             });
         });
@@ -264,7 +266,7 @@ public class LogBenchmark {
             logger.setLevel(ch.qos.logback.classic.Level.ALL);
 
             benchmark.measure("Logback " + name, () -> {
-                logger.info(message);
+                logger.error(message);
                 return -1;
             });
         });
@@ -285,7 +287,7 @@ public class LogBenchmark {
             I.env(name + ".console", output == OutputType.Console ? Level.ALL : Level.OFF);
 
             benchmark.measure("Sinobu " + type, () -> {
-                I.info(name, message);
+                I.error(name, message);
                 return -1;
             });
         });
