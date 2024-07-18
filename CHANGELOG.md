@@ -1,5 +1,17 @@
 # Changelog
 
+## [3.12.0](https://github.com/teletha/sinobu/compare/v3.11.0...v3.12.0) (2024-07-18)
+
+
+### Features
+
+* suppress the sequencial same error in UncaughtExceptionHandler ([cd7191c](https://github.com/teletha/sinobu/commit/cd7191ca940316cd66c4ef8f135c0d7d9eabec4f))
+
+
+### Bug Fixes
+
+* make error notifier more simple ([ffe2a8c](https://github.com/teletha/sinobu/commit/ffe2a8c3537f83e3c5aa55c402c5e368d877bb30))
+
 ## [3.11.0](https://github.com/teletha/sinobu/compare/v3.10.1...v3.11.0) (2024-04-02)
 
 
