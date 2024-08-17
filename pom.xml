@@ -124,14 +124,14 @@ With a few exceptions, Sinobu and its APIs are designed to be simple to use and 
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
-			<version>1.5.6</version>
+			<version>1.5.7</version>
 			<scope>test</scope>
 			<exclusions/>
 		</dependency>
 		<dependency>
 			<groupId>io.reactivex.rxjava3</groupId>
 			<artifactId>rxjava</artifactId>
-			<version>3.1.8</version>
+			<version>3.1.9</version>
 			<scope>test</scope>
 			<exclusions/>
 		</dependency>
