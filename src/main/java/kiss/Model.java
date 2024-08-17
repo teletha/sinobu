@@ -365,7 +365,7 @@ public class Model<M> {
      * @throws NullPointerException If the given model class is null.
      * @throws IllegalArgumentException If the given model class is not found.
      */
-    public static <M> Model<M> of(Class<? super M> modelClass) {
+    public static synchronized <M> Model<M> of(Class<? super M> modelClass) {
         Ⅱ<Class, Type[]> key = I.pair(modelClass, new Type[0]);
 
         // check cache
@@ -380,7 +380,6 @@ public class Model<M> {
                 model = models.computeIfAbsent(key, x -> new Model(modelClass));
                 model.init();
             }
-            models.put(key, model);
         }
         return model;
     }
@@ -395,7 +394,7 @@ public class Model<M> {
      * @throws IllegalArgumentException If the given model type is null.
      * @see TypeVariable
      */
-    static Model of(Type type, Type base) {
+    static synchronized Model of(Type type, Type base) {
         // class
         if (type instanceof Class) {
             return of((Class) type);
