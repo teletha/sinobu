@@ -380,6 +380,7 @@ public class Model<M> {
                 model = models.computeIfAbsent(key, x -> new Model(modelClass));
                 model.init();
             }
+            models.put(key, model);
         }
         return model;
     }
