@@ -33,7 +33,7 @@ public interface Storable<Self> {
     default Self restore() {
         synchronized (getClass()) {
             try {
-                I.json(Files.newBufferedReader(Path.of(locate()))).as(this);
+                I.json(Files.newBufferedReader(locate())).as(this);
             } catch (Throwable e) {
                 // ignore error
             }
@@ -49,7 +49,7 @@ public interface Storable<Self> {
     default Self store() {
         synchronized (getClass()) {
             try {
-                Path file = Path.of(locate());
+                Path file = locate();
                 Path tmp = Files.createTempFile(Files.createDirectories(file.getParent()), file.getFileName().toString(), null);
 
                 try (FileChannel c = FileChannel.open(file.resolveSibling(file.getFileName() + ".lock"), CREATE, WRITE, DELETE_ON_CLOSE)) {
@@ -119,7 +119,7 @@ public interface Storable<Self> {
      * 
      * @return An identifier of persistence location.
      */
-    default String locate() {
-        return I.env("PreferenceDirectory", ".preferences") + "/" + Model.of(this).type.getName() + ".json";
+    default Path locate() {
+        return Path.of(I.env("PreferenceDirectory", ".preferences") + "/" + Model.of(this).type.getName() + ".json");
     }
 }

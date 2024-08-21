@@ -9,11 +9,10 @@
  */
 package kiss;
 
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.*;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +33,7 @@ class StorableTest {
     @Test
     void readFromNotExist() throws Exception {
         Some instance = new Some();
-        Path path = Paths.get(instance.locate());
+        Path path = instance.locate();
         assert Files.notExists(path);
 
         instance.restore();
@@ -46,7 +45,7 @@ class StorableTest {
     @Test
     void readFromSizeZero() throws Exception {
         Some instance = new Some();
-        Path path = Paths.get(instance.locate());
+        Path path = instance.locate();
         Files.createDirectories(path.getParent());
         Files.createFile(path);
         assert Files.exists(path);
@@ -62,7 +61,7 @@ class StorableTest {
     @Test
     void writeToNotExist() throws Exception {
         Some instance = new Some();
-        Path path = Paths.get(instance.locate());
+        Path path = instance.locate();
         assert Files.notExists(path);
 
         instance.store();
@@ -72,7 +71,7 @@ class StorableTest {
     @Test
     void writeToSizeZero() throws Exception {
         Some instance = new Some();
-        Path path = Paths.get(instance.locate());
+        Path path = instance.locate();
         assert Files.notExists(path);
 
         Files.createDirectories(path.getParent());
@@ -98,8 +97,8 @@ class StorableTest {
          * {@inheritDoc}
          */
         @Override
-        public String locate() {
-            return room.locate(Some.class.getSimpleName()).toString();
+        public Path locate() {
+            return room.locate(Some.class.getSimpleName());
         }
     }
 
@@ -165,8 +164,8 @@ class StorableTest {
          * {@inheritDoc}
          */
         @Override
-        public String locate() {
-            return room.locate(Auto.class.getSimpleName()).toString();
+        public Path locate() {
+            return room.locate(Auto.class.getSimpleName());
         }
     }
 
@@ -249,8 +248,8 @@ class StorableTest {
          * {@inheritDoc}
          */
         @Override
-        public String locate() {
-            return room.locate(AutoRoot.class.getSimpleName()).toString();
+        public Path locate() {
+            return room.locate(AutoRoot.class.getSimpleName());
         }
     }
 }

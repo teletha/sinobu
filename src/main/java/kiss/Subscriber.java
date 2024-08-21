@@ -11,11 +11,11 @@ package kiss;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Type;
 import java.net.http.WebSocket;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -261,8 +261,8 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
      * {@inheritDoc}
      */
     @Override
-    public String locate() {
-        return I.env("LangDirectory", "lang") + "/" + text + ".json";
+    public Path locate() {
+        return Path.of(I.env("LangDirectory", "lang") + "/" + text + ".json");
     }
 
     // ======================================================================
