@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.13.0](https://github.com/teletha/sinobu/compare/v3.12.0...v3.13.0) (2024-08-21)
+
+
+### Features
+
+* change signature - Storable#locate returns Path instead of String ([d8755ca](https://github.com/teletha/sinobu/commit/d8755ca55c065acf690b0f32e8cdec2af14ec2ce))
+
 ## [3.12.0](https://github.com/teletha/sinobu/compare/v3.11.0...v3.12.0) (2024-08-17)
 
 
