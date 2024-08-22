@@ -23,7 +23,7 @@ class XMLWriterTest {
     static final String EOL = "\r\n";
 
     @RegisterExtension
-    static CleanRoom room = new CleanRoom();
+    static CleanRoom room = new CleanRoom(true);
 
     @Test
     void write() throws Exception {

@@ -9,7 +9,7 @@
  */
 package kiss.xml;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.StringReader;
@@ -26,7 +26,7 @@ import kiss.XML;
 class ReadTest {
 
     @RegisterExtension
-    static CleanRoom room = new CleanRoom();
+    static CleanRoom room = new CleanRoom(true);
 
     @Test
     void elementName() {
