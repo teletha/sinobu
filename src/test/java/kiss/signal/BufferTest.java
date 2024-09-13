@@ -174,6 +174,28 @@ class BufferTest extends SignalTester {
     }
 
     @Test
+    void diff() {
+        monitor(String.class, String.class, signal -> signal.buffer(v -> v.length()).map(v -> v.stream().collect(Collectors.joining())));
+
+        assert main.emit("A", "B", "CD", "E", "FG").value("AB", "CD", "E");
+        assert main.emit(Complete).value("FG");
+        assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+    }
+
+    @Test
+    void diffNoEmitOnComplete() {
+        monitor(String.class, String.class, signal -> signal.buffer(v -> v.length()).map(v -> v.stream().collect(Collectors.joining())));
+
+        assert main.emit("A", "B").value();
+        assert main.emit(Complete).value("AB");
+        assert main.isCompleted();
+        assert main.isNotError();
+        assert main.isDisposed();
+    }
+
+    @Test
     void all() {
         monitor(String.class, signal -> signal.buffer().map(composer));
 
