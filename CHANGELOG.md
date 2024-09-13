@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.14.0](https://github.com/teletha/sinobu/compare/v3.13.0...v3.14.0) (2024-09-13)
+
+
+### Features
+
+* add Signal#buffer(keySelector) ([04d8696](https://github.com/teletha/sinobu/commit/04d869678cfff767ad083bd13dbe9e74a06987e9))
+
 ## [3.13.0](https://github.com/teletha/sinobu/compare/v3.12.0...v3.13.0) (2024-08-21)
 
 
