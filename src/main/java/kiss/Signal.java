@@ -1714,7 +1714,7 @@ public class Signal<V> {
      * @return {ChainableAPI}
      */
     public Signal<V> first() {
-        return signal(I::accept, null, FALSE, null, TRUE, null);
+        return signal(I::accept, null, false, null, true, null);
     }
 
     /**
