@@ -755,11 +755,24 @@ public class I implements ParameterizedType {
                 // Handle (Normal or Inverted) Section Block
                 // ================================
                 if (type == '#' || type == '^') {
-                    // Trim heading whitespaces. Deletions are combined into a single operation for
-                    // performance considerations.
+                    // Trim heading whitespaces.
+                    // Deletes whitespace characters, but only deletes newline characters once.
+                    // Deletions are combined into a single operation for performance reason.
                     int count = 0;
-                    while (0 < --openStart && Character.isWhitespace(text.charAt(openStart))) {
-                        count++;
+                    while (0 < --openStart) {
+                        char now = text.charAt(openStart);
+                        if (Character.isWhitespace(now)) {
+                            count++;
+                            if (now == '\n') {
+                                if (text.charAt(openStart - 1) == '\r') {
+                                    count++;
+                                    openStart--;
+                                }
+                                break;
+                            }
+                        } else {
+                            break;
+                        }
                     }
                     builder.delete(builder.length() - count, builder.length());
 

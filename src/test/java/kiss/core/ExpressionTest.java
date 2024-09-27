@@ -115,6 +115,70 @@ class ExpressionTest {
     }
 
     @Test
+    void preserveLineNoOne() {
+        assert I.express("""
+                A
+                {#context}
+                X
+                {/context}
+                A
+                """, $("context", (String) null)).equals("""
+                A
+                A
+                """);
+    }
+
+    @Test
+    void preserveLineUpper() {
+        assert I.express("""
+                A
+
+                {#context}
+                X
+                {/context}
+                A
+                """, $("context", (String) null)).equals("""
+                A
+
+                A
+                """);
+    }
+
+    @Test
+    void preserveLineLower() {
+        assert I.express("""
+                A
+                {#context}
+                X
+                {/context}
+
+                A
+                """, $("context", (String) null)).equals("""
+                A
+
+                A
+                """);
+    }
+
+    @Test
+    void preserveLineBoth() {
+        assert I.express("""
+                A
+
+                {#context}
+                X
+                {/context}
+
+                A
+                """, $("context", (String) null)).equals("""
+                A
+
+
+                A
+                """);
+    }
+
+    @Test
     void sectionEmptyLine() {
         assert I.express("""
                 |
