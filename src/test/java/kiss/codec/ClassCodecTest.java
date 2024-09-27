@@ -32,6 +32,11 @@ class ClassCodecTest {
     }
 
     @Test
+    void systemClassArrayNest() {
+        assertClass(String[][].class);
+    }
+
+    @Test
     void userClass() {
         assertClass(ClassCodecTest.class);
     }
