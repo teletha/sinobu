@@ -5,8 +5,6 @@
     <span>&nbsp;</span>
     <a href="https://teletha.github.io/sinobu"><img src="https://img.shields.io/website.svg?down_color=red&down_message=CLOSE&label=Official%20Site&up_color=green&up_message=OPEN&url=https%3A%2F%2Fteletha.github.io%2Fsinobu"></a>
 </p>
-
-
 ## Summary
 Sinobu is not obsolete framework but utility, which can manipulate objects as a extremely-condensed facade.
 This is extremely lightweight at approximately 106 KB without relying on other libraries, and its various operations are designed to run as fast as other competing libraries.
@@ -33,8 +31,6 @@ With a few exceptions, Sinobu and its APIs are designed to be simple to use and 
 - Type safety
 - Refactoring safety
 <p align="right"><a href="#top">back to top</a></p>
-
-
 ## Usage
 Create instant from type.
 ```java
@@ -161,17 +157,37 @@ I.error((Supplier) () -> "Use a lambda expression to delay message building.");
 ```
 
 <p align="right"><a href="#top">back to top</a></p>
+## Benchmark
+### Logging
+<img src="/benchmark/LogBenchmark.svg" width="700">
+
+### JSON (Small) Parsing
+<img src="/benchmark/JSONParseShortBenchmark.svg" width="700">
+
+### JSON (Large) Parsing
+<img src="/benchmark/JSONParseLongBenchmark.svg" width="700">
+
+### JSON (Huge) Parsing
+<img src="/benchmark/JSONParseHugeBenchmark.svg" width="700">
+
+### JSON Travesing
+<img src="/benchmark/JSONTraverseBenchmark.svg" width="700">
+
+### JSON Mapping
+<img src="/benchmark/JSONMappingBenchmark.svg" width="700">
+
+### HTML Parsing
+<img src="/benchmark/XMLParseBenchmark.svg" width="700">
+
+### Mastache
+<img src="/benchmark/ExpressionBenchmark.svg" width="700">
+
+<p align="right"><a href="#top">back to top</a></p>
 
 
 ## Prerequisites
 Sinobu runs on all major operating systems and requires only [Java version 17](https://docs.oracle.com/en/java/javase/17/) or later to run.
-To check, please run `java -version` from the command line interface. You should see something like this:
-```
-> java -version
-openjdk version "16" 2021-03-16
-OpenJDK Runtime Environment (build 16+36-2231)
-OpenJDK 64-Bit Server VM (build 16+36-2231, mixed mode, sharing)
-```
+To check, please run `java -version` on your terminal.
 <p align="right"><a href="#top">back to top</a></p>
 
 ## Install
