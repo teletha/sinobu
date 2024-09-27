@@ -11,10 +11,10 @@
 		<script src="mimic.js" type="module"></script>
 		<link href="main.css" rel="stylesheet"/>
 	</head>
-	<body class="L">
-		<header class="I">
-			<h1 class="k" date="2024-09-13" ver="3.14.0"><code>Sinobu</code></h1>
-			<nav class="V"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
+	<body class="d">
+		<header class="a">
+			<h1 class="W" date="2024-09-13" ver="3.14.1"><code>Sinobu</code></h1>
+			<nav class="U"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#text"/>
 					</svg>Document</a><a href="api/"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#package"/>
@@ -25,7 +25,7 @@
 					</svg>Activity</a><a href="https://github.com/teletha/sinobu" target="_blank"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#github"/>
 					</svg>Repository</a></nav>
-			<div class="e" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
+			<div class="h" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#sun"/>
 					</svg>
 				</a><a id="dark" title="Change to a darker color scheme"><svg class="A svg" viewBox="0 0 24 24">
@@ -33,15 +33,15 @@
 					</svg>
 				</a></div>
 		</header>
-		<main class="Q">
-			<nav class="f">
+		<main class="H">
+			<nav class="e">
 				<div></div>
 			</nav>
-			<article class="T" id="Article">
-				<section class="X B" id="doc.DocumentDoc.Managing_object_lifestyle.What_do_you_mean_by_lifestyle_">
-					<header class="B a">
+			<article class="k" id="Article">
+				<section class="f B" id="doc.DocumentDoc.Managing_object_lifestyle.What_do_you_mean_by_lifestyle_">
+					<header class="B Z">
 						<h2>What do you mean by lifestyle?</h2>
-						<div class="l"><span class="perp N"><svg class="A svg" viewBox="0 0 24 24">
+						<div class="O"><span class="perp N"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
 							</span><a class="tweet N"><svg class="A svg" viewBox="0 0 24 24">
@@ -55,10 +55,10 @@
 the scope in terms of DI containers such as SpringFramework and Guice, but without the
 process of registering with the container or destroying the object.</p>
 </span>
-					<section class="B Z" id="doc.DocumentDoc.Managing_object_lifestyle.What_do_you_mean_by_lifestyle_.Creating_an_object">
-						<header class="B Y">
+					<section class="B g" id="doc.DocumentDoc.Managing_object_lifestyle.What_do_you_mean_by_lifestyle_.Creating_an_object">
+						<header class="B K">
 							<h3>Creating an object</h3>
-							<div class="l"><span class="perp N"><svg class="A svg" viewBox="0 0 24 24">
+							<div class="O"><span class="perp N"><svg class="A svg" viewBox="0 0 24 24">
 										<use href="main.svg#copy"/>
 									</svg>
 								</span><a class="tweet N"><svg class="A svg" viewBox="0 0 24 24">
@@ -96,10 +96,10 @@ only one global container in the JVM, and that object cannot be accessed directl
 order to create an object from a container, we need to call <code><a href="api/kiss.I.html#make(java.lang.Class)">I#make(Class)</a></code>.</p>
 </span></section>
 				</section>
-				<section class="X B" id="doc.DocumentDoc.Managing_object_lifestyle.Defining_lifestyle">
-					<header class="B a">
+				<section class="f B" id="doc.DocumentDoc.Managing_object_lifestyle.Defining_lifestyle">
+					<header class="B Z">
 						<h2>Defining lifestyle</h2>
-						<div class="l"><span class="perp N"><svg class="A svg" viewBox="0 0 24 24">
+						<div class="O"><span class="perp N"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
 							</span><a class="tweet N"><svg class="A svg" viewBox="0 0 24 24">
@@ -123,10 +123,10 @@ type. It makes the following 3 decisions:</p>
 <p>Sinobu defines two lifestyles that are frequently used. One is the prototype pattern and
 the other is the singleton pattern.</p>
 </span>
-					<section class="B Z" id="doc.DocumentDoc.Managing_object_lifestyle.Defining_lifestyle.Prototype">
-						<header class="B Y">
+					<section class="B g" id="doc.DocumentDoc.Managing_object_lifestyle.Defining_lifestyle.Prototype">
+						<header class="B K">
 							<h3>Prototype</h3>
-							<div class="l"><span class="perp N"><svg class="A svg" viewBox="0 0 24 24">
+							<div class="O"><span class="perp N"><svg class="A svg" viewBox="0 0 24 24">
 										<use href="main.svg#copy"/>
 									</svg>
 								</span><a class="tweet N"><svg class="A svg" viewBox="0 0 24 24">
@@ -147,10 +147,10 @@ applied automatically and you have to configure nothing.</p>
     assert one != other; // two different instances
 }</code></pre>
 </span></section>
-					<section class="B Z" id="doc.DocumentDoc.Managing_object_lifestyle.Defining_lifestyle.Singleton">
-						<header class="B Y">
+					<section class="B g" id="doc.DocumentDoc.Managing_object_lifestyle.Defining_lifestyle.Singleton">
+						<header class="B K">
 							<h3>Singleton</h3>
-							<div class="l"><span class="perp N"><svg class="A svg" viewBox="0 0 24 24">
+							<div class="O"><span class="perp N"><svg class="A svg" viewBox="0 0 24 24">
 										<use href="main.svg#copy"/>
 									</svg>
 								</span><a class="tweet N"><svg class="A svg" viewBox="0 0 24 24">
@@ -173,10 +173,10 @@ the class.</p>
     assert one == other; // same instance
 }</code></pre>
 </span></section>
-					<section class="B Z" id="doc.DocumentDoc.Managing_object_lifestyle.Defining_lifestyle.Custom_lifestyle">
-						<header class="B Y">
+					<section class="B g" id="doc.DocumentDoc.Managing_object_lifestyle.Defining_lifestyle.Custom_lifestyle">
+						<header class="B K">
 							<h3>Custom lifestyle</h3>
-							<div class="l"><span class="perp N"><svg class="A svg" viewBox="0 0 24 24">
+							<div class="O"><span class="perp N"><svg class="A svg" viewBox="0 0 24 24">
 										<use href="main.svg#copy"/>
 									</svg>
 								</span><a class="tweet N"><svg class="A svg" viewBox="0 0 24 24">
@@ -221,10 +221,10 @@ can use any instantiation technique.</p>
     }).start();
 }</code></pre>
 </span></section>
-					<section class="B Z" id="doc.DocumentDoc.Managing_object_lifestyle.Defining_lifestyle.Builtin_lifestyles">
-						<header class="B Y">
+					<section class="B g" id="doc.DocumentDoc.Managing_object_lifestyle.Defining_lifestyle.Builtin_lifestyles">
+						<header class="B K">
 							<h3>Builtin lifestyles</h3>
-							<div class="l"><span class="perp N"><svg class="A svg" viewBox="0 0 24 24">
+							<div class="O"><span class="perp N"><svg class="A svg" viewBox="0 0 24 24">
 										<use href="main.svg#copy"/>
 									</svg>
 								</span><a class="tweet N"><svg class="A svg" viewBox="0 0 24 24">
@@ -248,10 +248,10 @@ can use any instantiation technique.</p>
 </ul>
 </span></section>
 				</section>
-				<section class="X B" id="doc.DocumentDoc.Managing_object_lifestyle.Applying_lifestyle">
-					<header class="B a">
+				<section class="f B" id="doc.DocumentDoc.Managing_object_lifestyle.Applying_lifestyle">
+					<header class="B Z">
 						<h2>Applying lifestyle</h2>
-						<div class="l"><span class="perp N"><svg class="A svg" viewBox="0 0 24 24">
+						<div class="O"><span class="perp N"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
 							</span><a class="tweet N"><svg class="A svg" viewBox="0 0 24 24">
@@ -264,10 +264,10 @@ can use any instantiation technique.</p>
 					</header><span class="B"><p>To apply a non-prototype lifestyle, you need to configure each class individually. There
 are two ways to do this.</p>
 </span>
-					<section class="B Z" id="doc.DocumentDoc.Managing_object_lifestyle.Applying_lifestyle.Use_Managed_annotation">
-						<header class="B Y">
+					<section class="B g" id="doc.DocumentDoc.Managing_object_lifestyle.Applying_lifestyle.Use_Managed_annotation">
+						<header class="B K">
 							<h3>Use Managed annotation</h3>
-							<div class="l"><span class="perp N"><svg class="A svg" viewBox="0 0 24 24">
+							<div class="O"><span class="perp N"><svg class="A svg" viewBox="0 0 24 24">
 										<use href="main.svg#copy"/>
 									</svg>
 								</span><a class="tweet N"><svg class="A svg" viewBox="0 0 24 24">
@@ -283,10 +283,10 @@ lifestyle to classes that are under your control.</p>
 class UnderYourControl {
 }</code></pre>
 </span></section>
-					<section class="B Z" id="doc.DocumentDoc.Managing_object_lifestyle.Applying_lifestyle.Use_Lifestyle_extension">
-						<header class="B Y">
+					<section class="B g" id="doc.DocumentDoc.Managing_object_lifestyle.Applying_lifestyle.Use_Lifestyle_extension">
+						<header class="B K">
 							<h3>Use Lifestyle extension</h3>
-							<div class="l"><span class="perp N"><svg class="A svg" viewBox="0 0 24 24">
+							<div class="O"><span class="perp N"><svg class="A svg" viewBox="0 0 24 24">
 										<use href="main.svg#copy"/>
 									</svg>
 								</span><a class="tweet N"><svg class="A svg" viewBox="0 0 24 24">
@@ -313,8 +313,8 @@ apply lifestyle to classes that are not under your control.</p>
 </span></section>
 				</section>
 			</article>
-			<aside class="W" id="SubNavi">
-				<div class="U"></div>
+			<aside class="l" id="SubNavi">
+				<div class="j"></div>
 			</aside>
 		</main>
 		<script src="root.js"></script>
