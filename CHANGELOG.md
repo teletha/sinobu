@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.14.1](https://github.com/teletha/sinobu/compare/v3.14.0...v3.14.1) (2024-09-27)
+
+
+### Bug Fixes
+
+* block section should not delete the extra header whitespace ([a9c61dd](https://github.com/teletha/sinobu/commit/a9c61dd0da1a53a2d27b7643079279cf9e0086f0))
+* reduce code size ([8da9deb](https://github.com/teletha/sinobu/commit/8da9deb4b9499f897c9972ac368d6a28be9ecbc8))
+
 ## [3.14.0](https://github.com/teletha/sinobu/compare/v3.13.0...v3.14.0) (2024-09-13)
 
 
