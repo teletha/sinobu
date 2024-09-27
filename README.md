@@ -5,6 +5,7 @@
     <span>&nbsp;</span>
     <a href="https://teletha.github.io/sinobu"><img src="https://img.shields.io/website.svg?down_color=red&down_message=CLOSE&label=Official%20Site&up_color=green&up_message=OPEN&url=https%3A%2F%2Fteletha.github.io%2Fsinobu"></a>
 </p>
+
 ## Summary
 Sinobu is not obsolete framework but utility, which can manipulate objects as a extremely-condensed facade.
 This is extremely lightweight at approximately 106 KB without relying on other libraries, and its various operations are designed to run as fast as other competing libraries.
@@ -31,6 +32,8 @@ With a few exceptions, Sinobu and its APIs are designed to be simple to use and 
 - Type safety
 - Refactoring safety
 <p align="right"><a href="#top">back to top</a></p>
+
+
 ## Usage
 Create instant from type.
 ```java
@@ -157,6 +160,8 @@ I.error((Supplier) () -> "Use a lambda expression to delay message building.");
 ```
 
 <p align="right"><a href="#top">back to top</a></p>
+
+
 ## Benchmark
 ### Logging
 <img src="/benchmark/LogBenchmark.svg" width="700">
