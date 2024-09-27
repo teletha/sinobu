@@ -102,6 +102,19 @@ class ExpressionTest {
     }
 
     @Test
+    void emptyLineWithNull() {
+        assert I.express("""
+
+                {emptyLine}
+
+                """, $("emptyLine", (String) null)).equals("""
+
+
+
+                """);
+    }
+
+    @Test
     void sectionEmptyLine() {
         assert I.express("""
                 |
