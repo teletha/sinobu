@@ -7,10 +7,11 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss;
+package kiss.scheduler;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -18,16 +19,17 @@ import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.RepeatedTest;
 
 @SuppressWarnings("resource")
-public class ShutdownTest extends SchedulerTestSupport {
+public class ShutdownNowTest extends SchedulerTestSupport {
 
     @RepeatedTest(MULTIPLICITY)
     void rejectNewTask() {
         assert scheduler.isShutdown() == false;
         assert scheduler.isTerminated() == false;
 
-        scheduler.start().shutdown();
+        List<Runnable> remains = scheduler.start().shutdownNow();
         assert scheduler.isShutdown();
         assert scheduler.isTerminated();
+        assert remains.isEmpty();
 
         assertThrows(RejectedExecutionException.class, () -> scheduler.execute(new Verifier()));
         assertThrows(RejectedExecutionException.class, () -> scheduler.submit(new Verifier().asCallable()));
@@ -51,48 +53,38 @@ public class ShutdownTest extends SchedulerTestSupport {
         });
 
         Future<String> future = scheduler.submit(verifier.asCallable());
-        scheduler.start().shutdown();
+        assert scheduler.start().awaitRunning();
+
+        List<Runnable> remains = scheduler.shutdownNow();
+        assert remains.isEmpty();
         assert scheduler.isShutdown();
-        // The result of isTerminated is undefined here because it is not necessarily retrieved from
-        // the queue at this time, although the queued task will certainly be executed in the
-        // future.
+        // Although the running task is interrupted and starts moving, the checking #isTerminated
+        // is not performed because it is still uncertain at this moment whether the task is running
+        // to the end or not.
         // assert scheduler.isTerminated() == false;
 
         assert scheduler.awaitIdling();
         assert scheduler.isTerminated();
-        assert verifySuccessed(future, "Long Task");
+        assert verifySuccessed(future, "Stop");
     }
 
     @RepeatedTest(MULTIPLICITY)
     void processQueuedTask() {
         Verifier<?> verifier = new Verifier("Queued");
 
-        Future<?> future = scheduler.schedule(verifier.asCallable(), 150, TimeUnit.MILLISECONDS);
-        scheduler.start().shutdown();
+        Future<?> future = scheduler.schedule(verifier.asCallable(), 250, TimeUnit.MILLISECONDS);
+        List<Runnable> remains = scheduler.start().shutdownNow();
         assert scheduler.isShutdown();
-        assert scheduler.isTerminated() == false;
-
-        assert scheduler.awaitIdling();
         assert scheduler.isTerminated();
-        assert verifySuccessed(future);
+        assert remains.size() == 1;
+        assert remains.get(0) == future;
+
+        assert scheduler.isTerminated();
+        assert verifyRunning(future);
     }
 
     @RepeatedTest(MULTIPLICITY)
     void awaitTermination() throws InterruptedException {
-        Verifier<?> verifier = new Verifier("Queued");
-
-        Future<?> future = scheduler.schedule(verifier.asCallable(), 150, TimeUnit.MILLISECONDS);
-        scheduler.start().shutdown();
-        assert scheduler.isShutdown();
-        assert scheduler.isTerminated() == false;
-
-        assert scheduler.awaitTermination(300, TimeUnit.MILLISECONDS);
-        assert scheduler.isTerminated();
-        assert verifySuccessed(future);
-    }
-
-    @RepeatedTest(MULTIPLICITY)
-    void awaitTerminationLongTask() throws InterruptedException {
         Verifier<String> verifier = new Verifier(() -> {
             try {
                 Thread.sleep(150);
@@ -106,9 +98,10 @@ public class ShutdownTest extends SchedulerTestSupport {
         Future<?> future = scheduler.submit(verifier.asCallable());
         assert scheduler.start().awaitRunning();
 
-        scheduler.shutdown();
+        List<Runnable> remains = scheduler.shutdownNow();
         assert scheduler.isShutdown();
         assert scheduler.isTerminated() == false;
+        assert remains.isEmpty();
 
         assert scheduler.awaitTermination(300, TimeUnit.MILLISECONDS);
         assert scheduler.isTerminated();

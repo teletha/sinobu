@@ -7,7 +7,7 @@
  *
  *          https://opensource.org/licenses/MIT
  */
-package kiss;
+package kiss.scheduler;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
@@ -18,6 +18,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import antibug.Chronus;
+import kiss.Disposable;
+import kiss.I;
+import kiss.Variable;
 
 class ScheduleTest {
 

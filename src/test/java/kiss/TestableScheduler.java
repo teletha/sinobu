@@ -17,9 +17,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
-import kiss.I;
-import kiss.Scheduler;
-
 public class TestableScheduler extends Scheduler {
 
     private long awaitingLimit = 1000;
@@ -29,6 +26,20 @@ public class TestableScheduler extends Scheduler {
     private List<Task> startingBuffer = new ArrayList();
 
     private AtomicLong executed = new AtomicLong();
+
+    /**
+     * 
+     */
+    public TestableScheduler() {
+        super();
+    }
+
+    /**
+     * @param limit
+     */
+    public TestableScheduler(int limit) {
+        super(limit);
+    }
 
     private Runnable wrap(Runnable task) {
         return () -> {
@@ -108,7 +119,7 @@ public class TestableScheduler extends Scheduler {
      * 
      * @return
      */
-    protected final TestableScheduler start() {
+    public final TestableScheduler start() {
         if (starting.compareAndSet(false, true)) {
             for (Task task : startingBuffer) {
                 super.executeTask(task);
@@ -121,7 +132,7 @@ public class TestableScheduler extends Scheduler {
     /**
      * Await any task is running.
      */
-    protected boolean awaitRunning() {
+    public boolean awaitRunning() {
         int count = 0; // await at least once
         long start = System.currentTimeMillis();
         while (count++ == 0 || runs.isEmpty()) {
@@ -138,7 +149,7 @@ public class TestableScheduler extends Scheduler {
         return true;
     }
 
-    protected TestableScheduler limitAwaitTime(long millis) {
+    public TestableScheduler limitAwaitTime(long millis) {
         awaitingLimit = millis;
         return this;
     }
@@ -146,7 +157,7 @@ public class TestableScheduler extends Scheduler {
     /**
      * Await all tasks are executed.
      */
-    protected boolean awaitIdling() {
+    public boolean awaitIdling() {
         int count = 0; // await at least once
         long start = System.currentTimeMillis();
 
@@ -170,7 +181,7 @@ public class TestableScheduler extends Scheduler {
      * @param required
      * @return
      */
-    protected boolean awaitExecutions(long required) {
+    public boolean awaitExecutions(long required) {
         long start = System.currentTimeMillis();
 
         while (executed.get() < required) {

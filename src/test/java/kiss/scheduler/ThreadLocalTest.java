@@ -7,7 +7,7 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss;
+package kiss.scheduler;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;

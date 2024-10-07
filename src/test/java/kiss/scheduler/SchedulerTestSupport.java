@@ -7,7 +7,7 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss;
+package kiss.scheduler;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,6 +24,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 
 import kiss.I;
+import kiss.TestableScheduler;
 import kiss.WiseSupplier;
 
 public class SchedulerTestSupport {
