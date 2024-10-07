@@ -185,7 +185,7 @@ With a few exceptions, Sinobu and its APIs are designed to be simple to use and 
 				<version>3.8.1</version>
 				<configuration>
 					<encoding>UTF-8</encoding>
-					<release>19</release>
+					<release>21</release>
 					<compilerArgs/>
 				</configuration>
 			</plugin>
