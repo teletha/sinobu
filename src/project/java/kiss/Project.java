@@ -45,7 +45,7 @@ public class Project extends bee.api.Project {
                 - Refactoring safety
                 """);
 
-        require(SourceVersion.RELEASE_21, SourceVersion.RELEASE_17);
+        require(SourceVersion.RELEASE_21, SourceVersion.RELEASE_21);
 
         require("com.github.teletha", "antibug").atTest();
         require("com.pgs-soft", "HttpClientMock").atTest();
