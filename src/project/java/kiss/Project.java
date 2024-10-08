@@ -26,7 +26,8 @@ public class Project extends bee.api.Project {
                 - Dependency Injection
                 - Object lifecycle management
                 - JavaBeans-like property based type modeling
-                - HTTP(S)
+                - HTTP(S) Client
+                - Web Socket Client
                 - JSON
                 - HTML(XML)
                 - Reactive Programming (Rx)

@@ -9,7 +9,7 @@
  */
 package kiss.scheduler;
 
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.concurrent.TimeUnit.*;
 
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -30,7 +30,7 @@ class ScheduleTest {
 
     @Test
     void executeNull() {
-        Assertions.assertThrows(NullPointerException.class, () -> I.schedule(null));
+        Assertions.assertThrows(NullPointerException.class, () -> I.schedule((Runnable) null));
     }
 
     @Test

@@ -54,7 +54,6 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -75,7 +74,6 @@ import java.util.WeakHashMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -211,12 +209,8 @@ public class I implements ParameterizedType {
     static final Signaling<Subscriber> translate = new Signaling();
 
     /** The parallel task scheduler. */
-    static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(5, run -> {
-        Thread t = new Thread(run);
-        t.setName("Sinobu Scheduler");
-        t.setDaemon(true);
-        return t;
-    });
+    @SuppressWarnings("resource")
+    static final Scheduler scheduler = new Scheduler();
 
     /** The cache for {@link Lifestyle}. */
     private static final Map<Class, Lifestyle> lifestyles = new ConcurrentHashMap<>();
@@ -239,6 +233,7 @@ public class I implements ParameterizedType {
     private static final HttpClient client = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(15))
             .followRedirects(Redirect.ALWAYS)
+            .executor(scheduler)
             .build();
 
     // initialization
@@ -2015,22 +2010,14 @@ public class I implements ParameterizedType {
      * starting from a specified base time. For example, if the base time is 00:05 and the interval
      * is 30 minutes, the actual execution time will be 00:05, 00:30, 01:05, 01:35, and so on.
      * 
-     * @param time The base time.
-     * @param interval The period of time between emissions of the subsequent numbers
-     * @param unit The interval time unit.
-     * @param scheduler The task scheduler.
+     * @param cron The cron expression.
      * @return {@link Signal} that emits long value (1) at the time and ever-increasing numbers
      *         after each interval of time thereafter
      */
-    public static Signal<Long> schedule(LocalTime time, long interval, TimeUnit unit, ScheduledExecutorService... scheduler) {
-        return schedule(() -> {
-            long now = System.currentTimeMillis();
-            long start = now / 86400000 * 86400000 + time.toNanoOfDay() / 1000000;
-            while (start < now) {
-                start += unit.toMillis(interval);
-            }
-            return start - now;
-        }, time(unit.toMillis(interval)), TimeUnit.MILLISECONDS, true, scheduler);
+    public static Signal<Long> schedule(String cron) {
+        return new Signal<>((observer, disposer) -> {
+            return disposer.add(scheduler.scheduleAt(I.wiseC(observer).bindLast(null), cron));
+        }).count();
     }
 
     /**
@@ -2062,7 +2049,6 @@ public class I implements ParameterizedType {
             Runnable task = I.wiseC(observer).bindLast(null);
             Future future;
 
-            @SuppressWarnings("resource")
             ScheduledExecutorService exe = scheduler == null || scheduler.length == 0 || scheduler[0] == null ? I.scheduler : scheduler[0];
 
             if (interval <= 0) {
