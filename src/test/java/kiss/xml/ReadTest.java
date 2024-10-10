@@ -26,7 +26,7 @@ import kiss.XML;
 class ReadTest {
 
     @RegisterExtension
-    static CleanRoom room = new CleanRoom(true);
+    CleanRoom room = new CleanRoom(true);
 
     @Test
     void elementName() {
