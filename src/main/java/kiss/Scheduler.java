@@ -243,15 +243,17 @@ public class Scheduler extends AbstractExecutorService implements ScheduledExecu
      */
     static Cron[] parse(String cron) {
         String[] parts = cron.strip().split("\\s+");
-        int i = parts.length == 5 ? 0 : parts.length == 6 ? 1 : Cron.error(cron);
+        int i = parts.length - 5;
+        if (i != 0 && i != 1) {
+            throw new IllegalArgumentException(cron);
+        }
 
-        return new Cron[] { //
-                new Cron(ChronoField.SECOND_OF_MINUTE, 0, 59, "", "", "/", i == 1 ? parts[0] : "0"), //
-                new Cron(ChronoField.MINUTE_OF_HOUR, 0, 59, "", "", "/", parts[i++]), //
-                new Cron(ChronoField.HOUR_OF_DAY, 0, 23, "", "", "/", parts[i++]), //
-                new Cron(ChronoField.DAY_OF_MONTH, 1, 31, "", "?LW", "/", parts[i++]), //
-                new Cron(ChronoField.MONTH_OF_YEAR, 1, 12, "JANFEBMARAPRMAYJUNJULAUGSEPOCTNOVDEC", "", "/", parts[i++]), //
-                new Cron(ChronoField.DAY_OF_WEEK, 1, 7, "MONTUEWEDTHUFRISATSUN", "?L", "#/", parts[i++])};
+        return new Cron[] {new Cron(ChronoField.SECOND_OF_MINUTE, 0, 59, "", "", "/", i == 1 ? parts[0] : "0"),
+                new Cron(ChronoField.MINUTE_OF_HOUR, 0, 59, "", "", "/", parts[i++]),
+                new Cron(ChronoField.HOUR_OF_DAY, 0, 23, "", "", "/", parts[i++]),
+                new Cron(ChronoField.DAY_OF_MONTH, 1, 31, "", "?LW", "/", parts[i++]),
+                new Cron(ChronoField.MONTH_OF_YEAR, 1, 12, "JAN FEB MAR APR MAY JUN JUL AUG SEP OCT NOV DEC ", "", "/", parts[i++]),
+                new Cron(ChronoField.DAY_OF_WEEK, 1, 7, "MON TUE WED THU FRI SAT SUN ", "?L", "#/", parts[i++])};
     }
 
     /**
@@ -273,7 +275,7 @@ public class Scheduler extends AbstractExecutorService implements ScheduledExecu
         ZonedDateTime[] next = {base.plusSeconds(1).truncatedTo(ChronoUnit.SECONDS)};
         root: while (true) {
             if (next[0].isAfter(limit)) throw new IllegalArgumentException("Next time is not found before " + limit);
-            if (!cron[4].nextMatch(next)) continue;
+            if (!cron[4].matches(next)) continue;
 
             int month = next[0].getMonthValue();
             while (!(cron[3].matches(next[0]) && cron[5].matches(next[0]))) {
@@ -281,9 +283,9 @@ public class Scheduler extends AbstractExecutorService implements ScheduledExecu
                 if (next[0].getMonthValue() != month) continue root;
             }
 
-            if (!cron[2].nextMatch(next)) continue;
-            if (!cron[1].nextMatch(next)) continue;
-            if (!cron[0].nextMatch(next)) continue;
+            if (!cron[2].matches(next)) continue;
+            if (!cron[1].matches(next)) continue;
+            if (!cron[0].matches(next)) continue;
             return next[0];
         }
     }

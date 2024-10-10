@@ -28,15 +28,20 @@ class CronTest {
 
     ZoneId zoneId = ZoneId.systemDefault();
 
+    private boolean invalidFormat(String expression) {
+        assertThrows(IllegalArgumentException.class, () -> new Parsed(expression));
+        return true;
+    }
+
     @Test
     void invalidLength() {
-        assertThrows(IllegalArgumentException.class, () -> new Parsed(""));
-        assertThrows(IllegalArgumentException.class, () -> new Parsed("*"));
-        assertThrows(IllegalArgumentException.class, () -> new Parsed("* *"));
-        assertThrows(IllegalArgumentException.class, () -> new Parsed("* * *"));
-        assertThrows(IllegalArgumentException.class, () -> new Parsed("* * * *"));
-        assertThrows(IllegalArgumentException.class, () -> new Parsed("* * * * * * *"));
-        assertThrows(IllegalArgumentException.class, () -> new Parsed("* * * * * * * *"));
+        assert invalidFormat("");
+        assert invalidFormat("*");
+        assert invalidFormat("* *");
+        assert invalidFormat("* * *");
+        assert invalidFormat("* * * *");
+        assert invalidFormat("* * * * * * *");
+        assert invalidFormat("* * * * * * * *");
     }
 
     @Test
@@ -52,10 +57,10 @@ class CronTest {
         assert new Parsed("* * ? * 3").next("2024-10-08T10:20:30", "2024-10-09T00:00:00");
         assert new Parsed("* * 10 * ?").next("2024-10-08T10:20:30", "2024-10-10T00:00:00");
 
-        assertThrows(IllegalArgumentException.class, () -> new Parsed("? * * * * *"));
-        assertThrows(IllegalArgumentException.class, () -> new Parsed("* ? * * * *"));
-        assertThrows(IllegalArgumentException.class, () -> new Parsed("* * ? * * *"));
-        assertThrows(IllegalArgumentException.class, () -> new Parsed("* * * * ? *"));
+        assert invalidFormat("? * * * * *");
+        assert invalidFormat("* ? * * * *");
+        assert invalidFormat("* * ? * * *");
+        assert invalidFormat("* * * * ? *");
     }
 
     @Test
@@ -71,85 +76,56 @@ class CronTest {
     }
 
     @Test
-    void all() {
-        Parsed cronExpr = new Parsed("* * * * * *");
-
-        ZonedDateTime after = ZonedDateTime.of(2012, 4, 10, 13, 0, 1, 0, zoneId);
-        ZonedDateTime expected = ZonedDateTime.of(2012, 4, 10, 13, 0, 2, 0, zoneId);
-        assertEquals(expected, cronExpr.next(after));
-
-        after = ZonedDateTime.of(2012, 4, 10, 13, 2, 0, 0, zoneId);
-        expected = ZonedDateTime.of(2012, 4, 10, 13, 2, 1, 0, zoneId);
-        assertEquals(expected, cronExpr.next(after));
-
-        after = ZonedDateTime.of(2012, 4, 10, 13, 59, 59, 0, zoneId);
-        expected = ZonedDateTime.of(2012, 4, 10, 14, 0, 0, 0, zoneId);
-        assertEquals(expected, cronExpr.next(after));
-    }
-
-    @Test
-    void invalidInput() {
+    void invalid() {
         assertThrows(NullPointerException.class, () -> new Parsed(null));
     }
 
     @Test
     void secondNumber() {
-        Parsed cronExpr = new Parsed("3 * * * * *");
+        Parsed parsed = new Parsed("10 * * * * *");
+        assert parsed.next("10:20:{00~09}", "10:20:10");
+        assert parsed.next("10:20:{10~59}", "10:21:10");
 
-        ZonedDateTime after = ZonedDateTime.of(2012, 4, 10, 13, 1, 0, 0, zoneId);
-        ZonedDateTime expected = ZonedDateTime.of(2012, 4, 10, 13, 1, 3, 0, zoneId);
-        assertEquals(expected, cronExpr.next(after));
-
-        after = ZonedDateTime.of(2012, 4, 10, 13, 1, 3, 0, zoneId);
-        expected = ZonedDateTime.of(2012, 4, 10, 13, 2, 3, 0, zoneId);
-        assertEquals(expected, cronExpr.next(after));
-
-        after = ZonedDateTime.of(2012, 4, 10, 13, 59, 3, 0, zoneId);
-        expected = ZonedDateTime.of(2012, 4, 10, 14, 0, 3, 0, zoneId);
-        assertEquals(expected, cronExpr.next(after));
-
-        after = ZonedDateTime.of(2012, 4, 10, 23, 59, 3, 0, zoneId);
-        expected = ZonedDateTime.of(2012, 4, 11, 0, 0, 3, 0, zoneId);
-        assertEquals(expected, cronExpr.next(after));
-
-        after = ZonedDateTime.of(2012, 4, 30, 23, 59, 3, 0, zoneId);
-        expected = ZonedDateTime.of(2012, 5, 1, 0, 0, 3, 0, zoneId);
-        assertEquals(expected, cronExpr.next(after));
+        parsed = new Parsed("0 0 0 29 2 *");
+        assert parsed.next("2024-02-01", "2024-02-29");
+        assert parsed.next("2025-02-01", "2028-02-29"); // leap
     }
 
     @Test
     void secondIncrement() {
-        Parsed cronExpr = new Parsed("5/15 * * * * *");
+        Parsed parsed = new Parsed("10/10 * * * * *");
+        assert parsed.next("10:20:{00~09}", "10:20:10");
+        assert parsed.next("10:20:{10~19}", "10:20:20");
+        assert parsed.next("10:20:{20~29}", "10:20:30");
+        assert parsed.next("10:20:{30~39}", "10:20:40");
+        assert parsed.next("10:20:{40~49}", "10:20:50");
+        assert parsed.next("10:20:{50~59}", "10:21:10");
+    }
 
-        ZonedDateTime after = ZonedDateTime.of(2012, 4, 10, 13, 0, 0, 0, zoneId);
-        ZonedDateTime expected = ZonedDateTime.of(2012, 4, 10, 13, 0, 5, 0, zoneId);
-        assertEquals(expected, cronExpr.next(after));
+    @Test
+    void secondIncrementList() {
+        Parsed parsed = new Parsed("5/10,10/10 * * * * *");
+        assert parsed.next("10:20:{00~04}", "10:20:05");
+        assert parsed.next("10:20:{05~09}", "10:20:10");
+        assert parsed.next("10:20:{20~24}", "10:20:25");
+        assert parsed.next("10:20:{25~29}", "10:20:30");
+        assert parsed.next("10:20:{30~34}", "10:20:35");
+        assert parsed.next("10:20:{35~39}", "10:20:40");
+        assert parsed.next("10:20:{40~44}", "10:20:45");
+        assert parsed.next("10:20:{45~49}", "10:20:50");
+    }
 
-        after = ZonedDateTime.of(2012, 4, 10, 13, 0, 5, 0, zoneId);
-        expected = ZonedDateTime.of(2012, 4, 10, 13, 0, 20, 0, zoneId);
-        assertEquals(expected, cronExpr.next(after));
-
-        after = ZonedDateTime.of(2012, 4, 10, 13, 0, 20, 0, zoneId);
-        expected = ZonedDateTime.of(2012, 4, 10, 13, 0, 35, 0, zoneId);
-        assertEquals(expected, cronExpr.next(after));
-
-        after = ZonedDateTime.of(2012, 4, 10, 13, 0, 35, 0, zoneId);
-        expected = ZonedDateTime.of(2012, 4, 10, 13, 0, 50, 0, zoneId);
-        assertEquals(expected, cronExpr.next(after));
-
-        after = ZonedDateTime.of(2012, 4, 10, 13, 0, 50, 0, zoneId);
-        expected = ZonedDateTime.of(2012, 4, 10, 13, 1, 5, 0, zoneId);
-        assertEquals(expected, cronExpr.next(after));
-
-        // if rolling over minute then reset second (cron rules - increment affects only values in
-        // own field)
-        after = ZonedDateTime.of(2012, 4, 10, 13, 0, 50, 0, zoneId);
-        expected = ZonedDateTime.of(2012, 4, 10, 13, 1, 10, 0, zoneId);
-        assert new Parsed("10/100 * * * * *").next(after).equals(expected);
-
-        after = ZonedDateTime.of(2012, 4, 10, 13, 1, 10, 0, zoneId);
-        expected = ZonedDateTime.of(2012, 4, 10, 13, 2, 10, 0, zoneId);
-        assert new Parsed("10/100 * * * * *").next(after).equals(expected);
+    @Test
+    void secondIncrementListUnsorted() {
+        Parsed parsed = new Parsed("10/10,5/10 * * * * *");
+        assert parsed.next("10:20:{00~04}", "10:20:05");
+        assert parsed.next("10:20:{05~09}", "10:20:10");
+        assert parsed.next("10:20:{20~24}", "10:20:25");
+        assert parsed.next("10:20:{25~29}", "10:20:30");
+        assert parsed.next("10:20:{30~34}", "10:20:35");
+        assert parsed.next("10:20:{35~39}", "10:20:40");
+        assert parsed.next("10:20:{40~44}", "10:20:45");
+        assert parsed.next("10:20:{45~49}", "10:20:50");
     }
 
     @Test
@@ -195,13 +171,17 @@ class CronTest {
     }
 
     @Test
-    void secondInvalidRange() {
-        assertThrows(IllegalArgumentException.class, () -> new Parsed("42-63 * * * * *"));
-    }
+    void secondInvalid() {
+        assert invalidFormat("-1 * * * * *");
+        assert invalidFormat("60 * * * * *");
+        assert invalidFormat("100 * * * * *");
+        assert invalidFormat("0.2 * * * * *");
+        assert invalidFormat("# * * * * *");
+        assert invalidFormat("@ * * * * *");
+        assert invalidFormat("X * * * * *");
 
-    @Test
-    void secondInvalidIncrementModifier() {
-        assertThrows(IllegalArgumentException.class, () -> new Parsed("42#3 * * * * *"));
+        assert invalidFormat("42-63 * * * * *");
+        assert invalidFormat("42#3 * * * * *");
     }
 
     @Test
@@ -285,14 +265,29 @@ class CronTest {
     }
 
     @Test
+    void minuteRangeIncrementOne() {
+        Parsed parsed = new Parsed("3-20/1 * * * *");
+        assert parsed.next("10:02", "10:03");
+        assert parsed.next("10:03", "10:04");
+        assert parsed.next("10:04", "10:05");
+        assert parsed.next("10:06", "10:07");
+        assert parsed.next("10:08", "10:09");
+        assert parsed.next("10:10", "10:11");
+        assert parsed.next("10:22", "11:03");
+    }
+
+    @Test
     void minuteInvalid() {
-        assertThrows(IllegalArgumentException.class, () -> new Parsed("-1 * * * *"));
-        assertThrows(IllegalArgumentException.class, () -> new Parsed("-5 * * * *"));
-        assertThrows(IllegalArgumentException.class, () -> new Parsed("100 * * * *"));
-        assertThrows(IllegalArgumentException.class, () -> new Parsed("0.2 * * * *"));
-        assertThrows(IllegalArgumentException.class, () -> new Parsed("invlid * * * *"));
-        assertThrows(IllegalArgumentException.class, () -> new Parsed("# * * * *"));
-        assertThrows(IllegalArgumentException.class, () -> new Parsed("/ * * * *"));
+        assert invalidFormat("-1 * * * *");
+        assert invalidFormat("60 * * * *");
+        assert invalidFormat("100 * * * *");
+        assert invalidFormat("0.2 * * * *");
+        assert invalidFormat("# * * * *");
+        assert invalidFormat("@ * * * *");
+        assert invalidFormat("X * * * *");
+
+        assert invalidFormat("42-63 * * * *");
+        assert invalidFormat("42#3 * * * *");
     }
 
     @Test
@@ -355,91 +350,188 @@ class CronTest {
     }
 
     @Test
+    void hourInvalid() {
+        assert invalidFormat("* -1 * * *");
+        assert invalidFormat("* 60 * * *");
+        assert invalidFormat("* 100 * * *");
+        assert invalidFormat("* 0.2 * * *");
+        assert invalidFormat("* # * * *");
+        assert invalidFormat("* @ * * *");
+        assert invalidFormat("* X * * *");
+
+        assert invalidFormat("* 42-63 * * *");
+        assert invalidFormat("* 42#3 * * *");
+    }
+
+    @Test
     void dayNumber() {
-        Parsed cronExpr = new Parsed("0 * * 3 * *");
+        Parsed parsed = new Parsed("0 0 0 10 * *");
+        assert parsed.next("2024-10-{01~09}", "2024-10-10");
+        assert parsed.next("2024-10-{10~31}", "2024-11-10");
 
-        ZonedDateTime after = ZonedDateTime.of(2012, 4, 10, 13, 0, 0, 0, zoneId);
-        ZonedDateTime expected = ZonedDateTime.of(2012, 5, 3, 0, 0, 0, 0, zoneId);
-        assertEquals(expected, cronExpr.next(after));
-
-        after = ZonedDateTime.of(2012, 5, 3, 0, 0, 0, 0, zoneId);
-        expected = ZonedDateTime.of(2012, 5, 3, 0, 1, 0, 0, zoneId);
-        assertEquals(expected, cronExpr.next(after));
-
-        after = ZonedDateTime.of(2012, 5, 3, 0, 59, 0, 0, zoneId);
-        expected = ZonedDateTime.of(2012, 5, 3, 1, 0, 0, 0, zoneId);
-        assertEquals(expected, cronExpr.next(after));
-
-        after = ZonedDateTime.of(2012, 5, 3, 23, 59, 0, 0, zoneId);
-        expected = ZonedDateTime.of(2012, 6, 3, 0, 0, 0, 0, zoneId);
-        assertEquals(expected, cronExpr.next(after));
+        parsed = new Parsed("0 0 0 29 2 *");
+        assert parsed.next("2024-02-01", "2024-02-29");
+        assert parsed.next("2025-02-01", "2028-02-29"); // leap
     }
 
     @Test
     void dayIncrement() {
-        Parsed cronExpr = new Parsed("0 0 0 1/15 * *");
+        Parsed parsed = new Parsed("0 0 0 10/10 * *");
+        assert parsed.next("2024-10-{01~09}", "2024-10-10");
+        assert parsed.next("2024-10-{10~19}", "2024-10-20");
+        assert parsed.next("2024-10-{20~29}", "2024-10-30");
+        assert parsed.next("2024-10-{30~31}", "2024-11-10");
+    }
 
-        ZonedDateTime after = ZonedDateTime.of(2012, 4, 10, 13, 0, 0, 0, zoneId);
-        ZonedDateTime expected = ZonedDateTime.of(2012, 4, 16, 0, 0, 0, 0, zoneId);
-        assertEquals(expected, cronExpr.next(after));
+    @Test
+    void dayIncrementList() {
+        Parsed parsed = new Parsed("0 0 0 10/10,15/10 * *");
+        assert parsed.next("2024-10-{01~09}", "2024-10-10");
+        assert parsed.next("2024-10-{10~14}", "2024-10-15");
+        assert parsed.next("2024-10-{15~19}", "2024-10-20");
+        assert parsed.next("2024-10-{20~24}", "2024-10-25");
+        assert parsed.next("2024-10-{25~29}", "2024-10-30");
+        assert parsed.next("2024-10-{30~31}", "2024-11-10");
+    }
 
-        after = ZonedDateTime.of(2012, 4, 16, 0, 0, 0, 0, zoneId);
-        expected = ZonedDateTime.of(2012, 5, 1, 0, 0, 0, 0, zoneId);
-        assertEquals(expected, cronExpr.next(after));
-
-        after = ZonedDateTime.of(2012, 4, 30, 0, 0, 0, 0, zoneId);
-        assertEquals(expected, cronExpr.next(after));
-
-        after = ZonedDateTime.of(2012, 5, 1, 0, 0, 0, 0, zoneId);
-        expected = ZonedDateTime.of(2012, 5, 16, 0, 0, 0, 0, zoneId);
-        assertEquals(expected, cronExpr.next(after));
+    @Test
+    void dayIncrementListUnsorted() {
+        Parsed parsed = new Parsed("0 0 0 15/10,10/10 * *");
+        assert parsed.next("2024-10-{01~09}", "2024-10-10");
+        assert parsed.next("2024-10-{10~14}", "2024-10-15");
+        assert parsed.next("2024-10-{15~19}", "2024-10-20");
+        assert parsed.next("2024-10-{20~24}", "2024-10-25");
+        assert parsed.next("2024-10-{25~29}", "2024-10-30");
+        assert parsed.next("2024-10-{30~31}", "2024-11-10");
     }
 
     @Test
     void dayList() {
-        Parsed cronExpr = new Parsed("0 0 0 7,19 * *");
+        Parsed parsed = new Parsed("0 0 0 10,20,30 * *");
+        assert parsed.next("2024-10-{01~09}", "2024-10-10");
+        assert parsed.next("2024-10-{10~19}", "2024-10-20");
+        assert parsed.next("2024-10-{20~29}", "2024-10-30");
+        assert parsed.next("2024-10-{30~31}", "2024-11-10");
+    }
 
-        ZonedDateTime after = ZonedDateTime.of(2012, 4, 10, 13, 0, 0, 0, zoneId);
-        ZonedDateTime expected = ZonedDateTime.of(2012, 4, 19, 0, 0, 0, 0, zoneId);
-        assertEquals(expected, cronExpr.next(after));
+    @Test
+    void dayListUnsorted() {
+        Parsed parsed = new Parsed("0 0 0 30,20,10 * *");
+        assert parsed.next("2024-10-{01~09}", "2024-10-10");
+        assert parsed.next("2024-10-{10~19}", "2024-10-20");
+        assert parsed.next("2024-10-{20~29}", "2024-10-30");
+        assert parsed.next("2024-10-{30~31}", "2024-11-10");
+    }
 
-        after = ZonedDateTime.of(2012, 4, 19, 0, 0, 0, 0, zoneId);
-        expected = ZonedDateTime.of(2012, 5, 7, 0, 0, 0, 0, zoneId);
-        assertEquals(expected, cronExpr.next(after));
+    @Test
+    void dayRange() {
+        Parsed parsed = new Parsed("0 0 0 10-15 * *");
+        assert parsed.next("2024-10-{01~09}", "2024-10-10");
+        assert parsed.next("2024-10-10", "2024-10-11");
+        assert parsed.next("2024-10-11", "2024-10-12");
+        assert parsed.next("2024-10-12", "2024-10-13");
+        assert parsed.next("2024-10-13", "2024-10-14");
+        assert parsed.next("2024-10-14", "2024-10-15");
+        assert parsed.next("2024-10-{15~31}", "2024-11-10");
+    }
 
-        after = ZonedDateTime.of(2012, 5, 7, 0, 0, 0, 0, zoneId);
-        expected = ZonedDateTime.of(2012, 5, 19, 0, 0, 0, 0, zoneId);
-        assertEquals(expected, cronExpr.next(after));
+    @Test
+    void dayRangeList() {
+        Parsed parsed = new Parsed("0 0 0 10-12,15-17 * *");
+        assert parsed.next("2024-10-{01~09}", "2024-10-10");
+        assert parsed.next("2024-10-10", "2024-10-11");
+        assert parsed.next("2024-10-11", "2024-10-12");
+        assert parsed.next("2024-10-{13~14}", "2024-10-15");
+        assert parsed.next("2024-10-15", "2024-10-16");
+        assert parsed.next("2024-10-16", "2024-10-17");
+        assert parsed.next("2024-10-{17~31}", "2024-11-10");
+    }
 
-        after = ZonedDateTime.of(2012, 5, 30, 0, 0, 0, 0, zoneId);
-        expected = ZonedDateTime.of(2012, 6, 7, 0, 0, 0, 0, zoneId);
-        assertEquals(expected, cronExpr.next(after));
+    @Test
+    void dayRangeListUnsorted() {
+        Parsed parsed = new Parsed("0 0 0 15-17,10-12 * *");
+        assert parsed.next("2024-10-{01~09}", "2024-10-10");
+        assert parsed.next("2024-10-10", "2024-10-11");
+        assert parsed.next("2024-10-11", "2024-10-12");
+        assert parsed.next("2024-10-{13~14}", "2024-10-15");
+        assert parsed.next("2024-10-15", "2024-10-16");
+        assert parsed.next("2024-10-16", "2024-10-17");
+        assert parsed.next("2024-10-{17~31}", "2024-11-10");
     }
 
     @Test
     void dayLast() {
-        Parsed cronExpr = new Parsed("0 0 0 L * *");
+        Parsed parsed = new Parsed("0 0 0 L * *");
+        assert parsed.next("2024-10-{01~30}", "2024-10-31");
+        assert parsed.next("2024-10-31", "2024-11-30");
 
-        ZonedDateTime after = ZonedDateTime.of(2012, 4, 10, 13, 0, 0, 0, zoneId);
-        ZonedDateTime expected = ZonedDateTime.of(2012, 4, 30, 0, 0, 0, 0, zoneId);
-        assertEquals(expected, cronExpr.next(after));
+        parsed = new Parsed("0 0 0 2L * *");
+        assert parsed.next("2024-10-{01~28}", "2024-10-29");
+        assert parsed.next("2024-10-{29~31}", "2024-11-28");
 
-        after = ZonedDateTime.of(2012, 2, 12, 0, 0, 0, 0, zoneId);
-        expected = ZonedDateTime.of(2012, 2, 29, 0, 0, 0, 0, zoneId);
-        assertEquals(expected, cronExpr.next(after));
+        parsed = new Parsed("0 0 0 4L * *");
+        assert parsed.next("2024-10-{01~26}", "2024-10-27");
+        assert parsed.next("2024-10-{27~31}", "2024-11-26");
     }
 
     @Test
-    void dayNumberLast_L() {
-        Parsed cronExpr = new Parsed("0 0 0 3L * *");
+    void dayLastAndNumber() {
+        Parsed parsed = new Parsed("0 0 0 10,L * *");
+        assert parsed.next("2024-10-{01~09}", "2024-10-10");
+        assert parsed.next("2024-10-{10~30}", "2024-10-31");
 
-        ZonedDateTime after = ZonedDateTime.of(2012, 4, 10, 13, 0, 0, 0, zoneId);
-        ZonedDateTime expected = ZonedDateTime.of(2012, 4, 30 - 3, 0, 0, 0, 0, zoneId);
-        assertEquals(expected, cronExpr.next(after));
+        parsed = new Parsed("0 0 0 10,2L * *");
+        assert parsed.next("2024-10-{01~09}", "2024-10-10");
+        assert parsed.next("2024-10-{10~28}", "2024-10-29");
+        assert parsed.next("2024-10-{29~31}", "2024-11-10");
+    }
 
-        after = ZonedDateTime.of(2012, 2, 12, 0, 0, 0, 0, zoneId);
-        expected = ZonedDateTime.of(2012, 2, 29 - 3, 0, 0, 0, 0, zoneId);
-        assertEquals(expected, cronExpr.next(after));
+    @Test
+    void dayLastAndNumberUnsorted() {
+        Parsed parsed = new Parsed("0 0 0 L,10 * *");
+        assert parsed.next("2024-10-{01~09}", "2024-10-10");
+        assert parsed.next("2024-10-{10~30}", "2024-10-31");
+
+        parsed = new Parsed("0 0 0 4L,10 * *");
+        assert parsed.next("2024-10-{01~09}", "2024-10-10");
+        assert parsed.next("2024-10-{10~26}", "2024-10-27");
+        assert parsed.next("2024-10-{27~31}", "2024-11-10");
+    }
+
+    @Test
+    void dayLastAndRange() {
+        Parsed parsed = new Parsed("0 0 0 10-13,L * *");
+        assert parsed.next("2024-10-{01~09}", "2024-10-10");
+        assert parsed.next("2024-10-10", "2024-10-11");
+        assert parsed.next("2024-10-11", "2024-10-12");
+        assert parsed.next("2024-10-12", "2024-10-13");
+        assert parsed.next("2024-10-{13~30}", "2024-10-31");
+
+        parsed = new Parsed("0 0 0 10L,25-28 * *");
+        assert parsed.next("2024-10-{01~20}", "2024-10-21");
+        assert parsed.next("2024-10-{21~24}", "2024-10-25");
+        assert parsed.next("2024-10-25", "2024-10-26");
+        assert parsed.next("2024-10-26", "2024-10-27");
+        assert parsed.next("2024-10-27", "2024-10-28");
+        assert parsed.next("2024-10-{28~31}", "2024-11-20");
+    }
+
+    @Test
+    void dayLastAndRangeUnsorted() {
+        Parsed parsed = new Parsed("0 0 0 L,10-13 * *");
+        assert parsed.next("2024-10-{01~09}", "2024-10-10");
+        assert parsed.next("2024-10-10", "2024-10-11");
+        assert parsed.next("2024-10-11", "2024-10-12");
+        assert parsed.next("2024-10-12", "2024-10-13");
+        assert parsed.next("2024-10-{13~30}", "2024-10-31");
+
+        parsed = new Parsed("0 0 0 25-28,10L * *");
+        assert parsed.next("2024-10-{01~20}", "2024-10-21");
+        assert parsed.next("2024-10-{21~24}", "2024-10-25");
+        assert parsed.next("2024-10-25", "2024-10-26");
+        assert parsed.next("2024-10-26", "2024-10-27");
+        assert parsed.next("2024-10-27", "2024-10-28");
+        assert parsed.next("2024-10-{28~31}", "2024-11-20");
     }
 
     @Test
@@ -447,6 +539,22 @@ class CronTest {
         Parsed parsed = new Parsed("0 0 15W * *");
         assert parsed.next("2024-10-{1~14}", "2024-10-15");
         assert parsed.next("2024-10-{15~31}", "2024-11-15");
+    }
+
+    @Test
+    void dayWeekdayAndNumber() {
+        Parsed parsed = new Parsed("0 0 15W,18 * *");
+        assert parsed.next("2024-10-{1~14}", "2024-10-15");
+        assert parsed.next("2024-10-{15~17}", "2024-10-18");
+        assert parsed.next("2024-10-{18~31}", "2024-11-15");
+    }
+
+    @Test
+    void dayWeekdayAndNumberUnsorted() {
+        Parsed parsed = new Parsed("0 0 18,15W * *");
+        assert parsed.next("2024-10-{1~14}", "2024-10-15");
+        assert parsed.next("2024-10-{15~17}", "2024-10-18");
+        assert parsed.next("2024-10-{18~31}", "2024-11-15");
     }
 
     @Test
@@ -478,13 +586,58 @@ class CronTest {
     }
 
     @Test
-    void dayInvalidModifier() {
-        assertThrows(IllegalArgumentException.class, () -> new Parsed("0 0 0 9X * *"));
+    void dayInvalid() {
+        assert invalidFormat("* * -1 * *");
+        assert invalidFormat("* * 0 * *");
+        assert invalidFormat("* * 32 * *");
+        assert invalidFormat("* * 100 * *");
+        assert invalidFormat("* * 0.2 * *");
+        assert invalidFormat("* * # * *");
+        assert invalidFormat("* * @ * *");
+        assert invalidFormat("* * X * *");
+
+        assert invalidFormat("* * 42-63 * *");
+        assert invalidFormat("* * 42#3 * *");
+        assert invalidFormat("0 0 0 9X * *");
     }
 
     @Test
-    void dayInvalidIncrementModifier() {
-        assertThrows(IllegalArgumentException.class, () -> new Parsed("0 0 0 9#2 * *"));
+    void monthName() {
+        Parsed parsed = new Parsed("0 0 0 * JAN *");
+        assert parsed.next("2024-10-10", "2025-01-01");
+
+        parsed = new Parsed("0 0 0 * FEB *");
+        assert parsed.next("2024-10-10", "2025-02-01");
+
+        parsed = new Parsed("0 0 0 * MAR *");
+        assert parsed.next("2024-10-10", "2025-03-01");
+
+        parsed = new Parsed("0 0 0 * APR *");
+        assert parsed.next("2024-10-10", "2025-04-01");
+
+        parsed = new Parsed("0 0 0 * MAY *");
+        assert parsed.next("2024-10-10", "2025-05-01");
+
+        parsed = new Parsed("0 0 0 * JUN *");
+        assert parsed.next("2024-10-10", "2025-06-01");
+
+        parsed = new Parsed("0 0 0 * JUL *");
+        assert parsed.next("2024-10-10", "2025-07-01");
+
+        parsed = new Parsed("0 0 0 * AUG *");
+        assert parsed.next("2024-10-10", "2025-08-01");
+
+        parsed = new Parsed("0 0 0 * SEP *");
+        assert parsed.next("2024-10-10", "2025-09-01");
+
+        parsed = new Parsed("0 0 0 * OCT *");
+        assert parsed.next("2024-10-10", "2024-10-11");
+
+        parsed = new Parsed("0 0 0 * NOV *");
+        assert parsed.next("2024-10-10", "2024-11-01");
+
+        parsed = new Parsed("0 0 0 * DEC *");
+        assert parsed.next("2024-10-10", "2024-12-01");
     }
 
     @Test
@@ -513,19 +666,20 @@ class CronTest {
 
     @Test
     void monthList() {
-        Parsed cronExpr = new Parsed("0 0 0 1 3,7,12 *");
+        Parsed parsed = new Parsed("0 0 0 5 3,6,9 *");
+        assert parsed.next("2024-{01~02}-05", "2024-03-05");
+        assert parsed.next("2024-{03~05}-05", "2024-06-05");
+        assert parsed.next("2024-{06~08}-05", "2024-09-05");
+        assert parsed.next("2024-{09~12}-05", "2025-03-05");
+    }
 
-        ZonedDateTime after = ZonedDateTime.of(2012, 2, 12, 0, 0, 0, 0, zoneId);
-        ZonedDateTime expected = ZonedDateTime.of(2012, 3, 1, 0, 0, 0, 0, zoneId);
-        assertEquals(expected, cronExpr.next(after));
-
-        after = ZonedDateTime.of(2012, 3, 1, 0, 0, 0, 0, zoneId);
-        expected = ZonedDateTime.of(2012, 7, 1, 0, 0, 0, 0, zoneId);
-        assertEquals(expected, cronExpr.next(after));
-
-        after = ZonedDateTime.of(2012, 7, 1, 0, 0, 0, 0, zoneId);
-        expected = ZonedDateTime.of(2012, 12, 1, 0, 0, 0, 0, zoneId);
-        assertEquals(expected, cronExpr.next(after));
+    @Test
+    void monthListUnsorted() {
+        Parsed parsed = new Parsed("0 0 0 5 9,3,6 *");
+        assert parsed.next("2024-{01~02}-05", "2024-03-05");
+        assert parsed.next("2024-{03~05}-05", "2024-06-05");
+        assert parsed.next("2024-{06~08}-05", "2024-09-05");
+        assert parsed.next("2024-{09~12}-05", "2025-03-05");
     }
 
     @Test
@@ -546,8 +700,43 @@ class CronTest {
     }
 
     @Test
-    void monthInvalidModifier() {
-        assertThrows(IllegalArgumentException.class, () -> new Parsed("0 0 0 1 ? *"));
+    void monthInvalid() {
+        assert invalidFormat("* * * -1 *");
+        assert invalidFormat("* * * 0 *");
+        assert invalidFormat("* * * 13 *");
+        assert invalidFormat("* * * 100 *");
+        assert invalidFormat("* * * 0.2 *");
+        assert invalidFormat("* * * # *");
+        assert invalidFormat("* * * @ *");
+        assert invalidFormat("* * * X *");
+
+        assert invalidFormat("* * * 42-63 *");
+        assert invalidFormat("* * * 42#3 *");
+        assert invalidFormat("0 0 0 1 ? *");
+    }
+
+    @Test
+    void dowName() {
+        Parsed parsed = new Parsed("0 0 0 * * SUN");
+        assert parsed.next("2024-10-10", "2024-10-13");
+
+        parsed = new Parsed("0 0 0 * * MON");
+        assert parsed.next("2024-10-10", "2024-10-14");
+
+        parsed = new Parsed("0 0 0 * * TUE");
+        assert parsed.next("2024-10-10", "2024-10-15");
+
+        parsed = new Parsed("0 0 0 * * WED");
+        assert parsed.next("2024-10-10", "2024-10-16");
+
+        parsed = new Parsed("0 0 0 * * THU");
+        assert parsed.next("2024-10-10", "2024-10-17");
+
+        parsed = new Parsed("0 0 0 * * FRI");
+        assert parsed.next("2024-10-10", "2024-10-11");
+
+        parsed = new Parsed("0 0 0 * * SAT");
+        assert parsed.next("2024-10-10", "2024-10-12");
     }
 
     @Test
@@ -746,6 +935,15 @@ class CronTest {
     }
 
     @Test
+    void dowNthList() {
+        Parsed parsed = new Parsed("0 0 0 * * 5#3,4#1,1#2");
+        assert parsed.next("2024-07-{01~03}", "2024-07-04");
+        assert parsed.next("2024-07-{04~07}", "2024-07-08");
+        assert parsed.next("2024-07-{08~18}", "2024-07-19");
+        assert parsed.next("2024-07-{19~31}", "2024-08-01");
+    }
+
+    @Test
     void dowNthByName() {
         Parsed parsed = new Parsed("0 0 0 * * FRI#3");
         assert parsed.next("2024-07-{01~18}", "2024-07-19");
@@ -763,21 +961,23 @@ class CronTest {
 
     @Test
     void dowInvalid() {
-        assertThrows(IllegalArgumentException.class, () -> new Parsed("0 0 0 * * 5W"));
-        assertThrows(IllegalArgumentException.class, () -> new Parsed("0 0 0 * * 5?3"));
-        assertThrows(IllegalArgumentException.class, () -> new Parsed("0 0 0 * * 5*3"));
-        assertThrows(IllegalArgumentException.class, () -> new Parsed("0 0 0 * * 12"));
+        assert invalidFormat("* * * * -1");
+        assert invalidFormat("* * * * 8");
+        assert invalidFormat("* * * * 100");
+        assert invalidFormat("* * * * 0.2");
+        assert invalidFormat("* * * * #");
+        assert invalidFormat("* * * * @");
+        assert invalidFormat("* * * * X");
+
+        assert invalidFormat("0 0 0 * * 5W");
+        assert invalidFormat("0 0 0 * * 5?3");
+        assert invalidFormat("0 0 0 * * 5*3");
+        assert invalidFormat("0 0 0 * * 12");
     }
 
     @Test
     void notSupportRollingPeriod() {
-        assertThrows(IllegalArgumentException.class, () -> new Parsed("* * 5-1 * * *"));
-    }
-
-    @Test
-    void non_existing_date_throws_exception() {
-        // Will check for the next 4 years - no 30th of February is found so a IAE is thrown.
-        assertThrows(IllegalArgumentException.class, () -> new Parsed("* * * 30 2 *").next(ZonedDateTime.now()));
+        assert invalidFormat("* * 5-1 * * *");
     }
 
     @Test
