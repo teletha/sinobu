@@ -28,7 +28,7 @@ import antibug.CleanRoom;
 class StorableTest {
 
     @RegisterExtension
-    static CleanRoom room = new CleanRoom();
+    CleanRoom room = new CleanRoom();
 
     @Test
     void readFromNotExist() throws Exception {
