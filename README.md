@@ -8,7 +8,7 @@
 
 ## Summary
 Sinobu is not obsolete framework but utility, which can manipulate objects as a extremely-condensed facade.
-This is extremely lightweight at approximately 106 KB without relying on other libraries, and its various operations are designed to run as fast as other competing libraries.
+This is extremely lightweight at approximately 120 KB without relying on other libraries, and its various operations are designed to run as fast as other competing libraries.
 
 This library aims to simplify and highly condense the functions related to domains that are frequently encountered in real-world development projects, making them easier to use.
 - Dependency Injection
@@ -26,6 +26,8 @@ This library aims to simplify and highly condense the functions related to domai
 - Dynamic plug-in mechanism
 - Object Persistence
 - Logging
+- Virtual Job Scheduler
+- Cron Scheduling
 
 With a few exceptions, Sinobu and its APIs are designed to be simple to use and easy to understand by adhering to the following principles.
 - Keep it stupid simple
