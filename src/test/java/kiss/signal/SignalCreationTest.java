@@ -143,7 +143,7 @@ class SignalCreationTest extends SignalTester {
         assert main.isNotCompleted();
         assert main.isNotDisposed();
 
-        scheduler.await(200, ms);
+        scheduler.await();
         assert main.value(true, true, true);
         assert main.isCompleted();
         assert main.isDisposed();

@@ -16,6 +16,7 @@ import java.util.function.Consumer;
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
+import kiss.TestableScheduler;
 
 class OnTest extends SignalTester {
 
@@ -23,7 +24,8 @@ class OnTest extends SignalTester {
 
     @Test
     void on() {
-        monitor(signal -> signal.on(after).map(v -> Thread.currentThread().getName().contains("pool")));
+        Thread now = Thread.currentThread();
+        monitor(signal -> signal.on(after).map(v -> Thread.currentThread() != now));
 
         main.emit("START");
         assert main.value();
@@ -57,7 +59,7 @@ class OnTest extends SignalTester {
     void dispose() {
         // Signal#on doesn't guarantee the execution order of events (including COMPLETE)
         // Single thread executor will arrange all events in serial. (FIFO)
-        scheduler.configExecutionLimit(1);
+        scheduler = new TestableScheduler(1);
 
         monitor(signal -> signal.take(1).on(after));
 

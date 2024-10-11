@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
@@ -28,11 +27,11 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import antibug.Chronus;
 import kiss.Disposable;
 import kiss.I;
 import kiss.Observer;
 import kiss.Signal;
+import kiss.TestableScheduler;
 import kiss.WiseBiFunction;
 import kiss.WiseConsumer;
 import kiss.WiseFunction;
@@ -76,7 +75,7 @@ public class SignalTester {
     protected final SignalSource another = new SignalSource();
 
     /** The chrono scheduler. */
-    protected final Chronus scheduler = new Chronus(() -> Executors.newScheduledThreadPool(16));
+    protected TestableScheduler scheduler = new TestableScheduler();
 
     /** The log manager. */
     private Map<String, List> logs;

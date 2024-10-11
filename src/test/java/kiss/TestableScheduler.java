@@ -9,9 +9,13 @@
  */
 package kiss;
 
+import static java.util.concurrent.TimeUnit.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -19,7 +23,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class TestableScheduler extends Scheduler {
 
-    private long awaitingLimit = 1000;
+    private long awaitingLimit = 3000;
 
     private final AtomicBoolean starting = new AtomicBoolean();
 
@@ -196,6 +200,111 @@ public class TestableScheduler extends Scheduler {
             }
         }
         return true;
+    }
+
+    public boolean await() {
+        return start().awaitIdling();
+    }
+
+    /**
+     * Freeze process.
+     */
+    public void await(long time, TimeUnit unit) {
+        freezeNano(unit.toNanos(time));
+    }
+
+    /**
+     * <p>
+     * Freeze process.
+     * </p>
+     * 
+     * @param time A nano time to freeze.
+     */
+    private void freezeNano(long time) {
+        try {
+            long start = System.nanoTime();
+            NANOSECONDS.sleep(time);
+            long end = System.nanoTime();
+
+            long remaining = start + time - end;
+
+            if (0 < remaining) {
+                freezeNano(remaining);
+            }
+        } catch (InterruptedException e) {
+            throw new Error(e);
+        }
+    }
+
+    private long marked;
+
+    /**
+     * Record the current time. Hereafter, it is used as the start time when using
+     * {@link #elapse(int, TimeUnit)} or {@link #within(int, TimeUnit, Runnable)}.
+     */
+    public final TestableScheduler mark() {
+        marked = System.nanoTime();
+
+        return this;
+    }
+
+    /**
+     * <p>
+     * Waits for the specified time from the marked time. It does not wait if it has already passed.
+     * </p>
+     * <pre>
+     * chronus.mark();
+     * asynchronous.process();
+     * 
+     * chronus.elapse(100, TimeUnit.MILLSECONDS);
+     * assert validation.code();
+     * </pre>
+     * 
+     * @param amount Time amount.
+     * @param unit Time unit.
+     */
+    public final TestableScheduler elapse(int amount, TimeUnit unit) {
+        long startTime = marked + unit.toNanos(amount);
+
+        await(startTime - System.nanoTime(), NANOSECONDS);
+
+        return this;
+    }
+
+    /**
+     * <p>
+     * Performs the specified operation if the specified time has not yet elapsed since the marked
+     * time. If it has already passed, do nothing.
+     * </p>
+     * <pre>
+     * chronus.mark();
+     * synchronous.process();
+     * 
+     * chronus.within(100, TimeUnit.MILLSECONDS, () -> {
+     * assert validation.code();
+     * });
+     * </pre>
+     * 
+     * @param amount Time amount.
+     * @param unit Time unit.
+     * @param within Your process.
+     */
+    public final TestableScheduler within(int amount, TimeUnit unit, Runnable within) {
+        if (within != null && System.nanoTime() < marked + unit.toNanos(amount)) {
+            within.run();
+        }
+        return this;
+    }
+
+    /**
+     * Create delayed {@link Executors} in the specified duration.
+     * 
+     * @param time A delay time.
+     * @param unit A time unit.
+     * @return A delayed {@link Executor}.
+     */
+    public Executor in(long time, TimeUnit unit) {
+        return task -> schedule(task, time, unit);
     }
 
     /**
