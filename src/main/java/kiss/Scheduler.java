@@ -242,75 +242,118 @@ public class Scheduler extends AbstractExecutorService implements ScheduledExecu
      * <h4>Supported Cron Special Characters</h4>
      * <p>
      * The following special characters are supported in cron expressions:
-     * <ul>
-     * <li><b>,</b> (Comma): Used to specify multiple values. For example, {@code 0,15,30 * * * * *}
-     * means the task will run at 0, 15, and 30 seconds.</li>
-     * <li><b>-</b> (Dash): Specifies a range of values. For example, {@code 10-20 * * * * *} will
-     * run the task every second between 10 and 20 seconds.</li>
-     * <li><b>/</b> (Slash): Specifies intervals. For example, {@code 0/10 * * * * *} means the task
-     * will run every 10 seconds starting from 0 seconds.</li>
-     * <li><b>L</b> (Last): Indicates the last day of the month or the last weekday of the month,
-     * depending on its context.
-     * <ul>
-     * <li>For the day-of-month field, {@code L} means the last day of the month (e.g.,
-     * {@code L * * * *} runs on the last day of every month).</li>
-     * <li>For the day-of-week field, {@code L} means the last occurrence of a specific weekday
-     * (e.g., {@code 5L} means the last Friday of the month).</li>
-     * </ul>
-     * </li>
-     * <li><b>W</b> (Weekday): Runs the task on the closest weekday (Monday to Friday) to the
-     * specified day.
+     * <dl>
+     * <dt><b>,</b> (Comma)</dt>
+     * <dd>Used to specify multiple values. For example, {@code 0,15,30 * * * * *} means the task
+     * will run at 0, 15, and 30 seconds.</dd>
+     * 
+     * <dt><b>-</b> (Dash)</dt>
+     * <dd>Specifies a range of values. For example, {@code 10-20 * * * * *} will run the task every
+     * second between 10 and 20 seconds.</dd>
+     * 
+     * <dt><b>/</b> (Slash)</dt>
+     * <dd>Specifies intervals. For example, {@code 0/10 * * * * *} means the task will run every 10
+     * seconds starting from 0 seconds.</dd>
+     * 
+     * <dt><b>L</b> (Last)</dt>
+     * <dd>
+     * Indicates the last day of the month or the last weekday of the month, depending on its
+     * context.
+     * <dl>
+     * <dt>For the day-of-month field</dt>
+     * <dd>{@code L} means the last day of the month (e.g., {@code L * * * *} runs on the last day
+     * of every month).</dd>
+     * 
+     * <dt>For the day-of-week field</dt>
+     * <dd>{@code L} means the last occurrence of a specific weekday (e.g., {@code 5L} means the
+     * last Friday of the month).</dd>
+     * </dl>
+     * </dd>
+     * 
+     * <dt><b>W</b> (Weekday)</dt>
+     * <dd>
+     * Runs the task on the closest weekday (Monday to Friday) to the specified day.
      * For example, {@code 1W} means the task will run on the closest weekday to the 1st of the
-     * month. If the 1st is a Saturday, the task runs on the following Monday (the 3rd), but it does
-     * not cross into the next month. Similarly, {@code 31W} in a month with fewer than 31 days will
-     * run on the last weekday of that month.</li>
-     * <li><b>? (Any)</b>: Used in the day-of-month or day-of-week field to specify that no specific
-     * value is set. It is typically used when you want to define one of these fields but not the
-     * other.</li>
-     * <li><b># (Nth Weekday)</b>: Specifies the Nth occurrence of a weekday in a given month. For
-     * example, {@code 3#1} means the first Tuesday of the month.</li>
-     * <li><b>R (Random)</b>: This is a custom extension similar to Jenkins' H keyword. {@code R} is
-     * used to schedule tasks at random times based on the hash of the task.
+     * month.
+     * If the 1st is a Saturday, the task runs on the following Monday (the 3rd), but it does not
+     * cross into the next month.
+     * Similarly, {@code 31W} in a month with fewer than 31 days will run on the last weekday of
+     * that month.
+     * </dd>
+     * 
+     * <dt><b>? (Any)</b></dt>
+     * <dd>Used in the day-of-month or day-of-week field to specify that no specific value is set.
+     * It is typically used when you want to define one of these fields but not the other.</dd>
+     * 
+     * <dt><b># (Nth Weekday)</b></dt>
+     * <dd>Specifies the Nth occurrence of a weekday in a given month. For example, {@code 3#1}
+     * means the first Tuesday of the month.</dd>
+     * 
+     * <dt><b>R (Random)</b></dt>
+     * <dd>
+     * This is a custom extension similar to Jenkins' H keyword. {@code R} is used to schedule tasks
+     * at random times based on the hash of the task.
      * For example, {@code 5-30R * * * * *} will select a random second between 5 and 30 for each
      * execution.
      * This helps distribute task executions over time to avoid simultaneous task execution peaks.
      * By scattering task execution times randomly, the risk of heavy load caused by multiple tasks
-     * running at the same moment is reduced, effectively distributing the load across time.</li>
-     * </ul>
+     * running at the same moment is reduced, effectively distributing the load across time.
+     * </dd>
+     * </dl>
      * </p>
      * 
      * <h4>Examples</h4>
      * <p>
      * Some cron expression examples:
-     * <ul>
-     * <li><b>0 0 12 * * ?</b>: Executes at 12:00 PM every day.</li>
-     * <li><b>0 15 10 * * ?</b>: Executes at 10:15 AM every day.</li>
-     * <li><b>0 0/5 14 * * ?</b>: Executes every 5 minutes starting at 2:00 PM.</li>
-     * <li><b>0 0 10 ? * 2#1</b>: Executes at 10:00 AM on the first Monday of every month.</li>
-     * <li><b>0 0 1W * * ?</b>: Executes on the nearest weekday to the 1st day of every month.</li>
-     * <li><b>0 0 0 L * ?</b>: Executes at midnight on the last day of every month.</li>
-     * <li><b>0 0 0 LW * ?</b>: Executes at midnight on the last weekday of every month.</li>
-     * <li><b>0 10,20,30 * * * ?</b>: Executes at 10, 20, and 30 minutes of every hour.</li>
-     * <li><b>0 0 9-17 * * ?</b>: Executes every hour between 9:00 AM and 5:00 PM.</li>
-     * <li><b>0 0 9-17/2 * * ?</b>: Executes every 2 hours between 9:00 AM and 5:00 PM.</li>
-     * <li><b>0 0 9-17,20 * * ?</b>: Executes every hour between 9:00 AM and 5:00 PM, and at 8:00
-     * PM.</li>
-     * <li><b>0 15 10 15 * ?</b>: Executes at 10:15 AM on the 15th of every month.</li>
-     * <li><b>0 15 10 ? * 6L</b>: Executes at 10:15 AM on the last Friday of every month.</li>
-     * <li><b>0 0 12 15 JAN * </b>: Executes at noon on January 15th every year.</li>
-     * <li><b>0 0 12 ? * MON-FRI</b>: Executes at noon on weekdays (Monday to Friday).</li>
-     * <li><b>0 15 10 15 AUG-DEC * *</b>: Executes at 10:15 AM on the 15th of every month from
-     * August to December.</li>
-     * <li><b>0 0 8 1-7/2 * *</b>: Executes at 8:00 AM on every second day between the 1st and 7th
-     * of each month.</li>
-     * <li><b>0 30 9 1,15,30 * *</b>: Executes at 9:30 AM on the 1st, 15th, and 30th of every
-     * month.</li>
-     * <li><b>0 0 10 5-10 * MON-WED</b>: Executes at 10:00 AM between the 5th and 10th of every
-     * month, but only if the day is a Monday, Tuesday, or Wednesday.</li>
-     * <li><b>0 0/15 9-17 * * MON-FRI</b>: Executes every 15 minutes between 9:00 AM and 5:00 PM on
-     * weekdays (Monday to Friday).</li>
-     * <li><b>5-10R * * * * *</b>: Executes at a random second between 5 and 10 every minute.</li>
-     * </ul>
+     * <dl>
+     * <dt><b>0 0 12 * * ?</b></dt>
+     * <dd>Executes at 12:00 PM every day.</dd>
+     * 
+     * <dt><b>0 15 10 * * ?</b></dt>
+     * <dd>Executes at 10:15 AM every day.</dd>
+     * 
+     * <dt><b>0 0/5 14 * * ?</b></dt>
+     * <dd>Executes every 5 minutes starting at 2:00 PM.</dd>
+     * 
+     * <dt><b>0 0 10 ? * 2#1</b></dt>
+     * <dd>Executes at 10:00 AM on the first Monday of every month.</dd>
+     * 
+     * <dt><b>0 0 1W * * ?</b></dt>
+     * <dd>Executes on the nearest weekday to the 1st day of every month.</dd>
+     * 
+     * <dt><b>0 0 0 L * ?</b></dt>
+     * <dd>Executes at midnight on the last day of every month.</dd>
+     * 
+     * <dt><b>0 0 0 LW * ?</b></dt>
+     * <dd>Executes at midnight on the last weekday of every month.</dd>
+     * 
+     * <dt><b>0 0 12 15 JAN *</b></dt>
+     * <dd>Executes at noon on January 15th every year.</dd>
+     * 
+     * <dt><b>0 0 12 ? * MON-FRI</b></dt>
+     * <dd>Executes at noon on weekdays (Monday to Friday).</dd>
+     * 
+     * <dt><b>0 15 10 15 AUG-DEC * *</b></dt>
+     * <dd>Executes at 10:15 AM on the 15th of every month from August to December.</dd>
+     * 
+     * <dt><b>0 0 8 1-7/2 * *</b></dt>
+     * <dd>Executes at 8:00 AM on every second day between the 1st and 7th of each month.</dd>
+     * 
+     * <dt><b>0 30 9 1,15,30 * *</b></dt>
+     * <dd>Executes at 9:30 AM on the 1st, 15th, and 30th of every month.</dd>
+     * 
+     * <dt><b>0 0 10 5-10 * MON-WED</b></dt>
+     * <dd>Executes at 10:00 AM between the 5th and 10th of every month, but only if the day is a
+     * Monday, Tuesday, or Wednesday.</dd>
+     * 
+     * <dt><b>0 0/15 9-17 * * MON-FRI</b></dt>
+     * <dd>Executes every 15 minutes between 9:00 AM and 5:00 PM on weekdays (Monday to
+     * Friday).</dd>
+     * 
+     * <dt><b>5-10R * * * * *</b></dt>
+     * <dd>Executes at a random second between 5 and 10 every minute.</dd>
+     * </dl>
+     * </p>
      * </p>
      * 
      * @param command The {@code Runnable} task to be scheduled for periodic execution.
