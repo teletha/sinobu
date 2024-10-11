@@ -174,6 +174,20 @@ class CronTest {
     }
 
     @Test
+    void secondHash() {
+        Parsed parsed = new Parsed("H * * * * *", 45);
+        assert parsed.next("10:20:{00~44}", "10:20:45");
+        assert parsed.next("10:20:{45~59}", "10:21:45");
+    }
+
+    @Test
+    void secondHashRange() {
+        Parsed parsed = new Parsed("1-30H * * * * *", 45);
+        assert parsed.next("10:20:00", "10:20:01");
+        assert parsed.next("10:20:{01~59}", "10:21:01");
+    }
+
+    @Test
     void secondInvalid() {
         assert invalidFormat("-1 * * * * *");
         assert invalidFormat("60 * * * * *");
@@ -1035,7 +1049,11 @@ class CronTest {
         Cron[] fields;
 
         Parsed(String format) {
-            fields = Scheduler.parse(format);
+            this(format, 0);
+        }
+
+        Parsed(String format, int hash) {
+            fields = Scheduler.parse(format, hash);
         }
 
         ZonedDateTime next(ZonedDateTime base) {

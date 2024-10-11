@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
  */
 class Cron {
     private static final Pattern FORMAT = Pattern
-            .compile("(?:(?:(\\*)|(\\?|L|LW)) | ([0-9]{1,2}|[a-z]{3,3})(?:(L|W) | -([0-9]{1,2}|[a-z]{3,3}))?)(?:(/|\\#)([0-9]{1,7}))?", Pattern.CASE_INSENSITIVE | Pattern.COMMENTS);
+            .compile("(?:(?:(\\*)|(\\?|L|LW|H)) | ([0-9]{1,2}|[a-z]{3,3})(?:(L|W) | -([0-9]{1,2}|[a-z]{3,3}))?)(?:(H|/|\\#)([0-9]{1,7})?)?", Pattern.CASE_INSENSITIVE | Pattern.COMMENTS);
 
     private ChronoField field;
 
@@ -43,7 +43,7 @@ class Cron {
      * @param expr The expression string for this field.
      * @throws IllegalArgumentException if the expression is invalid.
      */
-    Cron(ChronoField field, int min, int max, String names, String modifier, String increment, String expr) {
+    Cron(ChronoField field, int min, int max, String names, String modifier, String increment, String expr, int hash) {
         this.field = field;
 
         for (String range : expr.split(",")) {
@@ -76,6 +76,10 @@ class Cron {
             if (m.group(2) != null) {
                 mod = m.group(2);
                 part[3] = mod.charAt(mod.length() - 1);
+
+                if (part[3] == 'H') {
+                    part[0] = part[1] = hash % (max + 1) + min;
+                }
             }
             if (inc != null) {
                 part[4] = m.group(6).charAt(0);

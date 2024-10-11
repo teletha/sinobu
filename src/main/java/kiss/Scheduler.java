@@ -228,7 +228,7 @@ public class Scheduler extends AbstractExecutorService implements ScheduledExecu
      * @throws IllegalArgumentException If the cron format is invalid or cannot be parsed correctly.
      */
     public ScheduledFuture<?> scheduleAt(Runnable command, String format) {
-        Cron[] fields = parse(format);
+        Cron[] fields = parse(format, command.toString().hashCode());
         LongUnaryOperator next = old -> next(fields, ZonedDateTime.now()).toInstant().toEpochMilli();
 
         return executeTask(new Task(callable(command), next.applyAsLong(0L), next));
@@ -246,19 +246,19 @@ public class Scheduler extends AbstractExecutorService implements ScheduledExecu
      * @return an array of {@link Cron} objects representing the parsed cron fields.
      * @throws IllegalArgumentException if the cron expression does not have 5 or 6 parts
      */
-    static Cron[] parse(String cron) {
+    static Cron[] parse(String cron, int hash) {
         String[] parts = cron.strip().split("\\s+");
         int i = parts.length - 5;
         if (i != 0 && i != 1) {
             throw new IllegalArgumentException(cron);
         }
 
-        return new Cron[] {new Cron(ChronoField.SECOND_OF_MINUTE, 0, 59, "", "", "/", i == 1 ? parts[0] : "0"),
-                new Cron(ChronoField.MINUTE_OF_HOUR, 0, 59, "", "", "/", parts[i++]),
-                new Cron(ChronoField.HOUR_OF_DAY, 0, 23, "", "", "/", parts[i++]),
-                new Cron(ChronoField.DAY_OF_MONTH, 1, 31, "", "?LW", "/", parts[i++]),
-                new Cron(ChronoField.MONTH_OF_YEAR, 1, 12, "JAN FEB MAR APR MAY JUN JUL AUG SEP OCT NOV DEC ", "", "/", parts[i++]),
-                new Cron(ChronoField.DAY_OF_WEEK, 1, 7, "MON TUE WED THU FRI SAT SUN ", "?L", "#/", parts[i++])};
+        return new Cron[] {new Cron(ChronoField.SECOND_OF_MINUTE, 0, 59, "", "H", "/", i == 1 ? parts[0] : "0", hash),
+                new Cron(ChronoField.MINUTE_OF_HOUR, 0, 59, "", "", "/", parts[i++], hash),
+                new Cron(ChronoField.HOUR_OF_DAY, 0, 23, "", "", "/", parts[i++], hash),
+                new Cron(ChronoField.DAY_OF_MONTH, 1, 31, "", "?LW", "/", parts[i++], hash),
+                new Cron(ChronoField.MONTH_OF_YEAR, 1, 12, "JAN FEB MAR APR MAY JUN JUL AUG SEP OCT NOV DEC ", "", "/", parts[i++], hash),
+                new Cron(ChronoField.DAY_OF_WEEK, 1, 7, "MON TUE WED THU FRI SAT SUN ", "?L", "#/", parts[i++], hash)};
     }
 
     /**
