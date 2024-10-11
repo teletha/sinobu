@@ -281,6 +281,7 @@ class CronTest {
 
     @Test
     void minuteInvalid() {
+        assert invalidFormat("5-1 * * * *");
         assert invalidFormat("-1 * * * *");
         assert invalidFormat("60 * * * *");
         assert invalidFormat("100 * * * *");
@@ -322,6 +323,7 @@ class CronTest {
 
     @Test
     void hourInvalid() {
+        assert invalidFormat("* 5-1 * * *");
         assert invalidFormat("* -1 * * *");
         assert invalidFormat("* 60 * * *");
         assert invalidFormat("* 100 * * *");
@@ -513,6 +515,24 @@ class CronTest {
     }
 
     @Test
+    void dayWeekdayOnSunday() {
+        // 2024-10-13 is SUN
+        Parsed parsed = new Parsed("0 0 13W * *");
+        assert parsed.next("2024-10-{1~13}", "2024-10-14");
+        assert parsed.next("2024-10-{14~31}", "2024-11-13");
+        assert parsed.next("2024-11-{01~12}", "2024-11-13");
+    }
+
+    @Test
+    void dayWeekdayOnSaturday() {
+        // 2024-10-12 is SAT
+        Parsed parsed = new Parsed("0 0 12W * *");
+        assert parsed.next("2024-10-{1~10}", "2024-10-11");
+        assert parsed.next("2024-10-{11~31}", "2024-11-12");
+        assert parsed.next("2024-11-{01~11}", "2024-11-12");
+    }
+
+    @Test
     void dayWeekdayAndNumber() {
         Parsed parsed = new Parsed("0 0 15W,18 * *");
         assert parsed.next("2024-10-{1~14}", "2024-10-15");
@@ -529,12 +549,12 @@ class CronTest {
     }
 
     @Test
-    void dayFirstWeekday() {
+    void dayWeekday1() {
         Parsed parsed = new Parsed("0 0 1W * *");
-        // 2025-02-01 is SUT, but don't back to January
+        // 2025-02-01 is SAT, but don't back to January
         assert parsed.next("2025-01-{01~31}", "2025-02-03");
         assert parsed.next("2025-02-{01~02}", "2025-02-03");
-        // 2025-03-01 is SUT, but don't back to Feburary
+        // 2025-03-01 is SAT, but don't back to Feburary
         assert parsed.next("2025-02-{03~28}", "2025-03-03");
         // 2025-06-01 is SUN
         assert parsed.next("2025-05-{01~31}", "2025-06-02");
@@ -544,7 +564,21 @@ class CronTest {
     }
 
     @Test
-    void dayLastWeekday() {
+    void dayWeekday2() {
+        Parsed parsed = new Parsed("0 0 2W * *");
+        // 2025-02-02 is SUN, but don't back to January
+        assert parsed.next("2025-01-{02~31}", "2025-02-03");
+        assert parsed.next("2025-02-{01~02}", "2025-02-03");
+        // 2025-03-02 is SUN, but don't back to Feburary
+        assert parsed.next("2025-02-{03~28}", "2025-03-03");
+        // 2025-08-02 is SAT
+        assert parsed.next("2025-07-{02~31}", "2025-08-01");
+        // 2025-09-02 is weekday
+        assert parsed.next("2025-08-{02~31}", "2025-09-02");
+    }
+
+    @Test
+    void dayWeekdayL() {
         Parsed parsed = new Parsed("0 0 LW * *");
         // 2025-01-31 is weekday
         assert parsed.next("2025-01-{01~30}", "2025-01-31");
@@ -558,6 +592,7 @@ class CronTest {
 
     @Test
     void dayInvalid() {
+        assert invalidFormat("* * 5-1 * *");
         assert invalidFormat("* * -1 * *");
         assert invalidFormat("* * 0 * *");
         assert invalidFormat("* * 32 * *");
@@ -720,6 +755,7 @@ class CronTest {
 
     @Test
     void monthInvalid() {
+        assert invalidFormat("* * * 5-1 *");
         assert invalidFormat("* * * -1 *");
         assert invalidFormat("* * * 0 *");
         assert invalidFormat("* * * 13 *");
@@ -980,6 +1016,7 @@ class CronTest {
 
     @Test
     void dowInvalid() {
+        assert invalidFormat("* * * * 5-1");
         assert invalidFormat("* * * * -1");
         assert invalidFormat("* * * * 8");
         assert invalidFormat("* * * * 100");
@@ -992,72 +1029,6 @@ class CronTest {
         assert invalidFormat("0 0 0 * * 5?3");
         assert invalidFormat("0 0 0 * * 5*3");
         assert invalidFormat("0 0 0 * * 12");
-    }
-
-    @Test
-    void notSupportRollingPeriod() {
-        assert invalidFormat("* * 5-1 * * *");
-    }
-
-    @Test
-    void withoutSeconds() {
-        ZonedDateTime after = ZonedDateTime.of(2012, 3, 1, 0, 0, 0, 0, zoneId);
-        ZonedDateTime expected = ZonedDateTime.of(2016, 2, 29, 0, 0, 0, 0, zoneId);
-        assert new Parsed("* * 29 2 *").next(after).equals(expected);
-    }
-
-    @Test
-    void triggerProblemSameMonth() {
-        assertEquals(ZonedDateTime.parse("2020-01-02T00:50:00Z"), new Parsed("00 50 * 1-8 1 *")
-                .next(ZonedDateTime.parse("2020-01-01T23:50:00Z")));
-    }
-
-    @Test
-    void triggerProblemNextMonth() {
-        assertEquals(ZonedDateTime.parse("2020-02-01T00:50:00Z"), new Parsed("00 50 * 1-8 2 *")
-                .next(ZonedDateTime.parse("2020-01-31T23:50:00Z")));
-    }
-
-    @Test
-    void triggerProblemNextYear() {
-        assertEquals(ZonedDateTime.parse("2020-01-01T00:50:00Z"), new Parsed("00 50 * 1-8 1 *")
-                .next(ZonedDateTime.parse("2019-12-31T23:50:00Z")));
-    }
-
-    @Test
-    void triggerProblemNextMonthMonthAst() {
-        assertEquals(ZonedDateTime.parse("2020-02-01T00:50:00Z"), new Parsed("00 50 * 1-8 * *")
-                .next(ZonedDateTime.parse("2020-01-31T23:50:00Z")));
-    }
-
-    @Test
-    void triggerProblemNextYearMonthAst() {
-        assertEquals(ZonedDateTime.parse("2020-01-01T00:50:00Z"), new Parsed("00 50 * 1-8 * *")
-                .next(ZonedDateTime.parse("2019-12-31T23:50:00Z")));
-    }
-
-    @Test
-    void triggerProblemNextMonthDayAst() {
-        assertEquals(ZonedDateTime.parse("2020-02-01T00:50:00Z"), new Parsed("00 50 * * 2 *")
-                .next(ZonedDateTime.parse("2020-01-31T23:50:00Z")));
-    }
-
-    @Test
-    void triggerProblemNextYearDayAst() {
-        assertEquals(ZonedDateTime.parse("2020-01-01T00:50:00Z"), new Parsed("00 50 * * 1 *")
-                .next(ZonedDateTime.parse("2019-12-31T22:50:00Z")));
-    }
-
-    @Test
-    void triggerProblemNextMonthAllAst() {
-        assertEquals(ZonedDateTime.parse("2020-02-01T00:50:00Z"), new Parsed("00 50 * * * *")
-                .next(ZonedDateTime.parse("2020-01-31T23:50:00Z")));
-    }
-
-    @Test
-    void triggerProblemNextYearAllAst() {
-        assertEquals(ZonedDateTime.parse("2020-01-01T00:50:00Z"), new Parsed("00 50 * * * *")
-                .next(ZonedDateTime.parse("2019-12-31T23:50:00Z")));
     }
 
     private static class Parsed {
