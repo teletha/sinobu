@@ -1,11 +1,11 @@
 /*
- * Copyright (C) 2023 Nameless Production Committee
+ * Copyright (C) 2024 The SINOBU Development Team
  *
  * Licensed under the MIT License (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *          http://opensource.org/licenses/mit-license.php
+ *          https://opensource.org/licenses/MIT
  */
 package kiss;
 
@@ -101,11 +101,16 @@ public class Scheduler extends AbstractExecutorService implements ScheduledExecu
     /** Controls the number of tasks that can be executed concurrently. */
     private final Semaphore max;
 
+    /**
+     * Create {@link Scheduler} without the specified concurrency limit.
+     */
     public Scheduler() {
         this(Integer.MAX_VALUE);
     }
 
     /**
+     * Create {@link Scheduler} with the specified concurrency limit.
+     * 
      * @param limit Controls the number of tasks that can be executed concurrently.
      */
     public Scheduler(int limit) {

@@ -175,6 +175,10 @@ public class I implements ParameterizedType {
     // yield
     // zip zoom zone
 
+    /** The parallel task scheduler. */
+    @SuppressWarnings("resource")
+    public static final Scheduler Jobs = new Scheduler();
+
     /** No Operation */
     public static final WiseRunnable NoOP = new Subscriber()::vandalize;
 
@@ -208,10 +212,6 @@ public class I implements ParameterizedType {
     /** Coordinator of bundle save timing */
     static final Signaling<Subscriber> translate = new Signaling();
 
-    /** The parallel task scheduler. */
-    @SuppressWarnings("resource")
-    static final Scheduler scheduler = new Scheduler();
-
     /** The cache for {@link Lifestyle}. */
     private static final Map<Class, Lifestyle> lifestyles = new ConcurrentHashMap<>();
 
@@ -233,7 +233,7 @@ public class I implements ParameterizedType {
     private static final HttpClient client = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(15))
             .followRedirects(Redirect.ALWAYS)
-            .executor(scheduler)
+            .executor(Jobs)
             .build();
 
     // initialization
@@ -1976,7 +1976,7 @@ public class I implements ParameterizedType {
      * @see #schedule(long, long, TimeUnit, boolean, ScheduledExecutorService...)
      */
     public static CompletableFuture<?> schedule(Runnable task) {
-        return CompletableFuture.runAsync(task, scheduler);
+        return CompletableFuture.runAsync(task, Jobs);
     }
 
     /**
@@ -2016,7 +2016,7 @@ public class I implements ParameterizedType {
      */
     public static Signal<Long> schedule(String cron) {
         return new Signal<>((observer, disposer) -> {
-            return disposer.add(scheduler.scheduleAt(I.wiseC(observer).bindLast(null), cron));
+            return disposer.add(Jobs.scheduleAt(I.wiseC(observer).bindLast(null), cron));
         }).count();
     }
 
@@ -2049,7 +2049,7 @@ public class I implements ParameterizedType {
             Runnable task = I.wiseC(observer).bindLast(null);
             Future future;
 
-            ScheduledExecutorService exe = scheduler == null || scheduler.length == 0 || scheduler[0] == null ? I.scheduler : scheduler[0];
+            ScheduledExecutorService exe = scheduler == null || scheduler.length == 0 || scheduler[0] == null ? I.Jobs : scheduler[0];
 
             if (interval <= 0) {
                 future = delay <= 0 ? CompletableFuture.runAsync(task, Runnable::run) : exe.schedule(task, delay, unit);
