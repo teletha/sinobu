@@ -212,10 +212,105 @@ public class Scheduler extends AbstractExecutorService implements ScheduledExecu
      * Schedules a task to be executed periodically based on a cron expression.
      * <p>
      * This method uses a cron expression to determine the execution intervals for the given
-     * {@code Runnable} command.
-     * It creates a task that calculates the next execution time using the provided cron format. The
-     * task is executed at each calculated interval, and the next execution time is determined
-     * dynamically after each run.
+     * {@code Runnable} command. The task calculates the next execution time dynamically after each
+     * run
+     * using the provided cron format.
+     * </p>
+     * <p>
+     * The method supports a general cron format with five fields (seconds, minutes, hours, day of
+     * month, month, and day of week) or six fields including seconds. Additionally, it includes
+     * special keywords such as {@code L, W, R, ?, /} to enhance scheduling flexibility.
+     * </p>
+     * 
+     * <h3>Cron Expression Syntax</h3>
+     * <p>
+     * A cron expression is a string that represents a schedule using six fields (with seconds) or
+     * five fields (without seconds).
+     * Each field allows specifying ranges, lists, and special keywords to determine the precise
+     * schedule of the task.
+     * The following are the six fields:
+     * <ul>
+     * <li><b>Seconds</b>: 0-59</li>
+     * <li><b>Minutes</b>: 0-59</li>
+     * <li><b>Hours</b>: 0-23</li>
+     * <li><b>Day of Month</b>: 1-31</li>
+     * <li><b>Month</b>: 1-12 or JAN-DEC (month names)</li>
+     * <li><b>Day of Week</b>: 0-7 (Sunday is both 0 and 7) or SUN-SAT (day names)</li>
+     * </ul>
+     * </p>
+     * 
+     * <h4>Supported Cron Special Characters</h4>
+     * <p>
+     * The following special characters are supported in cron expressions:
+     * <ul>
+     * <li><b>,</b> (Comma): Used to specify multiple values. For example, {@code 0,15,30 * * * * *}
+     * means the task will run at 0, 15, and 30 seconds.</li>
+     * <li><b>-</b> (Dash): Specifies a range of values. For example, {@code 10-20 * * * * *} will
+     * run the task every second between 10 and 20 seconds.</li>
+     * <li><b>/</b> (Slash): Specifies intervals. For example, {@code 0/10 * * * * *} means the task
+     * will run every 10 seconds starting from 0 seconds.</li>
+     * <li><b>L</b> (Last): Indicates the last day of the month or the last weekday of the month,
+     * depending on its context.
+     * <ul>
+     * <li>For the day-of-month field, {@code L} means the last day of the month (e.g.,
+     * {@code L * * * *} runs on the last day of every month).</li>
+     * <li>For the day-of-week field, {@code L} means the last occurrence of a specific weekday
+     * (e.g., {@code 5L} means the last Friday of the month).</li>
+     * </ul>
+     * </li>
+     * <li><b>W</b> (Weekday): Runs the task on the closest weekday (Monday to Friday) to the
+     * specified day.
+     * For example, {@code 1W} means the task will run on the closest weekday to the 1st of the
+     * month. If the 1st is a Saturday, the task runs on the following Monday (the 3rd), but it does
+     * not cross into the next month. Similarly, {@code 31W} in a month with fewer than 31 days will
+     * run on the last weekday of that month.</li>
+     * <li><b>? (Any)</b>: Used in the day-of-month or day-of-week field to specify that no specific
+     * value is set. It is typically used when you want to define one of these fields but not the
+     * other.</li>
+     * <li><b># (Nth Weekday)</b>: Specifies the Nth occurrence of a weekday in a given month. For
+     * example, {@code 3#1} means the first Tuesday of the month.</li>
+     * <li><b>R (Random)</b>: This is a custom extension similar to Jenkins' H keyword. {@code R} is
+     * used to schedule tasks at random times based on the hash of the task.
+     * For example, {@code 5-30R * * * * *} will select a random second between 5 and 30 for each
+     * execution.
+     * This helps distribute task executions over time to avoid simultaneous task execution peaks.
+     * By scattering task execution times randomly, the risk of heavy load caused by multiple tasks
+     * running at the same moment is reduced, effectively distributing the load across time.</li>
+     * </ul>
+     * </p>
+     * 
+     * <h4>Examples</h4>
+     * <p>
+     * Some cron expression examples:
+     * <ul>
+     * <li><b>0 0 12 * * ?</b>: Executes at 12:00 PM every day.</li>
+     * <li><b>0 15 10 * * ?</b>: Executes at 10:15 AM every day.</li>
+     * <li><b>0 0/5 14 * * ?</b>: Executes every 5 minutes starting at 2:00 PM.</li>
+     * <li><b>0 0 10 ? * 2#1</b>: Executes at 10:00 AM on the first Monday of every month.</li>
+     * <li><b>0 0 1W * * ?</b>: Executes on the nearest weekday to the 1st day of every month.</li>
+     * <li><b>0 0 0 L * ?</b>: Executes at midnight on the last day of every month.</li>
+     * <li><b>0 0 0 LW * ?</b>: Executes at midnight on the last weekday of every month.</li>
+     * <li><b>0 10,20,30 * * * ?</b>: Executes at 10, 20, and 30 minutes of every hour.</li>
+     * <li><b>0 0 9-17 * * ?</b>: Executes every hour between 9:00 AM and 5:00 PM.</li>
+     * <li><b>0 0 9-17/2 * * ?</b>: Executes every 2 hours between 9:00 AM and 5:00 PM.</li>
+     * <li><b>0 0 9-17,20 * * ?</b>: Executes every hour between 9:00 AM and 5:00 PM, and at 8:00
+     * PM.</li>
+     * <li><b>0 15 10 15 * ?</b>: Executes at 10:15 AM on the 15th of every month.</li>
+     * <li><b>0 15 10 ? * 6L</b>: Executes at 10:15 AM on the last Friday of every month.</li>
+     * <li><b>0 0 12 15 JAN * </b>: Executes at noon on January 15th every year.</li>
+     * <li><b>0 0 12 ? * MON-FRI</b>: Executes at noon on weekdays (Monday to Friday).</li>
+     * <li><b>0 15 10 15 AUG-DEC * *</b>: Executes at 10:15 AM on the 15th of every month from
+     * August to December.</li>
+     * <li><b>0 0 8 1-7/2 * *</b>: Executes at 8:00 AM on every second day between the 1st and 7th
+     * of each month.</li>
+     * <li><b>0 30 9 1,15,30 * *</b>: Executes at 9:30 AM on the 1st, 15th, and 30th of every
+     * month.</li>
+     * <li><b>0 0 10 5-10 * MON-WED</b>: Executes at 10:00 AM between the 5th and 10th of every
+     * month, but only if the day is a Monday, Tuesday, or Wednesday.</li>
+     * <li><b>0 0/15 9-17 * * MON-FRI</b>: Executes every 15 minutes between 9:00 AM and 5:00 PM on
+     * weekdays (Monday to Friday).</li>
+     * <li><b>5-10R * * * * *</b>: Executes at a random second between 5 and 10 every minute.</li>
+     * </ul>
      * </p>
      * 
      * @param command The {@code Runnable} task to be scheduled for periodic execution.
@@ -253,12 +348,12 @@ public class Scheduler extends AbstractExecutorService implements ScheduledExecu
             throw new IllegalArgumentException(cron);
         }
 
-        return new Cron[] {new Cron(ChronoField.SECOND_OF_MINUTE, 0, 59, "", "H", "/", i == 1 ? parts[0] : "0", hash),
-                new Cron(ChronoField.MINUTE_OF_HOUR, 0, 59, "", "", "/", parts[i++], hash),
-                new Cron(ChronoField.HOUR_OF_DAY, 0, 23, "", "", "/", parts[i++], hash),
-                new Cron(ChronoField.DAY_OF_MONTH, 1, 31, "", "?LW", "/", parts[i++], hash),
-                new Cron(ChronoField.MONTH_OF_YEAR, 1, 12, "JAN FEB MAR APR MAY JUN JUL AUG SEP OCT NOV DEC ", "", "/", parts[i++], hash),
-                new Cron(ChronoField.DAY_OF_WEEK, 1, 7, "MON TUE WED THU FRI SAT SUN ", "?L", "#/", parts[i++], hash)};
+        return new Cron[] {new Cron(ChronoField.SECOND_OF_MINUTE, 0, 59, "", "R", "/R", i == 1 ? parts[0] : "0", hash),
+                new Cron(ChronoField.MINUTE_OF_HOUR, 0, 59, "", "R", "/R", parts[i++], hash),
+                new Cron(ChronoField.HOUR_OF_DAY, 0, 23, "", "R", "/R", parts[i++], hash),
+                new Cron(ChronoField.DAY_OF_MONTH, 1, 31, "", "?LRW", "/R", parts[i++], hash),
+                new Cron(ChronoField.MONTH_OF_YEAR, 1, 12, "JAN FEB MAR APR MAY JUN JUL AUG SEP OCT NOV DEC ", "R", "/R", parts[i++], hash),
+                new Cron(ChronoField.DAY_OF_WEEK, 1, 7, "MON TUE WED THU FRI SAT SUN ", "?LR", "#/R", parts[i++], hash)};
     }
 
     /**

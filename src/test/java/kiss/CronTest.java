@@ -174,17 +174,17 @@ class CronTest {
     }
 
     @Test
-    void secondHash() {
-        Parsed parsed = new Parsed("H * * * * *", 45);
+    void secondRandom() {
+        Parsed parsed = new Parsed("R * * * * *", 45);
         assert parsed.next("10:20:{00~44}", "10:20:45");
         assert parsed.next("10:20:{45~59}", "10:21:45");
     }
 
     @Test
-    void secondHashRange() {
-        Parsed parsed = new Parsed("1-30H * * * * *", 45);
-        assert parsed.next("10:20:00", "10:20:01");
-        assert parsed.next("10:20:{01~59}", "10:21:01");
+    void secondRandomRange() {
+        Parsed parsed = new Parsed("0-30R * * * * *", 45);
+        assert parsed.next("10:20:{00~14}", "10:20:15");
+        assert parsed.next("10:20:{15~59}", "10:21:15");
     }
 
     @Test
@@ -294,6 +294,20 @@ class CronTest {
     }
 
     @Test
+    void minuteRandom() {
+        Parsed parsed = new Parsed("R * * * *", 45);
+        assert parsed.next("10:{0~44}:00", "10:45:00");
+        assert parsed.next("10:{45~59}:00", "11:45:00");
+    }
+
+    @Test
+    void minuteRandomRange() {
+        Parsed parsed = new Parsed("0-30R * * * *", 45);
+        assert parsed.next("10:{00~14}:00", "10:15:00");
+        assert parsed.next("10:{15~59}:00", "11:15:00");
+    }
+
+    @Test
     void minuteInvalid() {
         assert invalidFormat("5-1 * * * *");
         assert invalidFormat("-1 * * * *");
@@ -333,6 +347,20 @@ class CronTest {
         assert parsed.next("2024-10-10T{12~17}:00:00", "2024-10-10T18:00:00");
         assert parsed.next("2024-10-10T{18~23}:00:00", "2024-10-11T00:00:00");
         assert parsed.next("2024-10-11T{00~05}:00:00", "2024-10-11T06:00:00");
+    }
+
+    @Test
+    void hourRandom() {
+        Parsed parsed = new Parsed("0 R * * *", 12);
+        assert parsed.next("2024-10-10T{00~11}:00:00", "2024-10-10T12:00:00");
+        assert parsed.next("2024-10-10T{12~23}:00:00", "2024-10-11T12:00:00");
+    }
+
+    @Test
+    void hourRandomRange() {
+        Parsed parsed = new Parsed("0 0-10R * * *", 12);
+        assert parsed.next("2024-10-10T{00~01}:00:00", "2024-10-10T02:00:00");
+        assert parsed.next("2024-10-10T{02~23}:00:00", "2024-10-11T02:00:00");
     }
 
     @Test
@@ -605,6 +633,20 @@ class CronTest {
     }
 
     @Test
+    void dayRandom() {
+        Parsed parsed = new Parsed("0 0 R * *", 12);
+        assert parsed.next("2024-10-{01~12}", "2024-10-13");
+        assert parsed.next("2024-10-{13~31}", "2024-11-13");
+    }
+
+    @Test
+    void dayRandomRange() {
+        Parsed parsed = new Parsed("0 0 10-25R * *", 40);
+        assert parsed.next("2024-10-{01~19}", "2024-10-20");
+        assert parsed.next("2024-10-{20~31}", "2024-11-20");
+    }
+
+    @Test
     void dayInvalid() {
         assert invalidFormat("* * 5-1 * *");
         assert invalidFormat("* * -1 * *");
@@ -765,6 +807,20 @@ class CronTest {
         assert parsed.next("2024-{08~09}-05", "2024-10-05");
         assert parsed.next("2024-{10~12}-05", "2025-03-05");
         assert parsed.next("2025-{01~02}-05", "2025-03-05");
+    }
+
+    @Test
+    void monthRandom() {
+        Parsed parsed = new Parsed("0 0 1 R *", 20);
+        assert parsed.next("2024-{01~09}-01", "2024-10-01");
+        assert parsed.next("2024-{10~12}-01", "2025-10-01");
+    }
+
+    @Test
+    void monthRandomRange() {
+        Parsed parsed = new Parsed("0 0 1 3-10R *", 12);
+        assert parsed.next("2024-{01~07}-01", "2024-08-01");
+        assert parsed.next("2024-{08~12}-01", "2025-08-01");
     }
 
     @Test
@@ -1029,6 +1085,20 @@ class CronTest {
     }
 
     @Test
+    void dowRandom() {
+        Parsed parsed = new Parsed("0 0 * * R", 12);
+        assert parsed.next("2024-10-{01~06}", "2024-10-07");
+        assert parsed.next("2024-10-{07~13}", "2024-10-14");
+    }
+
+    @Test
+    void dowRandomRange() {
+        Parsed parsed = new Parsed("0 0 * * 2-5R", 12);
+        assert parsed.next("2024-10-{01~07}", "2024-10-08");
+        assert parsed.next("2024-10-{08~14}", "2024-10-15");
+    }
+
+    @Test
     void dowInvalid() {
         assert invalidFormat("* * * * 5-1");
         assert invalidFormat("* * * * -1");
@@ -1070,7 +1140,7 @@ class CronTest {
             } else {
                 for (String expand : expandDateRange(base)) {
                     ZonedDateTime baseDate = parse(expand);
-                    assert next(baseDate).isEqual(nextDate) : base + "   " + nextDate;
+                    assert next(baseDate).isEqual(nextDate) : base + "  " + next(baseDate) + "   " + nextDate;
                 }
             }
             return true;

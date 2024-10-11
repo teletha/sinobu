@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
  */
 class Cron {
     private static final Pattern FORMAT = Pattern
-            .compile("(?:(?:(\\*)|(\\?|L|LW|H)) | ([0-9]{1,2}|[a-z]{3,3})(?:(L|W) | -([0-9]{1,2}|[a-z]{3,3}))?)(?:(H|/|\\#)([0-9]{1,7})?)?", Pattern.CASE_INSENSITIVE | Pattern.COMMENTS);
+            .compile("(?:(?:(\\*)|(\\?|L|LW|R)) | ([0-9]{1,2}|[a-z]{3,3})(?:(L|W) | -([0-9]{1,2}|[a-z]{3,3}))?)(?:(R|/|\\#)([0-9]{1,7})?)?", Pattern.CASE_INSENSITIVE | Pattern.COMMENTS);
 
     private ChronoField field;
 
@@ -66,8 +66,11 @@ class Cron {
                 } else if (inc != null) {
                     part[1] = max;
                 }
-            }
 
+                if ("R".equals(m.group(6))) {
+                    part[0] = part[1] = hash % (part[1] - part[0]) + part[0];
+                }
+            }
             // astarisk
             if (m.group(1) != null) {
                 part[0] = min;
@@ -76,9 +79,8 @@ class Cron {
             if (m.group(2) != null) {
                 mod = m.group(2);
                 part[3] = mod.charAt(mod.length() - 1);
-
-                if (part[3] == 'H') {
-                    part[0] = part[1] = hash % (max + 1) + min;
+                if (part[3] == 'R') {
+                    part[0] = part[1] = hash % (max - min) + min;
                 }
             }
             if (inc != null) {
