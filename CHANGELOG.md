@@ -1,5 +1,36 @@
 # Changelog
 
+## [4.0.0](https://github.com/teletha/sinobu/compare/v3.14.1...v4.0.0) (2024-10-12)
+
+
+### ⚠ BREAKING CHANGES
+
+* update ci
+* update java version to 21
+* provide virtual scheduler with cron
+
+### Features
+
+* (cron) correct order ([2f3157d](https://github.com/teletha/sinobu/commit/2f3157d9ead18d2e59be50544416b913388d036d))
+* (cron) correct order on various list ([7093f64](https://github.com/teletha/sinobu/commit/7093f64572eb53998ab6d838699c9a2166de56cc))
+* (cron) support random keyword ([9d67ffd](https://github.com/teletha/sinobu/commit/9d67ffd9f5bdeb604132c8ed58ff606bb24eb96a))
+* (cron) support weekday keyword ([c7c41cf](https://github.com/teletha/sinobu/commit/c7c41cfddd7926cd14f38af6836f938a5392a225))
+* expose I#Jobs as global scheduler ([fd219b1](https://github.com/teletha/sinobu/commit/fd219b11d17119a5fc6355326f9734c4c6b52130))
+* integrate cron with type ([78c4321](https://github.com/teletha/sinobu/commit/78c432117be9eb9707385934bfe231f17b719a66))
+* provide virtual scheduler with cron ([e311eda](https://github.com/teletha/sinobu/commit/e311eda49c1f7e0c9d81079fac8a710c38a27a7e))
+* support the limit of execution size ([8771ae5](https://github.com/teletha/sinobu/commit/8771ae5a4040536fc378a42c172383a1f93c0d46))
+* update ci ([ffff772](https://github.com/teletha/sinobu/commit/ffff7728740503aa21d2c36d426c2c2bd9e17b17))
+* update java version to 21 ([471d822](https://github.com/teletha/sinobu/commit/471d822162da105aa7ae718a5c35d898867bf43f))
+* use virtual scheduler in default ([33e0fb1](https://github.com/teletha/sinobu/commit/33e0fb1fc00d892791e9f040e49b46daa1365045))
+
+
+### Bug Fixes
+
+* use non-static clean room ([a79feed](https://github.com/teletha/sinobu/commit/a79feed6aea98ed424fdfb8064577f6ec2cfa3d3))
+* use non-static clean room in LogTest ([26b565f](https://github.com/teletha/sinobu/commit/26b565f7b6a5377684c7e54c64c8e40e4a25d194))
+* use non-static clean room on no-virtual room ([2147c95](https://github.com/teletha/sinobu/commit/2147c95c7d0bc66244ceadd5883ee0339ea58cf7))
+* use TestableScheduler instead of Chronos ([3bbec5b](https://github.com/teletha/sinobu/commit/3bbec5bca526fc5c8e4be5aa8a6b9ca50483e077))
+
 ## [3.14.1](https://github.com/teletha/sinobu/compare/v3.14.0...v3.14.1) (2024-09-27)
 
 
