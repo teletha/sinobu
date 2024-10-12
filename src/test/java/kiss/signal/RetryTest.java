@@ -111,8 +111,7 @@ class RetryTest extends SignalTester {
 
     @Test
     void retryWhenWithError() {
-        monitor(signal -> signal.startWith("retry")
-                .retry(fail -> fail.flatMap(e -> e instanceof Error ? I.signal(e) : I.signalError(e))));
+        monitor(signal -> signal.startWith("retry").retry(fail -> fail.flatMap(e -> e instanceof Error ? I.signal(e) : I.signalError(e))));
 
         assert main.value("retry");
         assert main.emit(Error).value("retry");
@@ -158,6 +157,8 @@ class RetryTest extends SignalTester {
 
     @Test
     void retryWhenWithDelayImmediately() {
+        scheduler.limitAwaitTime(3000);
+
         monitor(1, () -> I.signal("start")
                 .effect(log("Begin"))
                 .map(errorFunction())

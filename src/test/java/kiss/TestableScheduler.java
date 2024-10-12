@@ -14,8 +14,6 @@ import static java.util.concurrent.TimeUnit.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -23,7 +21,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class TestableScheduler extends Scheduler {
 
-    private long awaitingLimit = 3000;
+    private long awaitingLimit = 1000;
 
     private final AtomicBoolean starting = new AtomicBoolean();
 
@@ -294,17 +292,6 @@ public class TestableScheduler extends Scheduler {
             within.run();
         }
         return this;
-    }
-
-    /**
-     * Create delayed {@link Executors} in the specified duration.
-     * 
-     * @param time A delay time.
-     * @param unit A time unit.
-     * @return A delayed {@link Executor}.
-     */
-    public Executor in(long time, TimeUnit unit) {
-        return task -> schedule(task, time, unit);
     }
 
     /**

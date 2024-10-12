@@ -32,7 +32,7 @@ class RecurseTest extends SignalTester {
 
     @Test
     void recurseAsynchronus() {
-        monitor(Integer.class, signal -> signal.recurse(v -> v + 1, scheduler.in(delay, ms)).take(5));
+        monitor(Integer.class, signal -> signal.recurse(v -> v + 1, scheduler).take(5));
 
         assert main.emit(1).value();
         scheduler.await();
@@ -54,7 +54,7 @@ class RecurseTest extends SignalTester {
 
     @Test
     void recurseMapAsynchronus() {
-        monitor(Integer.class, signal -> signal.recurseMap(s -> s.map(v -> v + 1), scheduler.in(delay, ms)).take(5));
+        monitor(Integer.class, signal -> signal.recurseMap(s -> s.map(v -> v + 1), scheduler).take(5));
 
         assert main.emit(1).value();
         scheduler.await();
@@ -66,8 +66,7 @@ class RecurseTest extends SignalTester {
 
     @Test
     void recurseMapAsynchronuslyWithAsynchronusComputation() {
-        monitor(Integer.class, signal -> signal.recurseMap(s -> s.map(v -> v + 1).delay(delay, ms, scheduler), scheduler.in(delay, ms))
-                .take(5));
+        monitor(Integer.class, signal -> signal.recurseMap(s -> s.map(v -> v + 1).delay(delay, ms, scheduler), scheduler).take(5));
 
         assert main.emit(1).value();
         scheduler.await();

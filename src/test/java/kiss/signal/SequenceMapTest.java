@@ -93,18 +93,19 @@ class SequenceMapTest extends SignalTester {
     void delayAndInterval() {
         List<Integer> internalProcess = new ArrayList();
 
-        monitor(1, Integer.class, signal -> signal
-                .sequenceMap(time -> signal(time, time + 1).delay(time, ms, scheduler).interval(delay, ms, scheduler).effect(internalProcess::add)));
+        monitor(1, Integer.class, signal -> signal.sequenceMap(time -> signal(time, time + 1).delay(time, ms, scheduler)
+                .interval(delay, ms, scheduler)
+                .effect(internalProcess::add)));
 
-        main.emit(300, 200, 100);
+        main.emit(100, 50, 10);
         scheduler.await();
-        assert main.value(300, 301, 200, 201, 100, 101);
-        assert internalProcess.get(0) == 100;
-        assert internalProcess.get(1) == 200;
-        assert internalProcess.get(2) == 300;
-        assert internalProcess.get(3) == 101;
-        assert internalProcess.get(4) == 201;
-        assert internalProcess.get(5) == 301;
+        assert main.value(100, 101, 50, 51, 10, 11);
+        assert internalProcess.get(0) == 10;
+        assert internalProcess.get(1) == 50;
+        assert internalProcess.get(2) == 100;
+        assert internalProcess.get(3) == 11;
+        assert internalProcess.get(4) == 51;
+        assert internalProcess.get(5) == 101;
     }
 
     @Test
