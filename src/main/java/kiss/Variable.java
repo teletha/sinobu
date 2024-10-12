@@ -32,7 +32,6 @@ import java.util.function.UnaryOperator;
  * (performs an action if a value is present).
  * <p>
  */
-@SuppressWarnings("UnusedReturnValue")
 public class Variable<V> implements Consumer<V>, Supplier<V> {
 
     /** The modifier base. */

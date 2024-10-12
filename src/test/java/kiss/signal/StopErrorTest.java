@@ -80,7 +80,7 @@ class StopErrorTest extends SignalTester {
     void noMatchMultipleTypes() {
         monitor(signal -> signal.stopError(Exception.class, IOError.class));
 
-        main.emit(ThreadDeath.class);
+        main.emit(LinkageError.class);
         assert main.isNotCompleted();
         assert main.isError();
         assert main.isDisposed();

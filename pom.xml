@@ -127,7 +127,7 @@ With a few exceptions, Sinobu and its APIs are designed to be simple to use and 
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
-			<version>1.5.9</version>
+			<version>1.5.10</version>
 			<scope>test</scope>
 			<exclusions/>
 		</dependency>
@@ -185,16 +185,11 @@ With a few exceptions, Sinobu and its APIs are designed to be simple to use and 
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.1</version>
 				<configuration>
 					<encoding>UTF-8</encoding>
 					<release>21</release>
 					<compilerArgs/>
 				</configuration>
-			</plugin>
-			<plugin>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.0.0-M5</version>
 			</plugin>
 		</plugins>
 	</build>

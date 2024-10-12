@@ -9,7 +9,7 @@
  */
 package kiss.core;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -91,7 +91,7 @@ class TransformTest {
 
     @Test
     void url() throws MalformedURLException, URISyntaxException {
-        URL value = new URL("http://localhost:8888/");
+        URL value = URI.create("http://localhost:8888/").toURL();
         String text = "http://localhost:8888/";
 
         assert I.transform(value, String.class).equals(text);

@@ -263,7 +263,7 @@ public class LogBenchmark {
             ch.qos.logback.classic.Logger logger = context.getLogger(name);
             logger.setAdditive(false);
             logger.addAppender(appender);
-            logger.setLevel(ch.qos.logback.classic.Level.ALL);
+            logger.setLevel(ch.qos.logback.classic.Level.TRACE);
 
             benchmark.measure("Logback " + name, () -> {
                 logger.error(message);

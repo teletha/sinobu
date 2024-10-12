@@ -14,7 +14,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URL;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
@@ -189,7 +188,7 @@ class CodecTest {
 
     @Test
     void url() throws MalformedURLException {
-        assert codec(new URL("http://www.test.com/path/index.html?param=value"));
+        assert codec(URI.create("http://www.test.com/path/index.html?param=value").toURL());
     }
 
     @Test
