@@ -15,7 +15,7 @@ import static java.time.format.DateTimeFormatter.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -23,7 +23,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringReader;
-import java.io.Writer;
 import java.lang.System.Logger.Level;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.Array;
@@ -1357,7 +1356,7 @@ public class I implements ParameterizedType {
         // ================================================
         // Look up logger by name
         // ================================================
-        Subscriber<Writer> log = logs.computeIfAbsent(name, key -> {
+        Subscriber<OutputStream> log = logs.computeIfAbsent(name, key -> {
             Subscriber s = new Subscriber();
             s.encoder = StandardCharsets.UTF_8.newEncoder();
             s.bytes = ByteBuffer.allocate(1024 * 24 * 4);
@@ -1416,7 +1415,7 @@ public class I implements ParameterizedType {
 
                         // The file output destination will be rotated daily. It will
                         // always be cached in an open state.
-                        log.obj = new FileWriter(new File(dir, name.concat(day.format(ISO_DATE)).concat(".log")), env(name
+                        log.obj = new FileOutputStream(new File(dir, name.concat(day.format(ISO_DATE)).concat(".log")), env(name
                                 .concat(".append"), env("*.append", true)));
 
                         // We also tried the following code to see if it would make a difference
@@ -1499,18 +1498,15 @@ public class I implements ParameterizedType {
                 // ================================================
                 // Output log
                 // ================================================
+                log.encoder.reset().encode(log.chars, log.bytes, true);
                 if (log.a[1] <= o) {
-                    log.obj.append(log.chars);
+                    log.obj.write(log.bytes.array(), 0, log.bytes.position());
                     if (ms == 0) log.obj.flush();
                 }
-                // if (log.a[2] <= o) System.out.print(log.chars);
                 if (log.a[2] <= o) {
-                    log.encoder.reset();
-                    log.encoder.encode(log.chars, log.bytes, true);
-                    // log.encoder.flush(log.bytes);
                     System.out.write(log.bytes.array(), 0, log.bytes.position());
-                    log.bytes.clear();
                 }
+                log.bytes.clear();
                 if (log.a[3] <= o && Logger != null) Logger.ACCEPT(name, Level.values()[o], log.chars);
             } catch (Throwable x) {
                 // ignore
