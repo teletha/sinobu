@@ -133,6 +133,42 @@ class LogTest {
     }
 
     @Test
+    void logHiragana() {
+        I.info("ひらがな");
+        assert assumeLog(Level.INFO, "ひらがな");
+    }
+
+    @Test
+    void logKanji() {
+        I.info("漢字");
+        assert assumeLog(Level.INFO, "漢字");
+    }
+
+    @Test
+    void logKana() {
+        I.info("カタカナ");
+        assert assumeLog(Level.INFO, "カタカナ");
+    }
+
+    @Test
+    void logHalfKana() {
+        I.info("ﾊﾝｶｸ");
+        assert assumeLog(Level.INFO, "ﾊﾝｶｸ");
+    }
+
+    @Test
+    void logSpecial() {
+        I.info("①②♡♧㍉");
+        assert assumeLog(Level.INFO, "①②♡♧㍉");
+    }
+
+    @Test
+    void logEmoji() {
+        I.info("🚀😀👩‍❤️‍👩👍🏽👨🏻‍🦱🏠🈵♌🕦📒👿");
+        assert assumeLog(Level.INFO, "🚀😀👩‍❤️‍👩👍🏽👨🏻‍🦱🏠🈵♌🕦📒👿");
+    }
+
+    @Test
     void logObject() {
         I.info(new Object() {
             @Override

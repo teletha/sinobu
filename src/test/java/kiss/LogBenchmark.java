@@ -59,11 +59,11 @@ public class LogBenchmark {
 
     private static final OutputType output = OutputType.Console;
 
-    private static final ExecutionType execution = ExecutionType.Both;
+    private static final ExecutionType execution = ExecutionType.Sync;
 
     private static final CallerType caller = CallerType.NoCaller;
 
-    private static final String message = "Write your message! This is comparison of  logging librariesこれは漢字カタカナﾊﾝｶｸｶﾅ①②♡♧㍉🚀😀👩‍❤️‍👩👍🏽👨🏻‍🦱🇬🇧로그 메시지입니다";
+    private static final String message = "Write your message! This is comparison of  logging libraries. これは漢字カタカナﾊﾝｶｸｶﾅ①②♡♧㍉🚀😀👩‍❤️‍👩👍🏽👨🏻‍🦱🏠🈵♌🕦📒👿";
 
     public static void main(String[] args) throws Exception {
         Benchmark benchmark = new Benchmark();
@@ -74,9 +74,9 @@ public class LogBenchmark {
 
         // performJUL(benchmark);
         performSinobu(benchmark);
-        // performLog4j(benchmark);
-        // performTinyLog(benchmark);
-        // performLogback(benchmark);
+        performLog4j(benchmark);
+        performTinyLog(benchmark);
+        performLogback(benchmark);
 
         benchmark.perform();
     }

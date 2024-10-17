@@ -1507,8 +1507,9 @@ public class I implements ParameterizedType {
                 if (log.a[2] <= o) {
                     log.encoder.reset();
                     log.encoder.encode(log.chars, log.bytes, true);
-                    log.encoder.flush(log.bytes);
+                    // log.encoder.flush(log.bytes);
                     System.out.write(log.bytes.array(), 0, log.bytes.position());
+                    log.bytes.clear();
                 }
                 if (log.a[3] <= o && Logger != null) Logger.ACCEPT(name, Level.values()[o], log.chars);
             } catch (Throwable x) {
