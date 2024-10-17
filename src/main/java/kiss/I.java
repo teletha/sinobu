@@ -47,6 +47,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.net.http.WebSocket;
+import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -1358,6 +1359,8 @@ public class I implements ParameterizedType {
         // ================================================
         Subscriber<Writer> log = logs.computeIfAbsent(name, key -> {
             Subscriber s = new Subscriber();
+            s.encoder = StandardCharsets.UTF_8.newEncoder();
+            s.bytes = ByteBuffer.allocate(1024 * 24 * 4);
             s.a = new byte[] {
                     // =================================================
                     // Logger Specific Configuration
@@ -1500,7 +1503,13 @@ public class I implements ParameterizedType {
                     log.obj.append(log.chars);
                     if (ms == 0) log.obj.flush();
                 }
-                if (log.a[2] <= o) System.out.print(log.chars);
+                // if (log.a[2] <= o) System.out.print(log.chars);
+                if (log.a[2] <= o) {
+                    log.encoder.reset();
+                    log.encoder.encode(log.chars, log.bytes, true);
+                    log.encoder.flush(log.bytes);
+                    System.out.write(log.bytes.array(), 0, log.bytes.position());
+                }
                 if (log.a[3] <= o && Logger != null) Logger.ACCEPT(name, Level.values()[o], log.chars);
             } catch (Throwable x) {
                 // ignore

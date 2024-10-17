@@ -44,7 +44,7 @@ class LogTest {
     @RegisterExtension
     CleanRoom room = new CleanRoom();
 
-    private static class Log extends PrintStream {
+    private class Log extends PrintStream {
 
         private final Deque<Entry> entries = new ArrayDeque();
 
@@ -52,6 +52,18 @@ class LogTest {
 
         private Log() {
             super(OutputStream.nullOutputStream(), true, StandardCharsets.UTF_8);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void write(byte[] buf, int off, int len) {
+            String csq = new String(buf, off, len);
+
+            for (int i = 0; i < csq.length(); i++) {
+                handle(csq.charAt(i));
+            }
         }
 
         /**
