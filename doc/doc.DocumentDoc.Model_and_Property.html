@@ -11,10 +11,10 @@
 		<script src="mimic.js" type="module"></script>
 		<link href="main.css" rel="stylesheet"/>
 	</head>
-	<body class="d">
-		<header class="Z">
-			<h1 class="I" date="2024-10-12" ver="4.0.0"><code>Sinobu</code></h1>
-			<nav class="b"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
+	<body class="K">
+		<header class="g">
+			<h1 class="j" date="2024-10-12" ver="4.0.0"><code>Sinobu</code></h1>
+			<nav class="e"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#text"/>
 					</svg>Document</a><a href="api/"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#package"/>
@@ -25,7 +25,7 @@
 					</svg>Activity</a><a href="https://github.com/teletha/sinobu" target="_blank"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#github"/>
 					</svg>Repository</a></nav>
-			<div class="c" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
+			<div class="i" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#sun"/>
 					</svg>
 				</a><a id="dark" title="Change to a darker color scheme"><svg class="A svg" viewBox="0 0 24 24">
@@ -33,15 +33,15 @@
 					</svg>
 				</a></div>
 		</header>
-		<main class="N">
-			<nav class="l">
+		<main class="T">
+			<nav class="V">
 				<div></div>
 			</nav>
-			<article class="T" id="Article">
-				<section class="Q B" id="doc.DocumentDoc.Model_and_Property.Concept">
-					<header class="B e">
+			<article class="b" id="Article">
+				<section class="U B" id="doc.DocumentDoc.Model_and_Property.Concept">
+					<header class="B P">
 						<h2>Concept</h2>
-						<div class="S"><span class="perp f"><svg class="A svg" viewBox="0 0 24 24">
+						<div class="O"><span class="perp f"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
 							</span><a class="tweet f"><svg class="A svg" viewBox="0 0 24 24">
@@ -98,10 +98,10 @@ principles of object-oriented programming (OOP). Encapsulation hides the interna
 of an object and exposes only the necessary interfaces for interacting with it, improving
 code maintainability, reusability, and flexibility.</p>
 </span></section>
-				<section class="Q B" id="doc.DocumentDoc.Model_and_Property.Models">
-					<header class="B e">
+				<section class="U B" id="doc.DocumentDoc.Model_and_Property.Models">
+					<header class="B P">
 						<h2>Models</h2>
-						<div class="S"><span class="perp f"><svg class="A svg" viewBox="0 0 24 24">
+						<div class="O"><span class="perp f"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
 							</span><a class="tweet f"><svg class="A svg" viewBox="0 0 24 24">
@@ -118,10 +118,10 @@ there should not be many situations where the end user needs to retrieve the mod
 directly.</p>
  <pre class="lang-java"><code>Model model = Model.of(Person.class);</code></pre>
 </span></section>
-				<section class="Q B" id="doc.DocumentDoc.Model_and_Property.Property">
-					<header class="B e">
+				<section class="U B" id="doc.DocumentDoc.Model_and_Property.Property">
+					<header class="B P">
 						<h2>Property</h2>
-						<div class="S"><span class="perp f"><svg class="A svg" viewBox="0 0 24 24">
+						<div class="O"><span class="perp f"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
 							</span><a class="tweet f"><svg class="A svg" viewBox="0 0 24 24">
@@ -134,10 +134,10 @@ directly.</p>
 					</header><span class="B"><p>In Sinobu, a property refers to a value accessible by name and defined by a field or
 method. Property name is arbitrary.</p>
 </span>
-					<section class="B h" id="doc.DocumentDoc.Model_and_Property.Property.By_Field">
-						<header class="B U">
+					<section class="B Q" id="doc.DocumentDoc.Model_and_Property.Property.By_Field">
+						<header class="B W">
 							<h3>By Field</h3>
-							<div class="S"><span class="perp f"><svg class="A svg" viewBox="0 0 24 24">
+							<div class="O"><span class="perp f"><svg class="A svg" viewBox="0 0 24 24">
 										<use href="main.svg#copy"/>
 									</svg>
 								</span><a class="tweet f"><svg class="A svg" viewBox="0 0 24 24">
@@ -159,10 +159,10 @@ use the <code><a href="api/kiss.Managed.html">Managed</a></code> annotation.</p>
  <pre class="lang-java"><code>@Managed
 protected String managedField = &#34;This is property&#34;;</code></pre>
 </span></section>
-					<section class="B h" id="doc.DocumentDoc.Model_and_Property.Property.By_Variable_Field">
-						<header class="B U">
+					<section class="B Q" id="doc.DocumentDoc.Model_and_Property.Property.By_Variable_Field">
+						<header class="B W">
 							<h3>By Variable Field</h3>
-							<div class="S"><span class="perp f"><svg class="A svg" viewBox="0 0 24 24">
+							<div class="O"><span class="perp f"><svg class="A svg" viewBox="0 0 24 24">
 										<use href="main.svg#copy"/>
 									</svg>
 								</span><a class="tweet f"><svg class="A svg" viewBox="0 0 24 24">
@@ -184,10 +184,10 @@ use the <code><a href="api/kiss.Managed.html">Managed</a></code> annotation.</p>
  <pre class="lang-java"><code>@Managed
 protected Variable&#60;String&#62; managedField = Variable.of(&#34;This is property&#34;);</code></pre>
 </span></section>
-					<section class="B h" id="doc.DocumentDoc.Model_and_Property.Property.By_Method">
-						<header class="B U">
+					<section class="B Q" id="doc.DocumentDoc.Model_and_Property.Property.By_Method">
+						<header class="B W">
 							<h3>By Method</h3>
-							<div class="S"><span class="perp f"><svg class="A svg" viewBox="0 0 24 24">
+							<div class="O"><span class="perp f"><svg class="A svg" viewBox="0 0 24 24">
 										<use href="main.svg#copy"/>
 									</svg>
 								</span><a class="tweet f"><svg class="A svg" viewBox="0 0 24 24">
@@ -224,10 +224,10 @@ according to the Java Bean naming conventions.</p>
 }</code></pre>
 </span></section>
 				</section>
-				<section class="Q B" id="doc.DocumentDoc.Model_and_Property.Manipulation">
-					<header class="B e">
+				<section class="U B" id="doc.DocumentDoc.Model_and_Property.Manipulation">
+					<header class="B P">
 						<h2>Manipulation</h2>
-						<div class="S"><span class="perp f"><svg class="A svg" viewBox="0 0 24 24">
+						<div class="O"><span class="perp f"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
 							</span><a class="tweet f"><svg class="A svg" viewBox="0 0 24 24">
@@ -241,10 +241,10 @@ according to the Java Bean naming conventions.</p>
 The following is mainly required for framework and library production.</p>
 <p>Models and properties can be used to get, set and monitor property values.</p>
 </span>
-					<section class="B h" id="doc.DocumentDoc.Model_and_Property.Manipulation.Get">
-						<header class="B U">
+					<section class="B Q" id="doc.DocumentDoc.Model_and_Property.Manipulation.Get">
+						<header class="B W">
 							<h3>Get</h3>
-							<div class="S"><span class="perp f"><svg class="A svg" viewBox="0 0 24 24">
+							<div class="O"><span class="perp f"><svg class="A svg" viewBox="0 0 24 24">
 										<use href="main.svg#copy"/>
 									</svg>
 								</span><a class="tweet f"><svg class="A svg" viewBox="0 0 24 24">
@@ -265,10 +265,10 @@ The following is mainly required for framework and library production.</p>
     assert model.get(person, property).equals(1);
 }</code></pre>
 </span></section>
-					<section class="B h" id="doc.DocumentDoc.Model_and_Property.Manipulation.Set">
-						<header class="B U">
+					<section class="B Q" id="doc.DocumentDoc.Model_and_Property.Manipulation.Set">
+						<header class="B W">
 							<h3>Set</h3>
-							<div class="S"><span class="perp f"><svg class="A svg" viewBox="0 0 24 24">
+							<div class="O"><span class="perp f"><svg class="A svg" viewBox="0 0 24 24">
 										<use href="main.svg#copy"/>
 									</svg>
 								</span><a class="tweet f"><svg class="A svg" viewBox="0 0 24 24">
@@ -300,10 +300,10 @@ the object. This is necessary because the Record is immutable.</p>
     assert point.y == 20d;
 }</code></pre>
 </span></section>
-					<section class="B h" id="doc.DocumentDoc.Model_and_Property.Manipulation.Monitor">
-						<header class="B U">
+					<section class="B Q" id="doc.DocumentDoc.Model_and_Property.Manipulation.Monitor">
+						<header class="B W">
 							<h3>Monitor</h3>
-							<div class="S"><span class="perp f"><svg class="A svg" viewBox="0 0 24 24">
+							<div class="O"><span class="perp f"><svg class="A svg" viewBox="0 0 24 24">
 										<use href="main.svg#copy"/>
 									</svg>
 								</span><a class="tweet f"><svg class="A svg" viewBox="0 0 24 24">
@@ -335,7 +335,7 @@ the object. This is necessary because the Record is immutable.</p>
 				</section>
 			</article>
 			<aside class="L" id="SubNavi">
-				<div class="M"></div>
+				<div class="R"></div>
 			</aside>
 		</main>
 		<script src="root.js"></script>

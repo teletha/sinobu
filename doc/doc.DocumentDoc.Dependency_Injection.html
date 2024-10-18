@@ -11,10 +11,10 @@
 		<script src="mimic.js" type="module"></script>
 		<link href="main.css" rel="stylesheet"/>
 	</head>
-	<body class="d">
-		<header class="Z">
-			<h1 class="I" date="2024-10-12" ver="4.0.0"><code>Sinobu</code></h1>
-			<nav class="b"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
+	<body class="K">
+		<header class="g">
+			<h1 class="j" date="2024-10-12" ver="4.0.0"><code>Sinobu</code></h1>
+			<nav class="e"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#text"/>
 					</svg>Document</a><a href="api/"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#package"/>
@@ -25,7 +25,7 @@
 					</svg>Activity</a><a href="https://github.com/teletha/sinobu" target="_blank"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#github"/>
 					</svg>Repository</a></nav>
-			<div class="c" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
+			<div class="i" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#sun"/>
 					</svg>
 				</a><a id="dark" title="Change to a darker color scheme"><svg class="A svg" viewBox="0 0 24 24">
@@ -33,15 +33,15 @@
 					</svg>
 				</a></div>
 		</header>
-		<main class="N">
-			<nav class="l">
+		<main class="T">
+			<nav class="V">
 				<div></div>
 			</nav>
-			<article class="T" id="Article">
-				<section class="Q B" id="doc.DocumentDoc.Dependency_Injection.Concept">
-					<header class="B e">
+			<article class="b" id="Article">
+				<section class="U B" id="doc.DocumentDoc.Dependency_Injection.Concept">
+					<header class="B P">
 						<h2>Concept</h2>
-						<div class="S"><span class="perp f"><svg class="A svg" viewBox="0 0 24 24">
+						<div class="O"><span class="perp f"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
 							</span><a class="tweet f"><svg class="A svg" viewBox="0 0 24 24">
@@ -61,10 +61,10 @@ having to work hard manually.</p>
 The detailed explanation of the DI concept is left to <a href="https://en.wikipedia.org/wiki/Dependency_injection">another
 website</a>.</p>
 </span>
-					<section class="B h" id="doc.DocumentDoc.Dependency_Injection.Concept.DI_Container">
-						<header class="B U">
+					<section class="B Q" id="doc.DocumentDoc.Dependency_Injection.Concept.DI_Container">
+						<header class="B W">
 							<h3>DI Container</h3>
-							<div class="S"><span class="perp f"><svg class="A svg" viewBox="0 0 24 24">
+							<div class="O"><span class="perp f"><svg class="A svg" viewBox="0 0 24 24">
 										<use href="main.svg#copy"/>
 									</svg>
 								</span><a class="tweet f"><svg class="A svg" viewBox="0 0 24 24">
@@ -79,10 +79,10 @@ one container implicitly inside, but the user is not aware of it. Therefore, the
 also no need to define dependencies explicitly by means of code or external files.
 All dependencies are automatically resolved based on type.</p>
 </span></section>
-					<section class="B h" id="doc.DocumentDoc.Dependency_Injection.Concept.Injection_Type">
-						<header class="B U">
+					<section class="B Q" id="doc.DocumentDoc.Dependency_Injection.Concept.Injection_Type">
+						<header class="B W">
 							<h3>Injection Type</h3>
-							<div class="S"><span class="perp f"><svg class="A svg" viewBox="0 0 24 24">
+							<div class="O"><span class="perp f"><svg class="A svg" viewBox="0 0 24 24">
 										<use href="main.svg#copy"/>
 									</svg>
 								</span><a class="tweet f"><svg class="A svg" viewBox="0 0 24 24">
@@ -111,10 +111,10 @@ types will <strong>not be supported in the future</strong> due to their signific
 to object safety.</p>
 </span></section>
 				</section>
-				<section class="Q B" id="doc.DocumentDoc.Dependency_Injection.Constructor_Injection">
-					<header class="B e">
+				<section class="U B" id="doc.DocumentDoc.Dependency_Injection.Constructor_Injection">
+					<header class="B P">
 						<h2>Constructor Injection</h2>
-						<div class="S"><span class="perp f"><svg class="A svg" viewBox="0 0 24 24">
+						<div class="O"><span class="perp f"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
 							</span><a class="tweet f"><svg class="A svg" viewBox="0 0 24 24">
@@ -142,10 +142,10 @@ state, since it cannot be instantiated without its necessary dependencies.</p>
     assert I.make(Injection.class).value != null;
 }</code></pre>
 </span>
-					<section class="B h" id="doc.DocumentDoc.Dependency_Injection.Constructor_Injection.Injectable_Type">
-						<header class="B U">
+					<section class="B Q" id="doc.DocumentDoc.Dependency_Injection.Constructor_Injection.Injectable_Type">
+						<header class="B W">
 							<h3>Injectable Type</h3>
-							<div class="S"><span class="perp f"><svg class="A svg" viewBox="0 0 24 24">
+							<div class="O"><span class="perp f"><svg class="A svg" viewBox="0 0 24 24">
 										<use href="main.svg#copy"/>
 									</svg>
 								</span><a class="tweet f"><svg class="A svg" viewBox="0 0 24 24">
@@ -215,10 +215,10 @@ available when implementing the special generic <code><a href="api/kiss.Lifestyl
     assert I.make(Injection.class).type == null;
 }</code></pre>
 </span></section>
-					<section class="B h" id="doc.DocumentDoc.Dependency_Injection.Constructor_Injection.Priority">
-						<header class="B U">
+					<section class="B Q" id="doc.DocumentDoc.Dependency_Injection.Constructor_Injection.Priority">
+						<header class="B W">
 							<h3>Priority</h3>
-							<div class="S"><span class="perp f"><svg class="A svg" viewBox="0 0 24 24">
+							<div class="O"><span class="perp f"><svg class="A svg" viewBox="0 0 24 24">
 										<use href="main.svg#copy"/>
 									</svg>
 								</span><a class="tweet f"><svg class="A svg" viewBox="0 0 24 24">
@@ -309,10 +309,10 @@ constructor found among them is used. (which is implementation-dependent in the 
     assert I.make(Injection.class).value == 10;
 }</code></pre>
 </span></section>
-					<section class="B h" id="doc.DocumentDoc.Dependency_Injection.Constructor_Injection.Circular_Reference">
-						<header class="B U">
+					<section class="B Q" id="doc.DocumentDoc.Dependency_Injection.Constructor_Injection.Circular_Reference">
+						<header class="B W">
 							<h3>Circular Reference</h3>
-							<div class="S"><span class="perp f"><svg class="A svg" viewBox="0 0 24 24">
+							<div class="O"><span class="perp f"><svg class="A svg" viewBox="0 0 24 24">
 										<use href="main.svg#copy"/>
 									</svg>
 								</span><a class="tweet f"><svg class="A svg" viewBox="0 0 24 24">
@@ -353,7 +353,7 @@ not possible, an error will occur.</p>
 				</section>
 			</article>
 			<aside class="L" id="SubNavi">
-				<div class="M"></div>
+				<div class="R"></div>
 			</aside>
 		</main>
 		<script src="root.js"></script>
