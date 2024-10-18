@@ -16,7 +16,6 @@ import java.net.http.WebSocket;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.CompletionStage;
@@ -41,9 +40,6 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
 
     /** Generic object. */
     T o;
-
-    /** Generic list. */
-    List<T> list;
 
     OutputStream out;
 
