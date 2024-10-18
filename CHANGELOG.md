@@ -1,5 +1,14 @@
 # Changelog
 
+## [4.1.0](https://github.com/teletha/sinobu/compare/v4.0.0...v4.1.0) (2024-10-18)
+
+
+### Features
+
+* fast log writer ([17320ce](https://github.com/teletha/sinobu/commit/17320ce9cfe92d1a85201e4e5fcc0a63060b7ace))
+* log supports unicode ([34b59a0](https://github.com/teletha/sinobu/commit/34b59a0f82b51af9c90dfbcbdeb774817d4c0b52))
+* Support extra logger. ([e0bf1a1](https://github.com/teletha/sinobu/commit/e0bf1a16920c380dc3254f272252332d80871b61))
+
 ## [4.0.0](https://github.com/teletha/sinobu/compare/v3.14.1...v4.0.0) (2024-10-12)
 
 
