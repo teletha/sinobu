@@ -1027,8 +1027,8 @@ public class I implements ParameterizedType {
             Subscriber sub = new Subscriber();
             sub.observer = observer;
             sub.disposer = disposer;
-            sub.text = new StringBuilder();
             sub.next = open;
+            sub.o = new StringBuilder();
 
             return disposer.add(I.signal(client)
                     .to()
