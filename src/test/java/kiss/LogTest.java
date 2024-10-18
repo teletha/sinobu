@@ -128,7 +128,6 @@ class LogTest {
     @Test
     void logString() {
         I.info("TEXT");
-
         assert assumeLog(Level.INFO, "TEXT");
     }
 
@@ -183,7 +182,6 @@ class LogTest {
     @Test
     void logSupplier() {
         I.info((Supplier) () -> "From Supplier");
-
         assert assumeLog(Level.INFO, "From Supplier");
     }
 
@@ -196,37 +194,38 @@ class LogTest {
     }
 
     @Test
+    void logNull() {
+        I.info(null);
+        assert assumeLog(Level.INFO, "null");
+    }
+
+    @Test
     void trace() {
         I.trace("Message");
-
         assert assumeLog(Level.TRACE, "Message");
     }
 
     @Test
     void debug() {
         I.debug("Message");
-
         assert assumeLog(Level.DEBUG, "Message");
     }
 
     @Test
     void info() {
         I.info("Message");
-
         assert assumeLog(Level.INFO, "Message");
     }
 
     @Test
     void warn() {
         I.warn("Message");
-
         assert assumeLog(Level.WARNING, "Message");
     }
 
     @Test
     void error() {
         I.error("Message");
-
         assert assumeLog(Level.ERROR, "Message");
     }
 

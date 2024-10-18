@@ -187,7 +187,7 @@ public class I implements ParameterizedType {
     public static final Variable<String> Lang = Variable.of(Locale.getDefault().getLanguage());
 
     /** The user-defined extra log appender. */
-    public static WiseTriConsumer<String, Level, CharBuffer> Logger;
+    public static WiseTriConsumer<String, Level, Object> Logger;
 
     /** The marker for {@link UncaughtExceptionHandler} processing. */
     static final Throwable Q = new Throwable();
@@ -1515,10 +1515,8 @@ public class I implements ParameterizedType {
                     log.out.write(log.o.ⅱ.array(), 0, log.o.ⅱ.position());
                     if (ms == 0) log.out.flush();
                 }
-                if (log.a[2] <= o) {
-                    System.out.write(log.o.ⅱ.array(), 0, log.o.ⅱ.position());
-                }
-                if (log.a[3] <= o && Logger != null) Logger.ACCEPT(name, Level.values()[o], log.o.ⅰ);
+                if (log.a[2] <= o) System.out.write(log.o.ⅱ.array(), 0, log.o.ⅱ.position());
+                if (log.a[3] <= o && Logger != null) Logger.ACCEPT(name, Level.values()[o], msg);
                 log.o.ⅱ.clear();
             } catch (Throwable x) {
                 // ignore
