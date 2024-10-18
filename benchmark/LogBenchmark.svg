@@ -60,149 +60,149 @@
     <text x="515" y="808">GC</text>
   </g>
 
-  <rect x="175" y="20" width="3.982301" rx="2" ry="2" class="call"/>
+  <rect x="175" y="20" width="4.224071" rx="2" ry="2" class="call"/>
   <rect x="175" y="32" width="250.000000" rx="2" ry="2" class="memory"/>
-  <rect x="175" y="44" width="3.015075" rx="2" ry="2" class="gc"/>
+  <rect x="175" y="44" width="3.640777" rx="2" ry="2" class="gc"/>
   <text x="160" y="37" text-anchor="end">TinyLog Sync-NoCaller</text>
   <text x="160" y="47" text-anchor="end" class="desc">2.8.0-M1</text>
-  <text x="185.982301" y="30" class="desc">216</text>
-  <text x="432.000000" y="42" class="desc">626M</text>
-  <text x="185.015075" y="54" class="desc">0</text>
+  <text x="186.224071" y="30" class="desc">219</text>
+  <text x="432.000000" y="42" class="desc">131M</text>
+  <text x="185.640777" y="54" class="desc">1</text>
 
-  <rect x="175" y="68" width="4.295723" rx="2" ry="2" class="call"/>
-  <rect x="175" y="80" width="235.690631" rx="2" ry="2" class="memory"/>
-  <rect x="175" y="92" width="4.522613" rx="2" ry="2" class="gc"/>
+  <rect x="175" y="68" width="4.320511" rx="2" ry="2" class="call"/>
+  <rect x="175" y="80" width="199.789750" rx="2" ry="2" class="memory"/>
+  <rect x="175" y="92" width="2.912621" rx="2" ry="2" class="gc"/>
   <text x="160" y="85" text-anchor="end">TinyLog Async-NoCaller</text>
   <text x="160" y="95" text-anchor="end" class="desc">2.8.0-M1</text>
-  <text x="186.295723" y="78" class="desc">233</text>
-  <text x="417.690631" y="90" class="desc">590M</text>
-  <text x="186.522613" y="102" class="desc">1</text>
+  <text x="186.320511" y="78" class="desc">224</text>
+  <text x="381.789750" y="90" class="desc">105M</text>
+  <text x="184.912621" y="102" class="desc">0</text>
 
-  <rect x="175" y="116" width="6.987463" rx="2" ry="2" class="call"/>
-  <rect x="175" y="128" width="3.458771" rx="2" ry="2" class="memory"/>
+  <rect x="175" y="116" width="7.406591" rx="2" ry="2" class="call"/>
+  <rect x="175" y="128" width="0.000000" rx="2" ry="2" class="memory"/>
   <rect x="175" y="140" width="0.000000" rx="2" ry="2" class="gc"/>
   <text x="160" y="133" text-anchor="end">Sinobu Sync-NoCaller</text>
   <text x="160" y="143" text-anchor="end" class="desc">4.0.0</text>
-  <text x="188.987463" y="126" class="desc">379</text>
-  <text x="185.458771" y="138" class="desc">9M</text>
+  <text x="189.406591" y="126" class="desc">384</text>
+  <text x="182.000000" y="138" class="desc">0M</text>
   <text x="182.000000" y="150" class="desc">0</text>
 
-  <rect x="175" y="164" width="11.670354" rx="2" ry="2" class="call"/>
-  <rect x="175" y="176" width="19.291410" rx="2" ry="2" class="memory"/>
+  <rect x="175" y="164" width="11.842830" rx="2" ry="2" class="call"/>
+  <rect x="175" y="176" width="57.756673" rx="2" ry="2" class="memory"/>
   <rect x="175" y="188" width="150.000000" rx="2" ry="2" class="gc"/>
   <text x="160" y="181" text-anchor="end">Logback Async-NoCaller</text>
   <text x="160" y="191" text-anchor="end" class="desc">1.5.11</text>
-  <text x="193.670354" y="174" class="desc">633</text>
-  <text x="201.291410" y="186" class="desc">48M</text>
-  <text x="332.000000" y="198" class="desc">39</text>
+  <text x="193.842830" y="174" class="desc">614</text>
+  <text x="239.756673" y="186" class="desc">30M</text>
+  <text x="332.000000" y="198" class="desc">41</text>
 
-  <rect x="175" y="212" width="12.868732" rx="2" ry="2" class="call"/>
-  <rect x="175" y="224" width="15.271520" rx="2" ry="2" class="memory"/>
-  <rect x="175" y="236" width="136.432161" rx="2" ry="2" class="gc"/>
+  <rect x="175" y="212" width="13.019398" rx="2" ry="2" class="call"/>
+  <rect x="175" y="224" width="95.366191" rx="2" ry="2" class="memory"/>
+  <rect x="175" y="236" width="135.436893" rx="2" ry="2" class="gc"/>
   <text x="160" y="229" text-anchor="end">Logback Sync-NoCaller</text>
   <text x="160" y="239" text-anchor="end" class="desc">1.5.11</text>
-  <text x="194.868732" y="222" class="desc">698</text>
-  <text x="197.271520" y="234" class="desc">38M</text>
-  <text x="318.432161" y="246" class="desc">36</text>
+  <text x="195.019398" y="222" class="desc">675</text>
+  <text x="277.366191" y="234" class="desc">50M</text>
+  <text x="317.436893" y="246" class="desc">37</text>
 
-  <rect x="175" y="260" width="18.971239" rx="2" ry="2" class="call"/>
-  <rect x="175" y="272" width="15.331840" rx="2" ry="2" class="memory"/>
+  <rect x="175" y="260" width="20.657445" rx="2" ry="2" class="call"/>
+  <rect x="175" y="272" width="53.775739" rx="2" ry="2" class="memory"/>
   <rect x="175" y="284" width="0.000000" rx="2" ry="2" class="gc"/>
   <text x="160" y="277" text-anchor="end">Log4j Sync-NoCaller</text>
   <text x="160" y="287" text-anchor="end" class="desc">3.0.0-beta2</text>
-  <text x="200.971239" y="270" class="desc">1029</text>
-  <text x="197.331840" y="282" class="desc">38M</text>
+  <text x="202.657445" y="270" class="desc">1071</text>
+  <text x="235.775739" y="282" class="desc">28M</text>
   <text x="182.000000" y="294" class="desc">0</text>
 
-  <rect x="175" y="308" width="21.294248" rx="2" ry="2" class="call"/>
-  <rect x="175" y="320" width="14.083638" rx="2" ry="2" class="memory"/>
+  <rect x="175" y="308" width="20.792461" rx="2" ry="2" class="call"/>
+  <rect x="175" y="320" width="53.775739" rx="2" ry="2" class="memory"/>
   <rect x="175" y="332" width="0.000000" rx="2" ry="2" class="gc"/>
   <text x="160" y="325" text-anchor="end">Log4j Async-NoCaller</text>
   <text x="160" y="335" text-anchor="end" class="desc">3.0.0-beta2</text>
-  <text x="203.294248" y="318" class="desc">1155</text>
-  <text x="196.083638" y="330" class="desc">35M</text>
+  <text x="202.792461" y="318" class="desc">1078</text>
+  <text x="235.775739" y="330" class="desc">28M</text>
   <text x="182.000000" y="342" class="desc">0</text>
 
-  <rect x="175" y="356" width="21.441740" rx="2" ry="2" class="call"/>
-  <rect x="175" y="368" width="13.996548" rx="2" ry="2" class="memory"/>
+  <rect x="175" y="356" width="21.274661" rx="2" ry="2" class="call"/>
+  <rect x="175" y="368" width="52.631575" rx="2" ry="2" class="memory"/>
   <rect x="175" y="380" width="0.000000" rx="2" ry="2" class="gc"/>
   <text x="160" y="373" text-anchor="end">Log4j Async-Caller</text>
   <text x="160" y="383" text-anchor="end" class="desc">3.0.0-beta2</text>
-  <text x="203.441740" y="366" class="desc">1163</text>
-  <text x="195.996548" y="378" class="desc">35M</text>
+  <text x="203.274661" y="366" class="desc">1103</text>
+  <text x="234.631575" y="378" class="desc">28M</text>
   <text x="182.000000" y="390" class="desc">0</text>
 
-  <rect x="175" y="404" width="94.210914" rx="2" ry="2" class="call"/>
-  <rect x="175" y="416" width="24.054722" rx="2" ry="2" class="memory"/>
-  <rect x="175" y="428" width="7.537688" rx="2" ry="2" class="gc"/>
+  <rect x="175" y="404" width="99.294610" rx="2" ry="2" class="call"/>
+  <rect x="175" y="416" width="96.518439" rx="2" ry="2" class="memory"/>
+  <rect x="175" y="428" width="7.281553" rx="2" ry="2" class="gc"/>
   <text x="160" y="421" text-anchor="end">Sinobu Sync-Caller</text>
   <text x="160" y="431" text-anchor="end" class="desc">4.0.0</text>
-  <text x="276.210914" y="414" class="desc">5110</text>
-  <text x="206.054722" y="426" class="desc">60M</text>
-  <text x="189.537688" y="438" class="desc">2</text>
+  <text x="281.294610" y="414" class="desc">5148</text>
+  <text x="278.518439" y="426" class="desc">51M</text>
+  <text x="189.281553" y="438" class="desc">2</text>
 
-  <rect x="175" y="452" width="107.577434" rx="2" ry="2" class="call"/>
-  <rect x="175" y="464" width="27.730641" rx="2" ry="2" class="memory"/>
-  <rect x="175" y="476" width="11.306533" rx="2" ry="2" class="gc"/>
-  <text x="160" y="469" text-anchor="end">TinyLog Async-Caller</text>
+  <rect x="175" y="452" width="113.278408" rx="2" ry="2" class="call"/>
+  <rect x="175" y="464" width="123.968570" rx="2" ry="2" class="memory"/>
+  <rect x="175" y="476" width="10.922330" rx="2" ry="2" class="gc"/>
+  <text x="160" y="469" text-anchor="end">TinyLog Sync-Caller</text>
   <text x="160" y="479" text-anchor="end" class="desc">2.8.0-M1</text>
-  <text x="289.577434" y="462" class="desc">5835</text>
-  <text x="209.730641" y="474" class="desc">69M</text>
-  <text x="193.306533" y="486" class="desc">3</text>
+  <text x="295.278408" y="462" class="desc">5873</text>
+  <text x="305.968570" y="474" class="desc">65M</text>
+  <text x="192.922330" y="486" class="desc">3</text>
 
-  <rect x="175" y="500" width="108.997050" rx="2" ry="2" class="call"/>
-  <rect x="175" y="512" width="28.541028" rx="2" ry="2" class="memory"/>
-  <rect x="175" y="524" width="11.306533" rx="2" ry="2" class="gc"/>
-  <text x="160" y="517" text-anchor="end">TinyLog Sync-Caller</text>
+  <rect x="175" y="500" width="115.496528" rx="2" ry="2" class="call"/>
+  <rect x="175" y="512" width="122.060807" rx="2" ry="2" class="memory"/>
+  <rect x="175" y="524" width="10.922330" rx="2" ry="2" class="gc"/>
+  <text x="160" y="517" text-anchor="end">TinyLog Async-Caller</text>
   <text x="160" y="527" text-anchor="end" class="desc">2.8.0-M1</text>
-  <text x="290.997050" y="510" class="desc">5912</text>
-  <text x="210.541028" y="522" class="desc">72M</text>
-  <text x="193.306533" y="534" class="desc">3</text>
+  <text x="297.496528" y="510" class="desc">5988</text>
+  <text x="304.060807" y="522" class="desc">64M</text>
+  <text x="192.922330" y="534" class="desc">3</text>
 
-  <rect x="175" y="548" width="196.552360" rx="2" ry="2" class="call"/>
-  <rect x="175" y="560" width="18.330964" rx="2" ry="2" class="memory"/>
-  <rect x="175" y="572" width="7.537688" rx="2" ry="2" class="gc"/>
+  <rect x="175" y="548" width="199.283589" rx="2" ry="2" class="call"/>
+  <rect x="175" y="560" width="82.810734" rx="2" ry="2" class="memory"/>
+  <rect x="175" y="572" width="7.281553" rx="2" ry="2" class="gc"/>
   <text x="160" y="565" text-anchor="end">Log4j Sync-Caller</text>
   <text x="160" y="575" text-anchor="end" class="desc">3.0.0-beta2</text>
-  <text x="378.552360" y="558" class="desc">10661</text>
-  <text x="200.330964" y="570" class="desc">46M</text>
-  <text x="189.537688" y="582" class="desc">2</text>
+  <text x="381.283589" y="558" class="desc">10332</text>
+  <text x="264.810734" y="570" class="desc">43M</text>
+  <text x="189.281553" y="582" class="desc">2</text>
 
-  <rect x="175" y="596" width="279.590708" rx="2" ry="2" class="call"/>
-  <rect x="175" y="608" width="15.214765" rx="2" ry="2" class="memory"/>
-  <rect x="175" y="620" width="11.306533" rx="2" ry="2" class="gc"/>
+  <rect x="175" y="596" width="295.839303" rx="2" ry="2" class="call"/>
+  <rect x="175" y="608" width="78.586075" rx="2" ry="2" class="memory"/>
+  <rect x="175" y="620" width="10.194175" rx="2" ry="2" class="gc"/>
   <text x="160" y="613" text-anchor="end">Logback Async-Caller</text>
   <text x="160" y="623" text-anchor="end" class="desc">1.5.11</text>
-  <text x="461.590708" y="606" class="desc">15165</text>
-  <text x="197.214765" y="618" class="desc">38M</text>
-  <text x="193.306533" y="630" class="desc">3</text>
+  <text x="477.839303" y="606" class="desc">15338</text>
+  <text x="260.586075" y="618" class="desc">41M</text>
+  <text x="192.194175" y="630" class="desc">2</text>
 
-  <rect x="175" y="644" width="325.276549" rx="2" ry="2" class="call"/>
-  <rect x="175" y="656" width="22.305617" rx="2" ry="2" class="memory"/>
-  <rect x="175" y="668" width="15.075377" rx="2" ry="2" class="gc"/>
+  <rect x="175" y="644" width="328.397443" rx="2" ry="2" class="call"/>
+  <rect x="175" y="656" width="114.427199" rx="2" ry="2" class="memory"/>
+  <rect x="175" y="668" width="14.563107" rx="2" ry="2" class="gc"/>
   <text x="160" y="661" text-anchor="end">JUL Sync-NoCaller</text>
   <text x="160" y="671" text-anchor="end" class="desc"></text>
-  <text x="507.276549" y="654" class="desc">17643</text>
-  <text x="204.305617" y="666" class="desc">56M</text>
-  <text x="197.075377" y="678" class="desc">4</text>
+  <text x="510.397443" y="654" class="desc">17026</text>
+  <text x="296.427199" y="666" class="desc">60M</text>
+  <text x="196.563107" y="678" class="desc">4</text>
 
-  <rect x="175" y="692" width="326.659292" rx="2" ry="2" class="call"/>
-  <rect x="175" y="704" width="12.335855" rx="2" ry="2" class="memory"/>
-  <rect x="175" y="716" width="10.552764" rx="2" ry="2" class="gc"/>
+  <rect x="175" y="692" width="332.062162" rx="2" ry="2" class="call"/>
+  <rect x="175" y="704" width="28.242962" rx="2" ry="2" class="memory"/>
+  <rect x="175" y="716" width="10.922330" rx="2" ry="2" class="gc"/>
   <text x="160" y="709" text-anchor="end">Logback Sync-Caller</text>
   <text x="160" y="719" text-anchor="end" class="desc">1.5.11</text>
-  <text x="508.659292" y="702" class="desc">17718</text>
-  <text x="194.335855" y="714" class="desc">31M</text>
-  <text x="192.552764" y="726" class="desc">2</text>
+  <text x="514.062162" y="702" class="desc">17216</text>
+  <text x="210.242962" y="714" class="desc">15M</text>
+  <text x="192.922330" y="726" class="desc">3</text>
 
   <rect x="175" y="740" width="350.000000" rx="2" ry="2" class="call"/>
-  <rect x="175" y="752" width="22.803302" rx="2" ry="2" class="memory"/>
-  <rect x="175" y="764" width="15.075377" rx="2" ry="2" class="gc"/>
+  <rect x="175" y="752" width="94.976933" rx="2" ry="2" class="memory"/>
+  <rect x="175" y="764" width="15.291262" rx="2" ry="2" class="gc"/>
   <text x="160" y="757" text-anchor="end">JUL Sync-Caller</text>
   <text x="160" y="767" text-anchor="end" class="desc"></text>
-  <text x="532.000000" y="750" class="desc">18984</text>
-  <text x="204.803302" y="762" class="desc">57M</text>
-  <text x="197.075377" y="774" class="desc">4</text>
+  <text x="532.000000" y="750" class="desc">18146</text>
+  <text x="276.976933" y="762" class="desc">50M</text>
+  <text x="197.291262" y="774" class="desc">4</text>
 
   <text x="175" y="828" class="desc">Java: 21</text>
   <text x="245" y="828" class="desc">Memory: 4072MB</text>
