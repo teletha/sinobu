@@ -9,6 +9,7 @@
  */
 package kiss;
 
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Future;
 
@@ -31,15 +32,15 @@ public interface Disposable {
      */
     default void dispose() {
         // dispose children
-        Subscriber<Disposable> subscriber = Subscriber.of(this);
+        Subscriber<List<Disposable>> subscriber = Subscriber.of(this);
 
         if (subscriber.index == 0) {
             // mark as disposed
             subscriber.index++;
 
-            if (subscriber.list != null) {
-                subscriber.list.forEach(Disposable::dispose);
-                subscriber.list = null;
+            if (subscriber.o != null) {
+                subscriber.o.forEach(Disposable::dispose);
+                subscriber.o = null;
             }
 
             // dispose self
@@ -64,12 +65,12 @@ public interface Disposable {
      */
     default Disposable add(Disposable next) {
         if (next != null && next != this) {
-            Subscriber subscriber = Subscriber.of(this);
+            Subscriber<List> subscriber = Subscriber.of(this);
 
-            if (subscriber.list == null) {
-                subscriber.list = new CopyOnWriteArrayList();
+            if (subscriber.o == null) {
+                subscriber.o = new CopyOnWriteArrayList();
             }
-            subscriber.list.add(next);
+            subscriber.o.add(next);
         }
         return this;
     }
@@ -94,7 +95,7 @@ public interface Disposable {
     default Disposable sub() {
         Disposable sub = empty();
         add(sub);
-        sub.add(() -> Subscriber.of(this).list.remove(sub));
+        sub.add(() -> ((List) Subscriber.of(this).o).remove(sub));
         return sub;
     }
 

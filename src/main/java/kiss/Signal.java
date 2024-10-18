@@ -2420,12 +2420,12 @@ public class Signal<V> {
             Subscriber<E> sub = new Subscriber();
             sub.next = e -> {
                 // recorde the processing error
-                sub.observer.accept(sub.obj = e);
+                sub.observer.accept(sub.o = e);
             };
 
             // define error recovering flow
             flow.apply(sub.signal()).to(v -> {
-                sub.obj = null; // processing error will be handled, so clear it
+                sub.o = null; // processing error will be handled, so clear it
                 if (v == UNDEF) {
                     observer.complete();
                 } else {
@@ -2441,7 +2441,7 @@ public class Signal<V> {
 
                 // The following code is not used as it may send null.
                 // if (sub.obj != null) observer.error(sub.obj);
-                Throwable t = sub.obj;
+                Throwable t = sub.o;
                 if (t != null) observer.error(t);
             });
 
@@ -2483,7 +2483,7 @@ public class Signal<V> {
             Subscriber<Object> sub = new Subscriber();
             WiseRunnable complete = () -> {
                 // recorde the processing completion
-                sub.accept(sub.obj = UNDEF);
+                sub.accept(sub.o = UNDEF);
             };
 
             // number of remaining repeats
@@ -2493,7 +2493,7 @@ public class Signal<V> {
 
             // define complete repeating flow
             flow.apply(sub.signal()).to(v -> {
-                sub.obj = null; // processing complete will be handled, so clear it
+                sub.o = null; // processing complete will be handled, so clear it
 
                 // If you are not repeating, repeat it immediately, otherwise you can do it later
                 if (remaining.getAndIncrement() == 0) {
@@ -2510,7 +2510,7 @@ public class Signal<V> {
 
                 // Since there is a complete in processing, but this complete flow has ended,
                 // the processing complete is passed to the source signal.
-                if (sub.obj != null) observer.complete();
+                if (sub.o != null) observer.complete();
             });
 
             // connect preassign complete handling flow
@@ -2561,7 +2561,7 @@ public class Signal<V> {
                 // recorde the processing error
                 //
                 // to user defined error flow
-                sub.observer.accept(sub.obj = e);
+                sub.observer.accept(sub.o = e);
             };
 
             // number of remaining retry
@@ -2571,7 +2571,7 @@ public class Signal<V> {
 
             // define error retrying flow
             flow.apply(sub.signal()).to(v -> {
-                sub.obj = null; // processing error will be handled, so clear it
+                sub.o = null; // processing error will be handled, so clear it
 
                 // If you are not retrying, retry it immediately, otherwise you can do it later
                 if (remaining.getAndIncrement() == 0) {
@@ -2591,7 +2591,7 @@ public class Signal<V> {
                 //
                 // The following code is not used as it may send null.
                 // if (sub.obj != null) observer.error(sub.obj);
-                Throwable t = sub.obj;
+                Throwable t = sub.o;
                 if (t != null) observer.error(t);
             });
 

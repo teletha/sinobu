@@ -11,13 +11,11 @@ package kiss;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.http.WebSocket;
 import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.charset.CharsetEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.CompletionStage;
@@ -41,10 +39,9 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
     volatile long time;
 
     /** Generic object. */
-    T obj;
+    T o;
 
-    /** Generic list. */
-    List<T> list;
+    OutputStream out;
 
     /**
      * {@link Subscriber} must have this constructor only. Don't use instance field initialization
@@ -160,8 +157,6 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
     // ======================================================================
     // Websocket Listener
     // ======================================================================
-    StringBuilder text;
-
     byte[] a;
 
     /**
@@ -178,17 +173,19 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
      */
     @Override
     public CompletionStage<?> onText(WebSocket web, CharSequence data, boolean last) {
+        StringBuilder b = (StringBuilder) o;
+
         if (last) {
             // If there is a pre-buffered string, it must be concatenated.
             // If not, we can stringify directly to avoid unnecessary bytes copying.
-            if (text.length() == 0) {
+            if (b.length() == 0) {
                 observer.accept(data.toString());
             } else {
-                observer.accept(text.append(data).toString());
-                text.setLength(0);
+                observer.accept(b.append(data).toString());
+                b.setLength(0);
             }
         } else {
-            text.append(data);
+            b.append(data);
         }
         return null;
     }
@@ -252,7 +249,7 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
      * @param lang An associated language.
      */
     Subscriber(String lang) {
-        text = new StringBuilder(lang);
+        o = (T) lang;
         messages = new ConcurrentSkipListMap();
 
         restore();
@@ -263,15 +260,6 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
      */
     @Override
     public Path locate() {
-        return Path.of(I.env("LangDirectory", "lang") + "/" + text + ".json");
+        return Path.of(I.env("LangDirectory", "lang") + "/" + o + ".json");
     }
-
-    // ======================================================================
-    // Logging
-    // ======================================================================
-    CharBuffer chars;
-
-    ByteBuffer bytes;
-
-    CharsetEncoder encoder;
 }

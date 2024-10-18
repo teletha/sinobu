@@ -15,7 +15,7 @@ import static java.time.format.DateTimeFormatter.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -23,7 +23,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringReader;
-import java.io.Writer;
 import java.lang.System.Logger.Level;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.Array;
@@ -49,6 +48,7 @@ import java.net.http.HttpResponse.BodyHandlers;
 import java.net.http.WebSocket;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
+import java.nio.charset.CharsetEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -390,7 +390,7 @@ public class I implements ParameterizedType {
         // clean up all buffered log at the end of JVM
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             for (Subscriber s : logs.values()) {
-                if (s.obj != null) I.quiet(s.obj);
+                if (s.o != null) I.quiet(s.o);
             }
         }));
     }
@@ -1027,8 +1027,8 @@ public class I implements ParameterizedType {
             Subscriber sub = new Subscriber();
             sub.observer = observer;
             sub.disposer = disposer;
-            sub.text = new StringBuilder();
             sub.next = open;
+            sub.o = new StringBuilder();
 
             return disposer.add(I.signal(client)
                     .to()
@@ -1357,10 +1357,8 @@ public class I implements ParameterizedType {
         // ================================================
         // Look up logger by name
         // ================================================
-        Subscriber<Writer> log = logs.computeIfAbsent(name, key -> {
+        Subscriber<Ⅲ<CharBuffer, ByteBuffer, CharsetEncoder>> log = logs.computeIfAbsent(name, key -> {
             Subscriber s = new Subscriber();
-            s.encoder = StandardCharsets.UTF_8.newEncoder();
-            s.bytes = ByteBuffer.allocate(1024 * 24 * 4);
             s.a = new byte[] {
                     // =================================================
                     // Logger Specific Configuration
@@ -1400,15 +1398,28 @@ public class I implements ParameterizedType {
                     // Set the next update time.
                     log.index = (day.atZone(ZoneId.systemDefault()).toEpochSecond() + 3600 * 24) * 1000;
 
+                    // Special context for logging
+                    //
+                    // 1 - CharBuffer
                     // Reuse all parts that use the same characters each time. Dates and
                     // separators are the same throughout the day, so generate them first and
                     // reuse them thereafter.
-                    log.chars = CharBuffer.allocate(1024 * 24).put(day.format(ISO_LOCAL_DATE_TIME)).put(".000 DEBUG\t");
+                    //
+                    // 2 - ByteBuffer
+                    // The maximum size should be 4 times the CharBuffer size to account for
+                    // surrogate pairs.
+                    //
+                    // 3 - CharsetEncoder
+                    // The character encoding of the log is fixed to UTF-8. It could be made
+                    // configurable like any other item, but I don't see the benefit for the
+                    // increased footprint.
+                    log.o = new Ⅲ(CharBuffer.allocate(1024 * 24).put(day.format(ISO_LOCAL_DATE_TIME)).put(".000 DEBUG\t"), ByteBuffer
+                            .allocate(1024 * 24 * 4), StandardCharsets.UTF_8.newEncoder());
 
                     // Replace the output destination file at the timing of the date change.
                     if (log.a[1] <= o) {
                         // stop old file
-                        if (log.obj != null) I.quiet(log.obj);
+                        if (log.o != null) I.quiet(log.o);
 
                         // create log directory
                         File dir = new File(I.env(name.concat(".dir"), I.env("*.dir", ".log")));
@@ -1416,7 +1427,7 @@ public class I implements ParameterizedType {
 
                         // The file output destination will be rotated daily. It will
                         // always be cached in an open state.
-                        log.obj = new FileWriter(new File(dir, name.concat(day.format(ISO_DATE)).concat(".log")), env(name
+                        log.out = new FileOutputStream(new File(dir, name.concat(day.format(ISO_DATE)).concat(".log")), env(name
                                 .concat(".append"), env("*.append", true)));
 
                         // We also tried the following code to see if it would make a difference
@@ -1439,7 +1450,7 @@ public class I implements ParameterizedType {
                 // Format log message
                 // ================================================
                 // The date and time part (YYYY-MM-ddTHH:mm:ss.SSS ) is reusable
-                log.chars.clear().position(24);
+                log.o.ⅰ.clear().position(24);
 
                 // Time - If the time is the same as the last time, the previous data will
                 // be used as is to speed up the process.
@@ -1452,7 +1463,7 @@ public class I implements ParameterizedType {
                     int m, time = (int) (ms - (log.index - 24 * 60 * 60 * 1000));
 
                     // Hour
-                    log.chars.put(11, (char) ('0' + (m = time / (3600 * 1000)) / 10))
+                    log.o.ⅰ.put(11, (char) ('0' + (m = time / (3600 * 1000)) / 10))
                             .put(12, (char) ('0' + m % 10))
 
                             // Minute
@@ -1478,40 +1489,37 @@ public class I implements ParameterizedType {
 
                 // Level & Message
                 if (msg instanceof Supplier) msg = ((Supplier) msg).get();
-                log.chars.put(L, (o - 1) * 5, 5).position(30).put(String.valueOf(msg));
+                log.o.ⅰ.put(L, (o - 1) * 5, 5).position(30).put(String.valueOf(msg));
 
                 // Caller Location
                 if (log.a[0] <= o) {
                     // Since javac (JDK16) doesn't infer it correctly, we'll put the
                     // toString method out there to make the type explicit, although it
                     // increases the footprint slightly.
-                    log.chars.put("\tat ").put(StackWalker.getInstance().walk(s -> s.skip(deep).findAny().get()).toString());
+                    log.o.ⅰ.put("\tat ").put(StackWalker.getInstance().walk(s -> s.skip(deep).findAny().get()).toString());
                 }
 
                 // Cause
                 if (msg instanceof Throwable) for (StackTraceElement s : ((Throwable) msg).getStackTrace()) {
-                    log.chars.put("\n\tat ").put(s.toString());
+                    log.o.ⅰ.put("\n\tat ").put(s.toString());
                 }
 
                 // Line Feed
-                log.chars.put('\n').flip();
+                log.o.ⅰ.put('\n').flip();
 
                 // ================================================
                 // Output log
                 // ================================================
+                log.o.ⅲ.reset().encode(log.o.ⅰ, log.o.ⅱ, true);
                 if (log.a[1] <= o) {
-                    log.obj.append(log.chars);
-                    if (ms == 0) log.obj.flush();
+                    log.out.write(log.o.ⅱ.array(), 0, log.o.ⅱ.position());
+                    if (ms == 0) log.out.flush();
                 }
-                // if (log.a[2] <= o) System.out.print(log.chars);
                 if (log.a[2] <= o) {
-                    log.encoder.reset();
-                    log.encoder.encode(log.chars, log.bytes, true);
-                    // log.encoder.flush(log.bytes);
-                    System.out.write(log.bytes.array(), 0, log.bytes.position());
-                    log.bytes.clear();
+                    System.out.write(log.o.ⅱ.array(), 0, log.o.ⅱ.position());
                 }
-                if (log.a[3] <= o && Logger != null) Logger.ACCEPT(name, Level.values()[o], log.chars);
+                if (log.a[3] <= o && Logger != null) Logger.ACCEPT(name, Level.values()[o], log.o.ⅰ);
+                log.o.ⅱ.clear();
             } catch (Throwable x) {
                 // ignore
             }
