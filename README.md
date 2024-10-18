@@ -25,7 +25,7 @@ This library aims to simplify and highly condense the functions related to domai
 - Template Engine (Mustache)
 - Dynamic plug-in mechanism
 - Object Persistence
-- Logging
+- Logging (Garbage-Free)
 - Virtual Job Scheduler
 - Cron Scheduling
 
