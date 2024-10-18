@@ -9,6 +9,8 @@
  */
 package kiss;
 
+import static java.util.concurrent.TimeUnit.*;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.System.Logger.Level;
@@ -72,10 +74,10 @@ public class LogBenchmark {
             benchmark.discardSystemOutput();
         }
 
+        performTinyLog(benchmark);
         performJUL(benchmark);
         performSinobu(benchmark);
         performLog4j(benchmark);
-        performTinyLog(benchmark);
         performLogback(benchmark);
 
         benchmark.perform();
@@ -211,10 +213,12 @@ public class LogBenchmark {
             String name = execution + "-" + caller;
 
             TaggedLogger logger = org.tinylog.Logger.tag(name);
-            benchmark.measure("TinyLog " + name, () -> {
-                logger.error(message);
-                return -1;
-            });
+            benchmark.measure("TinyLog " + name, env -> env.when(caller == CallerType.NoCaller)
+                    .duration(200, MILLISECONDS)
+                    .memory("1G"), () -> {
+                        logger.error(message);
+                        return -1;
+                    });
         });
     }
 

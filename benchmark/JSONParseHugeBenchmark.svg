@@ -25,13 +25,19 @@
       .call {
           fill: #4886CD;
           stroke-linejoin: round;
-          height: 14px;
+          height: 12px;
       }
 
       .gc {
           fill: #4FB84B;
           stroke-linejoin: round;
-          height: 14px;
+          height: 12px;
+      }
+
+      .memory {
+          fill: #BF4F4B;
+          stroke-linejoin: round;
+          height: 12px;
       }
   </style>
   <g>
@@ -46,39 +52,49 @@
     <rect x="525" y="0" width="1" height="212" class="subline"/>
     <rect x="175" y="212" width="450" height="1" class="subline"/>
 
-    <rect x="265" y="220" width="30" class="call"/>
-    <text x="305" y="232">ns / call</text>
-    <rect x="395" y="220" width="30" class="gc"/>
-    <text x="435" y="232">GC</text>
+    <rect x="225" y="220" width="30" class="call"/>
+    <text x="265" y="232">ns / call</text>
+    <rect x="355" y="220" width="30" class="memory"/>
+    <text x="395" y="232">Memory</text>
+    <rect x="475" y="220" width="30" class="gc"/>
+    <text x="515" y="232">GC</text>
   </g>
 
-  <rect x="175" y="20" width="190.936729" rx="2" ry="2" class="call"/>
-  <rect x="175" y="34" width="150.000000" rx="2" ry="2" class="gc"/>
+  <rect x="175" y="20" width="185.423393" rx="2" ry="2" class="call"/>
+  <rect x="175" y="32" width="189.999382" rx="2" ry="2" class="memory"/>
+  <rect x="175" y="44" width="150.000000" rx="2" ry="2" class="gc"/>
   <text x="160" y="37" text-anchor="end">FastJson</text>
   <text x="160" y="47" text-anchor="end" class="desc">2.0.53.android8</text>
-  <text x="372.936729" y="30" class="desc">8250477</text>
-  <text x="332.000000" y="44" class="desc">11</text>
+  <text x="367.423393" y="30" class="desc">7925150</text>
+  <text x="371.999382" y="42" class="desc">46M</text>
+  <text x="332.000000" y="54" class="desc">11</text>
 
-  <rect x="175" y="68" width="196.617405" rx="2" ry="2" class="call"/>
-  <rect x="175" y="82" width="114.406780" rx="2" ry="2" class="gc"/>
+  <rect x="175" y="68" width="199.107685" rx="2" ry="2" class="call"/>
+  <rect x="175" y="80" width="250.000000" rx="2" ry="2" class="memory"/>
+  <rect x="175" y="92" width="147.413793" rx="2" ry="2" class="gc"/>
   <text x="160" y="85" text-anchor="end">Sinobu</text>
   <text x="160" y="95" text-anchor="end" class="desc">4.0.0</text>
-  <text x="378.617405" y="78" class="desc">8495942</text>
-  <text x="296.406780" y="92" class="desc">9</text>
+  <text x="381.107685" y="78" class="desc">8510028</text>
+  <text x="432.000000" y="90" class="desc">61M</text>
+  <text x="329.413793" y="102" class="desc">11</text>
 
-  <rect x="175" y="116" width="263.557341" rx="2" ry="2" class="call"/>
-  <rect x="175" y="130" width="129.661017" rx="2" ry="2" class="gc"/>
+  <rect x="175" y="116" width="276.026100" rx="2" ry="2" class="call"/>
+  <rect x="175" y="128" width="167.778742" rx="2" ry="2" class="memory"/>
+  <rect x="175" y="140" width="129.310345" rx="2" ry="2" class="gc"/>
   <text x="160" y="133" text-anchor="end">Jackson</text>
   <text x="160" y="143" text-anchor="end" class="desc">2.18.0</text>
-  <text x="445.557341" y="126" class="desc">11388452</text>
-  <text x="311.661017" y="140" class="desc">10</text>
+  <text x="458.026100" y="126" class="desc">11797585</text>
+  <text x="349.778742" y="138" class="desc">41M</text>
+  <text x="311.310345" y="150" class="desc">10</text>
 
   <rect x="175" y="164" width="350.000000" rx="2" ry="2" class="call"/>
-  <rect x="175" y="178" width="137.288136" rx="2" ry="2" class="gc"/>
+  <rect x="175" y="176" width="202.911812" rx="2" ry="2" class="memory"/>
+  <rect x="175" y="188" width="142.241379" rx="2" ry="2" class="gc"/>
   <text x="160" y="181" text-anchor="end">Gson</text>
   <text x="160" y="191" text-anchor="end" class="desc">2.11.0</text>
-  <text x="532.000000" y="174" class="desc">15123685</text>
-  <text x="319.288136" y="188" class="desc">10</text>
+  <text x="532.000000" y="174" class="desc">14959291</text>
+  <text x="384.911812" y="186" class="desc">50M</text>
+  <text x="324.241379" y="198" class="desc">11</text>
 
   <text x="175" y="252" class="desc">Java: 21</text>
   <text x="245" y="252" class="desc">Memory: 4072MB</text>

@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 625 742">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 625 838">
   <style>
       text {
           font-family: Arial;
@@ -25,132 +25,186 @@
       .call {
           fill: #4886CD;
           stroke-linejoin: round;
-          height: 14px;
+          height: 12px;
       }
 
       .gc {
           fill: #4FB84B;
           stroke-linejoin: round;
-          height: 14px;
+          height: 12px;
+      }
+
+      .memory {
+          fill: #BF4F4B;
+          stroke-linejoin: round;
+          height: 12px;
       }
   </style>
   <g>
-    <rect x="175" y="0" width="1" height="692" class="vline"/>
-    <rect x="275" y="0" width="1" height="692" class="vline"/>
-    <rect x="375" y="0" width="1" height="692" class="vline"/>
-    <rect x="475" y="0" width="1" height="692" class="vline"/>
-    <rect x="575" y="0" width="1" height="692" class="vline"/>
-    <rect x="225" y="0" width="1" height="692" class="subline"/>
-    <rect x="325" y="0" width="1" height="692" class="subline"/>
-    <rect x="425" y="0" width="1" height="692" class="subline"/>
-    <rect x="525" y="0" width="1" height="692" class="subline"/>
-    <rect x="175" y="692" width="450" height="1" class="subline"/>
+    <rect x="175" y="0" width="1" height="788" class="vline"/>
+    <rect x="275" y="0" width="1" height="788" class="vline"/>
+    <rect x="375" y="0" width="1" height="788" class="vline"/>
+    <rect x="475" y="0" width="1" height="788" class="vline"/>
+    <rect x="575" y="0" width="1" height="788" class="vline"/>
+    <rect x="225" y="0" width="1" height="788" class="subline"/>
+    <rect x="325" y="0" width="1" height="788" class="subline"/>
+    <rect x="425" y="0" width="1" height="788" class="subline"/>
+    <rect x="525" y="0" width="1" height="788" class="subline"/>
+    <rect x="175" y="788" width="450" height="1" class="subline"/>
 
-    <rect x="265" y="700" width="30" class="call"/>
-    <text x="305" y="712">ns / call</text>
-    <rect x="395" y="700" width="30" class="gc"/>
-    <text x="435" y="712">GC</text>
+    <rect x="225" y="796" width="30" class="call"/>
+    <text x="265" y="808">ns / call</text>
+    <rect x="355" y="796" width="30" class="memory"/>
+    <text x="395" y="808">Memory</text>
+    <rect x="475" y="796" width="30" class="gc"/>
+    <text x="515" y="808">GC</text>
   </g>
 
-  <rect x="175" y="20" width="7.416162" rx="2" ry="2" class="call"/>
-  <rect x="175" y="34" width="0.000000" rx="2" ry="2" class="gc"/>
-  <text x="160" y="37" text-anchor="end">Sinobu Sync-NoCaller</text>
-  <text x="160" y="47" text-anchor="end" class="desc">4.0.0</text>
-  <text x="189.416162" y="30" class="desc">381</text>
-  <text x="182.000000" y="44" class="desc">0</text>
+  <rect x="175" y="20" width="3.982301" rx="2" ry="2" class="call"/>
+  <rect x="175" y="32" width="250.000000" rx="2" ry="2" class="memory"/>
+  <rect x="175" y="44" width="3.015075" rx="2" ry="2" class="gc"/>
+  <text x="160" y="37" text-anchor="end">TinyLog Sync-NoCaller</text>
+  <text x="160" y="47" text-anchor="end" class="desc">2.8.0-M1</text>
+  <text x="185.982301" y="30" class="desc">216</text>
+  <text x="432.000000" y="42" class="desc">626M</text>
+  <text x="185.015075" y="54" class="desc">0</text>
 
-  <rect x="175" y="68" width="12.535454" rx="2" ry="2" class="call"/>
-  <rect x="175" y="82" width="150.000000" rx="2" ry="2" class="gc"/>
-  <text x="160" y="85" text-anchor="end">Logback Async-NoCaller</text>
-  <text x="160" y="95" text-anchor="end" class="desc">1.5.11</text>
-  <text x="194.535454" y="78" class="desc">644</text>
-  <text x="332.000000" y="92" class="desc">39</text>
+  <rect x="175" y="68" width="4.295723" rx="2" ry="2" class="call"/>
+  <rect x="175" y="80" width="235.690631" rx="2" ry="2" class="memory"/>
+  <rect x="175" y="92" width="4.522613" rx="2" ry="2" class="gc"/>
+  <text x="160" y="85" text-anchor="end">TinyLog Async-NoCaller</text>
+  <text x="160" y="95" text-anchor="end" class="desc">2.8.0-M1</text>
+  <text x="186.295723" y="78" class="desc">233</text>
+  <text x="417.690631" y="90" class="desc">590M</text>
+  <text x="186.522613" y="102" class="desc">1</text>
 
-  <rect x="175" y="116" width="13.158334" rx="2" ry="2" class="call"/>
-  <rect x="175" y="130" width="141.666667" rx="2" ry="2" class="gc"/>
-  <text x="160" y="133" text-anchor="end">Logback Sync-NoCaller</text>
-  <text x="160" y="143" text-anchor="end" class="desc">1.5.11</text>
-  <text x="195.158334" y="126" class="desc">676</text>
-  <text x="323.666667" y="140" class="desc">37</text>
+  <rect x="175" y="116" width="6.987463" rx="2" ry="2" class="call"/>
+  <rect x="175" y="128" width="3.458771" rx="2" ry="2" class="memory"/>
+  <rect x="175" y="140" width="0.000000" rx="2" ry="2" class="gc"/>
+  <text x="160" y="133" text-anchor="end">Sinobu Sync-NoCaller</text>
+  <text x="160" y="143" text-anchor="end" class="desc">4.0.0</text>
+  <text x="188.987463" y="126" class="desc">379</text>
+  <text x="185.458771" y="138" class="desc">9M</text>
+  <text x="182.000000" y="150" class="desc">0</text>
 
-  <rect x="175" y="164" width="20.107336" rx="2" ry="2" class="call"/>
-  <rect x="175" y="178" width="0.000000" rx="2" ry="2" class="gc"/>
-  <text x="160" y="181" text-anchor="end">Log4j Sync-NoCaller</text>
-  <text x="160" y="191" text-anchor="end" class="desc">3.0.0-beta2</text>
-  <text x="202.107336" y="174" class="desc">1033</text>
-  <text x="182.000000" y="188" class="desc">0</text>
+  <rect x="175" y="164" width="11.670354" rx="2" ry="2" class="call"/>
+  <rect x="175" y="176" width="19.291410" rx="2" ry="2" class="memory"/>
+  <rect x="175" y="188" width="150.000000" rx="2" ry="2" class="gc"/>
+  <text x="160" y="181" text-anchor="end">Logback Async-NoCaller</text>
+  <text x="160" y="191" text-anchor="end" class="desc">1.5.11</text>
+  <text x="193.670354" y="174" class="desc">633</text>
+  <text x="201.291410" y="186" class="desc">48M</text>
+  <text x="332.000000" y="198" class="desc">39</text>
 
-  <rect x="175" y="212" width="21.353095" rx="2" ry="2" class="call"/>
-  <rect x="175" y="226" width="0.000000" rx="2" ry="2" class="gc"/>
-  <text x="160" y="229" text-anchor="end">Log4j Async-NoCaller</text>
-  <text x="160" y="239" text-anchor="end" class="desc">3.0.0-beta2</text>
-  <text x="203.353095" y="222" class="desc">1097</text>
-  <text x="182.000000" y="236" class="desc">0</text>
+  <rect x="175" y="212" width="12.868732" rx="2" ry="2" class="call"/>
+  <rect x="175" y="224" width="15.271520" rx="2" ry="2" class="memory"/>
+  <rect x="175" y="236" width="136.432161" rx="2" ry="2" class="gc"/>
+  <text x="160" y="229" text-anchor="end">Logback Sync-NoCaller</text>
+  <text x="160" y="239" text-anchor="end" class="desc">1.5.11</text>
+  <text x="194.868732" y="222" class="desc">698</text>
+  <text x="197.271520" y="234" class="desc">38M</text>
+  <text x="318.432161" y="246" class="desc">36</text>
 
-  <rect x="175" y="260" width="23.163339" rx="2" ry="2" class="call"/>
-  <rect x="175" y="274" width="0.000000" rx="2" ry="2" class="gc"/>
-  <text x="160" y="277" text-anchor="end">Log4j Async-Caller</text>
+  <rect x="175" y="260" width="18.971239" rx="2" ry="2" class="call"/>
+  <rect x="175" y="272" width="15.331840" rx="2" ry="2" class="memory"/>
+  <rect x="175" y="284" width="0.000000" rx="2" ry="2" class="gc"/>
+  <text x="160" y="277" text-anchor="end">Log4j Sync-NoCaller</text>
   <text x="160" y="287" text-anchor="end" class="desc">3.0.0-beta2</text>
-  <text x="205.163339" y="270" class="desc">1190</text>
-  <text x="182.000000" y="284" class="desc">0</text>
+  <text x="200.971239" y="270" class="desc">1029</text>
+  <text x="197.331840" y="282" class="desc">38M</text>
+  <text x="182.000000" y="294" class="desc">0</text>
 
-  <rect x="175" y="308" width="100.361493" rx="2" ry="2" class="call"/>
-  <rect x="175" y="322" width="7.575758" rx="2" ry="2" class="gc"/>
-  <text x="160" y="325" text-anchor="end">Sinobu Sync-Caller</text>
-  <text x="160" y="335" text-anchor="end" class="desc">4.0.0</text>
-  <text x="282.361493" y="318" class="desc">5156</text>
-  <text x="189.575758" y="332" class="desc">2</text>
+  <rect x="175" y="308" width="21.294248" rx="2" ry="2" class="call"/>
+  <rect x="175" y="320" width="14.083638" rx="2" ry="2" class="memory"/>
+  <rect x="175" y="332" width="0.000000" rx="2" ry="2" class="gc"/>
+  <text x="160" y="325" text-anchor="end">Log4j Async-NoCaller</text>
+  <text x="160" y="335" text-anchor="end" class="desc">3.0.0-beta2</text>
+  <text x="203.294248" y="318" class="desc">1155</text>
+  <text x="196.083638" y="330" class="desc">35M</text>
+  <text x="182.000000" y="342" class="desc">0</text>
 
-  <rect x="175" y="356" width="119.845949" rx="2" ry="2" class="call"/>
-  <rect x="175" y="370" width="11.363636" rx="2" ry="2" class="gc"/>
-  <text x="160" y="373" text-anchor="end">TinyLog Async-Caller</text>
-  <text x="160" y="383" text-anchor="end" class="desc">2.8.0-M1</text>
-  <text x="301.845949" y="366" class="desc">6157</text>
-  <text x="193.363636" y="380" class="desc">3</text>
+  <rect x="175" y="356" width="21.441740" rx="2" ry="2" class="call"/>
+  <rect x="175" y="368" width="13.996548" rx="2" ry="2" class="memory"/>
+  <rect x="175" y="380" width="0.000000" rx="2" ry="2" class="gc"/>
+  <text x="160" y="373" text-anchor="end">Log4j Async-Caller</text>
+  <text x="160" y="383" text-anchor="end" class="desc">3.0.0-beta2</text>
+  <text x="203.441740" y="366" class="desc">1163</text>
+  <text x="195.996548" y="378" class="desc">35M</text>
+  <text x="182.000000" y="390" class="desc">0</text>
 
-  <rect x="175" y="404" width="121.558868" rx="2" ry="2" class="call"/>
-  <rect x="175" y="418" width="11.363636" rx="2" ry="2" class="gc"/>
-  <text x="160" y="421" text-anchor="end">TinyLog Sync-Caller</text>
-  <text x="160" y="431" text-anchor="end" class="desc">2.8.0-M1</text>
-  <text x="303.558868" y="414" class="desc">6245</text>
-  <text x="193.363636" y="428" class="desc">3</text>
+  <rect x="175" y="404" width="94.210914" rx="2" ry="2" class="call"/>
+  <rect x="175" y="416" width="24.054722" rx="2" ry="2" class="memory"/>
+  <rect x="175" y="428" width="7.537688" rx="2" ry="2" class="gc"/>
+  <text x="160" y="421" text-anchor="end">Sinobu Sync-Caller</text>
+  <text x="160" y="431" text-anchor="end" class="desc">4.0.0</text>
+  <text x="276.210914" y="414" class="desc">5110</text>
+  <text x="206.054722" y="426" class="desc">60M</text>
+  <text x="189.537688" y="438" class="desc">2</text>
 
-  <rect x="175" y="452" width="203.019854" rx="2" ry="2" class="call"/>
-  <rect x="175" y="466" width="7.575758" rx="2" ry="2" class="gc"/>
-  <text x="160" y="469" text-anchor="end">Log4j Sync-Caller</text>
-  <text x="160" y="479" text-anchor="end" class="desc">3.0.0-beta2</text>
-  <text x="385.019854" y="462" class="desc">10430</text>
-  <text x="189.575758" y="476" class="desc">2</text>
+  <rect x="175" y="452" width="107.577434" rx="2" ry="2" class="call"/>
+  <rect x="175" y="464" width="27.730641" rx="2" ry="2" class="memory"/>
+  <rect x="175" y="476" width="11.306533" rx="2" ry="2" class="gc"/>
+  <text x="160" y="469" text-anchor="end">TinyLog Async-Caller</text>
+  <text x="160" y="479" text-anchor="end" class="desc">2.8.0-M1</text>
+  <text x="289.577434" y="462" class="desc">5835</text>
+  <text x="209.730641" y="474" class="desc">69M</text>
+  <text x="193.306533" y="486" class="desc">3</text>
 
-  <rect x="175" y="500" width="304.121017" rx="2" ry="2" class="call"/>
-  <rect x="175" y="514" width="11.363636" rx="2" ry="2" class="gc"/>
-  <text x="160" y="517" text-anchor="end">Logback Async-Caller</text>
-  <text x="160" y="527" text-anchor="end" class="desc">1.5.11</text>
-  <text x="486.121017" y="510" class="desc">15624</text>
-  <text x="193.363636" y="524" class="desc">3</text>
+  <rect x="175" y="500" width="108.997050" rx="2" ry="2" class="call"/>
+  <rect x="175" y="512" width="28.541028" rx="2" ry="2" class="memory"/>
+  <rect x="175" y="524" width="11.306533" rx="2" ry="2" class="gc"/>
+  <text x="160" y="517" text-anchor="end">TinyLog Sync-Caller</text>
+  <text x="160" y="527" text-anchor="end" class="desc">2.8.0-M1</text>
+  <text x="290.997050" y="510" class="desc">5912</text>
+  <text x="210.541028" y="522" class="desc">72M</text>
+  <text x="193.306533" y="534" class="desc">3</text>
 
-  <rect x="175" y="548" width="343.479228" rx="2" ry="2" class="call"/>
-  <rect x="175" y="562" width="16.666667" rx="2" ry="2" class="gc"/>
-  <text x="160" y="565" text-anchor="end">JUL Sync-Caller</text>
-  <text x="160" y="575" text-anchor="end" class="desc"></text>
-  <text x="525.479228" y="558" class="desc">17646</text>
-  <text x="198.666667" y="572" class="desc">4</text>
+  <rect x="175" y="548" width="196.552360" rx="2" ry="2" class="call"/>
+  <rect x="175" y="560" width="18.330964" rx="2" ry="2" class="memory"/>
+  <rect x="175" y="572" width="7.537688" rx="2" ry="2" class="gc"/>
+  <text x="160" y="565" text-anchor="end">Log4j Sync-Caller</text>
+  <text x="160" y="575" text-anchor="end" class="desc">3.0.0-beta2</text>
+  <text x="378.552360" y="558" class="desc">10661</text>
+  <text x="200.330964" y="570" class="desc">46M</text>
+  <text x="189.537688" y="582" class="desc">2</text>
 
-  <rect x="175" y="596" width="346.107002" rx="2" ry="2" class="call"/>
-  <rect x="175" y="610" width="15.151515" rx="2" ry="2" class="gc"/>
-  <text x="160" y="613" text-anchor="end">JUL Sync-NoCaller</text>
-  <text x="160" y="623" text-anchor="end" class="desc"></text>
-  <text x="528.107002" y="606" class="desc">17781</text>
-  <text x="197.151515" y="620" class="desc">4</text>
+  <rect x="175" y="596" width="279.590708" rx="2" ry="2" class="call"/>
+  <rect x="175" y="608" width="15.214765" rx="2" ry="2" class="memory"/>
+  <rect x="175" y="620" width="11.306533" rx="2" ry="2" class="gc"/>
+  <text x="160" y="613" text-anchor="end">Logback Async-Caller</text>
+  <text x="160" y="623" text-anchor="end" class="desc">1.5.11</text>
+  <text x="461.590708" y="606" class="desc">15165</text>
+  <text x="197.214765" y="618" class="desc">38M</text>
+  <text x="193.306533" y="630" class="desc">3</text>
 
-  <rect x="175" y="644" width="350.000000" rx="2" ry="2" class="call"/>
-  <rect x="175" y="658" width="10.606061" rx="2" ry="2" class="gc"/>
-  <text x="160" y="661" text-anchor="end">Logback Sync-Caller</text>
-  <text x="160" y="671" text-anchor="end" class="desc">1.5.11</text>
-  <text x="532.000000" y="654" class="desc">17981</text>
-  <text x="192.606061" y="668" class="desc">2</text>
+  <rect x="175" y="644" width="325.276549" rx="2" ry="2" class="call"/>
+  <rect x="175" y="656" width="22.305617" rx="2" ry="2" class="memory"/>
+  <rect x="175" y="668" width="15.075377" rx="2" ry="2" class="gc"/>
+  <text x="160" y="661" text-anchor="end">JUL Sync-NoCaller</text>
+  <text x="160" y="671" text-anchor="end" class="desc"></text>
+  <text x="507.276549" y="654" class="desc">17643</text>
+  <text x="204.305617" y="666" class="desc">56M</text>
+  <text x="197.075377" y="678" class="desc">4</text>
 
-  <text x="175" y="732" class="desc">Java: 21</text>
-  <text x="245" y="732" class="desc">Memory: 4072MB</text>
-  <text x="345" y="732" class="desc">CPU: Intel(R) Core(TM) i7-3770K CPU @ 3.50GHz 3.501GHz</text>
+  <rect x="175" y="692" width="326.659292" rx="2" ry="2" class="call"/>
+  <rect x="175" y="704" width="12.335855" rx="2" ry="2" class="memory"/>
+  <rect x="175" y="716" width="10.552764" rx="2" ry="2" class="gc"/>
+  <text x="160" y="709" text-anchor="end">Logback Sync-Caller</text>
+  <text x="160" y="719" text-anchor="end" class="desc">1.5.11</text>
+  <text x="508.659292" y="702" class="desc">17718</text>
+  <text x="194.335855" y="714" class="desc">31M</text>
+  <text x="192.552764" y="726" class="desc">2</text>
+
+  <rect x="175" y="740" width="350.000000" rx="2" ry="2" class="call"/>
+  <rect x="175" y="752" width="22.803302" rx="2" ry="2" class="memory"/>
+  <rect x="175" y="764" width="15.075377" rx="2" ry="2" class="gc"/>
+  <text x="160" y="757" text-anchor="end">JUL Sync-Caller</text>
+  <text x="160" y="767" text-anchor="end" class="desc"></text>
+  <text x="532.000000" y="750" class="desc">18984</text>
+  <text x="204.803302" y="762" class="desc">57M</text>
+  <text x="197.075377" y="774" class="desc">4</text>
+
+  <text x="175" y="828" class="desc">Java: 21</text>
+  <text x="245" y="828" class="desc">Memory: 4072MB</text>
+  <text x="345" y="828" class="desc">CPU: Intel(R) Core(TM) i7-3770K CPU @ 3.50GHz 3.501GHz</text>
 </svg>
