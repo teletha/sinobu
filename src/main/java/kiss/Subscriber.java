@@ -11,10 +11,9 @@ package kiss;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.http.WebSocket;
 import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.charset.CharsetEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.List;
@@ -41,10 +40,12 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
     volatile long time;
 
     /** Generic object. */
-    T obj;
+    T o;
 
     /** Generic list. */
     List<T> list;
+
+    OutputStream out;
 
     /**
      * {@link Subscriber} must have this constructor only. Don't use instance field initialization
@@ -265,13 +266,4 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
     public Path locate() {
         return Path.of(I.env("LangDirectory", "lang") + "/" + text + ".json");
     }
-
-    // ======================================================================
-    // Logging
-    // ======================================================================
-    CharBuffer chars;
-
-    ByteBuffer bytes;
-
-    CharsetEncoder encoder;
 }
