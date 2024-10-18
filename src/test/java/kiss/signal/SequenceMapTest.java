@@ -97,15 +97,15 @@ class SequenceMapTest extends SignalTester {
                 .interval(delay, ms, scheduler)
                 .effect(internalProcess::add)));
 
-        main.emit(100, 50, 10);
+        main.emit(300, 200, 100);
         scheduler.await();
-        assert main.value(100, 101, 50, 51, 10, 11);
-        assert internalProcess.get(0) == 10;
-        assert internalProcess.get(1) == 50;
-        assert internalProcess.get(2) == 100;
-        assert internalProcess.get(3) == 11;
-        assert internalProcess.get(4) == 51;
-        assert internalProcess.get(5) == 101;
+        assert main.value(300, 301, 200, 201, 100, 101);
+        assert internalProcess.get(0) == 100;
+        assert internalProcess.get(1) == 200;
+        assert internalProcess.get(2) == 300;
+        assert internalProcess.get(3) == 101;
+        assert internalProcess.get(4) == 201;
+        assert internalProcess.get(5) == 301;
     }
 
     @Test
