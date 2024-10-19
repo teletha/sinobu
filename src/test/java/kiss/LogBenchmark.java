@@ -215,7 +215,7 @@ public class LogBenchmark {
             TaggedLogger logger = org.tinylog.Logger.tag(name);
             benchmark.measure("TinyLog " + name, env -> env.when(caller == CallerType.NoCaller)
                     .duration(200, MILLISECONDS)
-                    .memory("1G"), () -> {
+                    .memory("512m"), () -> {
                         logger.error(message);
                         return -1;
                     });
