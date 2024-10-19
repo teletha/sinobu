@@ -74,11 +74,11 @@ public class LogBenchmark {
             benchmark.discardSystemOutput();
         }
 
-        performTinyLog(benchmark);
-        performJUL(benchmark);
-        performSinobu(benchmark);
+        // performTinyLog(benchmark);
+        // performJUL(benchmark);
+        // performSinobu(benchmark);
         performLog4j(benchmark);
-        performLogback(benchmark);
+        // performLogback(benchmark);
 
         benchmark.perform();
     }
@@ -160,6 +160,10 @@ public class LogBenchmark {
         ConfigurationBuilder<BuiltConfiguration> builder = ConfigurationBuilderFactory.newConfigurationBuilder();
 
         perform((execution, caller) -> {
+            if (execution == ExecutionType.Async && caller == CallerType.Caller) {
+                return; // log4j2 ignore location pattern in async logger
+            }
+
             String name = execution + "-" + caller;
 
             AppenderComponentBuilder appender = builder.newAppender(name, output == OutputType.File ? "File" : "Console");
@@ -167,7 +171,7 @@ public class LogBenchmark {
             appender.addAttribute("append", false);
             appender.addAttribute("immediateFlush", flush);
             appender.add(builder.newLayout("PatternLayout")
-                    .addAttribute("pattern", caller == CallerType.Caller ? "%date{yyyy-MM-dd HH:mm:ss.SSS} %level %class %method %msg%n"
+                    .addAttribute("pattern", caller == CallerType.Caller ? "%date{yyyy-MM-dd HH:mm:ss.SSS} %level %location %msg%n"
                             : "%date{yyyy-MM-dd HH:mm:ss.SSS} %level %msg%n"));
             builder.add(appender);
 
@@ -182,11 +186,15 @@ public class LogBenchmark {
         LoggerContext context = Configurator.initialize(builder.build());
 
         perform((execution, caller) -> {
+            if (execution == ExecutionType.Async && caller == CallerType.Caller) {
+                return; // log4j2 ignore location pattern in async logger
+            }
+
             String name = execution + "-" + caller;
 
-            org.apache.logging.log4j.Logger logger = context.getLogger(name);
+            org.apache.logging.log4j.Logger log = context.getLogger(name);
             benchmark.measure("Log4j " + name, () -> {
-                logger.error(message);
+                log.error(message);
                 return -1;
             });
         });
@@ -204,7 +212,7 @@ public class LogBenchmark {
             Configuration.set(writer + ".file", ".log/logging-tinylog" + name + ".log");
             Configuration.set(writer + ".tag", name);
             Configuration.set(writer + ".format", caller == CallerType.Caller
-                    ? "{date:yyyy-MM-dd HH:mm:ss.SSS} {level} {class} {method} {message}"
+                    ? "{date:yyyy-MM-dd HH:mm:ss.SSS} {level} {class}.{method}({file}:{line}) {message}"
                     : "{date:yyyy-MM-dd HH:mm:ss.SSS} {level} {message}");
             Configuration.set(writer + ".append", "false");
         });
@@ -229,7 +237,7 @@ public class LogBenchmark {
 
             PatternLayoutEncoder layout = new PatternLayoutEncoder();
             layout.setContext(context);
-            layout.setPattern(caller == CallerType.Caller ? "%date{YYYY-MM-dd HH:mm:ss.SSS} %level %class %method %msg%n"
+            layout.setPattern(caller == CallerType.Caller ? "%date{YYYY-MM-dd HH:mm:ss.SSS} %level %class.%method\\(%file:%line\\) %msg%n"
                     : "%date{YYYY-MM-dd HH:mm:ss.SSS} %level %msg%n");
             layout.start();
 
