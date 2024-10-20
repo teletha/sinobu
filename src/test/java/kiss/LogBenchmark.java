@@ -37,6 +37,7 @@ import org.tinylog.TaggedLogger;
 import org.tinylog.configuration.Configuration;
 
 import antibug.profiler.Benchmark;
+import antibug.profiler.Inspection;
 import ch.qos.logback.classic.AsyncAppender;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.core.Appender;
@@ -68,7 +69,7 @@ public class LogBenchmark {
     private static final String message = "Write your message! This is comparison of  logging libraries. これは漢字カタカナﾊﾝｶｸｶﾅ①②♡♧㍉🚀😀👩‍❤️‍👩👍🏽👨🏻‍🦱🏠🈵♌🕦📒👿";
 
     public static void main(String[] args) throws Exception {
-        Benchmark benchmark = new Benchmark().visualize();
+        Benchmark benchmark = new Benchmark().memory("128m").visualize(Inspection.TimePerCall, Inspection.GC, Inspection.PeakMemory);
 
         if (output == OutputType.Console) {
             benchmark.discardSystemOutput();

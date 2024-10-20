@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 625 262">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 625 246">
   <style>
       text {
           font-family: Arial;
@@ -22,81 +22,51 @@
           stroke-width: 0;
       }
 
-      .call {
-          fill: #4886CD;
-          stroke-linejoin: round;
-          height: 12px;
-      }
-
-      .gc {
-          fill: #4FB84B;
-          stroke-linejoin: round;
-          height: 12px;
-      }
-
-      .memory {
-          fill: #BF4F4B;
+      .bar {
           stroke-linejoin: round;
           height: 12px;
       }
   </style>
-  <g>
-    <rect x="175" y="0" width="1" height="212" class="vline"/>
-    <rect x="275" y="0" width="1" height="212" class="vline"/>
-    <rect x="375" y="0" width="1" height="212" class="vline"/>
-    <rect x="475" y="0" width="1" height="212" class="vline"/>
-    <rect x="575" y="0" width="1" height="212" class="vline"/>
-    <rect x="225" y="0" width="1" height="212" class="subline"/>
-    <rect x="325" y="0" width="1" height="212" class="subline"/>
-    <rect x="425" y="0" width="1" height="212" class="subline"/>
-    <rect x="525" y="0" width="1" height="212" class="subline"/>
-    <rect x="175" y="212" width="450" height="1" class="subline"/>
+  <rect x="175" y="0" width="1" height="196" class="vline"/>
+  <rect x="275" y="0" width="1" height="196" class="vline"/>
+  <rect x="375" y="0" width="1" height="196" class="vline"/>
+  <rect x="475" y="0" width="1" height="196" class="vline"/>
+  <rect x="575" y="0" width="1" height="196" class="vline"/>
+  <rect x="225" y="0" width="1" height="196" class="subline"/>
+  <rect x="325" y="0" width="1" height="196" class="subline"/>
+  <rect x="425" y="0" width="1" height="196" class="subline"/>
+  <rect x="525" y="0" width="1" height="196" class="subline"/>
+  <rect x="175" y="196" width="450" height="1" class="subline"/>
 
-    <rect x="225" y="220" width="30" class="call"/>
-    <text x="265" y="232">ns / call</text>
-    <rect x="355" y="220" width="30" class="memory"/>
-    <text x="395" y="232">Memory</text>
-    <rect x="475" y="220" width="30" class="gc"/>
-    <text x="515" y="232">GC</text>
-  </g>
-
-  <rect x="175" y="20" width="185.069937" rx="2" ry="2" class="call"/>
-  <rect x="175" y="32" width="250.000000" rx="2" ry="2" class="memory"/>
-  <rect x="175" y="44" width="150.000000" rx="2" ry="2" class="gc"/>
+  <rect x="205" y="204" width="30" fill="#4886CD" class="bar"/>
+  <text x="245" y="216">ns / call</text>
+  <rect x="400" y="204" width="30" fill="#4FB84B" class="bar"/>
+  <text x="440" y="216">GC</text>
   <text x="160" y="37" text-anchor="end">FastJson</text>
   <text x="160" y="47" text-anchor="end" class="desc">2.0.53.android8</text>
-  <text x="367.069937" y="30" class="desc">8283411</text>
-  <text x="432.000000" y="42" class="desc">122M</text>
-  <text x="332.000000" y="54" class="desc">10</text>
-
-  <rect x="175" y="68" width="206.674925" rx="2" ry="2" class="call"/>
-  <rect x="175" y="80" width="177.496541" rx="2" ry="2" class="memory"/>
-  <rect x="175" y="92" width="129.807692" rx="2" ry="2" class="gc"/>
-  <text x="160" y="85" text-anchor="end">Sinobu</text>
-  <text x="160" y="95" text-anchor="end" class="desc">4.0.0</text>
-  <text x="388.674925" y="78" class="desc">9250413</text>
-  <text x="359.496541" y="90" class="desc">87M</text>
-  <text x="311.807692" y="102" class="desc">9</text>
-
-  <rect x="175" y="116" width="264.008637" rx="2" ry="2" class="call"/>
-  <rect x="175" y="128" width="183.114623" rx="2" ry="2" class="memory"/>
-  <rect x="175" y="140" width="144.230769" rx="2" ry="2" class="gc"/>
-  <text x="160" y="133" text-anchor="end">Jackson</text>
-  <text x="160" y="143" text-anchor="end" class="desc">2.18.0</text>
-  <text x="446.008637" y="126" class="desc">11816571</text>
-  <text x="365.114623" y="138" class="desc">90M</text>
-  <text x="326.230769" y="150" class="desc">10</text>
-
-  <rect x="175" y="164" width="350.000000" rx="2" ry="2" class="call"/>
-  <rect x="175" y="176" width="187.111408" rx="2" ry="2" class="memory"/>
-  <rect x="175" y="188" width="144.230769" rx="2" ry="2" class="gc"/>
-  <text x="160" y="181" text-anchor="end">Gson</text>
-  <text x="160" y="191" text-anchor="end" class="desc">2.11.0</text>
-  <text x="532.000000" y="174" class="desc">15665396</text>
-  <text x="369.111408" y="186" class="desc">91M</text>
-  <text x="326.230769" y="198" class="desc">10</text>
-
-  <text x="175" y="252" class="desc">Java: 21</text>
-  <text x="245" y="252" class="desc">Memory: 4072MB</text>
-  <text x="345" y="252" class="desc">CPU: Intel(R) Core(TM) i7-3770K CPU @ 3.50GHz 3.501GHz</text>
+  <rect x="175" y="20" width="194.46" rx="2" ry="2" fill="#4886CD" class="bar"/>
+  <text x="376.46" y="30" class="desc">7735434</text>
+  <rect x="175" y="32" width="93.33" rx="2" ry="2" fill="#4FB84B" class="bar"/>
+  <text x="275.33" y="42" class="desc">2</text>
+  <text x="160" y="81" text-anchor="end">Sinobu</text>
+  <text x="160" y="91" text-anchor="end" class="desc">4.0.0</text>
+  <rect x="175" y="64" width="200.98" rx="2" ry="2" fill="#4886CD" class="bar"/>
+  <text x="382.98" y="74" class="desc">7994949</text>
+  <rect x="175" y="76" width="140.00" rx="2" ry="2" fill="#4FB84B" class="bar"/>
+  <text x="322.00" y="86" class="desc">3</text>
+  <text x="160" y="125" text-anchor="end">Jackson</text>
+  <text x="160" y="135" text-anchor="end" class="desc">2.18.0</text>
+  <rect x="175" y="108" width="280.19" rx="2" ry="2" fill="#4886CD" class="bar"/>
+  <text x="462.19" y="118" class="desc">11145531</text>
+  <rect x="175" y="120" width="93.33" rx="2" ry="2" fill="#4FB84B" class="bar"/>
+  <text x="275.33" y="130" class="desc">2</text>
+  <text x="160" y="169" text-anchor="end">Gson</text>
+  <text x="160" y="179" text-anchor="end" class="desc">2.11.0</text>
+  <rect x="175" y="152" width="350.00" rx="2" ry="2" fill="#4886CD" class="bar"/>
+  <text x="532.00" y="162" class="desc">13922623</text>
+  <rect x="175" y="164" width="93.33" rx="2" ry="2" fill="#4FB84B" class="bar"/>
+  <text x="275.33" y="174" class="desc">2</text>
+  <text x="175" y="236" class="desc">Java: 21</text>
+  <text x="245" y="236" class="desc">Memory: 4072MB</text>
+  <text x="345" y="236" class="desc">CPU: Intel(R) Core(TM) i7-3770K CPU @ 3.50GHz 3.501GHz</text>
 </svg>
