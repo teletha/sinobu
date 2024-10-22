@@ -1115,6 +1115,13 @@ class CronTest {
         assert invalidFormat("0 0 0 * * 12");
     }
 
+    @Test
+    void zone() {
+        Parsed parsed = new Parsed("0 9 * * *");
+        assert parsed.nextInstant("2024-10-10T05:00:00+00:00", "2024-10-10T09:00:00+00:00");
+        assert parsed.nextInstant("2024-10-10T05:00:00+09:00", "2024-10-10T00:00:00+00:00");
+    }
+
     private static class Parsed {
         Cron[] fields;
 
@@ -1146,6 +1153,22 @@ class CronTest {
             return true;
         }
 
+        boolean nextInstant(String base, String expectedNext) {
+            ZonedDateTime nextDate = parse(expectedNext);
+
+            if (base.indexOf("{") == -1) {
+                ZonedDateTime baseDate = parse(base);
+                assert next(baseDate).toInstant().equals(nextDate.toInstant()) : base + "   " + nextDate;
+                return true;
+            } else {
+                for (String expand : expandDateRange(base)) {
+                    ZonedDateTime baseDate = parse(expand);
+                    assert next(baseDate).toInstant().equals(nextDate.toInstant()) : base + "  " + next(baseDate) + "   " + nextDate;
+                }
+            }
+            return true;
+        }
+
         private ZonedDateTime parse(String date) {
             if (date.indexOf('T') == -1) {
                 if (date.indexOf(':') == -1) {
@@ -1154,7 +1177,11 @@ class CronTest {
                     return LocalTime.parse(date).atDate(LocalDate.now()).atZone(ZoneId.systemDefault());
                 }
             } else {
-                return LocalDateTime.parse(date).atZone(ZoneId.systemDefault());
+                if (date.indexOf('+') == -1) {
+                    return LocalDateTime.parse(date).atZone(ZoneId.systemDefault());
+                } else {
+                    return ZonedDateTime.parse(date);
+                }
             }
         }
 

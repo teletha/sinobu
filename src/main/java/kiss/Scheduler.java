@@ -11,6 +11,7 @@ package kiss;
 
 import static java.util.concurrent.Executors.*;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
@@ -366,8 +367,26 @@ public class Scheduler extends AbstractExecutorService implements ScheduledExecu
      * @throws IllegalArgumentException If the cron format is invalid or cannot be parsed correctly.
      */
     public ScheduledFuture<?> scheduleAt(Runnable command, String format) {
+        return scheduleAt(command, format, ZoneId.systemDefault());
+    }
+
+    /**
+     * Schedules the task using the specified time zone.
+     * For more details, see {@link #scheduleAt(Runnable, String)}.
+     * 
+     * @param command The {@code Runnable} task to be scheduled for periodic execution.
+     * @param format A valid cron expression that defines the schedule for task execution.
+     *            The cron format is parsed to calculate the next execution time.
+     * @param id The time zone.
+     * 
+     * @return A {@code ScheduledFuture<?>} representing the pending completion of the task.
+     *         The {@code ScheduledFuture} can be used to cancel or check the status of the task.
+     * 
+     * @throws IllegalArgumentException If the cron format is invalid or cannot be parsed correctly.
+     */
+    public ScheduledFuture<?> scheduleAt(Runnable command, String format, ZoneId id) {
         Cron[] fields = parse(format, command.toString().hashCode());
-        LongUnaryOperator next = old -> next(fields, ZonedDateTime.now()).toInstant().toEpochMilli();
+        LongUnaryOperator next = old -> next(fields, ZonedDateTime.now(id)).toInstant().toEpochMilli();
 
         return executeTask(new Task(callable(command), next.applyAsLong(0L), next));
     }
