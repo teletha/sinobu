@@ -1,5 +1,14 @@
 # Changelog
 
+## [4.2.0](https://github.com/teletha/sinobu/compare/v4.1.0...v4.2.0) (2024-10-23)
+
+
+### Features
+
+* add I#schedule(cron, zoneId) ([3e57f17](https://github.com/teletha/sinobu/commit/3e57f17bdb81887e4cc540f83330eb96074b671a))
+* change time provider from LognSupplier to Variable&lt;Long&gt; ([3e57f17](https://github.com/teletha/sinobu/commit/3e57f17bdb81887e4cc540f83330eb96074b671a))
+* drop Signal#throttle with time provider ([3e57f17](https://github.com/teletha/sinobu/commit/3e57f17bdb81887e4cc540f83330eb96074b671a))
+
 ## [4.1.0](https://github.com/teletha/sinobu/compare/v4.0.0...v4.1.0) (2024-10-22)
 
 
