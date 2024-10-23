@@ -61,7 +61,8 @@ public class DocumentDoc {
          * - [Dependency Injection](https://en.wikipedia.org/wiki/Dependency_injection)
          * - Object lifecycle management
          * - Property based object modeling
-         * - HTTP(S)
+         * - HTTP(S) Client
+         * - Web Socket Client
          * - [JSON](https://en.wikipedia.org/wiki/JSON)
          * - [HTML](https://en.wikipedia.org/wiki/HTML) (including Tag Soup)
          * - [XML](https://en.wikipedia.org/wiki/XML)
