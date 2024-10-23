@@ -395,23 +395,44 @@ const root = {
 				},
 				{
 					"path": "doc/doc.DocumentDoc.Cron.html#doc.DocumentDoc.Cron.Format",
-					"subs": [],
+					"subs": [
+						{
+							"path": "doc/doc.DocumentDoc.Cron.html#doc.DocumentDoc.Cron.Format.Second",
+							"subs": [],
+							"title": "Second"
+						},
+						{
+							"path": "doc/doc.DocumentDoc.Cron.html#doc.DocumentDoc.Cron.Format.Hour",
+							"subs": [],
+							"title": "Hour"
+						},
+						{
+							"path": "doc/doc.DocumentDoc.Cron.html#doc.DocumentDoc.Cron.Format.Day",
+							"subs": [],
+							"title": "Day"
+						},
+						{
+							"path": "doc/doc.DocumentDoc.Cron.html#doc.DocumentDoc.Cron.Format.Month",
+							"subs": [],
+							"title": "Month"
+						},
+						{
+							"path": "doc/doc.DocumentDoc.Cron.html#doc.DocumentDoc.Cron.Format.Day_of_Week",
+							"subs": [],
+							"title": "Day of Week"
+						}
+					],
 					"title": "Format"
 				},
 				{
-					"path": "doc/doc.DocumentDoc.Cron.html#doc.DocumentDoc.Cron.Fields",
+					"path": "doc/doc.DocumentDoc.Cron.html#doc.DocumentDoc.Cron.Special_Characters",
 					"subs": [],
-					"title": "Fields"
+					"title": "Special Characters"
 				},
 				{
-					"path": "doc/doc.DocumentDoc.Cron.html#doc.DocumentDoc.Cron.Specials",
+					"path": "doc/doc.DocumentDoc.Cron.html#doc.DocumentDoc.Cron.API",
 					"subs": [],
-					"title": "Specials"
-				},
-				{
-					"path": "doc/doc.DocumentDoc.Cron.html#doc.DocumentDoc.Cron.Samples",
-					"subs": [],
-					"title": "Samples"
+					"title": "API"
 				}
 			],
 			"title": "Cron"

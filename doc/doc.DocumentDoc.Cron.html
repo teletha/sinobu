@@ -11,10 +11,10 @@
 		<script src="mimic.js" type="module"></script>
 		<link href="main.css" rel="stylesheet"/>
 	</head>
-	<body class="Y">
-		<header class="b">
-			<h1 class="e" date="2024-10-23" ver="4.2.0"><code>Sinobu</code></h1>
-			<nav class="g"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
+	<body class="N">
+		<header class="I">
+			<h1 class="c" date="2024-10-23" ver="4.2.0"><code>Sinobu</code></h1>
+			<nav class="Z"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#text"/>
 					</svg>Document</a><a href="api/"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#package"/>
@@ -25,7 +25,7 @@
 					</svg>Activity</a><a href="https://github.com/teletha/sinobu" target="_blank"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#github"/>
 					</svg>Repository</a></nav>
-			<div class="Q" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
+			<div class="O" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#sun"/>
 					</svg>
 				</a><a id="dark" title="Change to a darker color scheme"><svg class="A svg" viewBox="0 0 24 24">
@@ -33,21 +33,21 @@
 					</svg>
 				</a></div>
 		</header>
-		<main class="N">
-			<nav class="f">
+		<main class="d">
+			<nav class="T">
 				<div></div>
 			</nav>
-			<article class="k" id="Article">
-				<section class="W B" id="doc.DocumentDoc.Cron.Features_and_Roles">
-					<header class="B K">
+			<article class="J" id="Article">
+				<section class="Y B" id="doc.DocumentDoc.Cron.Features_and_Roles">
+					<header class="B V">
 						<h2>Features and Roles</h2>
-						<div class="j"><span class="perp I"><svg class="A svg" viewBox="0 0 24 24">
+						<div class="h"><span class="perp S"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
-							</span><a class="tweet I"><svg class="A svg" viewBox="0 0 24 24">
+							</span><a class="tweet S"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit I" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L952-L971"><svg class="A svg" viewBox="0 0 24 24">
+							</a><a class="edit S" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L953-L972"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
@@ -78,9 +78,44 @@ services.</li>
 architectures.</li>
 </ul>
 </span></section>
+				<section class="Y B" id="doc.DocumentDoc.Cron.API">
+					<header class="B V">
+						<h2>API</h2>
+						<div class="h"><span class="perp S"><svg class="A svg" viewBox="0 0 24 24">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet S"><svg class="A svg" viewBox="0 0 24 24">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit S" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L1110-L1117"><svg class="A svg" viewBox="0 0 24 24">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="B"><p>You can use <code><a href="api/kiss.I.html#schedule(java.lang.String)">I#schedule(String)</a></code> to schedule jobs by cron expression.</p>
+ <pre class="lang-java"><code>void scheduling() {
+    I.schedule(&#34;0 0 * * *&#34;).to(() -&#62; {
+        // execute your job
+    });
+}</code></pre>
+<p>To stop continuous task scheduling, execute the return value <code><a href="api/kiss.Disposable.html">Disposable</a></code>.</p>
+ <pre class="lang-java"><code>void stopScheduling() {
+    Disposable disposer = I.schedule(&#34;0 0 * * *&#34;).to(() -&#62; {
+        // execute your job
+    });
+
+    // stop scheduling
+    disposer.dispose();
+}</code></pre>
+<p>Since the return value is <code><a href="api/kiss.Signal.html">Signal</a></code>, it is easy to stop after five executions.</p>
+ <pre class="lang-java"><code>void stopSchedulingAfter5Executions() {
+    I.schedule(&#34;0 0 * * *&#34;).take(5).to(() -&#62; {
+        // execute your job
+    });
+}</code></pre>
+</span></section>
 			</article>
-			<aside class="a" id="SubNavi">
-				<div class="S"></div>
+			<aside class="g" id="SubNavi">
+				<div class="R"></div>
 			</aside>
 		</main>
 		<script src="root.js"></script>
