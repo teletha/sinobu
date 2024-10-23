@@ -52,12 +52,11 @@ public class DocumentDoc {
          * 
          * Sinobu is not obsolete framework but utility, which can manipulate objects as a
          * extremely-condensed facade.
-         * This is extremely lightweight at approximately 106 KB without relying on other libraries,
+         * This is extremely lightweight at approximately 120 KB without relying on other libraries,
          * and its various operations are designed to run as fast as other competing libraries.
          * 
          * This library aims to simplify and highly condense the functions related to domains that
          * are frequently encountered in real-world development projects, making them easier to use.
-         * Some specific domains are listed below.
          * 
          * - [Dependency Injection](https://en.wikipedia.org/wiki/Dependency_injection)
          * - Object lifecycle management
@@ -72,7 +71,9 @@ public class DocumentDoc {
          * - Template Engine ([Mustache](https://mustache.github.io/mustache.5.html))
          * - Dynamic plug-in mechanism
          * - Object persistence
-         * - Logging
+         * - Logging (Garbage-Free)
+         * - Virtual Job Scheduler
+         * - [Cron](https://en.wikipedia.org/wiki/Cron) Scheduling
          * 
          * With a few exceptions, Sinobu and its APIs are designed to be simple to use and easy to
          * understand by adhering to the following principles.

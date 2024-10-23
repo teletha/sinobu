@@ -23,23 +23,22 @@ public class Project extends bee.api.Project {
                 This is extremely lightweight at approximately 120 KB without relying on other libraries, and its various operations are designed to run as fast as other competing libraries.
 
                 This library aims to simplify and highly condense the functions related to domains that are frequently encountered in real-world development projects, making them easier to use.
-                - Dependency Injection
+                - [Dependency Injection](https://en.wikipedia.org/wiki/Dependency_injection)
                 - Object lifecycle management
-                - JavaBeans-like property based type modeling
-                - HTTP(S) Client
-                - Web Socket Client
-                - JSON
-                - HTML(XML)
-                - Reactive Programming (Rx)
-                - Asynchronous processing
-                - Parallel processing
+                - Property based object modeling
+                - HTTP(S)
+                - [JSON](https://en.wikipedia.org/wiki/JSON)
+                - [HTML](https://en.wikipedia.org/wiki/HTML) (including Tag Soup)
+                - [XML](https://en.wikipedia.org/wiki/XML)
+                - Reactive Programming ([Rx](http://reactivex.io))
+                - Asynchronous & Parallel processing
                 - Multilingualization
-                - Template Engine (Mustache)
+                - Template Engine ([Mustache](https://mustache.github.io/mustache.5.html))
                 - Dynamic plug-in mechanism
                 - Object Persistence
                 - Logging (Garbage-Free)
                 - Virtual Job Scheduler
-                - Cron Scheduling
+                - [Cron](https://en.wikipedia.org/wiki/Cron) Scheduling
 
                 With a few exceptions, Sinobu and its APIs are designed to be simple to use and easy to understand by adhering to the following principles.
                 - Keep it stupid simple
