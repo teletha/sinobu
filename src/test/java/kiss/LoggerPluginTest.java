@@ -12,12 +12,11 @@ package kiss;
 import java.lang.System.Logger.Level;
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.function.Supplier;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import com.google.common.base.Supplier;
 
 public class LoggerPluginTest {
 
