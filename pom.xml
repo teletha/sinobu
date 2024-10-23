@@ -187,7 +187,7 @@ With a few exceptions, Sinobu and its APIs are designed to be simple to use and 
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
 					<encoding>UTF-8</encoding>
-					<release>21</release>
+					<release>23</release>
 					<compilerArgs/>
 				</configuration>
 			</plugin>
