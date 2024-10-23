@@ -2220,7 +2220,7 @@ public class Signal<V> {
                     }
                 });
             }, e -> {
-                scheduler.accept(I.wiseC(observer::error).bind(e));
+                scheduler.accept(((WiseConsumer<Throwable>) observer::error).bind(e));
             }, () -> {
                 if (--countable[0] == 0) {
                     scheduler.accept(observer::complete);

@@ -2044,6 +2044,8 @@ public class I implements ParameterizedType {
      * @param cron The cron expression.
      * @return {@link Signal} that emits long value (1) at the time and ever-increasing numbers
      *         after each interval of time thereafter
+     * 
+     * @see Scheduler#scheduleAt(Runnable, String)
      */
     public static Signal<Long> schedule(String cron) {
         return schedule(cron, null);
@@ -2057,6 +2059,8 @@ public class I implements ParameterizedType {
      * @param cron The cron expression.
      * @return {@link Signal} that emits long value (1) at the time and ever-increasing numbers
      *         after each interval of time thereafter
+     * 
+     * @see Scheduler#scheduleAt(Runnable, String)
      */
     public static Signal<Long> schedule(String cron, ZoneId id) {
         return new Signal<>((observer, disposer) -> disposer.add(Jobs.scheduleAt(I.wiseC(observer).bindLast(null), cron, id))).count();
