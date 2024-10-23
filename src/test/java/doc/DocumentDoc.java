@@ -23,6 +23,7 @@ import java.util.concurrent.Executors;
 import doc.ExtensionTest.Codec;
 import doc.ExtensionTest.LocalDateCodec;
 import doc.MustacheTest.Person;
+import kiss.Disposable;
 import kiss.Extensible;
 import kiss.I;
 import kiss.Lifestyle;
@@ -973,161 +974,170 @@ public class DocumentDoc {
         public class Features_and_Roles {
         }
 
+        ///  ## Format
+        /// 
+        /// A Cron expression consists of five or six fields, separated by spaces.
+        /// From left to right, they represent seconds, minutes, hours, days, months, and days of the week, with seconds being optional.
+        /// The possible values for each field are as follows, and some special function characters can also be used.
         ///
-        ///  ## 基本構文
-        /// 
-        /// Cron式は5つまたは6つのフィールドで構成され、スペースで区切って記述します：
-        /// 
+        /// If you want to specify 9:00 every morning, it would look like this
         /// ```
-        /// * * * * *
-        /// ┬ ┬ ┬ ┬ ┬ ┬
-        /// │ │ │ │ │ │
-        /// │ │ │ │ │ └── 秒（オプション）
-        /// │ │ │ │ └──── 曜日 (0 - 6) (日曜日=0)
-        /// │ │ │ └────── 月 (1 - 12)
-        /// │ │ └──────── 日 (1 - 31)
-        /// │ └────────── 時 (0 - 23)
-        /// └──────────── 分 (0 - 59)
+        /// 0 0 9 * * *
         /// ```
         ///
+        /// Seconds field is optional and can be omitted.
+        /// ```
+        /// 0 9 * * *
+        /// ```
+        ///
+        /// | Field           | Required | Acceptable Values                                                     | Special Characters        |
+        /// |------------|--------|------------------------------------------------------|-------------------------|
+        /// | Seconds     | No       | 0 ~ 59                                                                              | `,` `-` `*` `/` `R`                  |
+        /// | Minutes     | Yes       | 0 ~ 59                                                                              | `,` `-` `*` `/` `R`                  |
+        /// | Hours         | Yes      | 0 ~ 23                                                                               | `,` `-` `*` `/` `R`                  |
+        /// | Days           | Yes       | 1 ~ 31                                                                              | `,` `-` `*` `/` `?` `L` `W` `R`  |
+        /// | Months      | Yes      | 1 ~ 12 or JAN ~ DEC                                                      | `,` `-` `*` `/` `R`                   |
+        /// | Weekdays  | Yes      | 0 ~ 7 or SUN ~ SAT<br/>0 and 7 represent Sunday | `,` `-` `*` `/` `?` `L` `#` `R`    |
         public class Format {
+
+            /// The seconds field can be a number from 0 to 59. It is optional and does not have to be specified.
+            ///
+            /// | Expression | Description    | Example        | Execution Timing            |
+            /// |------------|----------------|----------------|-----------------------------|
+            /// | `*`        | Every minute    | `* * * * *`    |  every minute        |
+            /// | `*/5`      | Every 5 minutes | `*/5 * * * *`  |  every 5 minutes     |
+            /// | `5`        | Specific minute | `5 * * * *`    |  at the 5th minute   |
+            /// | `1-30`     | Range           | `1-30 * * * *` |  from minute 1 to 30 |
+            /// | `0,30`     | Multiple values | `0,30 * * * *` |  at minutes 0 and 30 |
+            public class Second {
+            }
+
+            /// The time field can be a number from 0 to 23.
+            ///
+            /// | Expression   | Description           | Example        | Execution Timing                   |
+            /// |--------------|-----------------------|----------------|------------------------------------|
+            /// | `*`          | Every hour            | `0 * * * *`    |  at the 0th minute of every hour |
+            /// | `*/3`        | Every 3 hours         | `0 */3 * * *`  |  every 3 hours at the 0th minute |
+            /// | `0`          | Midnight              | `0 0 * * *`    |  at 12:00 AM every day         |
+            /// | `9-17`       | Business hours        | `0 9-17 * * *` |  at the 0th minute between 9 AM and 5 PM |
+            /// | `8,12,18`    | Multiple times        | `0 8,12,18 * * *` |  at 8 AM, 12 PM, and 6 PM | 
+            public class Hour {
+            }
+
+            /// The date field can be a number between 1 and 31.
+            ///
+            /// | Expression | Description        | Example         | Execution Timing                       |
+            /// |------------|--------------------|-----------------|----------------------------------------|
+            /// | `*`        | Every day           | `0 0 * * *`     |  at 12:00 AM every day         |
+            /// | `1`        | First day of month  | `0 0 1 * *`     |  at 12:00 AM on the 1st of every month |
+            /// | `L`        | Last day of month   | `0 0 L * *`     |  at 12:00 AM on the last day of every month |
+            /// | `*/2`      | Every other day     | `0 0 */2 * *`   |  at 12:00 AM every other day   |
+            /// | `1,15`     | Multiple days       | `0 0 1,15 * *`  |  at 12:00 AM on the 1st and 15th of every month |
+            /// | `15W`      | Nearest weekday     | `0 0 15W * *`   |  at 12:00 AM on the nearest weekday to the 15th |
+            public class Day {
+            }
+
+            /// The month field can be a number from 1 to 12.
+            /// It can also be specified in English abbreviations such as `JUN`, `FEB`, `MAR`, etc.
+            ///
+            /// | Expression         | Description          | Example           | Execution Timing                           |
+            /// |--------------------|----------------------|-------------------|--------------------------------------------|
+            /// | `*`                | Every month          | `0 0 1 * *`       |  at 12:00 AM on the 1st of every month |
+            /// | `1` or `JAN`       | January              | `0 0 1 1 *`       |  at 12:00 AM on January 1st        |
+            /// | `*/3`              | Quarterly            | `0 0 1 */3 *`     |  at 12:00 AM on the 1st every 3 months |
+            /// | `3-5`              | Specified period     | `0 0 1 3-5 *`     |  at 12:00 AM on the 1st from March to May |
+            /// | `1,6,12`           | Multiple months      | `0 0 1 1,6,12 *`  |  at 12:00 AM on January 1st, June 1st, and December 1st |
+            public class Month {
+            }
+
+            /// The day of the week field can be a number from 0 to 7, where 0 is Sunday, 1 is Monday, 2 is Tuesday, and so on, returning to Sunday at 7.
+            /// You can also specify the English abbreviation of `SUN`, `MON`, `TUE`, etc.
+            ///
+            /// | Expression | Description | Example | Execution Timing |
+            /// |----------|-------------|---------|------------------|
+            /// | `*`      | Every day   | `0 0 * * *` |  every day at 00:00 |
+            /// | `1-5`    | Weekdays only | `0 0 * * 1-5` |  at 00:00 on weekdays |
+            /// | `0,6`    | Weekends only | `0 0 * * 0,6` |  at 00:00 on Saturday and Sunday |
+            /// | `1#1`    | Nth weekday | `0 0 * * 1#1` |  at 00:00 on the first Monday of each month |
+            /// | `5L`     | Last weekday | `0 0 * * 5L` |  at 00:00 on the last Friday of each month |
+            public class Day_of_Week {
+            }
         }
 
-        /// ## 各フィールドの説明
+        /// In addition to numbers, each field can contain characters with special meanings and functions.
         ///
-        /// ### フィールドの仕様
+        /// | Character | Description | Example | Execution Timing |
+        /// |-----------|-------------|---------|------------------|
+        /// | `*`       | All values  | `* * * * *` |  every minute |
+        /// | `,`       | List of values | `1,15,30 * * * *` |  at 1 minute, 15 minutes, and 30 minutes past every hour |
+        /// | `-`       | Range       | `9-17 * * * *` |  every minute from 9 AM to 5 PM |
+        /// | `/`       | Interval    | `*/15 * * * *` |  every 15 minutes |
+        /// | `L`       | Last        | `0 0 L * *` |  at 00:00 on the last day of each month |
+        /// | `W`       | Nearest weekday | `0 0 15W * *` |  at 00:00 on the nearest weekday to the 15th |
+        /// | `#`       | Nth occurrence | `0 0 * * 1#1` |  at 00:00 on the first Monday of each month |
+        /// | `R`       | Random                       | `R 10 * * *` |  once at a random minute in 10:00 a.m |
+        /// | `?`       | No date specification | `0 0 ? * MON` |  at 00:00 every Monday |
+        /// 
+        /// 
+        /// Complex time specifications can be made by combining several special characters as follows
         ///
-        /// | フィールド | 必須  | 許容値                                     | 使用可能な特殊文字 |
-        /// |-------- |------|------------------------------- |-------------------|
-        /// | 秒         | いいえ | 0-59                                        | `,` `-` `*` `/` |
-        /// | 分         | はい   | 0-59                                        | `,` `-` `*` `/` |
-        /// | 時         | はい   | 0-23                                        | `,` `-` `*` `/` |
-        /// | 日         | はい   | 1-31                                        | `,` `-` `*` `/` `?` `L` `W` |
-        /// | 月         | はい   | 1-12 または JAN-DEC                  | `,` `-` `*` `/` |
-        /// | 曜日      | はい   | 0-6 または SUN-SAT（0と7は日曜日） | `,` `-` `*` `/` `?` `L` `#` |
-        ///
-        /// ### 分フィールド (0-59)
-        ///
-        /// | 表記 | 説明 | 例 | 実行タイミング |
-        /// |------|------|-----|----------------|
-        /// | `*` | 毎分 | `* * * * *` | 毎分実行 |
-        /// | `*/5` | 5分おき | `*/5 * * * *` | 5分ごとに実行 |
-        /// | `5` | 特定の分 | `5 * * * *` | 毎時5分に実行 |
-        /// | `1-30` | 範囲指定 | `1-30 * * * *` | 毎時1分から30分まで毎分実行 |
-        /// | `0,30` | 複数指定 | `0,30 * * * *` | 毎時0分と30分に実行 |
-        ///
-        /// ### 時フィールド (0-23)
-        ///
-        /// | 表記 | 説明 | 例 | 実行タイミング |
-        /// |------|------|-----|----------------|
-        /// | `*` | 毎時 | `0 * * * *` | 毎時0分に実行 |
-        /// | `*/3` | 3時間おき | `0 */3 * * *` | 3時間ごとの0分に実行 |
-        /// | `0` | 深夜0時 | `0 0 * * *` | 毎日深夜0時0分に実行 |
-        /// | `9-17` | 営業時間 | `0 9-17 * * *` | 9時から17時まで毎時0分に実行 |
-        /// | `8,12,18` | 複数時刻 | `0 8,12,18 * * *` | 8時、12時、18時の0分に実行 |
-        ///
-        /// ### 日フィールド (1-31)
-        ///
-        /// | 表記 | 説明 | 例 | 実行タイミング |
-        /// |------|------|-----|----------------|
-        /// | `*` | 毎日 | `0 0 * * *` | 毎日0時0分に実行 |
-        /// | `1` | 月初 | `0 0 1 * *` | 毎月1日の0時0分に実行 |
-        /// | `L` | 月末 | `0 0 L * *` | 毎月最終日の0時0分に実行 |
-        /// | `*/2` | 1日おき | `0 0 */2 * *` | 1日おきの0時0分に実行 |
-        /// | `1,15` | 複数日 | `0 0 1,15 * *` | 毎月1日と15日の0時0分に実行 |
-        /// | `15W` | 平日指定 | `0 0 15W * *` | 15日に最も近い平日の0時0分に実行 |
-        ///
-        /// ### 月フィールド (1-12)
-        ///
-        /// | 表記 | 説明 | 例 | 実行タイミング |
-        /// |------|------|-----|----------------|
-        /// | `*` | 毎月 | `0 0 1 * *` | 毎月1日の0時0分に実行 |
-        /// | `1` または `JAN` | 1月 | `0 0 1 1 *` | 1月1日の0時0分に実行 |
-        /// | `*/3` | 四半期 | `0 0 1 */3 *` | 3ヶ月ごとの1日0時0分に実行 |
-        /// | `3-5` | 期間指定 | `0 0 1 3-5 *` | 3月から5月の1日0時0分に実行 |
-        /// | `1,6,12` | 複数月 | `0 0 1 1,6,12 *` | 1月、6月、12月の1日0時0分に実行 |
-        ///
-        /// ### 曜日フィールド (0-6, 日曜日=0)
-        ///
-        /// | 表記 | 説明 | 例 | 実行タイミング |
-        /// |------|------|-----|----------------|
-        /// | `*` | 毎日 | `0 0 * * *` | 毎日0時0分に実行 |
-        /// | `1-5` | 平日のみ | `0 0 * * 1-5` | 平日の0時0分に実行 |
-        /// | `0,6` | 週末のみ | `0 0 * * 0,6` | 土曜と日曜の0時0分に実行 |
-        /// | `1#1` | 第N曜日 | `0 0 * * 1#1` | 毎月第1月曜日の0時0分に実行 |
-        /// | `5L` | 最終曜日 | `0 0 * * 5L` | 毎月最後の金曜日の0時0分に実行 |
-        public class Fields {
+        /// | Example                       | Execution Timing                                          |
+        /// |-------------------------------|---------------------------------------------------------|
+        /// | `30 17 * * 5L`               |  at 17:30 on the last Friday of each month     |
+        /// | `*/30 9-17 * * 1-5`          |  every 30 minutes from 9 AM to 5 PM on weekdays |
+        /// | `0 0 1,15,L * *`              |  at 00:00 on the 1st, 15th, and last day of each month |
+        /// | `0 12 * * 1#2,1#4`          |  at 12:00 on the 2nd and 4th Monday of each month |
+        /// | `0 9 15W * *`                 |  at 09:00 on the nearest weekday to the 15th   |
+        /// | `0 22 * 1-3 0L`              |  at 22:00 on the last Sunday of each month from January to March |
+        /// | `15 9-17/2 * * 1,3,5`      |  every 2 hours from 09:15 to 17:15 on Mondays, Wednesdays, and Fridays |
+        /// | `0 0-5/2 * * *`              |  every 2 hours between 00:00 and 05:00 every day |
+        /// | `0 18-22 * * 1-5`            |  at every hour from 18:00 to 22:00 on weekdays |
+        /// | `0 0 1 * 2`                  |  at 00:00 on the first day of every month, but only if it is a Tuesday |
+        /// | `0 0 15 * 1#3`               |  at 00:00 on the third Monday of every month when it falls on the 15th |
+        /// | `0 12 1 1 *`                 |  at 12:00 on January 1st every year            |
+        /// | `*/10 * * * 6#3`             |  every 10 minutes on the third Saturday of each month |
+        /// | `0 8-18/3 * * 0`             |  every 3 hours from 08:00 to 18:00 on Sundays  |
+        /// | `0 0-23/6 * * *`             |  every 6 hours, at 00:00, 06:00, 12:00, and 18:00 every day |
+        /// | `0 15 1 1,7 *`               |  at 15:00 on January 1st and July 1st every year |
+        /// | `0 20 * * 1#2`               |  at 20:00 on the second Monday of each month    |
+        /// | `0-30R 10,22 * * *`               |  once each at random times between 0 and 30 minutes at 10:00 or 22:00    |
+        /// | `0 0 1-5,10-15 * *`          |  at 00:00 on the 1st to 5th and the 10th to 15th day of each month |
+        /// | `0 1-5/2,10-15 * * *`        |  at every 2 hours from 01:00 to 05:00 and every hour from 10:00 to 15:00 every day |
+        public class Special_Characters {
         }
 
-        /// ## 特殊文字
-        /// 
-        /// | 文字 | 説明 | 例 | 実行タイミング |
-        /// |------|------|-----|----------------|
-        /// | `*` | 全ての値 | `* * * * *` | 毎分実行 |
-        /// | `,` | 値のリスト | `1,15,30 * * * *` | 毎時1分、15分、30分に実行 |
-        /// | `-` | 範囲 | `9-17 * * * *` | 9時から17時まで毎分実行 |
-        /// | `/` | 間隔 | `*/15 * * * *` | 15分おきに実行 |
-        /// | `L` | 最終 | `0 0 L * *` | 毎月最終日の0時0分に実行 |
-        /// | `L` | 曜日での最終 | `0 0 * * 5L` | 毎月最後の金曜日の0時0分に実行 |
-        /// | `W` | 最も近い平日 | `0 0 15W * *` | 15日の最も近い平日の0時0分に実行 |
-        /// | `#` | 第N番目 | `0 0 * * 1#1` | 毎月第1月曜日の0時0分に実行 |
-        /// | `?` | 日付指定なし（曜日指定時） | `0 0 ? * MON` | 毎週月曜日の0時0分に実行 |
-        /// 
-        /// ### 特殊文字の組み合わせ例
-        /// 
-        /// ```
-        /// # 毎月最終金曜日の17:30に実行
-        /// 30 17 * * 5L
-        /// 
-        /// # 平日の9時から17時まで30分おきに実行
-        /// */30 9-17 * * 1-5
-        /// 
-        /// # 毎月1日、15日、最終日の0時に実行
-        /// 0 0 1,15,L * *
-        /// 
-        /// # 毎月第2月曜と第4月曜の12時に実行
-        /// 0 12 * * 1#2,1#4
-        /// 
-        /// # 毎月15日前後の平日の9時に実行（15日が週末の場合は直前または直後の平日）
-        /// 0 9 15W * *
-        /// 
-        /// # 1月から3月の間で、最終日曜日の22時に実行
-        /// 0 22 * 1-3 0L
-        /// 
-        /// # 毎週月水金の9時15分から17時15分まで2時間おきに実行
-        /// 15 9-17/2 * * 1,3,5
-        /// ```
-        public class Specials {
-        }
+        /**
+         * You can use {@link I#schedule(String)} to schedule jobs by cron expression.
+         * {@link API#scheduling() @}
+         * 
+         * To stop continuous task scheduling, execute the return value {@link Disposable}.
+         * {@link API#stopScheduling() @}
+         * 
+         * Since the return value is {@link Signal}, it is easy to stop after five executions.
+         * {@link API#stopSchedulingAfter5Executions() @}
+         */
+        public class API {
 
-        /// ## よく使用される例
-        /// 
-        /// ```
-        /// # 毎日午前3時に実行
-        /// 0 3 * * *
-        /// 
-        /// # 平日の営業時間内（9-17時）に1時間おきに実行
-        /// 0 9-17 * * 1-5
-        /// 
-        /// # 毎週月曜の午前9時に実行
-        /// 0 9 * * 1
-        /// 
-        /// # 毎月1日の深夜0時に実行
-        /// 0 0 1 * *
-        /// 
-        /// # 15分おきに実行
-        /// */15 * * * *
-        /// 
-        /// # 毎月最終日の23時45分に実行
-        /// 45 23 L * *
-        /// 
-        /// # 毎週土日の9時から18時まで30分おきに実行
-        /// */30 9-18 * * 6,0
-        /// 
-        /// # 1月、4月、7月、10月の最初の月曜の0時に実行
-        /// 0 0 * 1,4,7,10 1#1
-        /// ```
-        public class Samples {
+            void scheduling() {
+                I.schedule("0 0 * * *").to(() -> {
+                    // execute your job
+                });
+            }
+
+            void stopScheduling() {
+                Disposable disposer = I.schedule("0 0 * * *").to(() -> {
+                    // execute your job
+                });
+
+                // stop scheduling
+                disposer.dispose();
+            }
+
+            void stopSchedulingAfter5Executions() {
+                I.schedule("0 0 * * *").take(5).to(() -> {
+                    // execute your job
+                });
+            }
         }
     }
 }
