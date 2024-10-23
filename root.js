@@ -384,6 +384,37 @@ const root = {
 				}
 			],
 			"title": "Persistence"
+		},
+		{
+			"path": "doc/doc.DocumentDoc.Cron.html",
+			"subs": [
+				{
+					"path": "doc/doc.DocumentDoc.Cron.html#doc.DocumentDoc.Cron.Features_and_Roles",
+					"subs": [],
+					"title": "Features and Roles"
+				},
+				{
+					"path": "doc/doc.DocumentDoc.Cron.html#doc.DocumentDoc.Cron.Format",
+					"subs": [],
+					"title": "Format"
+				},
+				{
+					"path": "doc/doc.DocumentDoc.Cron.html#doc.DocumentDoc.Cron.Fields",
+					"subs": [],
+					"title": "Fields"
+				},
+				{
+					"path": "doc/doc.DocumentDoc.Cron.html#doc.DocumentDoc.Cron.Specials",
+					"subs": [],
+					"title": "Specials"
+				},
+				{
+					"path": "doc/doc.DocumentDoc.Cron.html#doc.DocumentDoc.Cron.Samples",
+					"subs": [],
+					"title": "Samples"
+				}
+			],
+			"title": "Cron"
 		}
 	],
 	"modules": [],
