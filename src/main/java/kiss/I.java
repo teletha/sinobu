@@ -82,7 +82,6 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -2018,7 +2017,23 @@ public class I implements ParameterizedType {
      *         numbers after each interval time of time thereafter
      */
     public static Signal<Long> schedule(long delayTime, long intervalTime, TimeUnit unit, boolean fixedRate, ScheduledExecutorService... scheduler) {
-        return schedule(time(delayTime), time(intervalTime), unit, fixedRate, scheduler);
+        Objects.requireNonNull(unit);
+
+        return new Signal<>((observer, disposer) -> {
+            Runnable task = I.wiseC(observer).bindLast(null);
+            Future future;
+
+            ScheduledExecutorService exe = scheduler == null || scheduler.length == 0 || scheduler[0] == null ? I.Jobs : scheduler[0];
+
+            if (intervalTime <= 0) {
+                future = delayTime <= 0 ? CompletableFuture.runAsync(task, Runnable::run) : exe.schedule(task, delayTime, unit);
+            } else if (fixedRate) {
+                future = exe.scheduleAtFixedRate(task, delayTime, intervalTime, unit);
+            } else {
+                future = exe.scheduleWithFixedDelay(task, delayTime, intervalTime, unit);
+            }
+            return disposer.add(future);
+        }).count();
     }
 
     /**
@@ -2031,51 +2046,20 @@ public class I implements ParameterizedType {
      *         after each interval of time thereafter
      */
     public static Signal<Long> schedule(String cron) {
-        return new Signal<>((observer, disposer) -> {
-            return disposer.add(Jobs.scheduleAt(I.wiseC(observer).bindLast(null), cron));
-        }).count();
+        return schedule(cron, null);
     }
 
     /**
+     * Create a time-based periodic executable scheduler. It will be executed at regular intervals
+     * starting from a specified base time. For example, if the base time is 00:05 and the interval
+     * is 30 minutes, the actual execution time will be 00:05, 00:30, 01:05, 01:35, and so on.
      * 
-     * 
-     * @param time
-     * @return
+     * @param cron The cron expression.
+     * @return {@link Signal} that emits long value (1) at the time and ever-increasing numbers
+     *         after each interval of time thereafter
      */
-    static LongSupplier time(long time) {
-        return () -> time;
-    }
-
-    /**
-     * Returns an {@link Signal} that emits long value (1) after the delay time and ever-increasing
-     * numbers after each interval time of time thereafter.
-     * 
-     * @param delayTime The initial delay time to wait before emitting the first value of 1L
-     * @param intervalTime The period of time between emissions of the subsequent numbers
-     * @param unit the time unit for both delay time and interval time
-     * @return {@link Signal} that emits long value (1) after the delay time and ever-increasing
-     *         numbers after each interval time of time thereafter
-     */
-    static Signal<Long> schedule(LongSupplier delayTime, LongSupplier intervalTime, TimeUnit unit, boolean fixedRate, ScheduledExecutorService... scheduler) {
-        Objects.requireNonNull(unit);
-
-        return new Signal<>((observer, disposer) -> {
-            long delay = delayTime.getAsLong();
-            long interval = intervalTime.getAsLong();
-            Runnable task = I.wiseC(observer).bindLast(null);
-            Future future;
-
-            ScheduledExecutorService exe = scheduler == null || scheduler.length == 0 || scheduler[0] == null ? I.Jobs : scheduler[0];
-
-            if (interval <= 0) {
-                future = delay <= 0 ? CompletableFuture.runAsync(task, Runnable::run) : exe.schedule(task, delay, unit);
-            } else if (fixedRate) {
-                future = exe.scheduleAtFixedRate(task, delay, interval, unit);
-            } else {
-                future = exe.scheduleWithFixedDelay(task, delay, interval, unit);
-            }
-            return disposer.add(future);
-        }).count();
+    public static Signal<Long> schedule(String cron, ZoneId id) {
+        return new Signal<>((observer, disposer) -> disposer.add(Jobs.scheduleAt(I.wiseC(observer).bindLast(null), cron, id))).count();
     }
 
     /**

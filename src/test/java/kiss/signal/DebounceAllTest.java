@@ -13,6 +13,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import kiss.Variable;
+
 class DebounceAllTest extends SignalTester {
 
     @Test
@@ -60,6 +62,27 @@ class DebounceAllTest extends SignalTester {
     @Test
     void unitNull() {
         monitor(signal -> signal.debounceAll(10, null));
+
+        assert main.emit("null unit", "makes", "no effect").value(List.of("null unit"), List.of("makes"), List.of("no effect"));
+    }
+
+    @Test
+    void variableZero() {
+        monitor(signal -> signal.debounceAll(Variable.of(0L), ms));
+
+        assert main.emit("null unit", "makes", "no effect").value(List.of("null unit"), List.of("makes"), List.of("no effect"));
+    }
+
+    @Test
+    void variableNegative() {
+        monitor(signal -> signal.debounceAll(Variable.of(-30L), ms));
+
+        assert main.emit("null unit", "makes", "no effect").value(List.of("null unit"), List.of("makes"), List.of("no effect"));
+    }
+
+    @Test
+    void variableNull() {
+        monitor(signal -> signal.debounceAll((Variable<Long>) null, ms));
 
         assert main.emit("null unit", "makes", "no effect").value(List.of("null unit"), List.of("makes"), List.of("no effect"));
     }

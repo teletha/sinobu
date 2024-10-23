@@ -48,7 +48,6 @@ import java.util.function.BinaryOperator;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.LongPredicate;
-import java.util.function.LongSupplier;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
@@ -1129,7 +1128,7 @@ public class Signal<V> {
      * @return {ChainableAPI}
      */
     public Signal<V> debounce(long time, TimeUnit unit, boolean acceptFirst, ScheduledExecutorService... scheduler) {
-        return debounce(I.time(time), unit, acceptFirst, scheduler);
+        return debounce(Variable.of(time), unit, acceptFirst, scheduler);
     }
 
     /**
@@ -1143,7 +1142,7 @@ public class Signal<V> {
      * @param scheduler
      * @return {ChainableAPI}
      */
-    public Signal<V> debounce(LongSupplier time, TimeUnit unit, boolean acceptFirst, ScheduledExecutorService... scheduler) {
+    public Signal<V> debounce(Variable<Long> time, TimeUnit unit, boolean acceptFirst, ScheduledExecutorService... scheduler) {
         return debounceX(time, unit, acceptFirst, scheduler).flatMap(v -> I.signal(v).last());
     }
 
@@ -1157,7 +1156,7 @@ public class Signal<V> {
      * @return {ChainableAPI}
      */
     public Signal<List<V>> debounceAll(long time, TimeUnit unit, ScheduledExecutorService... scheduler) {
-        return debounceAll(I.time(time), unit, scheduler);
+        return debounceAll(Variable.of(time), unit, scheduler);
     }
 
     /**
@@ -1169,7 +1168,7 @@ public class Signal<V> {
      * @param scheduler
      * @return {ChainableAPI}
      */
-    public Signal<List<V>> debounceAll(LongSupplier time, TimeUnit unit, ScheduledExecutorService... scheduler) {
+    public Signal<List<V>> debounceAll(Variable<Long> time, TimeUnit unit, ScheduledExecutorService... scheduler) {
         return debounceX(time, unit, false, scheduler);
     }
 
@@ -1182,9 +1181,9 @@ public class Signal<V> {
      * @param scheduler
      * @return {ChainableAPI}
      */
-    private Signal<List<V>> debounceX(LongSupplier time, TimeUnit unit, boolean acceptFirst, ScheduledExecutorService... scheduler) {
+    private Signal<List<V>> debounceX(Variable<Long> time, TimeUnit unit, boolean acceptFirst, ScheduledExecutorService... scheduler) {
         // ignore invalid parameters
-        if (time == null || time.getAsLong() <= 0 || unit == null) {
+        if (time == null || time.or(0L) <= 0 || unit == null) {
             return map(List::of);
         }
 
@@ -1205,7 +1204,7 @@ public class Signal<V> {
                     d.dispose();
                 }
 
-                latest.set(I.schedule(time, I.time(0), unit, false, scheduler).to(() -> {
+                latest.set(I.schedule(time.v, 0, unit, false, scheduler).to(() -> {
                     latest.set(null);
                     observer.accept(list.getAndSet(new ArrayList<>()));
                 }));
@@ -3546,7 +3545,7 @@ public class Signal<V> {
      * @return {ChainableAPI}
      */
     public Signal<V> throttle(long time, TimeUnit unit) {
-        return throttle(time, unit, System::nanoTime);
+        return throttle(Variable.of(time), unit);
     }
 
     /**
@@ -3563,40 +3562,18 @@ public class Signal<V> {
      *            negative number will ignore this instruction.
      * @param unit A unit of time for the specified timeout. {@code null} will ignore this
      *            instruction.
-     * @param nanoClock A nano-time stamp provider.
      * @return {ChainableAPI}
      */
-    public Signal<V> throttle(long time, TimeUnit unit, LongSupplier nanoClock) {
-        return throttle(I.time(time), unit, nanoClock);
-    }
-
-    /**
-     * <p>
-     * Throttles by skipping values until "skipDuration" passes and then emits the next received
-     * value.
-     * </p>
-     * <p>
-     * Ignores the values from an {@link Signal} sequence which are followed by another value before
-     * due time preassign the specified source and time.
-     * </p>
-     *
-     * @param time Time to wait before sending another item after emitting the last item. Zero or
-     *            negative number will ignore this instruction.
-     * @param unit A unit of time for the specified timeout. {@code null} will ignore this
-     *            instruction.
-     * @param nanoClock A nano-time stamp provider.
-     * @return {ChainableAPI}
-     */
-    public Signal<V> throttle(LongSupplier time, TimeUnit unit, LongSupplier nanoClock) {
+    public Signal<V> throttle(Variable<Long> time, TimeUnit unit) {
         // ignore invalid parameters
-        if (time == null || unit == null || nanoClock == null) {
+        if (time == null || unit == null) {
             return this;
         }
 
         return take(AtomicLong::new, (context, value) -> {
-            long now = nanoClock.getAsLong();
+            long now = System.nanoTime();
 
-            if (context.get() + unit.toNanos(time.getAsLong()) <= now) {
+            if (context.get() + unit.toNanos(time.or(0L)) <= now) {
                 context.set(now);
                 return true;
             }
