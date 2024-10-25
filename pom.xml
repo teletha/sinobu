@@ -127,7 +127,7 @@ With a few exceptions, Sinobu and its APIs are designed to be simple to use and 
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
-			<version>1.5.11</version>
+			<version>1.5.12</version>
 			<scope>test</scope>
 			<exclusions/>
 		</dependency>
