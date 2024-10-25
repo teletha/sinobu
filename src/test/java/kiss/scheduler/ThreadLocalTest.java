@@ -14,7 +14,6 @@ import java.util.concurrent.Future;
 
 import org.junit.jupiter.api.Test;
 
-@SuppressWarnings("resource")
 class ThreadLocalTest extends SchedulerTestSupport {
 
     @Test

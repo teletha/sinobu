@@ -18,7 +18,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.RepeatedTest;
 
-@SuppressWarnings("resource")
 public class ShutdownNowTest extends SchedulerTestSupport {
 
     @RepeatedTest(MULTIPLICITY)

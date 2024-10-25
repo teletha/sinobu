@@ -15,7 +15,6 @@ import org.junit.jupiter.api.Test;
 
 import kiss.TestableScheduler;
 
-@SuppressWarnings("resource")
 public class LimitExecutionSizeTest extends SchedulerTestSupport {
 
     @Test

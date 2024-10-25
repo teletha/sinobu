@@ -13,7 +13,6 @@ import java.util.concurrent.ScheduledFuture;
 
 import org.junit.jupiter.api.Test;
 
-@SuppressWarnings("resource")
 class ScheduleByCronTest extends SchedulerTestSupport {
 
     @Test

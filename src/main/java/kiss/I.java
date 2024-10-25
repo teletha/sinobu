@@ -328,7 +328,7 @@ public class I implements ParameterizedType {
             case 2050244018: // java.net.URL
                 return value -> {
                     try {
-                        return new URL(value);
+                        return URI.create(value).toURL();
                     } catch (Exception e) {
                         throw I.quiet(e);
                     }

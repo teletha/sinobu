@@ -17,7 +17,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.RepeatedTest;
 
-@SuppressWarnings("resource")
 class SchedulerTest extends SchedulerTestSupport {
 
     @RepeatedTest(MULTIPLICITY)
