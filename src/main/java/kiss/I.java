@@ -68,8 +68,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
-import java.util.ServiceLoader;
-import java.util.ServiceLoader.Provider;
 import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.CompletableFuture;
@@ -1171,7 +1169,7 @@ public class I implements ParameterizedType {
      * Load all {@link Extensible} types from the specified source.
      * </p>
      * <p>
-     * You can create the special service loader file "META-INF/services/kiss.Extensible" which
+     * You can pass the csv data from "kiss.Extensible" environment variable which
      * enumerates pre-scanned class names.
      * </p>
      *
@@ -1193,7 +1191,7 @@ public class I implements ParameterizedType {
      * Load all {@link Extensible} types from the specified source.
      * </p>
      * <p>
-     * You can create the special service loader file "META-INF/services/kiss.Extensible" which
+     * You can pass the csv data from "kiss.Extensible" environment variable which
      * enumerates pre-scanned class names.
      * </p>
      *
@@ -1251,8 +1249,8 @@ public class I implements ParameterizedType {
             names = names.take(name -> name.endsWith(".class")).map(name -> name.substring(0, name.length() - 6));
         } catch (Throwable e) {
             // FALLBACK
-            // Read from pre-scanned file "kiss.Extensible" as service provider interface.
-            names = I.signal(ServiceLoader.load(Extensible.class).stream()::iterator).map(Provider::type).map(Class::getName);
+            // Read from pre-scanned csv "kiss.Extensible" in environment variable.
+            names = I.signal(env(Extensible.class.getName()).split(","));
         }
 
         // =======================================
