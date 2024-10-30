@@ -58,7 +58,8 @@ public interface Storable<Self> {
                     Files.move(tmp, file, ATOMIC_MOVE);
                 }
             } catch (Throwable e) {
-                // ignore error
+                // ignore
+                I.error(e);
             }
             return (Self) this;
         }
