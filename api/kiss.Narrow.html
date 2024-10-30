@@ -11,10 +11,10 @@
 		<script src="mimic.js" type="module"></script>
 		<link href="main.css" rel="stylesheet"/>
 	</head>
-	<body class="i">
-		<header class="h">
-			<h1 class="T" date="2024-10-23" ver="4.2.0"><code>Sinobu</code></h1>
-			<nav class="M"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
+	<body class="d">
+		<header class="i">
+			<h1 class="R" date="2024-10-23" ver="4.2.0"><code>Sinobu</code></h1>
+			<nav class="c"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#text"/>
 					</svg>Document</a><a href="api/"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#package"/>
@@ -25,7 +25,7 @@
 					</svg>Activity</a><a href="https://github.com/teletha/sinobu" target="_blank"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#github"/>
 					</svg>Repository</a></nav>
-			<div class="Y" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
+			<div class="e" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#sun"/>
 					</svg>
 				</a><a id="dark" title="Change to a darker color scheme"><svg class="A svg" viewBox="0 0 24 24">
@@ -33,13 +33,13 @@
 					</svg>
 				</a></div>
 		</header>
-		<main class="l">
-			<nav class="W">
+		<main class="Q">
+			<nav class="K">
 				<div></div>
 			</nav>
-			<article class="H" id="Article">
-				<section class="a"><code class="R">kiss</code>
-					<h2 class="Functional J"><code class="I">Narrow</code><code class="P">&#60;<code>FirstBound</code>, <code>First</code>, <code>LastBound</code>, <code>Last</code>&#62;</code></h2>
+			<article class="V" id="Article">
+				<section class="W"><code class="k">kiss</code>
+					<h2 class="Functional l"><code class="L">Narrow</code><code class="M">&#60;<code>FirstBound</code>, <code>First</code>, <code>LastBound</code>, <code>Last</code>&#62;</code></h2>
 					<div class="S">
 						<ul class="C D">
 							<li><code>FirstBound</code></li>
@@ -60,30 +60,30 @@
 						</ul>
 					</div><span class="B"><p>Provide the partial application functionality.</p>
 </span></section>
-				<section class="a" id="bind(java.lang.Object)">
-					<h2 class="k"><i class="DEFAULT"><i class="PUBLIC"></i></i><code class="I">bind</code><code class="P">(<code>First</code> <code class="parameterName">param</code>)</code><i class="Q"><code>FirstBound</code></i></h2>
-					<table class="L">
-						<tr class="e">
+				<section class="W" id="bind(java.lang.Object)">
+					<h2 class="g"><i class="DEFAULT"><i class="PUBLIC"></i></i><code class="L">bind</code><code class="M">(<code>First</code> <code class="parameterName">param</code>)</code><i class="O"><code>FirstBound</code></i></h2>
+					<table class="I">
+						<tr class="N">
 							<td><code>First</code> <code>param</code></td>
 							<td><span><p>A fixed parameter. (accept null)</p>
 </span></td>
 						</tr>
-						<tr class="b">
+						<tr class="J">
 							<td><code>FirstBound</code></td>
 							<td><span><p>A partial applied function.</p>
 </span></td>
 						</tr>
 					</table><span class="B"><p>Apply first parameter partially.</p>
 </span></section>
-				<section class="a" id="bindLazily(java.util.function.Supplier)">
-					<h2 class="k"><i class="DEFAULT"><i class="PUBLIC"></i></i><code class="I">bindLazily</code><code class="P">(<code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code>First</code></code></code> <code class="parameterName">param</code>)</code><i class="Q"><code>FirstBound</code></i></h2>
-					<table class="L">
-						<tr class="e">
+				<section class="W" id="bindLazily(java.util.function.Supplier)">
+					<h2 class="g"><i class="DEFAULT"><i class="PUBLIC"></i></i><code class="L">bindLazily</code><code class="M">(<code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code>First</code></code></code> <code class="parameterName">param</code>)</code><i class="O"><code>FirstBound</code></i></h2>
+					<table class="I">
+						<tr class="N">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code>First</code></code></code> <code>param</code></td>
 							<td><span><p>A fixed parameter. (reject null)</p>
 </span></td>
 						</tr>
-						<tr class="b">
+						<tr class="J">
 							<td><code>FirstBound</code></td>
 							<td><span><p>A partial applied function.</p>
 </span></td>
@@ -91,30 +91,30 @@
 					</table><span class="B"><p>Apply first parameter partially. Unlike <code><a href="api/kiss.Narrow.html#bind(java.lang.Object)">#bind(Object)</a></code>, null parameter will throw
 <code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/NullPointerException.html">NullPointerException</a></code>.</p>
 </span></section>
-				<section class="a" id="bindLast(java.lang.Object)">
-					<h2 class="k"><i class="DEFAULT"><i class="PUBLIC"></i></i><code class="I">bindLast</code><code class="P">(<code>Last</code> <code class="parameterName">param</code>)</code><i class="Q"><code>LastBound</code></i></h2>
-					<table class="L">
-						<tr class="e">
+				<section class="W" id="bindLast(java.lang.Object)">
+					<h2 class="g"><i class="DEFAULT"><i class="PUBLIC"></i></i><code class="L">bindLast</code><code class="M">(<code>Last</code> <code class="parameterName">param</code>)</code><i class="O"><code>LastBound</code></i></h2>
+					<table class="I">
+						<tr class="N">
 							<td><code>Last</code> <code>param</code></td>
 							<td><span><p>A fixed parameter. (accept null)</p>
 </span></td>
 						</tr>
-						<tr class="b">
+						<tr class="J">
 							<td><code>LastBound</code></td>
 							<td><span><p>A partial applied function.</p>
 </span></td>
 						</tr>
 					</table><span class="B"><p>Apply last parameter partially.</p>
 </span></section>
-				<section class="a" id="bindLastLazily(java.util.function.Supplier)">
-					<h2 class="k"><i class="DEFAULT"><i class="PUBLIC"></i></i><code class="I">bindLastLazily</code><code class="P">(<code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code>Last</code></code></code> <code class="parameterName">param</code>)</code><i class="Q"><code>LastBound</code></i></h2>
-					<table class="L">
-						<tr class="e">
+				<section class="W" id="bindLastLazily(java.util.function.Supplier)">
+					<h2 class="g"><i class="DEFAULT"><i class="PUBLIC"></i></i><code class="L">bindLastLazily</code><code class="M">(<code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code>Last</code></code></code> <code class="parameterName">param</code>)</code><i class="O"><code>LastBound</code></i></h2>
+					<table class="I">
+						<tr class="N">
 							<td><code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code>Last</code></code></code> <code>param</code></td>
 							<td><span><p>A fixed parameter. (reject null)</p>
 </span></td>
 						</tr>
-						<tr class="b">
+						<tr class="J">
 							<td><code>LastBound</code></td>
 							<td><span><p>A partial applied function.</p>
 </span></td>
@@ -123,14 +123,14 @@
 <code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/NullPointerException.html">NullPointerException</a></code>.</p>
 </span></section>
 			</article>
-			<aside class="V" id="SubNavi">
-				<div class="Z">
-					<h5 class="f">Methods</h5>
+			<aside class="h" id="SubNavi">
+				<div class="m">
+					<h5 class="a">Methods</h5>
 					<ul>
-						<li><i class="DEFAULT"><i class="PUBLIC"></i></i><code><a href="api/kiss.Narrow.html#bind(java.lang.Object)">bind</a></code><code class="P">(<code>First</code> <code class="parameterName">param</code>)</code><i class="g"><code>FirstBound</code></i></li>
-						<li><i class="DEFAULT"><i class="PUBLIC"></i></i><code><a href="api/kiss.Narrow.html#bindLazily(java.util.function.Supplier)">bindLazily</a></code><code class="P">(<code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code>First</code></code></code> <code class="parameterName">param</code>)</code><i class="g"><code>FirstBound</code></i></li>
-						<li><i class="DEFAULT"><i class="PUBLIC"></i></i><code><a href="api/kiss.Narrow.html#bindLast(java.lang.Object)">bindLast</a></code><code class="P">(<code>Last</code> <code class="parameterName">param</code>)</code><i class="g"><code>LastBound</code></i></li>
-						<li><i class="DEFAULT"><i class="PUBLIC"></i></i><code><a href="api/kiss.Narrow.html#bindLastLazily(java.util.function.Supplier)">bindLastLazily</a></code><code class="P">(<code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code>Last</code></code></code> <code class="parameterName">param</code>)</code><i class="g"><code>LastBound</code></i></li>
+						<li><i class="DEFAULT"><i class="PUBLIC"></i></i><code><a href="api/kiss.Narrow.html#bind(java.lang.Object)">bind</a></code><code class="M">(<code>First</code> <code class="parameterName">param</code>)</code><i class="Y"><code>FirstBound</code></i></li>
+						<li><i class="DEFAULT"><i class="PUBLIC"></i></i><code><a href="api/kiss.Narrow.html#bindLazily(java.util.function.Supplier)">bindLazily</a></code><code class="M">(<code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code>First</code></code></code> <code class="parameterName">param</code>)</code><i class="Y"><code>FirstBound</code></i></li>
+						<li><i class="DEFAULT"><i class="PUBLIC"></i></i><code><a href="api/kiss.Narrow.html#bindLast(java.lang.Object)">bindLast</a></code><code class="M">(<code>Last</code> <code class="parameterName">param</code>)</code><i class="Y"><code>LastBound</code></i></li>
+						<li><i class="DEFAULT"><i class="PUBLIC"></i></i><code><a href="api/kiss.Narrow.html#bindLastLazily(java.util.function.Supplier)">bindLastLazily</a></code><code class="M">(<code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code>Last</code></code></code> <code class="parameterName">param</code>)</code><i class="Y"><code>LastBound</code></i></li>
 					</ul>
 				</div>
 			</aside>
