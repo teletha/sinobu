@@ -1,5 +1,19 @@
 # Changelog
 
+## [4.3.0](https://github.com/teletha/sinobu/compare/v4.2.0...v4.3.0) (2024-10-31)
+
+
+### Features
+
+* Model supports native-image ([0a56255](https://github.com/teletha/sinobu/commit/0a56255a09d591ffb9124e6582808160b295c188))
+* new fallback Extensible system ([9df9fe5](https://github.com/teletha/sinobu/commit/9df9fe50c8e4f95084096318697ffa2bed1d5988))
+
+
+### Bug Fixes
+
+* log file writing error ([4b619ac](https://github.com/teletha/sinobu/commit/4b619ac8824b5b9616fcdd8ae92077e09b9e4b8f))
+* remove deprecated api ([5db138e](https://github.com/teletha/sinobu/commit/5db138eeb046a0eecd07735ec9198df8ea033adc))
+
 ## [4.2.0](https://github.com/teletha/sinobu/compare/v4.1.0...v4.2.0) (2024-10-23)
 
 
