@@ -738,6 +738,16 @@ public class Model<M> {
     // .invokeExact();
     // }
 
+    /**
+     * In Java today, there are three main types of reflection methods. The first is using old
+     * methods and fields, the second is using MethodHandle, and the third is using
+     * LambdaMetaFactory. The fastest of the three methods is the one using MethodHandle, but it has
+     * the restriction that each MethodHandle must be stored in a static final field. Therefore,
+     * LambdaMetaFactory, the second fastest method, is used here. However, this method is still as
+     * fast as a direct call.
+     * 
+     * See benchmarks for verification against speed.
+     */
     static WiseFunction createGetter(Method method) {
         try {
             Lookup lookup = MethodHandles.privateLookupIn(method.getDeclaringClass(), MethodHandles.lookup());
@@ -748,10 +758,25 @@ public class Model<M> {
                     .dynamicInvoker()
                     .invokeExact();
         } catch (Throwable e) {
+            // This fallback process is mainly used when running in environments where the
+            // LambdaMetaFactory is not available (e.g., Native-Image in GraalVM). A normal process
+            // can access private members even if setAccessible is not executed, but since it falls
+            // back to the old reflection method, it is necessary to execute it.
+            method.setAccessible(true);
             return method::invoke;
         }
     }
 
+    /**
+     * In Java today, there are three main types of reflection methods. The first is using old
+     * methods and fields, the second is using MethodHandle, and the third is using
+     * LambdaMetaFactory. The fastest of the three methods is the one using MethodHandle, but it has
+     * the restriction that each MethodHandle must be stored in a static final field. Therefore,
+     * LambdaMetaFactory, the second fastest method, is used here. However, this method is still as
+     * fast as a direct call.
+     * 
+     * See benchmarks for verification against speed.
+     */
     static WiseBiConsumer createSetter(Method method) {
         try {
             Lookup lookup = MethodHandles.privateLookupIn(method.getDeclaringClass(), MethodHandles.lookup());
@@ -764,6 +789,11 @@ public class Model<M> {
                     .dynamicInvoker()
                     .invokeExact();
         } catch (Throwable e) {
+            // This fallback process is mainly used when running in environments where the
+            // LambdaMetaFactory is not available (e.g., Native-Image in GraalVM). A normal process
+            // can access private members even if setAccessible is not executed, but since it falls
+            // back to the old reflection method, it is necessary to execute it.
+            method.setAccessible(true);
             return method::invoke;
         }
     }
