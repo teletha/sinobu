@@ -13,7 +13,7 @@
 	</head>
 	<body class="d">
 		<header class="X">
-			<h1 class="N" date="2024-10-31" ver="4.3.0"><code>Sinobu</code></h1>
+			<h1 class="N" date="2024-10-31" ver="4.4.0"><code>Sinobu</code></h1>
 			<nav class="W"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#text"/>
 					</svg>Document</a><a href="api/"><svg class="A svg" viewBox="0 0 24 24">
@@ -38,6 +38,83 @@
 				<div></div>
 			</nav>
 			<article class="a" id="Article">
+				<section class="b B" id="4.4.0(2024-11-11)">
+					<header class="B V">
+						<h2>4.4.0 (2024-11-11)</h2>
+						<div class="c"><span class="perp U"><svg class="A svg" viewBox="0 0 24 24">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet U"><svg class="A svg" viewBox="0 0 24 24">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a></div>
+					</header>
+					<section class="B l" id="Features">
+						<header class="B H">
+							<h3>Features</h3>
+							<div class="c"><span class="perp U"><svg class="A svg" viewBox="0 0 24 24">
+										<use href="main.svg#copy"/>
+									</svg>
+								</span><a class="tweet U"><svg class="A svg" viewBox="0 0 24 24">
+										<use href="main.svg#twitter"/>
+									</svg>
+								</a></div>
+						</header>
+						<ul>
+
+							<li>add I#vouch (<a href="https://github.com/teletha/sinobu/commit/c19c7b9723ae3f798fff9da814e76cc59e972748">c19c7b9</a>)</li>
+
+							<li>drop Signal#buffer(long, TimeUnit, ScheduledExecutorService...) (<a href="https://github.com/teletha/sinobu/commit/4ba2b2538338ee912ab5dcae5c51b855a4fb060b">4ba2b25</a>)</li>
+
+							<li>drop Signal#buffer(Signal, Supplier, BiConsumer) (<a href="https://github.com/teletha/sinobu/commit/8bd9cbe4a5ea6e353efbee18c94f4c998cc69aa4">8bd9cbe</a>)</li>
+
+							<li>drop Signal#buffer(WiseFunction) (<a href="https://github.com/teletha/sinobu/commit/0738853176887939eeac7f8ca3b8a75b5bbe2d7b">0738853</a>)</li>
+
+							<li>drop Signal#is(V value) and #isNot(V value) (<a href="https://github.com/teletha/sinobu/commit/b8e9dde573e4eb6f63d21cc69d06c103d500ed6e">b8e9dde</a>)</li>
+
+							<li>drop Signal#none(Predicate&#60;? super V&#62; condition) (<a href="https://github.com/teletha/sinobu/commit/62b0e7eca4fd5b5921f018185877fd2506c8c45c">62b0e7e</a>)</li>
+
+							<li>drop Signal#pair and #pair(V init) (<a href="https://github.com/teletha/sinobu/commit/a2bf6201e2eca5637434b9b2c38c4ad9a408475e">a2bf620</a>)</li>
+
+							<li>drop Signal#toAlternate (<a href="https://github.com/teletha/sinobu/commit/44ded33e7710bb05973ec227ef51795a70ab1ecf">44ded33</a>)</li>
+
+							<li>drop Signal#wait(long, TimeUnit) (<a href="https://github.com/teletha/sinobu/commit/d15e2ee27200006173281d471d9c023ce1770eb8">d15e2ee</a>)</li>
+
+							<li>drop Signale#to(Consumer&#60;? super V&#62; next, Runnable complete) (<a href="https://github.com/teletha/sinobu/commit/f332b3fd7486a90a0f06f4697687c7a06871898a">f332b3f</a>)</li>
+</ul>
+					</section>
+					<section class="B l" id="BugFixes">
+						<header class="B H">
+							<h3>Bug Fixes</h3>
+							<div class="c"><span class="perp U"><svg class="A svg" viewBox="0 0 24 24">
+										<use href="main.svg#copy"/>
+									</svg>
+								</span><a class="tweet U"><svg class="A svg" viewBox="0 0 24 24">
+										<use href="main.svg#twitter"/>
+									</svg>
+								</a></div>
+						</header>
+						<ul>
+
+							<li>flaky test (<a href="https://github.com/teletha/sinobu/commit/ae13f4815103bf6e9c6fb86d33b82b5e11268a44">ae13f48</a>)</li>
+</ul>
+					</section>
+					<section class="B l" id="Asserts">
+						<header class="B H">
+							<h3>Assets</h3>
+							<div class="c"><span class="perp U"><svg class="A svg" viewBox="0 0 24 24">
+										<use href="main.svg#copy"/>
+									</svg>
+								</span><a class="tweet U"><svg class="A svg" viewBox="0 0 24 24">
+										<use href="main.svg#twitter"/>
+									</svg>
+								</a></div>
+						</header>
+						<ul>
+							<li><a href="https://github.com/teletha/sinobu/archive/refs/tags/v4.4.0.zip">Source code</a> (zip)</li>
+						</ul>
+					</section>
+				</section>
 				<section class="b B" id="4.3.0(2024-10-31)">
 					<header class="B V">
 						<h2>4.3.0 (2024-10-31)</h2>
@@ -3382,6 +3459,7 @@
 			<aside class="Y" id="SubNavi">
 				<div class="K">
 					<ul>
+						<li><a href="doc/changelog.html#4.4.0(2024-11-11)">4.4.0 (2024-11-11)</a></li>
 						<li><a href="doc/changelog.html#4.3.0(2024-10-31)">4.3.0 (2024-10-31)</a></li>
 						<li><a href="doc/changelog.html#4.2.0(2024-10-23)">4.2.0 (2024-10-23)</a></li>
 						<li><a href="doc/changelog.html#4.1.0(2024-10-22)">4.1.0 (2024-10-22)</a></li>
