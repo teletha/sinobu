@@ -1722,17 +1722,6 @@ public class Signal<V> {
     }
 
     /**
-     * Compare the incoming items. If it matches the given value, it sends true, otherwise it sends
-     * false to the subsequent {@link Signal}.
-     *
-     * @param value A value to be compared.
-     * @return {ChainableAPI}
-     */
-    public Signal<Boolean> is(V value) {
-        return is(value == null ? Objects::isNull : value::equals);
-    }
-
-    /**
      * <p>
      * Returns an {@link Signal} that applies the given {@link Predicate} function to each value
      * emitted by an {@link Signal} and emits the result.
@@ -1744,19 +1733,6 @@ public class Signal<V> {
      */
     public Signal<Boolean> is(Predicate<? super V> condition) {
         return map(condition::test);
-    }
-
-    /**
-     * <p>
-     * Returns an {@link Signal} that applies the given {@link Predicate} function to each value
-     * emitted by an {@link Signal} and emits the result.
-     * </p>
-     *
-     * @param value An expected value.
-     * @return {ChainableAPI}
-     */
-    public Signal<Boolean> isNot(V value) {
-        return isNot(value == null ? Objects::isNull : value::equals);
     }
 
     /**
