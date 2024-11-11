@@ -1,5 +1,26 @@
 # Changelog
 
+## [4.4.0](https://github.com/teletha/sinobu/compare/v4.3.0...v4.4.0) (2024-11-11)
+
+
+### Features
+
+* add I#vouch ([c19c7b9](https://github.com/teletha/sinobu/commit/c19c7b9723ae3f798fff9da814e76cc59e972748))
+* drop Signal#buffer(long, TimeUnit, ScheduledExecutorService...) ([4ba2b25](https://github.com/teletha/sinobu/commit/4ba2b2538338ee912ab5dcae5c51b855a4fb060b))
+* drop Signal#buffer(Signal, Supplier, BiConsumer) ([8bd9cbe](https://github.com/teletha/sinobu/commit/8bd9cbe4a5ea6e353efbee18c94f4c998cc69aa4))
+* drop Signal#buffer(WiseFunction) ([0738853](https://github.com/teletha/sinobu/commit/0738853176887939eeac7f8ca3b8a75b5bbe2d7b))
+* drop Signal#is(V value) and #isNot(V value) ([b8e9dde](https://github.com/teletha/sinobu/commit/b8e9dde573e4eb6f63d21cc69d06c103d500ed6e))
+* drop Signal#none(Predicate&lt;? super V&gt; condition) ([62b0e7e](https://github.com/teletha/sinobu/commit/62b0e7eca4fd5b5921f018185877fd2506c8c45c))
+* drop Signal#pair and #pair(V init) ([a2bf620](https://github.com/teletha/sinobu/commit/a2bf6201e2eca5637434b9b2c38c4ad9a408475e))
+* drop Signal#toAlternate ([44ded33](https://github.com/teletha/sinobu/commit/44ded33e7710bb05973ec227ef51795a70ab1ecf))
+* drop Signal#wait(long, TimeUnit) ([d15e2ee](https://github.com/teletha/sinobu/commit/d15e2ee27200006173281d471d9c023ce1770eb8))
+* drop Signale#to(Consumer&lt;? super V&gt; next, Runnable complete) ([f332b3f](https://github.com/teletha/sinobu/commit/f332b3fd7486a90a0f06f4697687c7a06871898a))
+
+
+### Bug Fixes
+
+* flaky test ([ae13f48](https://github.com/teletha/sinobu/commit/ae13f4815103bf6e9c6fb86d33b82b5e11268a44))
+
 ## [4.3.0](https://github.com/teletha/sinobu/compare/v4.2.0...v4.3.0) (2024-10-31)
 
 
