@@ -1107,7 +1107,6 @@ public class Signal<V> {
      * @param unit The {@link TimeUnit} in which {@code period} is defined.
      * @param scheduler An event scheduler.
      * @return The source {@link Signal} shifted in time by the specified delay.
-     * @see #wait(long, TimeUnit)
      */
     public Signal<V> delay(long time, TimeUnit unit, ScheduledExecutorService... scheduler) {
         if (unit == null) {
@@ -3465,24 +3464,6 @@ public class Signal<V> {
             return to(value -> observer
                     .accept(values[count.getAndIncrement() % values.length]), observer::error, observer::complete, disposer, false);
         });
-    }
-
-    /**
-     * Returns {@link Signal} that emits the items emitted by the source {@link Signal} shifted
-     * forward in time by a specified delay at current thread. Error notifications from the source
-     * {@link Signal} are not delayed.
-     *
-     * @param time The delay to shift the source by.
-     * @param unit The {@link TimeUnit} in which {@code period} is defined.
-     * @return The source {@link Signal} shifted in time by the specified delay.
-     * @see #delay(long, TimeUnit, ScheduledExecutorService...)
-     */
-    public Signal<V> wait(long time, TimeUnit unit) {
-        // ignore invalid parameters
-        if (time <= 0 || unit == null) {
-            return this;
-        }
-        return effect(((WiseConsumer<Long>) Thread::sleep).bind(unit.toMillis(time)));
     }
 
     /**
