@@ -65,21 +65,6 @@ class BufferTest extends SignalTester {
     }
 
     @Test
-    void time() {
-        monitor(1, String.class, signal -> signal.buffer(10, ms).map(composer));
-        // Time-based buffer uses infinite boundary signal.
-        // So awaiting all tasks will be deadlock, don't use it
-
-        assert main.emit("A", "B").value();
-        scheduler.await(100, ms);
-        assert main.value("AB");
-
-        assert main.emit("C", "D", "E").value();
-        scheduler.await(100, ms);
-        assert main.value("CDE");
-    }
-
-    @Test
     void signal() {
         monitor(String.class, signal -> signal.buffer(other.signal()).map(composer));
 

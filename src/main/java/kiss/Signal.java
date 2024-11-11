@@ -532,33 +532,6 @@ public class Signal<V> {
 
     /**
      * <p>
-     * It accumulates elements and flows them together as {@link List} buffer whenever the specified
-     * period of time elapses. Note that all unflowed accumulated elements at the time of completion
-     * will be discarded.
-     * </p>
-     * <pre class="marble-diagram" style="font: 11px/1.2 'Yu Gothic';">
-     * ───①──②────③────────④⑤─────╂
-     * ↓ ↓ ↓ ↓↓
-     * ┌─────────────────────────┐
-     * buffer (1, minute)
-     * └─────────────────────────┘
-     * ↓ ↓ ↓ ↓
-     * ─────[①②]────[③]──────────[④⑤]╂
-     * </pre>
-     *
-     * @param time Time to collect values. Zero or negative number will ignore this instruction.
-     * @param unit A unit of time for the specified timeout. {@code null} will ignore this
-     *            instruction.
-     * @param scheduler An event scheduler.
-     * @return {ChainableAPI}
-     * @see <a href="https://reactivex.io/documentation/operators/buffer.html">ReactiveX buffer</a>
-     */
-    public Signal<List<V>> buffer(long time, TimeUnit unit, ScheduledExecutorService... scheduler) {
-        return buffer(I.schedule(time, time, unit, true, scheduler));
-    }
-
-    /**
-     * <p>
      * It accumulates elements and flows them together as {@link List} buffer at each specified
      * timing. Note that all unflowed accumulated elements at the time of completion will be
      * discarded.
