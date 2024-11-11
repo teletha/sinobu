@@ -553,36 +553,40 @@ public class Signal<V> {
      * @see <a href="https://reactivex.io/documentation/operators/buffer.html">ReactiveX buffer</a>
      */
     public Signal<List<V>> buffer(Signal<?> timing) {
-        return buffer(timing, (Supplier<List<V>>) ArrayList::new, List::add).skip(List::isEmpty);
+        return buffer(timing, (Supplier<List<V>>) ArrayList::new, List::add, false).skip(List::isEmpty);
     }
 
-    /**
-     * <p>
-     * It accumulates elements and flows them together as buffer at each specified timing. Note that
-     * all unflowed accumulated elements at the time of completion will be discarded.
-     * </p>
-     * <pre class="marble-diagram" style="font: 11px/1.2 'Yu Gothic';">
-     * ────────▽──────────▽─╂ timing
-     * ↓ ↓
-     * ───①──②────③────④⑤───╂ signal
-     * ↓ ↓ ↓ ↓↓
-     * ┌───────────────────┐
-     * buffer (timing)
-     * └───────────────────┘
-     * ↓ ↓
-     * ───────[①②]────────[③④⑤]╂
-     * </pre>
-     * 
-     * @param timing A timing {@link Signal}.
-     * @param supplier A factory function that returns a container instance to be used and returned
-     *            as the buffer.
-     * @param assigner An operation function that assigns a value to the buffer.
-     * @return {ChainableAPI}
-     * @see <a href="https://reactivex.io/documentation/operators/buffer.html">ReactiveX buffer</a>
-     */
-    public <B> Signal<B> buffer(Signal<?> timing, Supplier<B> supplier, BiConsumer<B, V> assigner) {
-        return buffer(timing, supplier, assigner, false);
-    }
+    // /**
+    // * <p>
+    // * It accumulates elements and flows them together as buffer at each specified timing. Note
+    // that
+    // * all unflowed accumulated elements at the time of completion will be discarded.
+    // * </p>
+    // * <pre class="marble-diagram" style="font: 11px/1.2 'Yu Gothic';">
+    // * ────────▽──────────▽─╂ timing
+    // * ↓ ↓
+    // * ───①──②────③────④⑤───╂ signal
+    // * ↓ ↓ ↓ ↓↓
+    // * ┌───────────────────┐
+    // * buffer (timing)
+    // * └───────────────────┘
+    // * ↓ ↓
+    // * ───────[①②]────────[③④⑤]╂
+    // * </pre>
+    // *
+    // * @param timing A timing {@link Signal}.
+    // * @param supplier A factory function that returns a container instance to be used and
+    // returned
+    // * as the buffer.
+    // * @param assigner An operation function that assigns a value to the buffer.
+    // * @return {ChainableAPI}
+    // * @see <a href="https://reactivex.io/documentation/operators/buffer.html">ReactiveX
+    // buffer</a>
+    // */
+    // public <B> Signal<B> buffer(Signal<?> timing, Supplier<B> supplier, BiConsumer<B, V>
+    // assigner) {
+    // return buffer(timing, supplier, assigner, false);
+    // }
 
     /**
      * Returns an {@link Signal} that emits non-overlapping buffered items from the source
@@ -1954,7 +1958,7 @@ public class Signal<V> {
      * @return {ChainableAPI}
      */
     public Signal<V> last() {
-        return buffer(never(), AtomicReference<V>::new, AtomicReference::set).map(AtomicReference::get).skipNull();
+        return buffer(never(), AtomicReference<V>::new, AtomicReference::set, false).map(AtomicReference::get).skipNull();
     }
 
     /**
@@ -2524,7 +2528,7 @@ public class Signal<V> {
      * @return {ChainableAPI}
      */
     public Signal<V> reverse() {
-        return buffer(never(), LinkedList<V>::new, Deque::addFirst).flatIterable(I.wiseF(Function.identity()));
+        return buffer(never(), LinkedList<V>::new, Deque::addFirst, false).flatIterable(I.wiseF(Function.identity()));
     }
 
     /**
