@@ -306,21 +306,6 @@ public class Signal<V> {
     }
 
     /**
-     * Receive values as {@link Set} from this {@link Signal}. Each value alternates between In and
-     * Out.
-     *
-     * @return A {@link Set} as value receiver.
-     */
-    public Set<V> toAlternate() {
-        return to(new HashSet(), (set, value) -> {
-
-            if (!set.add(value)) {
-                set.remove(value);
-            }
-        });
-    }
-
-    /**
      * Receive values as {@link Collection} from this {@link Signal}.
      *
      * @return A {@link Collection} as value receiver.

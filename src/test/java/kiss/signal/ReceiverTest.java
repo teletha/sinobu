@@ -49,23 +49,6 @@ class ReceiverTest extends SignalTester {
     }
 
     @Test
-    void toAlternate() {
-        Set<Integer> set = I.signal(30, 20, 10).toAlternate();
-        assert set.contains(10);
-        assert set.contains(20);
-        assert set.contains(30);
-
-        // duplicate
-        set = I.signal(30, 20, 20, 30).toAlternate();
-        assert set.isEmpty();
-
-        // triple
-        set = I.signal(30, 20, 20, 30, 10, 20).toAlternate();
-        assert set.contains(10);
-        assert set.contains(20);
-    }
-
-    @Test
     void toList() {
         List<String> list = I.<String> signal().toList();
         assert list.isEmpty();
