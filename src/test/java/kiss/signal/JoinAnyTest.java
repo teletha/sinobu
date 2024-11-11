@@ -9,6 +9,7 @@
  */
 package kiss.signal;
 
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.junit.jupiter.api.Test;
@@ -123,7 +124,7 @@ class JoinAnyTest extends SignalTester {
                 Thread.sleep(200);
             }
             return v.toUpperCase();
-        }, null));
+        }, (ExecutorService) null));
 
         assert main.emit("a", "b", "c").value();
         assert main.emit(Complete).value("B");
