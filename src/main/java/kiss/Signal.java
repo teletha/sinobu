@@ -188,18 +188,6 @@ public class Signal<V> {
     }
 
     /**
-     * An {@link Observer} must call an {@link Signal#to()} method in order to receive items and
-     * notifications from the Observable.
-     *
-     * @param next A delegator method of {@link Observer#accept(Object)}.
-     * @param complete A delegator method of {@link Observer#complete()}.
-     * @return Calling {@link Disposable#dispose()} will dispose this subscription.
-     */
-    public Disposable to(Consumer<? super V> next, Runnable complete) {
-        return to(next, null, complete);
-    }
-
-    /**
      * Receive values from this {@link Signal}.
      *
      * @param next A delegator method of {@link Observer#accept(Object)}.
@@ -552,7 +540,7 @@ public class Signal<V> {
      * @return {ChainableAPI}
      * @see <a href="https://reactivex.io/documentation/operators/buffer.html">ReactiveX buffer</a>
      */
-    public Signal<List<V>> buffer(Signal<?> timing) {
+    public Signal<List<V>> buffer(Signal timing) {
         return buffer(timing, (Supplier<List<V>>) ArrayList::new, List::add, false).skip(List::isEmpty);
     }
 
