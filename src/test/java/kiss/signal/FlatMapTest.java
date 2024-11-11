@@ -9,7 +9,7 @@
  */
 package kiss.signal;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -141,7 +141,7 @@ class FlatMapTest extends SignalTester {
     @Test
     void delayAndInterval() {
         monitor(Integer.class, signal -> signal
-                .flatMap(time -> signal(time, time + 1).delay(time, ms, scheduler).interval(100, ms, scheduler)));
+                .flatMap(time -> signal(time, time + 1).delay(time, ms, scheduler).interval(50, ms, scheduler)));
 
         assert main.emit(300, 200, 100).value();
         scheduler.await();
