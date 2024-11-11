@@ -969,11 +969,8 @@ public class I implements ParameterizedType {
      */
     public static <T> Signal<T> http(HttpRequest.Builder request, Class<T> type, HttpClient... client) {
         return new Signal<>((observer, disposer) -> {
-            return disposer.add(I.signal(client)
-                    .to()
-                    .or(I.client)
-                    .sendAsync(request.build(), BodyHandlers.ofInputStream())
-                    .whenComplete((res, e) -> {
+            return disposer
+                    .add(I.vouch(I.client, client).sendAsync(request.build(), BodyHandlers.ofInputStream()).whenComplete((res, e) -> {
                         if (e == null) try {
                             if (res.statusCode() < 400) {
                                 InputStream in = res.body();
@@ -1027,9 +1024,7 @@ public class I implements ParameterizedType {
             sub.next = open;
             sub.o = new StringBuilder();
 
-            return disposer.add(I.signal(client)
-                    .to()
-                    .or(I.client)
+            return disposer.add(I.vouch(I.client, client)
                     .newWebSocketBuilder()
                     .connectTimeout(Duration.ofSeconds(15))
                     .buildAsync(URI.create(uri), sub)
@@ -2021,7 +2016,7 @@ public class I implements ParameterizedType {
             Runnable task = I.wiseC(observer).bindLast(null);
             Future future;
 
-            ScheduledExecutorService exe = scheduler == null || scheduler.length == 0 || scheduler[0] == null ? I.Jobs : scheduler[0];
+            ScheduledExecutorService exe = vouch(Jobs, scheduler);
 
             if (intervalTime <= 0) {
                 future = delayTime <= 0 ? CompletableFuture.runAsync(task, Runnable::run) : exe.schedule(task, delayTime, unit);
@@ -2233,6 +2228,19 @@ public class I implements ParameterizedType {
         } catch (ClassNotFoundException e) {
             throw I.quiet(e);
         }
+    }
+
+    /**
+     * Obtains the last non-null value from the specified array. If there is no suitable value in
+     * the array or the array itself, the default value is retrieved.
+     * 
+     * @param <T> A type of value.
+     * @param defaults A default value.
+     * @param values A candidate of values.
+     * @return A suitable value.
+     */
+    public static <T> T vouch(T defaults, T... values) {
+        return I.signal(values).skipNull().to().or(defaults);
     }
 
     /**

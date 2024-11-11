@@ -1822,20 +1822,8 @@ public class Signal<V> {
      * @param function A mapper function.
      * @return {ChainableAPI}
      */
-    public <R> Signal<R> joinAll(WiseFunction<V, R> function) {
-        return joinAll(function, null);
-    }
-
-    /**
-     * Returns a new {@link Signal} that invokes the mapper action in parallel thread and waits all
-     * of them until all actions are completed.
-     *
-     * @param function A mapper function.
-     * @return {ChainableAPI}
-     */
-    public <R> Signal<R> joinAll(WiseFunction<V, R> function, ExecutorService executor) {
-        return map(function::bind).buffer()
-                .flatIterable(v -> I.signal((executor == null ? I.Jobs : executor).invokeAll(v)).map(Future::get).toList());
+    public <R> Signal<R> joinAll(WiseFunction<V, R> function, ExecutorService... executor) {
+        return map(function::bind).buffer().flatIterable(v -> I.signal(I.vouch(I.Jobs, executor).invokeAll(v)).map(Future::get).toList());
     }
 
     /**
@@ -1845,19 +1833,9 @@ public class Signal<V> {
      * @param function A mapper function.
      * @return {ChainableAPI}
      */
-    public <R> Signal<R> joinAny(WiseFunction<V, R> function) {
-        return joinAny(function, null);
-    }
-
-    /**
-     * Returns a new {@link Signal} that invokes the mapper action in parallel thread and waits
-     * until any single action is completed. All other actions will be cancelled.
-     * 
-     * @param function A mapper function.
-     * @return {ChainableAPI}
-     */
-    public <R> Signal<R> joinAny(WiseFunction<V, R> function, ExecutorService executor) {
-        return map(function::bind).buffer().map((executor == null ? I.Jobs : executor)::invokeAny);
+    @SuppressWarnings("resource")
+    public <R> Signal<R> joinAny(WiseFunction<V, R> function, ExecutorService... executor) {
+        return map(function::bind).buffer().map(I.vouch(I.Jobs, executor)::invokeAny);
     }
 
     /**
@@ -2124,24 +2102,10 @@ public class Signal<V> {
      * </p>
      * 
      * @param recurse A mapper function to enumerate values recursively.
-     * @return {ChainableAPI}
-     */
-    public Signal<V> recurse(WiseFunction<V, V> recurse) {
-        return recurse(recurse, Runnable::run);
-    }
-
-    /**
-     * <p>
-     * Returns an {@link Signal} that emits items based on applying a function that you supply to
-     * each item emitted by the source {@link Signal}, where that function returns an {@link Signal}
-     * , and then merging those resulting {@link Signal} and emitting the results of this merger.
-     * </p>
-     * 
-     * @param recurse A mapper function to enumerate values recursively.
      * @param executor An execution context.
      * @return {ChainableAPI}
      */
-    public Signal<V> recurse(WiseFunction<V, V> recurse, Executor executor) {
+    public Signal<V> recurse(WiseFunction<V, V> recurse, Executor... executor) {
         return recurseMap(e -> e.map(recurse), executor);
     }
 
@@ -2153,27 +2117,13 @@ public class Signal<V> {
      * </p>
      * 
      * @param recurse A mapper function to enumerate values recursively.
-     * @return {ChainableAPI}
-     */
-    public Signal<V> recurseMap(WiseFunction<Signal<V>, Signal<V>> recurse) {
-        return recurseMap(recurse, Runnable::run);
-    }
-
-    /**
-     * <p>
-     * Returns an {@link Signal} that emits items based on applying a function that you supply to
-     * each item emitted by the source {@link Signal}, where that function returns an {@link Signal}
-     * , and then merging those resulting {@link Signal} and emitting the results of this merger.
-     * </p>
-     * 
-     * @param recurse A mapper function to enumerate values recursively.
      * @param executor An execution context.
      * @return {ChainableAPI}
      */
-    public Signal<V> recurseMap(WiseFunction<Signal<V>, Signal<V>> recurse, Executor executor) {
+    public Signal<V> recurseMap(WiseFunction<Signal<V>, Signal<V>> recurse, Executor... executor) {
         // DON'T use the recursive call, it will throw StackOverflowError.
         return flatMap(init -> new Signal<>((observer, disposer) -> {
-            (executor == null ? I.Jobs : executor).execute(() -> {
+            I.vouch(Runnable::run, executor).execute(() -> {
                 try {
                     LinkedList<V> values = new LinkedList(); // LinkedList accepts null
                     LinkedTransferQueue<Signal<V>> signal = new LinkedTransferQueue();
@@ -3514,42 +3464,4 @@ public class Signal<V> {
             }, sub, false);
         });
     }
-
-    // /**
-    // * <p>
-    // * Append the current time to each event.
-    // * </p>
-    // *
-    // * @return Chainable API.
-    // */
-    // public Signal<Ⅱ<V, Instant>> timeStamp() {
-    // return map(value -> I.pair(value, Instant.now()));
-    // }
-    //
-    // /**
-    // * <p>
-    // * Append {@link Duration} between the current value and the previous value.
-    // * </p>
-    // *
-    // * @return Chainable API.
-    // */
-    // public Signal<Ⅱ<V, Duration>> timeInterval() {
-    // return timeStamp().map((Ⅱ) null, (prev, now) -> I.pair(now.ⅰ, Duration.between(prev == null ?
-    // now.ⅱ : prev.ⅱ, now.ⅱ)));
-    // }
-    //
-    // /**
-    // * <p>
-    // * Append {@link Duration} between the current value and the first value.
-    // * </p>
-    // *
-    // * @return Chainable API.
-    // */
-    // public Signal<Ⅱ<V, Duration>> timeElapsed() {
-    // return map(Variable::<Instant> empty, (context, value) -> {
-    // Instant prev = context.let(Instant::now);
-    //
-    // return I.pair(value, prev == null ? Duration.ZERO : Duration.between(prev, Instant.now()));
-    // });
-    // }
 }
