@@ -2047,18 +2047,6 @@ public class Signal<V> {
     }
 
     /**
-     * Returns {@link Signal} that emits a Boolean that indicates whether all the items emitted
-     * by the source {@link Signal} unsatisfying a condition.
-     * 
-     * @param condition A condition that evaluates an item and returns a Boolean.
-     * @return A {@link Signal} that emits false if all items emitted by the source {@link Signal}
-     *         satisfy the predicate; otherwise, true.
-     */
-    public Signal<Boolean> none(Predicate<? super V> condition) {
-        return signal(Objects.requireNonNull(condition), FALSE, false, FALSE, true, TRUE);
-    }
-
-    /**
      * <link rel="stylesheet" href="main.css" type="text/css">
      * <p>
      * Switch event stream context.
