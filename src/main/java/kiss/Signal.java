@@ -558,50 +558,6 @@ public class Signal<V> {
 
     /**
      * <p>
-     * It accumulates elements, and whenever it reaches the different key, it flows them together
-     * as {@link List} buffer.
-     * </p>
-     *
-     * @param keySelector A key calculator for each item.
-     * @return {ChainableAPI}
-     * @see <a href="https://reactivex.io/documentation/operators/buffer.html">ReactiveX buffer</a>
-     */
-    public Signal<List<V>> buffer(WiseFunction<V, ?> keySelector) {
-        return new Signal<>((observer, disposer) -> {
-            List<V> buffer = new ArrayList();
-            Object[] prev = {UNDEF};
-
-            return to(value -> {
-                Object key = keySelector.apply(value);
-
-                if (prev[0] != UNDEF && !Objects.equals(key, prev[0])) {
-                    // Thinking about what is the fastest way to copy data from Deque to List.
-                    // The following three methods are slower and memory-heavy because they perform
-                    // two complete copies from the data source array.
-                    //
-                    // List.copyOf(buffer)
-                    // List.of(buffer.toArray())
-                    // new ArrayList<>(buffer)
-                    //
-                    // The following method is faster and lighter because it only copies the array
-                    // only once and wraps as list.
-                    observer.accept((List<V>) Arrays.asList(buffer.toArray()));
-                    buffer.clear();
-                }
-
-                buffer.add(value);
-                prev[0] = key;
-            }, observer::error, () -> {
-                if (buffer.size() != 0) {
-                    observer.accept(buffer);
-                }
-                observer.complete();
-            }, disposer, false);
-        });
-    }
-
-    /**
-     * <p>
      * It accumulates elements and flows them together as buffer at each specified timing. Note that
      * all unflowed accumulated elements at the time of completion will be discarded.
      * </p>
