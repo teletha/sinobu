@@ -676,8 +676,13 @@ public class XML implements Iterable<XML>, Consumer<XML> {
     private boolean to(Node node, Appendable output, String indent, int level, boolean block, Set<String> inlines) {
         try {
             if (node.getNodeType() != Node.ELEMENT_NODE) {
-                output.append(escape(node.getTextContent()));
-                return false;
+                String text = node.getTextContent();
+                if (!text.isBlank()) {
+                    output.append(escape(text));
+                    return false;
+                } else {
+                    return block;
+                }
             }
 
             String name = ((Element) node).getTagName();

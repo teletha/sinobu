@@ -45,6 +45,40 @@ class XMLWriterTest {
     }
 
     @Test
+    void format2() {
+        checkXMLFormat("""
+                <root>
+                    <child/>
+                    <child/>
+                </root>
+                """);
+    }
+
+    private boolean checkXMLFormat(String xml) {
+        // normalize line feed and leading tab
+        String[] lines = xml.trim().split("\n");
+        for (int i = 0; i < lines.length; i++) {
+            int count = countLeadingSpaces(lines[i]);
+            lines[i] = "\t".repeat(count / 4).concat(lines[i].trim());
+        }
+        xml = String.join(System.lineSeparator(), lines);
+
+        // validate
+        String formatted = I.xml(xml).toString().trim();
+        assert formatted.equals(xml);
+
+        return true;
+    }
+
+    private static int countLeadingSpaces(String line) {
+        int count = 0;
+        while (count < line.length() && line.charAt(count) == ' ') {
+            count++;
+        }
+        return count;
+    }
+
+    @Test
     void nested() {
         String expected = "" + //
                 "<root>" + EOL + //
