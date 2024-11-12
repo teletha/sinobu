@@ -43,7 +43,7 @@ With a few exceptions, Sinobu and its APIs are designed to be simple to use and 
 		<dependency>
 			<groupId>com.github.teletha</groupId>
 			<artifactId>antibug</artifactId>
-			<version>1.12.0</version>
+			<version>1.12.2</version>
 			<scope>test</scope>
 			<exclusions/>
 		</dependency>
