@@ -14,7 +14,6 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import antibug.Chronus;
 import kiss.I;
 
 class FisrtTest extends SignalTester {
@@ -71,8 +70,6 @@ class FisrtTest extends SignalTester {
         assert countingItemsOnSourceSignal.size() == 1;
     }
 
-    Chronus chronus = new Chronus();
-
     @Test
     void dontStopFollowingAsyncSignalImmediately() {
         List<Integer> countingItemsOnSourceSignal = new ArrayList();
@@ -80,10 +77,10 @@ class FisrtTest extends SignalTester {
         List<Integer> result = I.signal(1, 2, 3)
                 .effect(countingItemsOnSourceSignal::add)
                 .first()
-                .flatMap(v -> I.signal(v * 10, v * 100).delay(20, ms, chronus))
+                .flatMap(v -> I.signal(v * 10, v * 100).delay(20, ms, scheduler))
                 .toList();
 
-        chronus.await();
+        scheduler.await();
         assert result.size() == 2;
         assert result.get(0) == 10;
         assert result.get(1) == 100;
