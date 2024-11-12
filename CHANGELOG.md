@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.4.1](https://github.com/teletha/sinobu/compare/v4.4.0...v4.4.1) (2024-11-12)
+
+
+### Bug Fixes
+
+* more pretty xml format ([75b2ec3](https://github.com/teletha/sinobu/commit/75b2ec30d5d2e345cdb7bbee27d89c2c9deb6ed3))
+
 ## [4.4.0](https://github.com/teletha/sinobu/compare/v4.3.0...v4.4.0) (2024-11-11)
 
 
