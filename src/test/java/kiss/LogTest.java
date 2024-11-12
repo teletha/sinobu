@@ -35,7 +35,7 @@ import org.junit.jupiter.api.parallel.ExecutionMode;
 import antibug.CleanRoom;
 
 @Execution(ExecutionMode.SAME_THREAD)
-class LogTest {
+class LogTest extends LogInitializer {
 
     private PrintStream original;
 
@@ -115,9 +115,6 @@ class LogTest {
     void store() {
         original = System.out;
         System.setOut(log = new Log());
-
-        I.env("*.file", Level.OFF);
-        I.env("*.console", Level.ALL);
     }
 
     @AfterEach
@@ -517,7 +514,7 @@ class LogTest {
     private void awaitLogProcess() {
         while (log.entries.size() == 0) {
             try {
-                Thread.sleep(50);
+                Thread.sleep(20);
             } catch (InterruptedException e) {
                 throw I.quiet(e);
             }

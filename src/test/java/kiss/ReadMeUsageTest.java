@@ -21,7 +21,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 
-class ReadMeUsageTest {
+class ReadMeUsageTest extends LogInitializer {
 
     /**
      * Create instant from type.
