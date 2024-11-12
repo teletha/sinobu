@@ -61,7 +61,7 @@ class XMLWriterTest {
             int count = countLeadingSpaces(lines[i]);
             lines[i] = "\t".repeat(count / 4).concat(lines[i].trim());
         }
-        xml = String.join(System.lineSeparator(), lines);
+        xml = String.join("\r\n", lines);
 
         // validate
         String formatted = I.xml(xml).toString().trim();
