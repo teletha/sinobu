@@ -310,6 +310,25 @@ class XMLManipulationTest {
     }
 
     @Test
+    void childNest() {
+        XML e = I.xml("<Q/>");
+
+        assert e.find("child item").size() == 0;
+        e.child("child", c -> {
+            c.child("item");
+        });
+        assert e.find("child item").size() == 1;
+    }
+
+    @Test
+    void childNullNest() {
+        XML e = I.xml("<Q/>");
+
+        e.child("child", null);
+        assert e.find("child").size() == 1;
+    }
+
+    @Test
     void childWithSameName() {
         XML e = I.xml("<Q><child/></Q>");
 

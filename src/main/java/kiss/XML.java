@@ -44,7 +44,8 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      * Original pattern.
      * </p>
      * <pre>
-     * ([>~+\<, ]*)?((?:(?:\w+|\*)\|)?(?:[\w\-]+(?:\\.[\w\-]*)*|\*))?(?:#([\w\-\\]+))?((?:\.[\w\-\\]+)*)(?:\[\s?([\w:]+)(?:\s*([=~^$*|])?=\s*["]([^"]*)["])?\s?\])?(?::([\w-]+)(?:\((odd|even|(\d*)(n)?(?:\+(\d+))?|(?:.*))\))?)?
+     * ([>~+\<,
+     * ]*)?((?:(?:\w+|\*)\|)?(?:[\w\-]+(?:\\.[\w\-]*)*|\*))?(?:#([\w\-\\]+))?((?:\.[\w\-\\]+)*)(?:\[\s?([\w:]+)(?:\s*([=~^$*|])?=\s*["]([^"]*)["])?\s?\])?(?::([\w-]+)(?:\((odd|even|(\d*)(n)?(?:\+(\d+))?|(?:.*))\))?)?
      * </pre>
      */
     private static final Pattern SELECTOR = Pattern
@@ -485,6 +486,16 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      * @return A created child elements.
      */
     public final XML child(String name) {
+        return child(name, null);
+    }
+
+    /**
+     * Append new child element with the specified name and traverse into them.
+     *
+     * @param name A child element name.
+     * @return A created child elements.
+     */
+    public final XML child(String name, Consumer<XML> child) {
         // don't use the following codes because of building xml performance
         // return append("<" + name + "/>").lastChild();
         List list = new ArrayList();
@@ -492,7 +503,9 @@ public class XML implements Iterable<XML>, Consumer<XML> {
         for (Node node : nodes) {
             list.add(node.appendChild(doc.createElementNS(null, name)));
         }
-        return new XML(doc, list);
+        XML x = new XML(doc, list);
+        if (child != null) child.accept(x);
+        return x;
     }
 
     /**
