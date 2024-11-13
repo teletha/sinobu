@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.5.0](https://github.com/teletha/sinobu/compare/v4.4.1...v4.5.0) (2024-11-13)
+
+
+### Features
+
+* add XML#child(name, sub) ([f834aef](https://github.com/teletha/sinobu/commit/f834aefc5ce6cbf345373ed2423a1964ccb00651))
+
 ## [4.4.1](https://github.com/teletha/sinobu/compare/v4.4.0...v4.4.1) (2024-11-12)
 
 
