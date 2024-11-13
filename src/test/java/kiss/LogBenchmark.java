@@ -31,7 +31,6 @@ import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilder;
 import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilderFactory;
 import org.apache.logging.log4j.core.config.builder.api.LoggerComponentBuilder;
 import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
-import org.apache.logging.log4j.core.impl.Log4jPropertyKey;
 import org.slf4j.LoggerFactory;
 import org.tinylog.TaggedLogger;
 import org.tinylog.configuration.Configuration;
@@ -157,7 +156,7 @@ public class LogBenchmark {
     }
 
     static void performLog4j(Benchmark benchmark) throws Exception {
-        System.setProperty(Log4jPropertyKey.ASYNC_LOGGER_DISCARD_THRESHOLD.getKey(), "OFF");
+        System.setProperty("log4j2.DiscardThreshold", "OFF");
         ConfigurationBuilder<BuiltConfiguration> builder = ConfigurationBuilderFactory.newConfigurationBuilder();
 
         perform((execution, caller) -> {
