@@ -11,10 +11,10 @@
 		<script src="mimic.js" type="module"></script>
 		<link href="main.css" rel="stylesheet"/>
 	</head>
-	<body class="X">
-		<header class="Z">
-			<h1 class="b" date="2024-11-12" ver="4.4.1"><code>Sinobu</code></h1>
-			<nav class="f"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
+	<body class="J">
+		<header class="P">
+			<h1 class="W" date="2024-11-12" ver="4.4.1"><code>Sinobu</code></h1>
+			<nav class="L"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#text"/>
 					</svg>Document</a><a href="api/"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#package"/>
@@ -25,7 +25,7 @@
 					</svg>Activity</a><a href="https://github.com/teletha/sinobu" target="_blank"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#github"/>
 					</svg>Repository</a></nav>
-			<div class="S" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
+			<div class="O" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#sun"/>
 					</svg>
 				</a><a id="dark" title="Change to a darker color scheme"><svg class="A svg" viewBox="0 0 24 24">
@@ -33,21 +33,21 @@
 					</svg>
 				</a></div>
 		</header>
-		<main class="d">
-			<nav class="g">
+		<main class="j">
+			<nav class="b">
 				<div></div>
 			</nav>
-			<article class="h" id="Article">
-				<section class="a B" id="doc.DocumentDoc.JSON.Reading_JSON">
-					<header class="B H">
+			<article class="I" id="Article">
+				<section class="X B" id="doc.DocumentDoc.JSON.Reading_JSON">
+					<header class="B T">
 						<h2>Reading JSON</h2>
-						<div class="W"><span class="perp Q"><svg class="A svg" viewBox="0 0 24 24">
+						<div class="g"><span class="perp c"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
-							</span><a class="tweet Q"><svg class="A svg" viewBox="0 0 24 24">
+							</span><a class="tweet c"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit Q" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L665-L669"><svg class="A svg" viewBox="0 0 24 24">
+							</a><a class="edit c" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L665-L669"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
@@ -55,23 +55,21 @@
 into
 memory in a tree format. It is not a streaming format, so please be careful when
 parsing
-very large JSON.</p>
-</span>
-					<section class="B I" id="doc.DocumentDoc.JSON.Reading_JSON.Access_to_the_value">
-						<header class="B L">
+very large JSON.</p></span>
+					<section class="B S" id="doc.DocumentDoc.JSON.Reading_JSON.Access_to_the_value">
+						<header class="B K">
 							<h3>Access to the value</h3>
-							<div class="W"><span class="perp Q"><svg class="A svg" viewBox="0 0 24 24">
+							<div class="g"><span class="perp c"><svg class="A svg" viewBox="0 0 24 24">
 										<use href="main.svg#copy"/>
 									</svg>
-								</span><a class="tweet Q"><svg class="A svg" viewBox="0 0 24 24">
+								</span><a class="tweet c"><svg class="A svg" viewBox="0 0 24 24">
 										<use href="main.svg#twitter"/>
 									</svg>
-								</a><a class="edit Q" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L674-L676"><svg class="A svg" viewBox="0 0 24 24">
+								</a><a class="edit c" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L674-L676"><svg class="A svg" viewBox="0 0 24 24">
 										<use href="main.svg#edit"/>
 									</svg>
 								</a></div>
-						</header><span class="B"><p>You can access the value by specifying the key.</p>
- <pre class="lang-java"><code>public void readValue() {
+						</header><span class="B"><p>You can access the value by specifying the key.</p><pre class="lang-java"><code>public void readValue() {
     JSON json = I.json(&#34;&#34;&#34;
             {
                 &#34;number&#34; : 10,
@@ -81,23 +79,21 @@ very large JSON.</p>
 
     assert json.get(&#34;number&#34;).as(int.class) == 10;
     assert json.get(&#34;bool&#34;).as(boolean.class) == false;
-}</code></pre>
-</span></section>
-					<section class="B I" id="doc.DocumentDoc.JSON.Reading_JSON.Access_to_the_nested_value">
-						<header class="B L">
+}</code></pre></span></section>
+					<section class="B S" id="doc.DocumentDoc.JSON.Reading_JSON.Access_to_the_nested_value">
+						<header class="B K">
 							<h3>Access to the nested value</h3>
-							<div class="W"><span class="perp Q"><svg class="A svg" viewBox="0 0 24 24">
+							<div class="g"><span class="perp c"><svg class="A svg" viewBox="0 0 24 24">
 										<use href="main.svg#copy"/>
 									</svg>
-								</span><a class="tweet Q"><svg class="A svg" viewBox="0 0 24 24">
+								</span><a class="tweet c"><svg class="A svg" viewBox="0 0 24 24">
 										<use href="main.svg#twitter"/>
 									</svg>
-								</a><a class="edit Q" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L682-L686"><svg class="A svg" viewBox="0 0 24 24">
+								</a><a class="edit c" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L682-L686"><svg class="A svg" viewBox="0 0 24 24">
 										<use href="main.svg#edit"/>
 									</svg>
 								</a></div>
-						</header><span class="B"><p>You can specify a key multiple times to access nested values.</p>
- <pre class="lang-java"><code>public void readNestedValue() {
+						</header><span class="B"><p>You can specify a key multiple times to access nested values.</p><pre class="lang-java"><code>public void readNestedValue() {
     JSON json = I.json(&#34;&#34;&#34;
             {
                 &#34;child1&#34; : {
@@ -111,9 +107,7 @@ very large JSON.</p>
 
     assert json.get(&#34;child1&#34;).get(&#34;name&#34;).as(String.class).equals(&#34;first&#34;);
     assert json.get(&#34;child2&#34;).get(&#34;name&#34;).as(String.class).equals(&#34;second&#34;);
-}</code></pre>
-<p>You can also find all values by the sequential keys.</p>
- <pre class="lang-java"><code>public void readNestedValueBySequentialKeys() {
+}</code></pre><p>You can also find all values by the sequential keys.</p><pre class="lang-java"><code>public void readNestedValueBySequentialKeys() {
     JSON json = I.json(&#34;&#34;&#34;
             [
                 {
@@ -133,24 +127,22 @@ very large JSON.</p>
     assert found.size() == 2;
     assert found.get(0).equals(&#34;first&#34;);
     assert found.get(1).equals(&#34;second&#34;);
-}</code></pre>
-</span></section>
+}</code></pre></span></section>
 				</section>
-				<section class="a B" id="doc.DocumentDoc.JSON.Writing_JSON">
-					<header class="B H">
+				<section class="X B" id="doc.DocumentDoc.JSON.Writing_JSON">
+					<header class="B T">
 						<h2>Writing JSON</h2>
-						<div class="W"><span class="perp Q"><svg class="A svg" viewBox="0 0 24 24">
+						<div class="g"><span class="perp c"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
-							</span><a class="tweet Q"><svg class="A svg" viewBox="0 0 24 24">
+							</span><a class="tweet c"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit Q" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L693-L695"><svg class="A svg" viewBox="0 0 24 24">
+							</a><a class="edit c" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L693-L695"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
-					</header><span class="B"><p>You can write JSON from property-based model.</p>
- <pre class="lang-java"><code>public void testName() {
+					</header><span class="B"><p>You can write JSON from property-based model.</p><pre class="lang-java"><code>public void testName() {
     record Person(String name, int age) {
     }
 
@@ -161,11 +153,10 @@ very large JSON.</p>
                 &#34;name&#34;: &#34;Joe&#34;
             }
             &#34;&#34;&#34;);
-}</code></pre>
-</span></section>
+}</code></pre></span></section>
 			</article>
-			<aside class="l" id="SubNavi">
-				<div class="J"></div>
+			<aside class="M" id="SubNavi">
+				<div class="m"></div>
 			</aside>
 		</main>
 		<script src="root.js"></script>

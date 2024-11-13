@@ -11,10 +11,10 @@
 		<script src="mimic.js" type="module"></script>
 		<link href="main.css" rel="stylesheet"/>
 	</head>
-	<body class="X">
-		<header class="Z">
-			<h1 class="b" date="2024-11-12" ver="4.4.1"><code>Sinobu</code></h1>
-			<nav class="f"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
+	<body class="J">
+		<header class="P">
+			<h1 class="W" date="2024-11-12" ver="4.4.1"><code>Sinobu</code></h1>
+			<nav class="L"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#text"/>
 					</svg>Document</a><a href="api/"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#package"/>
@@ -25,7 +25,7 @@
 					</svg>Activity</a><a href="https://github.com/teletha/sinobu" target="_blank"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#github"/>
 					</svg>Repository</a></nav>
-			<div class="S" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
+			<div class="O" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#sun"/>
 					</svg>
 				</a><a id="dark" title="Change to a darker color scheme"><svg class="A svg" viewBox="0 0 24 24">
@@ -33,17 +33,16 @@
 					</svg>
 				</a></div>
 		</header>
-		<main class="d">
-			<nav class="g">
+		<main class="j">
+			<nav class="b">
 				<div></div>
 			</nav>
-			<article class="h" id="Article">
-				<section class="a"><code class="Y">kiss</code>
-					<h2 class="Functional P"><code class="i">Lifestyle</code><code class="c">&#60;<code>M</code>&#62;</code></h2>
-					<div class="R">
+			<article class="I" id="Article">
+				<section class="X"><code class="U">kiss</code>
+					<h2 class="Functional Z"><code class="d">Lifestyle</code><code class="V">&#60;<code>M</code>&#62;</code></h2>
+					<div class="Q">
 						<ul class="C D">
-							<li><code>M</code><span><p>A <code><a href="api/kiss.Managed.html">Managed</a></code> class.</p>
-</span></li>
+							<li><code>M</code><span><p>A <code><a href="api/kiss.Managed.html">Managed</a></code> class.</p></span></li>
 						</ul>
 						<ul class="C F">
 							<li><code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/Callable.html">Callable</a><code class="parameters"><code>M</code></code></code></li>
@@ -58,24 +57,19 @@
 					</div><span class="B"><p>
  Lifestyle manages the instance in the specific context. Sinobu provides two commonly used
  lifestyles (<code><a href="api/kiss.I.html#prototype(java.lang.Class)">I#prototype(Class)</a></code> and <code><a href="api/kiss.Singleton.html">Singleton</a></code>.
- </p>
- <p>
+ </p><p>
  There are two ways to specify <code><a href="api/kiss.Lifestyle.html">Lifestyle</a></code> for the class.
- </p>
- <p>
+ </p><p>
  The one is <code><a href="api/kiss.Managed.html">Managed</a></code> annotation. This way is useful if the target class is under your
  control. If the lifestyle is not specified, Sinobu uses <code><a href="api/kiss.I.html#prototype(java.lang.Class)">I#prototype(Class)</a></code> lifestyle as
  default. The following is example.
- </p>
- <pre class="lang-java"><code>&#64;Managed(lifestyle = Singleton.class)
+ </p><pre class="lang-java"><code>&#64;Managed(lifestyle = Singleton.class)
  public class TargetClass {
- }</code></pre>
- <p>
+ }</code></pre><p>
  The other is defining custom <code><a href="api/kiss.Lifestyle.html">Lifestyle</a></code>. Sinobu recognizes it automatically if your custom
  lifestyle class is loaded or unloaded by <code><a href="api/kiss.I.html#load(java.lang.Class)">I#load(Class)</a></code> and
  <code><a href="api/kiss.Disposable.html#dispose()">Disposable#dispose()</a></code>methods. The following is example.
- </p>
- <pre class="lang-java"><code>public class CustomLifestyle implements Lifestyle&#60;ClassNotUnderYourControl&#62; {
+ </p><pre class="lang-java"><code>public class CustomLifestyle implements Lifestyle&#60;ClassNotUnderYourControl&#62; {
  
      public ClassNotUnderYourControl call() {
          return new ClassNotUnderYourControl();
@@ -83,8 +77,8 @@
  }</code></pre>
 					</span></section>
 			</article>
-			<aside class="l" id="SubNavi">
-				<div class="J"></div>
+			<aside class="M" id="SubNavi">
+				<div class="m"></div>
 			</aside>
 		</main>
 		<script src="root.js"></script>

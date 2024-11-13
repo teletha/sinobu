@@ -11,10 +11,10 @@
 		<script src="mimic.js" type="module"></script>
 		<link href="main.css" rel="stylesheet"/>
 	</head>
-	<body class="X">
-		<header class="Z">
-			<h1 class="b" date="2024-11-12" ver="4.4.1"><code>Sinobu</code></h1>
-			<nav class="f"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
+	<body class="J">
+		<header class="P">
+			<h1 class="W" date="2024-11-12" ver="4.4.1"><code>Sinobu</code></h1>
+			<nav class="L"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#text"/>
 					</svg>Document</a><a href="api/"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#package"/>
@@ -25,7 +25,7 @@
 					</svg>Activity</a><a href="https://github.com/teletha/sinobu" target="_blank"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#github"/>
 					</svg>Repository</a></nav>
-			<div class="S" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
+			<div class="O" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#sun"/>
 					</svg>
 				</a><a id="dark" title="Change to a darker color scheme"><svg class="A svg" viewBox="0 0 24 24">
@@ -33,21 +33,21 @@
 					</svg>
 				</a></div>
 		</header>
-		<main class="d">
-			<nav class="g">
+		<main class="j">
+			<nav class="b">
 				<div></div>
 			</nav>
-			<article class="h" id="Article">
-				<section class="a B" id="doc.DocumentDoc.Plugin.Usage">
-					<header class="B H">
+			<article class="I" id="Article">
+				<section class="X B" id="doc.DocumentDoc.Plugin.Usage">
+					<header class="B T">
 						<h2>Usage</h2>
-						<div class="W"><span class="perp Q"><svg class="A svg" viewBox="0 0 24 24">
+						<div class="g"><span class="perp c"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
-							</span><a class="tweet Q"><svg class="A svg" viewBox="0 0 24 24">
+							</span><a class="tweet c"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit Q" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L811-L811"><svg class="A svg" viewBox="0 0 24 24">
+							</a><a class="edit c" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L811-L811"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
@@ -95,147 +95,120 @@ public class ExtensionTest {
     }
 }</code></pre>
 					</span></section>
-				<section class="a B" id="doc.DocumentDoc.Plugin.Extension_Point">
-					<header class="B H">
+				<section class="X B" id="doc.DocumentDoc.Plugin.Extension_Point">
+					<header class="B T">
 						<h2>Extension Point</h2>
-						<div class="W"><span class="perp Q"><svg class="A svg" viewBox="0 0 24 24">
+						<div class="g"><span class="perp c"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
-							</span><a class="tweet Q"><svg class="A svg" viewBox="0 0 24 24">
+							</span><a class="tweet c"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit Q" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L817-L833"><svg class="A svg" viewBox="0 0 24 24">
+							</a><a class="edit c" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L817-L833"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
 					</header><span class="B"><p>Sinobu has a general-purpose plug-in mechanism for extending application functions.
 An
 extensible place is called Extension Point, and its substance is a type (interface or
-class) marked with the <code><a href="api/kiss.Extensible.html">Extensible</a></code> interface.</p>
-<p>We give a definition of <em>Extension Point</em> like the following.</p>
-<ul>
-
+class) marked with the <code><a href="api/kiss.Extensible.html">Extensible</a></code> interface.</p><p>We give a definition of <em>Extension Point</em> like the following.</p><ul>
 							<li>It implements <code><a href="api/kiss.Extensible.html">Extensible</a></code> interface directly.</li>
-</ul>
- <pre class="lang-java"><code>interface ThisIsExtensionPoint extends Extensible {
-}</code></pre>
- <pre class="lang-java"><code>class ThisIsAlsoExtensionPoint implements Extensible {
+						</ul><pre class="lang-java"><code>interface ThisIsExtensionPoint extends Extensible {
+}</code></pre><pre class="lang-java"><code>class ThisIsAlsoExtensionPoint implements Extensible {
     // This class is both Extension Point and Extension.
-}</code></pre>
- <pre class="lang-java"><code>interface ThisIsNotExtensionPoint extends ThisIsExtensionPoint {
-}</code></pre>
-<p>In the usage example, Codec is the extension point that converts any object to a
+}</code></pre><pre class="lang-java"><code>interface ThisIsNotExtensionPoint extends ThisIsExtensionPoint {
+}</code></pre><p>In the usage example, Codec is the extension point that converts any object to a
 string
-representation.</p>
- <pre class="lang-java"><code>interface Codec&#60;T&#62; extends Extensible {
+representation.</p><pre class="lang-java"><code>interface Codec&#60;T&#62; extends Extensible {
     String encode(T value);
-}</code></pre>
-</span></section>
-				<section class="a B" id="doc.DocumentDoc.Plugin.Extension">
-					<header class="B H">
+}</code></pre></span></section>
+				<section class="X B" id="doc.DocumentDoc.Plugin.Extension">
+					<header class="B T">
 						<h2>Extension</h2>
-						<div class="W"><span class="perp Q"><svg class="A svg" viewBox="0 0 24 24">
+						<div class="g"><span class="perp c"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
-							</span><a class="tweet Q"><svg class="A svg" viewBox="0 0 24 24">
+							</span><a class="tweet c"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit Q" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L849-L862"><svg class="A svg" viewBox="0 0 24 24">
+							</a><a class="edit c" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L849-L862"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
-					</header><span class="B"><p>We give a definition of <em>Extension</em> like the following.</p>
-<ul>
-
+					</header><span class="B"><p>We give a definition of <em>Extension</em> like the following.</p><ul>
 							<li>It implements any Extension Point or is Extension Point itself.</li>
-
 							<li>It must be concrete class and has a suitable constructor for Sinobu (see also
 <code><a href="api/kiss.I.html#make(java.lang.Class)">I#make(Class)</a></code> method).</li>
-</ul>
- <pre class="lang-java"><code>class ThisIsExtension implements Extensible {
+						</ul><pre class="lang-java"><code>class ThisIsExtension implements Extensible {
     // This class is both Extension Point and Extension.
-}</code></pre>
- <pre class="lang-java"><code>class ThisIsAlsoExtension extends ThisIsExtension {
+}</code></pre><pre class="lang-java"><code>class ThisIsAlsoExtension extends ThisIsExtension {
     // But not Extension Point.
-}</code></pre>
- <pre class="lang-java"><code>class ThisIsNotExtension extends ThisIsExtension {
+}</code></pre><pre class="lang-java"><code>class ThisIsNotExtension extends ThisIsExtension {
 
     public ThisIsNotExtension(NotInjectable object) {
         // because of invalid constructor
     }
-}</code></pre>
-<p>In the usage example, LocalDateCodec is the extension that is special implementation
+}</code></pre><p>In the usage example, LocalDateCodec is the extension that is special implementation
 for
-<code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/time/LocalDate.html">LocalDate</a></code>.</p>
- <pre class="lang-java"><code>class LocalDateCodec implements Codec&#60;LocalDate&#62; {
+<code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/time/LocalDate.html">LocalDate</a></code>.</p><pre class="lang-java"><code>class LocalDateCodec implements Codec&#60;LocalDate&#62; {
 
     public String encode(LocalDate value) {
         return DateTimeFormatter.ISO_DATE.format(value);
     }
-}</code></pre>
-</span></section>
-				<section class="a B" id="doc.DocumentDoc.Plugin.Extension_Key">
-					<header class="B H">
+}</code></pre></span></section>
+				<section class="X B" id="doc.DocumentDoc.Plugin.Extension_Key">
+					<header class="B T">
 						<h2>Extension Key</h2>
-						<div class="W"><span class="perp Q"><svg class="A svg" viewBox="0 0 24 24">
+						<div class="g"><span class="perp c"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
-							</span><a class="tweet Q"><svg class="A svg" viewBox="0 0 24 24">
+							</span><a class="tweet c"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit Q" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L885-L893"><svg class="A svg" viewBox="0 0 24 24">
+							</a><a class="edit c" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L885-L893"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
-					</header><span class="B"><p>You can provide <em>Extension Key</em> for each Extensions by using parameter.</p>
- <pre class="lang-java"><code>interface ExtensionPointWithKey&#60;K&#62; extends Extensible {
-}</code></pre>
- <pre class="lang-java"><code>class ExtensionWithStringKey implements ExtensionPointWithKey&#60;String&#62; {
+					</header><span class="B"><p>You can provide <em>Extension Key</em> for each Extensions by using parameter.</p><pre class="lang-java"><code>interface ExtensionPointWithKey&#60;K&#62; extends Extensible {
+}</code></pre><pre class="lang-java"><code>class ExtensionWithStringKey implements ExtensionPointWithKey&#60;String&#62; {
     // Associate this Extension with String class.
-}</code></pre>
- <pre class="lang-java"><code>class ExtensionWithListKey implements ExtensionPointWithKey&#60;List&#62; {
+}</code></pre><pre class="lang-java"><code>class ExtensionWithListKey implements ExtensionPointWithKey&#60;List&#62; {
     // Associate this Extension with List interface.
-}</code></pre>
-<p>The key makes easy finding an Extension you need (see also
-<code><a href="api/kiss.I.html#find(java.lang.Class,java.lang.Class)">I#find(Class, Class)</a></code>).</p>
- <pre class="lang-java"><code>void findExtensionByKey() {
+}</code></pre><p>The key makes easy finding an Extension you need (see also
+<code><a href="api/kiss.I.html#find(java.lang.Class,java.lang.Class)">I#find(Class, Class)</a></code>).</p><pre class="lang-java"><code>void findExtensionByKey() {
     assert I.find(ExtensionPointWithKey.class, String.class) instanceof ExtensionWithStringKey;
-}</code></pre>
-</span></section>
-				<section class="a B" id="doc.DocumentDoc.Plugin.Dynamic_Loading">
-					<header class="B H">
+}</code></pre></span></section>
+				<section class="X B" id="doc.DocumentDoc.Plugin.Dynamic_Loading">
+					<header class="B T">
 						<h2>Dynamic Loading</h2>
-						<div class="W"><span class="perp Q"><svg class="A svg" viewBox="0 0 24 24">
+						<div class="g"><span class="perp c"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
-							</span><a class="tweet Q"><svg class="A svg" viewBox="0 0 24 24">
+							</span><a class="tweet c"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit Q" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L914-L918"><svg class="A svg" viewBox="0 0 24 24">
+							</a><a class="edit c" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L914-L918"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
 					</header><span class="B"><p>All extensions are not recognized automatically, you have to load them explicitly
 using
-<code><a href="api/kiss.I.html#load(java.lang.Class)">I#load(Class)</a></code>.</p>
- <pre class="lang-java"><code>class ExtensionUser {
+<code><a href="api/kiss.I.html#load(java.lang.Class)">I#load(Class)</a></code>.</p><pre class="lang-java"><code>class ExtensionUser {
     static {
         I.load(ExtensionUser.class);
     }
 
     // write your code
-}</code></pre>
- <pre class="lang-java"><code>class ApplicationMain {
+}</code></pre><pre class="lang-java"><code>class ApplicationMain {
     public static void main(String[] args) {
         I.load(ApplicationMain.class);
 
         // start your application
     }
-}</code></pre>
-</span></section>
+}</code></pre></span></section>
 			</article>
-			<aside class="l" id="SubNavi">
-				<div class="J"></div>
+			<aside class="M" id="SubNavi">
+				<div class="m"></div>
 			</aside>
 		</main>
 		<script src="root.js"></script>
