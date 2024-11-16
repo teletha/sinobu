@@ -463,6 +463,7 @@ public class Model<M> {
                         return of(collectParameters(base, variable.getGenericDeclaration())[i], base);
                     }
                 }
+
             }
         }
 
@@ -671,7 +672,7 @@ public class Model<M> {
                             try {
                                 args[i] = Model.of(args[i], base).type;
                             } catch (ArrayIndexOutOfBoundsException e) {
-                                args[i] = collectParameters(clazz, target)[i];
+                                args[i] = clazz == base ? Object.class : collectParameters(clazz, target)[i];
                             }
                         }
                     }

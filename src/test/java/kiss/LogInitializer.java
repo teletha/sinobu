@@ -11,6 +11,10 @@ package kiss;
 
 import java.lang.System.Logger.Level;
 
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
+
+@Execution(ExecutionMode.SAME_THREAD)
 public class LogInitializer {
     static {
         I.env("*.file", Level.OFF);

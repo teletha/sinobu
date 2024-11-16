@@ -91,6 +91,7 @@ class CollectParametersTest {
         assert types[1] == Object.class;
     }
 
+    @Test
     void parameterizedTypeVariable() throws Exception {
         class Definition<E> {
             UnaryOperator<E> op;
