@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.5.1](https://github.com/teletha/sinobu/compare/v4.5.0...v4.5.1) (2024-11-16)
+
+
+### Bug Fixes
+
+* Model#collectParameters is failed on parameterized type variable ([1357525](https://github.com/teletha/sinobu/commit/135752583d2bd5f5bbb4fd5d35e3afe0fd730805))
+
 ## [4.5.0](https://github.com/teletha/sinobu/compare/v4.4.1...v4.5.0) (2024-11-13)
 
 
