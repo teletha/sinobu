@@ -194,7 +194,6 @@ With a few exceptions, Sinobu and its APIs are designed to be simple to use and 
 					<compilerId>javac</compilerId>
 					<compilerArgs>
 						<arg>-parameters</arg>
-						<arg>-warn:none</arg>
 					</compilerArgs>
 				</configuration>
 			</plugin>
