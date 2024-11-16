@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 import org.junit.jupiter.api.Test;
 
@@ -28,10 +30,8 @@ import kiss.sample.bean.StringList;
 import kiss.sample.bean.StringMap;
 import kiss.sample.bean.Student;
 
-/**
- * @version 2018/03/27 23:14:21
- */
-public class CollectParametersTest {
+@SuppressWarnings("unused")
+class CollectParametersTest {
 
     static {
         // dirty code to load I class at first
@@ -39,27 +39,74 @@ public class CollectParametersTest {
     }
 
     @Test
-    public void parameterIsVariable() {
+    void parameterIsVariable() {
         Type[] parameters = Model.collectParameters(ArrayList.class, List.class);
         assert parameters.length == 1;
         assert parameters[0] == Object.class;
     }
 
-    /**
-     * Test {@link String} parameter with interface.
-     */
     @Test
-    public void testGetParameterizedTypes01() {
-        Type[] types = Model.collectParameters(ParameterizedStringByInterface.class, ParameterInterface.class);
-        assert 1 == types.length;
-        assert String.class == types[0];
+    void parameterizedClass() {
+        class Definition implements ParameterInterface<String> {
+        }
+
+        Type[] types = Model.collectParameters(Definition.class, ParameterInterface.class);
+        assert types.length == 1;
+        assert types[0] == String.class;
+    }
+
+    @Test
+    void parameterizedClassFromSub() {
+        class Definition implements ParameterInterface<String> {
+        }
+
+        class Sub extends Definition {
+        }
+
+        Type[] types = Model.collectParameters(Sub.class, ParameterInterface.class);
+        assert types.length == 1;
+        assert types[0] == String.class;
+    }
+
+    @Test
+    void parameterizedRaw() throws Exception {
+        class Definition {
+            UnaryOperator op;
+        }
+
+        Type[] types = Model.collectParameters(Definition.class.getDeclaredField("op").getGenericType(), Function.class);
+        assert types.length == 2;
+        assert types[0] == Object.class;
+        assert types[1] == Object.class;
+    }
+
+    @Test
+    void parameterizedTypeVariable2() throws Exception {
+        abstract class Definition<E> implements UnaryOperator<E> {
+        }
+
+        Type[] types = Model.collectParameters(Definition.class, Function.class);
+        assert types.length == 2;
+        assert types[0] == Object.class;
+        assert types[1] == Object.class;
+    }
+
+    void parameterizedTypeVariable() throws Exception {
+        class Definition<E> {
+            UnaryOperator<E> op;
+        }
+
+        Type[] types = Model.collectParameters(Definition.class.getDeclaredField("op").getGenericType(), Function.class);
+        assert types.length == 2;
+        assert types[0] == Object.class;
+        assert types[1] == Object.class;
     }
 
     /**
      * Test {@link Object} parameter with interface.
      */
     @Test
-    public void testGetParameterizedTypes02() {
+    void testGetParameterizedTypes02() {
         Type[] types = Model.collectParameters(ParameterizedObjectByInterface.class, ParameterInterface.class);
         assert 1 == types.length;
         assert Object.class == types[0];
@@ -69,7 +116,7 @@ public class CollectParametersTest {
      * Test wildcard parameter with interface.
      */
     @Test
-    public void testGetParameterizedTypes14() {
+    void testGetParameterizedTypes14() {
         Type[] types = Model.collectParameters(ParameterizedWildcardByInterface.class, ParameterInterface.class);
         assert 1 == types.length;
         assert Map.class == types[0];
@@ -79,30 +126,20 @@ public class CollectParametersTest {
      * Test none parameter with interface.
      */
     @Test
-    public void testGetParameterizedTypes03() {
+    void testGetParameterizedTypes03() {
         Type[] types = Model.collectParameters(ParameterizedNoneByInterface.class, ParameterInterface.class);
         assert 0 == types.length;
     }
 
-    /**
-     * Test parent parameter with interface.
-     */
     @Test
-    public void testGetParameterizedTypes04() {
-        Type[] types = Model.collectParameters(ExtendedFromInterface.class, ParameterInterface.class);
-        assert 1 == types.length;
-        assert String.class == types[0];
-    }
-
-    @Test
-    public void parameterFromOverriddenInterface() {
+    void parameterFromOverriddenInterface() {
         Type[] types = Model.collectParameters(TypedExtendedFromInterface.class, ParameterInterface.class);
         assert 1 == types.length;
         assert String.class == types[0];
     }
 
     @Test
-    public void parameterFromOverrideInterface() {
+    void parameterFromOverrideInterface() {
         Type[] types = Model.collectParameters(TypedExtendedFromInterface.class, ExtensibleByInterface.class);
         assert 1 == types.length;
         assert String.class == types[0];
@@ -112,7 +149,7 @@ public class CollectParametersTest {
      * Test {@link String} parameter with class.
      */
     @Test
-    public void testGetParameterizedTypes06() {
+    void testGetParameterizedTypes06() {
         Type[] types = Model.collectParameters(ParameterizedStringByClass.class, ParameterClass.class);
         assert 1 == types.length;
         assert String.class == types[0];
@@ -122,7 +159,7 @@ public class CollectParametersTest {
      * Test {@link Object} parameter with class.
      */
     @Test
-    public void testGetParameterizedTypes07() {
+    void testGetParameterizedTypes07() {
         Type[] types = Model.collectParameters(ParameterizedObjectByClass.class, ParameterClass.class);
         assert 1 == types.length;
         assert Object.class == types[0];
@@ -132,7 +169,7 @@ public class CollectParametersTest {
      * Test wildcard parameter with class.
      */
     @Test
-    public void testGetParameterizedTypes15() {
+    void testGetParameterizedTypes15() {
         Type[] types = Model.collectParameters(ParameterizedWildcardByClass.class, ParameterClass.class);
         assert 1 == types.length;
         assert Map.class == types[0];
@@ -142,7 +179,7 @@ public class CollectParametersTest {
      * Test none parameter with class.
      */
     @Test
-    public void testGetParameterizedTypes08() {
+    void testGetParameterizedTypes08() {
         Type[] types = Model.collectParameters(ParameterizedNoneByClass.class, ParameterClass.class);
         assert 0 == types.length;
     }
@@ -151,7 +188,7 @@ public class CollectParametersTest {
      * Test none parameter with class.
      */
     @Test
-    public void testGetParameterizedTypes09() {
+    void testGetParameterizedTypes09() {
         Type[] types = Model.collectParameters(ExtendedFromClass.class, ParameterClass.class);
         assert 1 == types.length;
         assert String.class == types[0];
@@ -161,7 +198,7 @@ public class CollectParametersTest {
      * Test parent variable parameter with class.
      */
     @Test
-    public void testGetParameterizedTypes10() {
+    void testGetParameterizedTypes10() {
         Type[] types = Model.collectParameters(TypedExtendedFromClass.class, ParameterClass.class);
         assert 1 == types.length;
         assert String.class == types[0];
@@ -171,7 +208,7 @@ public class CollectParametersTest {
      * Test parameter from multiple source.
      */
     @Test
-    public void testGetParameterizedTypes11() {
+    void testGetParameterizedTypes11() {
         Type[] types = Model.collectParameters(ParameterFromMultipleSource.class, ParameterInterface.class);
         assert 1 == types.length;
         assert Type.class == types[0];
@@ -185,7 +222,7 @@ public class CollectParametersTest {
      * Test multiple parameter.
      */
     @Test
-    public void testGetParameterizedTypes12() {
+    void testGetParameterizedTypes12() {
         Type[] types = Model.collectParameters(MultipleParameterClass.class, MultipleParameter.class);
         assert 2 == types.length;
         assert Integer.class == types[0];
@@ -193,40 +230,40 @@ public class CollectParametersTest {
     }
 
     @Test
-    public void parameterIsArrayFromInterface() {
+    void parameterIsArrayFromInterface() {
         Type[] types = Model.collectParameters(ParameterizedStringArrayByInterface.class, ParameterInterface.class);
         assert 1 == types.length;
         assert String[].class == types[0];
     }
 
     @Test
-    public void parameterIsArrayFromClass() {
+    void parameterIsArrayFromClass() {
         Type[] types = Model.collectParameters(ParameterizedStringArrayByClass.class, ParameterClass.class);
         assert 1 == types.length;
         assert String[].class == types[0];
     }
 
     @Test
-    public void methodGetPrameterAcceptsNullType() {
+    void methodGetPrameterAcceptsNullType() {
         Type[] types = Model.collectParameters(null, ParameterClass.class);
         assert 0 == types.length;
     }
 
     @Test
-    public void methodGetPrameterAcceptsNullTarget() {
+    void methodGetPrameterAcceptsNullTarget() {
         Type[] types = Model.collectParameters(ParameterizedStringByClass.class, null);
         assert 0 == types.length;
     }
 
     @Test
-    public void subclassHasAnotherParameter() {
+    void subclassHasAnotherParameter() {
         Type[] types = Model.collectParameters(TypedSubClass.class, ParameterClass.class);
         assert 1 == types.length;
         assert String.class == types[0];
     }
 
     @Test
-    public void constructorHasParameterClass() {
+    void constructorHasParameterClass() {
         Constructor constructor = Model.collectConstructors(ParameterClassConstructor.class)[0];
         Type[] types = Model.collectParameters(constructor.getGenericParameterTypes()[0], ParameterClass.class);
         assert 1 == types.length;
@@ -234,7 +271,7 @@ public class CollectParametersTest {
     }
 
     @Test
-    public void constructorHasExtendableByClass() {
+    void constructorHasExtendableByClass() {
         Constructor constructor = Model.collectConstructors(ExtensibleByClassConstructor.class)[0];
         Type[] types = Model.collectParameters(constructor.getGenericParameterTypes()[0], ExtensibleByClass.class);
         assert 1 == types.length;
@@ -242,7 +279,7 @@ public class CollectParametersTest {
     }
 
     @Test
-    public void constructorHasArrayParameter() {
+    void constructorHasArrayParameter() {
         Constructor constructor = Model.collectConstructors(ArrayParameterConstructor.class)[0];
         Type[] types = Model.collectParameters(constructor.getGenericParameterTypes()[0], ParameterClass.class);
         assert 1 == types.length;
@@ -250,7 +287,7 @@ public class CollectParametersTest {
     }
 
     @Test
-    public void constructorHasMultipleParameter() {
+    void constructorHasMultipleParameter() {
         Constructor constructor = Model.collectConstructors(MultipleParameterConstructor.class)[0];
         Type[] types = Model.collectParameters(constructor.getGenericParameterTypes()[0], MultipleParameter.class);
         assert 2 == types.length;
@@ -259,7 +296,7 @@ public class CollectParametersTest {
     }
 
     @Test
-    public void constructorHasOverlapParameter() {
+    void constructorHasOverlapParameter() {
         Constructor constructor = Model.collectConstructors(ImplicitParameterConstructor.class)[0];
         Type[] types = Model.collectParameters(constructor.getGenericParameterTypes()[0], ParameterOverlapClass.class);
         assert 1 == types.length;
@@ -267,7 +304,7 @@ public class CollectParametersTest {
     }
 
     @Test
-    public void constructorHasOverlappedParameter() {
+    void constructorHasOverlappedParameter() {
         Constructor constructor = Model.collectConstructors(ImplicitParameterConstructor.class)[0];
         Type[] types = Model.collectParameters(constructor.getGenericParameterTypes()[0], ParameterClass.class);
         assert 1 == types.length;
@@ -275,21 +312,21 @@ public class CollectParametersTest {
     }
 
     @Test
-    public void parameterVariableFromInterface() {
+    void parameterVariableFromInterface() {
         Type[] types = Model.collectParameters(ParameterVariableStringByInterface.class, ParameterVariableInterface.class);
         assert 1 == types.length;
         assert String.class == types[0];
     }
 
     @Test
-    public void parameterVariableFromClass() {
+    void parameterVariableFromClass() {
         Type[] types = Model.collectParameters(ParameterVariableStringByClass.class, ParameterVariableClass.class);
         assert 1 == types.length;
         assert String.class == types[0];
     }
 
     @Test
-    public void list() throws Exception {
+    void list() throws Exception {
         Type[] types = Model.collectParameters(StringList.class, List.class);
         assert 1 == types.length;
         assert String.class == types[0];
@@ -300,7 +337,7 @@ public class CollectParametersTest {
     }
 
     @Test
-    public void map() throws Exception {
+    void map() throws Exception {
         Type[] types = Model.collectParameters(StringMap.class, Map.class);
         assert 2 == types.length;
         assert String.class == types[0];
@@ -311,7 +348,7 @@ public class CollectParametersTest {
     }
 
     @Test
-    public void bundedBean() {
+    void bundedBean() {
         Type[] types = Model.collectParameters(I.make(BoundedBean.class).getClass(), GenericBoundedBean.class);
         assert 1 == types.length;
         assert Student.class == types[0];
@@ -345,12 +382,6 @@ public class CollectParametersTest {
      * @version 2010/02/20 0:10:12
      */
     private static class ParameterOverlapClass<S> extends ParameterClass<String> {
-    }
-
-    /**
-     * @version 2010/02/19 22:46:18
-     */
-    private static class ParameterizedStringByInterface implements ParameterInterface<String> {
     }
 
     /**
@@ -429,14 +460,6 @@ public class CollectParametersTest {
      * @version 2008/06/20 12:57:04
      */
     private static class ParameterizedNoneByClass extends ParameterClass {
-    }
-
-    /**
-     * DOCUMENT.
-     * 
-     * @version 2008/06/20 12:57:04
-     */
-    private static class ExtendedFromInterface extends ParameterizedStringByInterface {
     }
 
     /**
@@ -558,7 +581,7 @@ public class CollectParametersTest {
     }
 
     @Test
-    public void complexTypeHierarchy1() {
+    void complexTypeHierarchy1() {
         Type[] types = Model.collectParameters(Child3.class, Child2.class);
         assert 2 == types.length;
         assert Teacher.class == types[0];
@@ -567,7 +590,7 @@ public class CollectParametersTest {
     }
 
     @Test
-    public void complexTypeHierarchy2() {
+    void complexTypeHierarchy2() {
         Type[] types = Model.collectParameters(Child3.class, Child1.class);
         assert 3 == types.length;
         assert Student.class == types[0];
@@ -576,7 +599,7 @@ public class CollectParametersTest {
     }
 
     @Test
-    public void complexTypeHierarchy3() {
+    void complexTypeHierarchy3() {
         Type[] types = Model.collectParameters(Child3.class, Root.class);
         assert 2 == types.length;
         assert Student.class == types[0];
@@ -620,7 +643,7 @@ public class CollectParametersTest {
     }
 
     @Test
-    public void complexTypeHierarchy4() {
+    void complexTypeHierarchy4() {
         Type[] types = Model.collectParameters(CheckBox.class, Widget.class);
         assert 1 == types.length;
         assert UserStyle.class == types[0];
@@ -629,49 +652,48 @@ public class CollectParametersTest {
     /**
      * @version 2016/05/27 22:33:12
      */
-    public static class StyleDescriptor {
+    static class StyleDescriptor {
     }
 
     /**
      * @version 2016/09/11 2:47:58
      */
-    public static class PieceStyle extends StyleDescriptor {
+    static class PieceStyle extends StyleDescriptor {
     }
 
     /**
      * @version 2016/05/27 22:32:52
      */
-    public static class UserStyle extends PieceStyle {
+    static class UserStyle extends PieceStyle {
     }
 
     /**
      * @version 2016/05/27 22:34:05
      */
-    public static interface Declarable {
+    static interface Declarable {
     }
 
     /**
      * @version 2016/05/27 22:33:47
      */
-    public static abstract class Widget<Styles extends StyleDescriptor> implements Declarable {
+    static abstract class Widget<Styles extends StyleDescriptor> implements Declarable {
     }
 
     /**
      * @version 2016/05/27 22:33:36
      */
-    public static abstract class LowLevelWidget<Styles extends StyleDescriptor, T extends LowLevelWidget<Styles, T>>
-            extends Widget<Styles> {
+    static abstract class LowLevelWidget<Styles extends StyleDescriptor, T extends LowLevelWidget<Styles, T>> extends Widget<Styles> {
     }
 
     /**
      * @version 2016/05/27 22:33:01
      */
-    public static abstract class MarkedButton<T extends MarkedButton<T, V>, V> extends LowLevelWidget<UserStyle, T> {
+    static abstract class MarkedButton<T extends MarkedButton<T, V>, V> extends LowLevelWidget<UserStyle, T> {
     }
 
     /**
      * @version 2016/05/27 22:31:56
      */
-    public static class CheckBox<V> extends MarkedButton<CheckBox<V>, V> {
+    static class CheckBox<V> extends MarkedButton<CheckBox<V>, V> {
     }
 }
