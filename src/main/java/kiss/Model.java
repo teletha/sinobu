@@ -460,7 +460,14 @@ public class Model<M> {
                     if (base == variable.getGenericDeclaration()) {
                         return of(variable.getBounds()[0], base);
                     } else {
-                        return of(collectParameters(base, variable.getGenericDeclaration())[i], base);
+                        Type[] types = collectParameters(base, variable.getGenericDeclaration());
+
+                        if (types.length == 0) {
+                            System.out.println(base + "    " + variable.getGenericDeclaration() + "  " + variable + "  " + Arrays
+                                    .toString(variables) + "    " + Arrays.toString(variable.getBounds()));
+                        }
+
+                        return of(types.length < i ? variable.getBounds()[0] : types[i], base);
                     }
                 }
 
@@ -672,6 +679,7 @@ public class Model<M> {
                             try {
                                 args[i] = Model.of(args[i], base).type;
                             } catch (ArrayIndexOutOfBoundsException e) {
+                                e.printStackTrace();
                                 args[i] = clazz == base ? Object.class : collectParameters(clazz, target)[i];
                             }
                         }

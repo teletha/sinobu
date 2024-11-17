@@ -16,8 +16,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.function.UnaryOperator;
 
 import org.junit.jupiter.api.Test;
 
@@ -30,7 +28,6 @@ import kiss.sample.bean.StringList;
 import kiss.sample.bean.StringMap;
 import kiss.sample.bean.Student;
 
-@SuppressWarnings("unused")
 class CollectParametersTest {
 
     static {
@@ -38,210 +35,449 @@ class CollectParametersTest {
         assert I.class != null;
     }
 
-    @Test
-    void parameterIsVariable() {
-        Type[] parameters = Model.collectParameters(ArrayList.class, List.class);
-        assert parameters.length == 1;
-        assert parameters[0] == Object.class;
+    private boolean collect(Class target, Class api, Class... results) {
+        Type[] params = Model.collectParameters(target, api);
+        assert params.length == results.length;
+        for (int i = 0; i < params.length; i++) {
+            assert params[i] == results[i];
+        }
+        return true;
     }
 
     @Test
     void parameterizedClass() {
-        class Definition implements ParameterInterface<String> {
+        class Declare implements ParamInterface1<String> {
+        }
+        class Sub extends Declare {
+        }
+        class Deep extends Sub {
         }
 
-        Type[] types = Model.collectParameters(Definition.class, ParameterInterface.class);
-        assert types.length == 1;
+        assert Model.collectParameters(Declare.class, ParamInterface1.class)[0] == String.class;
+        assert Model.collectParameters(Sub.class, ParamInterface1.class)[0] == String.class;
+        assert Model.collectParameters(Deep.class, ParamInterface1.class)[0] == String.class;
+    }
+
+    @Test
+    void parameterizedClassX() {
+        class Declare extends ParamClass1<String> {
+        }
+        class Sub extends Declare {
+        }
+        class Deep extends Sub {
+        }
+
+        assert Model.collectParameters(Declare.class, ParamClass1.class)[0] == String.class;
+        assert Model.collectParameters(Sub.class, ParamClass1.class)[0] == String.class;
+        assert Model.collectParameters(Deep.class, ParamClass1.class)[0] == String.class;
+    }
+
+    @Test
+    void parameterizedArrayClass() {
+        class Declare implements ParamInterface1<String[]> {
+        }
+        class Sub extends Declare {
+        }
+        class Deep extends Sub {
+        }
+
+        assert Model.collectParameters(Declare.class, ParamInterface1.class)[0] == String[].class;
+        assert Model.collectParameters(Sub.class, ParamInterface1.class)[0] == String[].class;
+        assert Model.collectParameters(Deep.class, ParamInterface1.class)[0] == String[].class;
+    }
+
+    @Test
+    void parameterizedArrayClassX() {
+        class Declare extends ParamClass1<String[]> {
+        }
+        class Sub extends Declare {
+        }
+        class Deep extends Sub {
+        }
+
+        assert Model.collectParameters(Declare.class, ParamClass1.class)[0] == String[].class;
+        assert Model.collectParameters(Sub.class, ParamClass1.class)[0] == String[].class;
+        assert Model.collectParameters(Deep.class, ParamClass1.class)[0] == String[].class;
+    }
+
+    @Test
+    void parameterizedRaw() {
+        class Declare implements ParamInterface1 {
+        }
+        class Sub extends Declare {
+        }
+        class Deep extends Sub {
+        }
+
+        assert Model.collectParameters(Declare.class, ParamInterface1.class).length == 0;
+        assert Model.collectParameters(Sub.class, ParamInterface1.class).length == 0;
+        assert Model.collectParameters(Deep.class, ParamInterface1.class).length == 0;
+    }
+
+    @Test
+    void parameterizedRawX() {
+        class Declare extends ParamClass1 {
+        }
+        class Sub extends Declare {
+        }
+        class Deep extends Sub {
+        }
+
+        assert Model.collectParameters(Declare.class, ParamClass1.class).length == 0;
+        assert Model.collectParameters(Sub.class, ParamClass1.class).length == 0;
+        assert Model.collectParameters(Deep.class, ParamClass1.class).length == 0;
+    }
+
+    @Test
+    void parameterizedTypeVariable() {
+        class Declare<E> implements ParamInterface1<E> {
+        }
+        class Sub extends Declare {
+        }
+        class Deep extends Sub {
+        }
+
+        assert Model.collectParameters(Declare.class, ParamInterface1.class)[0] == Object.class;
+        assert Model.collectParameters(Sub.class, ParamInterface1.class)[0] == Object.class;
+        assert Model.collectParameters(Deep.class, ParamInterface1.class)[0] == Object.class;
+    }
+
+    @Test
+    void parameterizedTypeVariableX() {
+        class Declare<E> extends ParamClass1<E> {
+        }
+        class Sub extends Declare {
+        }
+        class Deep extends Sub {
+        }
+
+        assert Model.collectParameters(Declare.class, ParamClass1.class)[0] == Object.class;
+        assert Model.collectParameters(Sub.class, ParamClass1.class)[0] == Object.class;
+        assert Model.collectParameters(Deep.class, ParamClass1.class)[0] == Object.class;
+    }
+
+    @Test
+    void parameterizedTypeVariableOnSub() {
+        class Declare<E> implements ParamInterface1<E> {
+        }
+        class Sub extends Declare<String> {
+        }
+
+        Type[] types = Model.collectParameters(Sub.class, ParamInterface1.class);
         assert types[0] == String.class;
     }
 
     @Test
-    void parameterizedClassFromSub() {
-        class Definition implements ParameterInterface<String> {
+    void parameterizedTypeVariableOnDeep() {
+        class Declare<E> implements ParamInterface1<E> {
+        }
+        class Sub<E> extends Declare<E> {
+        }
+        class Deep extends Sub<String> {
         }
 
-        class Sub extends Definition {
+        assert Model.collectParameters(Deep.class, ParamInterface1.class)[0] == String.class;
+        assert Model.collectParameters(Deep.class, Declare.class)[0] == String.class;
+        assert Model.collectParameters(Deep.class, Sub.class)[0] == String.class;
+    }
+
+    @Test
+    void parameterizedWildcard() {
+        class Declare<E extends List> implements ParamInterface1<E> {
+        }
+        class Sub extends Declare {
+        }
+        class Deep extends Sub {
         }
 
-        Type[] types = Model.collectParameters(Sub.class, ParameterInterface.class);
-        assert types.length == 1;
-        assert types[0] == String.class;
+        assert Model.collectParameters(Declare.class, ParamInterface1.class)[0] == List.class;
+        assert Model.collectParameters(Sub.class, ParamInterface1.class)[0] == List.class;
+        assert Model.collectParameters(Deep.class, ParamInterface1.class)[0] == List.class;
     }
 
     @Test
-    void parameterizedRaw() throws Exception {
-        class Definition {
-            UnaryOperator op;
+    void parameterizedWildcardX() {
+        class Declare<E extends List> extends ParamClass1<E> {
+        }
+        class Sub extends Declare {
+        }
+        class Deep extends Sub {
         }
 
-        Type[] types = Model.collectParameters(Definition.class.getDeclaredField("op").getGenericType(), Function.class);
-        assert types.length == 2;
-        assert types[0] == Object.class;
-        assert types[1] == Object.class;
+        assert Model.collectParameters(Declare.class, ParamClass1.class)[0] == List.class;
+        assert Model.collectParameters(Sub.class, ParamClass1.class)[0] == List.class;
+        assert Model.collectParameters(Deep.class, ParamClass1.class)[0] == List.class;
     }
 
     @Test
-    void parameterizedTypeVariable2() throws Exception {
-        abstract class Definition<E> implements UnaryOperator<E> {
+    void parameterizedWildcardOnSub() {
+        abstract class Declare<E> implements ParamInterface1<E> {
+        }
+        class Sub<E extends List> extends Declare<E> {
         }
 
-        Type[] types = Model.collectParameters(Definition.class, Function.class);
-        assert types.length == 2;
-        assert types[0] == Object.class;
-        assert types[1] == Object.class;
+        Type[] types = Model.collectParameters(Sub.class, ParamInterface1.class);
+        assert types[0] == List.class;
     }
 
     @Test
-    void parameterizedTypeVariable() throws Exception {
-        class Definition<E> {
-            UnaryOperator<E> op;
+    void parameterizedWildcardOnDeep() {
+        class Declare<E> implements ParamInterface1<E> {
+        }
+        class Sub<E> extends Declare<E> {
+        }
+        class Deep<E extends List> extends Sub<E> {
         }
 
-        Type[] types = Model.collectParameters(Definition.class.getDeclaredField("op").getGenericType(), Function.class);
-        assert types.length == 2;
-        assert types[0] == Object.class;
-        assert types[1] == Object.class;
-    }
-
-    /**
-     * Test {@link Object} parameter with interface.
-     */
-    @Test
-    void testGetParameterizedTypes02() {
-        Type[] types = Model.collectParameters(ParameterizedObjectByInterface.class, ParameterInterface.class);
-        assert 1 == types.length;
-        assert Object.class == types[0];
-    }
-
-    /**
-     * Test wildcard parameter with interface.
-     */
-    @Test
-    void testGetParameterizedTypes14() {
-        Type[] types = Model.collectParameters(ParameterizedWildcardByInterface.class, ParameterInterface.class);
-        assert 1 == types.length;
-        assert Map.class == types[0];
-    }
-
-    /**
-     * Test none parameter with interface.
-     */
-    @Test
-    void testGetParameterizedTypes03() {
-        Type[] types = Model.collectParameters(ParameterizedNoneByInterface.class, ParameterInterface.class);
-        assert 0 == types.length;
+        assert Model.collectParameters(Deep.class, ParamInterface1.class)[0] == List.class;
+        assert Model.collectParameters(Deep.class, Declare.class)[0] == List.class;
+        assert Model.collectParameters(Deep.class, Sub.class)[0] == List.class;
     }
 
     @Test
-    void parameterFromOverriddenInterface() {
-        Type[] types = Model.collectParameters(TypedExtendedFromInterface.class, ParameterInterface.class);
-        assert 1 == types.length;
-        assert String.class == types[0];
+    void multipleClasses() {
+        class Declare extends ParamClass1<String> implements ParamInterface1<Number> {
+        }
+
+        assert Model.collectParameters(Declare.class, ParamInterface1.class)[0] == Number.class;
+        assert Model.collectParameters(Declare.class, ParamClass1.class)[0] == String.class;
     }
 
     @Test
-    void parameterFromOverrideInterface() {
-        Type[] types = Model.collectParameters(TypedExtendedFromInterface.class, ExtensibleByInterface.class);
-        assert 1 == types.length;
-        assert String.class == types[0];
-    }
+    void multipleRaws() {
+        class Declare extends ParamClass1 implements ParamInterface1 {
+        }
 
-    /**
-     * Test {@link String} parameter with class.
-     */
-    @Test
-    void testGetParameterizedTypes06() {
-        Type[] types = Model.collectParameters(ParameterizedStringByClass.class, ParameterClass.class);
-        assert 1 == types.length;
-        assert String.class == types[0];
-    }
-
-    /**
-     * Test {@link Object} parameter with class.
-     */
-    @Test
-    void testGetParameterizedTypes07() {
-        Type[] types = Model.collectParameters(ParameterizedObjectByClass.class, ParameterClass.class);
-        assert 1 == types.length;
-        assert Object.class == types[0];
-    }
-
-    /**
-     * Test wildcard parameter with class.
-     */
-    @Test
-    void testGetParameterizedTypes15() {
-        Type[] types = Model.collectParameters(ParameterizedWildcardByClass.class, ParameterClass.class);
-        assert 1 == types.length;
-        assert Map.class == types[0];
-    }
-
-    /**
-     * Test none parameter with class.
-     */
-    @Test
-    void testGetParameterizedTypes08() {
-        Type[] types = Model.collectParameters(ParameterizedNoneByClass.class, ParameterClass.class);
-        assert 0 == types.length;
-    }
-
-    /**
-     * Test none parameter with class.
-     */
-    @Test
-    void testGetParameterizedTypes09() {
-        Type[] types = Model.collectParameters(ExtendedFromClass.class, ParameterClass.class);
-        assert 1 == types.length;
-        assert String.class == types[0];
-    }
-
-    /**
-     * Test parent variable parameter with class.
-     */
-    @Test
-    void testGetParameterizedTypes10() {
-        Type[] types = Model.collectParameters(TypedExtendedFromClass.class, ParameterClass.class);
-        assert 1 == types.length;
-        assert String.class == types[0];
-    }
-
-    /**
-     * Test parameter from multiple source.
-     */
-    @Test
-    void testGetParameterizedTypes11() {
-        Type[] types = Model.collectParameters(ParameterFromMultipleSource.class, ParameterInterface.class);
-        assert 1 == types.length;
-        assert Type.class == types[0];
-
-        types = Model.collectParameters(ParameterFromMultipleSource.class, ParameterClass.class);
-        assert 1 == types.length;
-        assert Class.class == types[0];
-    }
-
-    /**
-     * Test multiple parameter.
-     */
-    @Test
-    void testGetParameterizedTypes12() {
-        Type[] types = Model.collectParameters(MultipleParameterClass.class, MultipleParameter.class);
-        assert 2 == types.length;
-        assert Integer.class == types[0];
-        assert Long.class == types[1];
+        assert Model.collectParameters(Declare.class, ParamInterface1.class).length == 0;
+        assert Model.collectParameters(Declare.class, ParamClass1.class).length == 0;
     }
 
     @Test
-    void parameterIsArrayFromInterface() {
-        Type[] types = Model.collectParameters(ParameterizedStringArrayByInterface.class, ParameterInterface.class);
-        assert 1 == types.length;
-        assert String[].class == types[0];
+    void multipleTypeVariables() {
+        class Declare<S, T> extends ParamClass1<S> implements ParamInterface1<T> {
+        }
+
+        assert Model.collectParameters(Declare.class, ParamInterface1.class)[0] == Object.class;
+        assert Model.collectParameters(Declare.class, ParamClass1.class)[0] == Object.class;
     }
 
     @Test
-    void parameterIsArrayFromClass() {
-        Type[] types = Model.collectParameters(ParameterizedStringArrayByClass.class, ParameterClass.class);
-        assert 1 == types.length;
-        assert String[].class == types[0];
+    void multipleTypeVariablesOnSub() {
+        class Declare<S, T> extends ParamClass1<S> implements ParamInterface1<T> {
+        }
+        class Sub extends Declare<String, Number> {
+        }
+
+        assert Model.collectParameters(Sub.class, ParamClass1.class)[0] == String.class;
+        assert Model.collectParameters(Sub.class, ParamInterface1.class)[0] == Number.class;
+    }
+
+    @Test
+    void multipleTypeVariablesOnDeep() {
+        class Declare<S, T> extends ParamClass1<S> implements ParamInterface1<T> {
+        }
+        class Sub<S, T> extends Declare<S, T> {
+        }
+        class Deep extends Sub<String, Number> {
+        }
+
+        assert Model.collectParameters(Deep.class, ParamClass1.class)[0] == String.class;
+        assert Model.collectParameters(Deep.class, ParamInterface1.class)[0] == Number.class;
+    }
+
+    @Test
+    void multipleWildcards() {
+        class Declare<S, T> extends ParamClass1<S> implements ParamInterface1<T> {
+        }
+
+        assert Model.collectParameters(Declare.class, ParamInterface1.class)[0] == Object.class;
+        assert Model.collectParameters(Declare.class, ParamClass1.class)[0] == Object.class;
+    }
+
+    @Test
+    void multipleWildcardsOnSub() {
+        class Declare<S, T> extends ParamClass1<S> implements ParamInterface1<T> {
+        }
+        class Sub<S extends List, T extends Map> extends Declare<S, T> {
+        }
+
+        assert Model.collectParameters(Sub.class, ParamClass1.class)[0] == List.class;
+        assert Model.collectParameters(Sub.class, ParamInterface1.class)[0] == Map.class;
+    }
+
+    @Test
+    void multipleWildcardsOnDeep() {
+        class Declare<S, T> extends ParamClass1<S> implements ParamInterface1<T> {
+        }
+        class Sub<S, T> extends Declare<S, T> {
+        }
+        class Deep<S extends List, T extends Map> extends Sub<S, T> {
+        }
+
+        assert Model.collectParameters(Deep.class, ParamClass1.class)[0] == List.class;
+        assert Model.collectParameters(Deep.class, ParamInterface1.class)[0] == Map.class;
+    }
+
+    @Test
+    void biparameterizedClass() {
+        class Declare implements ParamInterface2<String, Integer> {
+        }
+        class Sub extends Declare {
+        }
+        class Deep extends Sub {
+        }
+
+        assert collect(Declare.class, ParamInterface2.class, String.class, Integer.class);
+        assert collect(Sub.class, ParamInterface2.class, String.class, Integer.class);
+        assert collect(Deep.class, ParamInterface2.class, String.class, Integer.class);
+    }
+
+    @Test
+    void biparameterizedClassX() {
+        class Declare extends ParamClass2<String, Integer> {
+        }
+        class Sub extends Declare {
+        }
+        class Deep extends Sub {
+        }
+
+        assert collect(Declare.class, ParamClass2.class, String.class, Integer.class);
+        assert collect(Sub.class, ParamClass2.class, String.class, Integer.class);
+        assert collect(Deep.class, ParamClass2.class, String.class, Integer.class);
+    }
+
+    @Test
+    void biparameterizedRaw() {
+        class Declare implements ParamInterface2 {
+        }
+        class Sub extends Declare {
+        }
+        class Deep extends Sub {
+        }
+
+        assert Model.collectParameters(Declare.class, ParamInterface2.class).length == 0;
+        assert Model.collectParameters(Sub.class, ParamInterface2.class).length == 0;
+        assert Model.collectParameters(Deep.class, ParamInterface2.class).length == 0;
+    }
+
+    @Test
+    void biparameterizedRawX() {
+        class Declare extends ParamClass2 {
+        }
+        class Sub extends Declare {
+        }
+        class Deep extends Sub {
+        }
+
+        assert Model.collectParameters(Declare.class, ParamClass2.class).length == 0;
+        assert Model.collectParameters(Sub.class, ParamClass2.class).length == 0;
+        assert Model.collectParameters(Deep.class, ParamClass2.class).length == 0;
+    }
+
+    @Test
+    void biparameterizedTypeVariable() {
+        class Declare<E, F> implements ParamInterface2<E, F> {
+        }
+        class Sub extends Declare {
+        }
+        class Deep extends Sub {
+        }
+
+        assert collect(Declare.class, ParamInterface2.class, Object.class, Object.class);
+        assert collect(Sub.class, ParamInterface2.class, Object.class, Object.class);
+        assert collect(Deep.class, ParamInterface2.class, Object.class, Object.class);
+    }
+
+    @Test
+    void biparameterizedTypeVariableX() {
+        class Declare<E, F> extends ParamClass2<E, F> {
+        }
+        class Sub extends Declare {
+        }
+        class Deep extends Sub {
+        }
+
+        assert collect(Declare.class, ParamClass2.class, Object.class, Object.class);
+        assert collect(Sub.class, ParamClass2.class, Object.class, Object.class);
+        assert collect(Deep.class, ParamClass2.class, Object.class, Object.class);
+    }
+
+    @Test
+    void biparameterizedTypeVariableOnSub() {
+        class Declare<E, F> implements ParamInterface2<E, F> {
+        }
+        class Sub extends Declare<String, Integer> {
+        }
+
+        assert collect(Sub.class, ParamInterface2.class, String.class, Integer.class);
+        assert collect(Sub.class, Declare.class, String.class, Integer.class);
+    }
+
+    @Test
+    void biparameterizedTypeVariableOnDeep() {
+        class Declare<E, F> implements ParamInterface2<E, F> {
+        }
+        class Sub<E, F> extends Declare<E, F> {
+        }
+        class Deep extends Sub<String, Integer> {
+        }
+
+        assert collect(Deep.class, ParamInterface2.class, String.class, Integer.class);
+        assert collect(Deep.class, Declare.class, String.class, Integer.class);
+        assert collect(Deep.class, Sub.class, String.class, Integer.class);
+    }
+
+    @Test
+    void biparameterizedWildcard() {
+        class Declare<E extends List, F extends Map> implements ParamInterface2<E, F> {
+        }
+        class Sub extends Declare {
+        }
+        class Deep extends Sub {
+        }
+
+        assert collect(Declare.class, ParamInterface2.class, List.class, Map.class);
+        assert collect(Sub.class, ParamInterface2.class, List.class, Map.class);
+        assert collect(Deep.class, ParamInterface2.class, List.class, Map.class);
+    }
+
+    @Test
+    void biparameterizedWildcardX() {
+        class Declare<E extends List, F extends Map> extends ParamClass2<E, F> {
+        }
+        class Sub extends Declare {
+        }
+        class Deep extends Sub {
+        }
+
+        assert collect(Declare.class, ParamClass2.class, List.class, Map.class);
+        assert collect(Sub.class, ParamClass2.class, List.class, Map.class);
+        assert collect(Deep.class, ParamClass2.class, List.class, Map.class);
+    }
+
+    @Test
+    void biparameterizedWildcardOnSub() {
+        class Declare<E, F> implements ParamInterface2<E, F> {
+        }
+        class Sub<E extends List, F extends Map> extends Declare<E, F> {
+        }
+
+        assert collect(Sub.class, ParamInterface2.class, List.class, Map.class);
+        assert collect(Sub.class, Declare.class, List.class, Map.class);
+    }
+
+    @Test
+    void biparameterizedWildcardOnDeep() {
+        class Declare<E, F> implements ParamInterface2<E, F> {
+        }
+        class Sub<E, F> extends Declare<E, F> {
+        }
+        class Deep<E extends List, F extends Map> extends Sub<E, F> {
+        }
+
+        assert collect(Deep.class, ParamInterface2.class, List.class, Map.class);
+        assert collect(Deep.class, Declare.class, List.class, Map.class);
+        assert collect(Deep.class, Sub.class, List.class, Map.class);
     }
 
     @Test
@@ -258,9 +494,21 @@ class CollectParametersTest {
 
     @Test
     void subclassHasAnotherParameter() {
-        Type[] types = Model.collectParameters(TypedSubClass.class, ParameterClass.class);
-        assert 1 == types.length;
-        assert String.class == types[0];
+        class Declare<E> extends ParamClass1<String> {
+        }
+        class Sub<S> extends Declare<List> {
+        }
+        class Deep<D> extends Sub<Integer> {
+        }
+
+        assert collect(Declare.class, ParamClass1.class, String.class);
+        assert collect(Sub.class, ParamClass1.class, String.class);
+        assert collect(Deep.class, ParamClass1.class, String.class);
+
+        assert collect(Sub.class, Declare.class, List.class);
+        assert collect(Deep.class, Declare.class, List.class);
+
+        assert collect(Deep.class, Sub.class, Integer.class);
     }
 
     @Test
@@ -355,10 +603,16 @@ class CollectParametersTest {
         assert Student.class == types[0];
     }
 
-    /**
-     * @version 2010/02/19 22:37:01
-     */
-    private static interface ParameterInterface<T> {
+    private static interface ParamInterface1<T> {
+    }
+
+    private static interface ParamInterface2<S, T> {
+    }
+
+    private static class ParamClass1<T> {
+    }
+
+    private static class ParamClass2<S, T> {
     }
 
     /**
@@ -392,36 +646,6 @@ class CollectParametersTest {
     }
 
     /**
-     * @version 2010/02/15 15:34:39
-     */
-    private static class ParameterizedStringArrayByInterface implements ParameterInterface<String[]> {
-    }
-
-    /**
-     * DOCUMENT.
-     * 
-     * @version 2008/06/20 12:57:04
-     */
-    private static class ParameterizedObjectByInterface implements ParameterInterface<Object> {
-    }
-
-    /**
-     * DOCUMENT.
-     * 
-     * @version 2008/06/20 12:57:04
-     */
-    private static class ParameterizedWildcardByInterface<T extends Map> implements ParameterInterface<T> {
-    }
-
-    /**
-     * DOCUMENT.
-     * 
-     * @version 2008/06/20 12:57:04
-     */
-    private static class ParameterizedNoneByInterface implements ParameterInterface {
-    }
-
-    /**
      * @version 2010/02/19 22:54:31
      */
     private static class ParameterizedStringByClass extends ParameterClass<String> {
@@ -434,58 +658,6 @@ class CollectParametersTest {
     }
 
     /**
-     * @version 2010/02/15 15:34:39
-     */
-    private static class ParameterizedStringArrayByClass extends ParameterClass<String[]> {
-    }
-
-    /**
-     * DOCUMENT.
-     * 
-     * @version 2008/06/20 12:57:04
-     */
-    private static class ParameterizedObjectByClass extends ParameterClass<Object> {
-    }
-
-    /**
-     * DOCUMENT.
-     * 
-     * @version 2008/06/20 12:57:04
-     */
-    private static class ParameterizedWildcardByClass<T extends Map> extends ParameterClass<T> {
-    }
-
-    /**
-     * DOCUMENT.
-     * 
-     * @version 2008/06/20 12:57:04
-     */
-    private static class ParameterizedNoneByClass extends ParameterClass {
-    }
-
-    /**
-     * DOCUMENT.
-     * 
-     * @version 2008/06/20 12:57:04
-     */
-    private static class ExtendedFromClass extends ParameterizedStringByClass {
-    }
-
-    /**
-     * @version 2010/02/15 15:04:45
-     */
-    private static class ExtensibleByInterface<T> implements ParameterInterface<T> {
-    }
-
-    /**
-     * DOCUMENT.
-     * 
-     * @version 2008/06/20 14:44:09
-     */
-    private static class TypedExtendedFromInterface extends ExtensibleByInterface<String> {
-    }
-
-    /**
      * @version 2010/02/15 15:04:51
      */
     private static class ExtensibleByClass<T> extends ParameterClass<T> {
@@ -494,40 +666,9 @@ class CollectParametersTest {
     /**
      * DOCUMENT.
      * 
-     * @version 2008/06/20 14:44:09
-     */
-    private static class TypedExtendedFromClass extends ExtensibleByClass<String> {
-    }
-
-    /**
-     * DOCUMENT.
-     * 
-     * @version 2008/06/20 15:15:56
-     */
-    private static class ParameterFromMultipleSource extends ParameterClass<Class> implements ParameterInterface<Type> {
-    }
-
-    /**
-     * DOCUMENT.
-     * 
      * @version 2008/06/20 15:19:19
      */
     private static interface MultipleParameter<S, T> {
-    }
-
-    /**
-     * DOCUMENT.
-     * 
-     * @version 2008/06/20 15:20:00
-     */
-    private static class MultipleParameterClass implements MultipleParameter<Integer, Long> {
-    }
-
-    /**
-     * @version 2009/07/19 18:55:16
-     */
-    @SuppressWarnings("hiding")
-    private static class TypedSubClass<Boolean> extends ParameterClass<String> {
     }
 
     /**
