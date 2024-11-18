@@ -465,11 +465,6 @@ public class Model<M> {
                 // of classes implementing this interface.
                 if (variable.equals(variables[i])) {
                     Type[] types = collectParameters(base, variable.getGenericDeclaration());
-                    // if (types.length == 0) {
-                    // System.out.println(base + " " + variable.getGenericDeclaration() + " " +
-                    // variable + " " + Arrays
-                    // .toString(variables) + " " + Arrays.toString(variable.getBounds()));
-                    // }
                     return of(types.length == 0 || types.length < i ? variable.getBounds()[0] : types[i], base);
                 }
             }
