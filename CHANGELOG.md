@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.5.2](https://github.com/teletha/sinobu/compare/v4.5.1...v4.5.2) (2024-11-18)
+
+
+### Bug Fixes
+
+* optimize Model#collectParameters ([083d0c0](https://github.com/teletha/sinobu/commit/083d0c0497ad08b82d161767c81442385136a7c0))
+
 ## [4.5.1](https://github.com/teletha/sinobu/compare/v4.5.0...v4.5.1) (2024-11-16)
 
 
