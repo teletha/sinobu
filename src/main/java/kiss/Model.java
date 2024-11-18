@@ -36,7 +36,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -396,12 +395,16 @@ public class Model<M> {
      * @see TypeVariable
      */
     static synchronized Model of(Type type, Type base) {
-        // class
+        // =======================================
+        // Class
+        // =======================================
         if (type instanceof Class) {
             return of((Class) type);
         }
 
-        // parameterized type
+        // =======================================
+        // Parameterized Type
+        // =======================================
         if (type instanceof ParameterizedType) {
             ParameterizedType parameterized = (ParameterizedType) type;
             Class clazz = (Class) parameterized.getRawType();
@@ -424,7 +427,9 @@ public class Model<M> {
             return model;
         }
 
-        // wildcard type
+        // =======================================
+        // Wildcard Type
+        // =======================================
         if (type instanceof WildcardType) {
             WildcardType wildcard = (WildcardType) type;
 
@@ -441,7 +446,9 @@ public class Model<M> {
             }
         }
 
-        // variable type
+        // =======================================
+        // Variable Type
+        // =======================================
         if (type instanceof TypeVariable) {
             TypeVariable variable = (TypeVariable) type;
             TypeVariable[] variables = variable.getGenericDeclaration().getTypeParameters();
@@ -457,24 +464,20 @@ public class Model<M> {
                 // consequence, users of type variables must not rely on the identity of instances
                 // of classes implementing this interface.
                 if (variable.equals(variables[i])) {
-                    if (base == variable.getGenericDeclaration()) {
-                        return of(variable.getBounds()[0], base);
-                    } else {
-                        Type[] types = collectParameters(base, variable.getGenericDeclaration());
-
-                        if (types.length == 0) {
-                            System.out.println(base + "    " + variable.getGenericDeclaration() + "  " + variable + "  " + Arrays
-                                    .toString(variables) + "    " + Arrays.toString(variable.getBounds()));
-                        }
-
-                        return of(types.length < i ? variable.getBounds()[0] : types[i], base);
-                    }
+                    Type[] types = collectParameters(base, variable.getGenericDeclaration());
+                    // if (types.length == 0) {
+                    // System.out.println(base + " " + variable.getGenericDeclaration() + " " +
+                    // variable + " " + Arrays
+                    // .toString(variables) + " " + Arrays.toString(variable.getBounds()));
+                    // }
+                    return of(types.length == 0 || types.length < i ? variable.getBounds()[0] : types[i], base);
                 }
-
             }
         }
 
-        // generic array type
+        // =======================================
+        // Generic Array Type
+        // =======================================
         if (type instanceof GenericArrayType) {
             return of(((GenericArrayType) type).getGenericComponentType(), base);
         }
@@ -660,7 +663,7 @@ public class Model<M> {
                 : clazz instanceof ParameterizedType ? ((ParameterizedType) clazz).getRawType() : Object.class);
 
         // collect all types
-        Set<Type> types = new HashSet();
+        Set<Type> types = new LinkedHashSet();
         types.add(clazz);
         types.add(raw.getGenericSuperclass());
         Collections.addAll(types, raw.getGenericInterfaces());
@@ -676,11 +679,9 @@ public class Model<M> {
                     Type[] args = param.getActualTypeArguments();
                     for (int i = 0; i < args.length; i++) {
                         if (args[i] instanceof TypeVariable) {
-                            try {
-                                args[i] = Model.of(args[i], base).type;
-                            } catch (ArrayIndexOutOfBoundsException e) {
-                                e.printStackTrace();
-                                args[i] = clazz == base ? Object.class : collectParameters(clazz, target)[i];
+                            args[i] = Model.of(args[i], base).type;
+                            if (args[i] == Object.class && clazz != base) {
+                                args[i] = collectParameters(clazz, target)[i];
                             }
                         }
                     }

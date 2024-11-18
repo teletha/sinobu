@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 import org.junit.jupiter.api.Test;
 
@@ -46,11 +48,11 @@ class CollectParametersTest {
 
     @Test
     void parameterizedClass() {
-        class Declare implements ParamInterface1<String> {
+        interface Declare extends ParamInterface1<String> {
         }
-        class Sub extends Declare {
+        interface Sub extends Declare {
         }
-        class Deep extends Sub {
+        interface Deep extends Sub {
         }
 
         assert Model.collectParameters(Declare.class, ParamInterface1.class)[0] == String.class;
@@ -74,11 +76,11 @@ class CollectParametersTest {
 
     @Test
     void parameterizedArrayClass() {
-        class Declare implements ParamInterface1<String[]> {
+        interface Declare extends ParamInterface1<String[]> {
         }
-        class Sub extends Declare {
+        interface Sub extends Declare {
         }
-        class Deep extends Sub {
+        interface Deep extends Sub {
         }
 
         assert Model.collectParameters(Declare.class, ParamInterface1.class)[0] == String[].class;
@@ -102,11 +104,11 @@ class CollectParametersTest {
 
     @Test
     void parameterizedRaw() {
-        class Declare implements ParamInterface1 {
+        interface Declare extends ParamInterface1 {
         }
-        class Sub extends Declare {
+        interface Sub extends Declare {
         }
-        class Deep extends Sub {
+        interface Deep extends Sub {
         }
 
         assert Model.collectParameters(Declare.class, ParamInterface1.class).length == 0;
@@ -130,11 +132,11 @@ class CollectParametersTest {
 
     @Test
     void parameterizedTypeVariable() {
-        class Declare<E> implements ParamInterface1<E> {
+        interface Declare<E> extends ParamInterface1<E> {
         }
-        class Sub extends Declare {
+        interface Sub extends Declare {
         }
-        class Deep extends Sub {
+        interface Deep extends Sub {
         }
 
         assert Model.collectParameters(Declare.class, ParamInterface1.class)[0] == Object.class;
@@ -158,9 +160,9 @@ class CollectParametersTest {
 
     @Test
     void parameterizedTypeVariableOnSub() {
-        class Declare<E> implements ParamInterface1<E> {
+        interface Declare<E> extends ParamInterface1<E> {
         }
-        class Sub extends Declare<String> {
+        interface Sub extends Declare<String> {
         }
 
         Type[] types = Model.collectParameters(Sub.class, ParamInterface1.class);
@@ -169,11 +171,11 @@ class CollectParametersTest {
 
     @Test
     void parameterizedTypeVariableOnDeep() {
-        class Declare<E> implements ParamInterface1<E> {
+        interface Declare<E> extends ParamInterface1<E> {
         }
-        class Sub<E> extends Declare<E> {
+        interface Sub<E> extends Declare<E> {
         }
-        class Deep extends Sub<String> {
+        interface Deep extends Sub<String> {
         }
 
         assert Model.collectParameters(Deep.class, ParamInterface1.class)[0] == String.class;
@@ -183,11 +185,11 @@ class CollectParametersTest {
 
     @Test
     void parameterizedWildcard() {
-        class Declare<E extends List> implements ParamInterface1<E> {
+        interface Declare<E extends List> extends ParamInterface1<E> {
         }
-        class Sub extends Declare {
+        interface Sub extends Declare {
         }
-        class Deep extends Sub {
+        interface Deep extends Sub {
         }
 
         assert Model.collectParameters(Declare.class, ParamInterface1.class)[0] == List.class;
@@ -211,9 +213,9 @@ class CollectParametersTest {
 
     @Test
     void parameterizedWildcardOnSub() {
-        abstract class Declare<E> implements ParamInterface1<E> {
+        interface Declare<E> extends ParamInterface1<E> {
         }
-        class Sub<E extends List> extends Declare<E> {
+        interface Sub<E extends List> extends Declare<E> {
         }
 
         Type[] types = Model.collectParameters(Sub.class, ParamInterface1.class);
@@ -222,11 +224,11 @@ class CollectParametersTest {
 
     @Test
     void parameterizedWildcardOnDeep() {
-        class Declare<E> implements ParamInterface1<E> {
+        interface Declare<E> extends ParamInterface1<E> {
         }
-        class Sub<E> extends Declare<E> {
+        interface Sub<E> extends Declare<E> {
         }
-        class Deep<E extends List> extends Sub<E> {
+        interface Deep<E extends List> extends Sub<E> {
         }
 
         assert Model.collectParameters(Deep.class, ParamInterface1.class)[0] == List.class;
@@ -320,11 +322,11 @@ class CollectParametersTest {
 
     @Test
     void biparameterizedClass() {
-        class Declare implements ParamInterface2<String, Integer> {
+        interface Declare extends ParamInterface2<String, Integer> {
         }
-        class Sub extends Declare {
+        interface Sub extends Declare {
         }
-        class Deep extends Sub {
+        interface Deep extends Sub {
         }
 
         assert collect(Declare.class, ParamInterface2.class, String.class, Integer.class);
@@ -348,11 +350,11 @@ class CollectParametersTest {
 
     @Test
     void biparameterizedRaw() {
-        class Declare implements ParamInterface2 {
+        interface Declare extends ParamInterface2 {
         }
-        class Sub extends Declare {
+        interface Sub extends Declare {
         }
-        class Deep extends Sub {
+        interface Deep extends Sub {
         }
 
         assert Model.collectParameters(Declare.class, ParamInterface2.class).length == 0;
@@ -376,11 +378,11 @@ class CollectParametersTest {
 
     @Test
     void biparameterizedTypeVariable() {
-        class Declare<E, F> implements ParamInterface2<E, F> {
+        interface Declare<E, F> extends ParamInterface2<E, F> {
         }
-        class Sub extends Declare {
+        interface Sub extends Declare {
         }
-        class Deep extends Sub {
+        interface Deep extends Sub {
         }
 
         assert collect(Declare.class, ParamInterface2.class, Object.class, Object.class);
@@ -404,9 +406,9 @@ class CollectParametersTest {
 
     @Test
     void biparameterizedTypeVariableOnSub() {
-        class Declare<E, F> implements ParamInterface2<E, F> {
+        interface Declare<E, F> extends ParamInterface2<E, F> {
         }
-        class Sub extends Declare<String, Integer> {
+        interface Sub extends Declare<String, Integer> {
         }
 
         assert collect(Sub.class, ParamInterface2.class, String.class, Integer.class);
@@ -415,11 +417,11 @@ class CollectParametersTest {
 
     @Test
     void biparameterizedTypeVariableOnDeep() {
-        class Declare<E, F> implements ParamInterface2<E, F> {
+        interface Declare<E, F> extends ParamInterface2<E, F> {
         }
-        class Sub<E, F> extends Declare<E, F> {
+        interface Sub<E, F> extends Declare<E, F> {
         }
-        class Deep extends Sub<String, Integer> {
+        interface Deep extends Sub<String, Integer> {
         }
 
         assert collect(Deep.class, ParamInterface2.class, String.class, Integer.class);
@@ -429,11 +431,11 @@ class CollectParametersTest {
 
     @Test
     void biparameterizedWildcard() {
-        class Declare<E extends List, F extends Map> implements ParamInterface2<E, F> {
+        interface Declare<E extends List, F extends Map> extends ParamInterface2<E, F> {
         }
-        class Sub extends Declare {
+        interface Sub extends Declare {
         }
-        class Deep extends Sub {
+        interface Deep extends Sub {
         }
 
         assert collect(Declare.class, ParamInterface2.class, List.class, Map.class);
@@ -457,9 +459,9 @@ class CollectParametersTest {
 
     @Test
     void biparameterizedWildcardOnSub() {
-        class Declare<E, F> implements ParamInterface2<E, F> {
+        interface Declare<E, F> extends ParamInterface2<E, F> {
         }
-        class Sub<E extends List, F extends Map> extends Declare<E, F> {
+        interface Sub<E extends List, F extends Map> extends Declare<E, F> {
         }
 
         assert collect(Sub.class, ParamInterface2.class, List.class, Map.class);
@@ -513,6 +515,11 @@ class CollectParametersTest {
 
     @Test
     void constructorHasParameterClass() {
+        class ParameterClassConstructor {
+            private ParameterClassConstructor(ParameterClass<String> param) {
+            }
+        }
+
         Constructor constructor = Model.collectConstructors(ParameterClassConstructor.class)[0];
         Type[] types = Model.collectParameters(constructor.getGenericParameterTypes()[0], ParameterClass.class);
         assert 1 == types.length;
@@ -521,6 +528,11 @@ class CollectParametersTest {
 
     @Test
     void constructorHasExtendableByClass() {
+        class ExtensibleByClassConstructor {
+            private ExtensibleByClassConstructor(ExtensibleByClass<Integer> param) {
+            }
+        }
+
         Constructor constructor = Model.collectConstructors(ExtensibleByClassConstructor.class)[0];
         Type[] types = Model.collectParameters(constructor.getGenericParameterTypes()[0], ExtensibleByClass.class);
         assert 1 == types.length;
@@ -529,6 +541,11 @@ class CollectParametersTest {
 
     @Test
     void constructorHasArrayParameter() {
+        class ArrayParameterConstructor {
+            private ArrayParameterConstructor(ParameterClass<String[]> param) {
+            }
+        }
+
         Constructor constructor = Model.collectConstructors(ArrayParameterConstructor.class)[0];
         Type[] types = Model.collectParameters(constructor.getGenericParameterTypes()[0], ParameterClass.class);
         assert 1 == types.length;
@@ -537,6 +554,11 @@ class CollectParametersTest {
 
     @Test
     void constructorHasMultipleParameter() {
+        class MultipleParameterConstructor {
+            private MultipleParameterConstructor(MultipleParameter<Readable, Appendable> param) {
+            }
+        }
+
         Constructor constructor = Model.collectConstructors(MultipleParameterConstructor.class)[0];
         Type[] types = Model.collectParameters(constructor.getGenericParameterTypes()[0], MultipleParameter.class);
         assert 2 == types.length;
@@ -546,6 +568,11 @@ class CollectParametersTest {
 
     @Test
     void constructorHasOverlapParameter() {
+        class ImplicitParameterConstructor {
+            private ImplicitParameterConstructor(ParameterOverlapClass<Map> param) {
+            }
+        }
+
         Constructor constructor = Model.collectConstructors(ImplicitParameterConstructor.class)[0];
         Type[] types = Model.collectParameters(constructor.getGenericParameterTypes()[0], ParameterOverlapClass.class);
         assert 1 == types.length;
@@ -554,6 +581,11 @@ class CollectParametersTest {
 
     @Test
     void constructorHasOverlappedParameter() {
+        class ImplicitParameterConstructor {
+            private ImplicitParameterConstructor(ParameterOverlapClass<Map> param) {
+            }
+        }
+
         Constructor constructor = Model.collectConstructors(ImplicitParameterConstructor.class)[0];
         Type[] types = Model.collectParameters(constructor.getGenericParameterTypes()[0], ParameterClass.class);
         assert 1 == types.length;
@@ -601,6 +633,28 @@ class CollectParametersTest {
         Type[] types = Model.collectParameters(I.make(BoundedBean.class).getClass(), GenericBoundedBean.class);
         assert 1 == types.length;
         assert Student.class == types[0];
+    }
+
+    @Test
+    void unaryOpereator() {
+        interface Declare extends UnaryOperator<String> {
+        }
+
+        assert collect(Declare.class, UnaryOperator.class, String.class);
+        assert collect(Declare.class, Function.class, String.class, String.class);
+    }
+
+    @Test
+    void functionPartially() {
+        interface Partial<E> extends Function<String, E> {
+        }
+        interface Declare extends Partial<Integer> {
+        }
+
+        assert collect(Declare.class, Function.class, String.class, Integer.class);
+        assert collect(Declare.class, Partial.class, Integer.class);
+
+        assert collect(Partial.class, Function.class, String.class, Object.class);
     }
 
     private static interface ParamInterface1<T> {
@@ -672,51 +726,6 @@ class CollectParametersTest {
     }
 
     /**
-     * @version 2010/02/15 12:55:43
-     */
-    private static class ParameterClassConstructor {
-
-        private ParameterClassConstructor(ParameterClass<String> param) {
-        }
-    }
-
-    /**
-     * @version 2010/02/15 12:55:43
-     */
-    private static class ExtensibleByClassConstructor {
-
-        private ExtensibleByClassConstructor(ExtensibleByClass<Integer> param) {
-        }
-    }
-
-    /**
-     * @version 2010/02/15 12:55:43
-     */
-    private static class ArrayParameterConstructor {
-
-        private ArrayParameterConstructor(ParameterClass<String[]> param) {
-        }
-    }
-
-    /**
-     * @version 2010/02/15 15:06:14
-     */
-    private static class MultipleParameterConstructor {
-
-        private MultipleParameterConstructor(MultipleParameter<Readable, Appendable> param) {
-        }
-    }
-
-    /**
-     * @version 2010/02/20 0:05:01
-     */
-    private static class ImplicitParameterConstructor {
-
-        private ImplicitParameterConstructor(ParameterOverlapClass<Map> param) {
-        }
-    }
-
-    /**
      * @version 2010/02/19 23:43:53
      */
     protected static class BoundedBean extends GenericBoundedBean<Student> {
@@ -724,118 +733,42 @@ class CollectParametersTest {
 
     @Test
     void complexTypeHierarchy1() {
-        Type[] types = Model.collectParameters(Child3.class, Child2.class);
-        assert 2 == types.length;
-        assert Teacher.class == types[0];
-        assert School.class == types[1];
+        class Assoication<M> {
+        }
+        class Teacher extends Assoication<School> {
+        }
+        class Root<W extends Person, M> {
+        }
+        class Child1<W extends Person, M extends Assoication<R>, R> extends Root<W, M> {
+        }
+        class Child2<M extends Assoication<R>, R> extends Child1<Student, M, R> {
+        }
+        class Child3 extends Child2<Teacher, School> {
+        }
 
+        assert collect(Child3.class, Child2.class, Teacher.class, School.class);
+        assert collect(Child3.class, Child1.class, Student.class, Teacher.class, School.class);
+        assert collect(Child3.class, Root.class, Student.class, Teacher.class);
     }
 
     @Test
     void complexTypeHierarchy2() {
-        Type[] types = Model.collectParameters(Child3.class, Child1.class);
-        assert 3 == types.length;
-        assert Student.class == types[0];
-        assert Teacher.class == types[1];
-        assert School.class == types[2];
-    }
+        class StyleDescriptor {
+        }
+        class PieceStyle extends StyleDescriptor {
+        }
+        class UserStyle extends PieceStyle {
+        }
+        class Widget<S extends StyleDescriptor> {
+        }
+        class LowLevelWidget<S extends StyleDescriptor, T extends LowLevelWidget<S, T>> extends Widget<S> {
+        }
+        class MarkedButton<T extends MarkedButton<T, V>, V> extends LowLevelWidget<UserStyle, T> {
+        }
+        class CheckBox<V> extends MarkedButton<CheckBox<V>, V> {
+        }
 
-    @Test
-    void complexTypeHierarchy3() {
-        Type[] types = Model.collectParameters(Child3.class, Root.class);
-        assert 2 == types.length;
-        assert Student.class == types[0];
-        assert Teacher.class == types[1];
-    }
-
-    /**
-     * @version 2010/02/15 15:11:46
-     */
-    private static class Assoication<M> {
-    }
-
-    /**
-     * @version 2010/02/15 15:11:42
-     */
-    private static class Teacher extends Assoication<School> {
-    }
-
-    /**
-     * @version 2010/02/15 15:11:40
-     */
-    private static class Root<W extends Person, M> {
-    }
-
-    /**
-     * @version 2010/02/15 15:11:38
-     */
-    private static class Child1<W extends Person, M extends Assoication<R>, R> extends Root<W, M> {
-    }
-
-    /**
-     * @version 2010/02/15 15:11:36
-     */
-    private static class Child2<M extends Assoication<R>, R> extends Child1<Student, M, R> {
-    }
-
-    /**
-     * @version 2010/02/15 15:11:33
-     */
-    private static class Child3 extends Child2<Teacher, School> {
-    }
-
-    @Test
-    void complexTypeHierarchy4() {
-        Type[] types = Model.collectParameters(CheckBox.class, Widget.class);
-        assert 1 == types.length;
-        assert UserStyle.class == types[0];
-    }
-
-    /**
-     * @version 2016/05/27 22:33:12
-     */
-    static class StyleDescriptor {
-    }
-
-    /**
-     * @version 2016/09/11 2:47:58
-     */
-    static class PieceStyle extends StyleDescriptor {
-    }
-
-    /**
-     * @version 2016/05/27 22:32:52
-     */
-    static class UserStyle extends PieceStyle {
-    }
-
-    /**
-     * @version 2016/05/27 22:34:05
-     */
-    static interface Declarable {
-    }
-
-    /**
-     * @version 2016/05/27 22:33:47
-     */
-    static abstract class Widget<Styles extends StyleDescriptor> implements Declarable {
-    }
-
-    /**
-     * @version 2016/05/27 22:33:36
-     */
-    static abstract class LowLevelWidget<Styles extends StyleDescriptor, T extends LowLevelWidget<Styles, T>> extends Widget<Styles> {
-    }
-
-    /**
-     * @version 2016/05/27 22:33:01
-     */
-    static abstract class MarkedButton<T extends MarkedButton<T, V>, V> extends LowLevelWidget<UserStyle, T> {
-    }
-
-    /**
-     * @version 2016/05/27 22:31:56
-     */
-    static class CheckBox<V> extends MarkedButton<CheckBox<V>, V> {
+        assert collect(CheckBox.class, Widget.class, UserStyle.class);
+        assert collect(CheckBox.class, LowLevelWidget.class, UserStyle.class, CheckBox.class);
     }
 }
