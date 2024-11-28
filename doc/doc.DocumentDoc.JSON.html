@@ -4,17 +4,26 @@
 		<meta charset="UTF-8"/>
 		<meta content="width=device-width, initial-scale=1" name="viewport"/>
 		<meta content="Explains how to use Sinobu and its API. " name="description"/>
-		<link href="https://fonts.googleapis.com" rel="preconnect"/>
 		<link href="https://cdn.jsdelivr.net" rel="preconnect"/>
+		<link href="https://fonts.googleapis.com" rel="preconnect"/>
+		<link crossorigin="null" href="https://fonts.gstatic.com" rel="preconnect"/>
+		<link as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?display=swap&#38;family=Inter" rel="preload"/>
+		<link href="https://fonts.googleapis.com/css2?display=swap&#38;family=Inter" media="print" onload="this.media=&#39;all&#39;" rel="stylesheet"/>
+		<link as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?display=swap&#38;family=Material+Icons" rel="preload"/>
+		<link href="https://fonts.googleapis.com/css2?display=swap&#38;family=Material+Icons" media="print" onload="this.media=&#39;all&#39;" rel="stylesheet"/>
+		<link as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?display=swap&#38;family=Vollkorn" rel="preload"/>
+		<link href="https://fonts.googleapis.com/css2?display=swap&#38;family=Vollkorn" media="print" onload="this.media=&#39;all&#39;" rel="stylesheet"/>
+		<link as="style" fetchpriority="high" href="https://cdn.jsdelivr.net/npm/ress@4.0.0/dist/ress.min.css" rel="preload"/>
+		<link href="https://cdn.jsdelivr.net/npm/ress@4.0.0/dist/ress.min.css" rel="stylesheet"/>
 		<title>Sinobu API</title>
 		<base href="../"/>
 		<script src="mimic.js" type="module"></script>
 		<link href="main.css" rel="stylesheet"/>
 	</head>
-	<body class="l">
-		<header class="L">
-			<h1 class="O" date="2024-11-18" ver="4.5.2"><code>Sinobu</code></h1>
-			<nav class="Q"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
+	<body class="R">
+		<header class="a">
+			<h1 class="P" date="2024-11-18" ver="4.5.2"><code>Sinobu</code></h1>
+			<nav class="O"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#text"/>
 					</svg>Document</a><a href="api/"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#package"/>
@@ -25,7 +34,7 @@
 					</svg>Activity</a><a href="https://github.com/teletha/sinobu" target="_blank"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#github"/>
 					</svg>Repository</a></nav>
-			<div class="Z" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
+			<div class="Y" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#sun"/>
 					</svg>
 				</a><a id="dark" title="Change to a darker color scheme"><svg class="A svg" viewBox="0 0 24 24">
@@ -33,21 +42,21 @@
 					</svg>
 				</a></div>
 		</header>
-		<main class="a">
-			<nav class="R">
+		<main class="l">
+			<nav class="U">
 				<div></div>
 			</nav>
-			<article class="W" id="Article">
-				<section class="H B" id="doc.DocumentDoc.JSON.Reading_JSON">
+			<article class="T" id="Article">
+				<section class="h B" id="doc.DocumentDoc.JSON.Reading_JSON">
 					<header class="B I">
 						<h2>Reading JSON</h2>
-						<div class="P"><span class="perp J"><svg class="A svg" viewBox="0 0 24 24">
+						<div class="S"><span class="perp V"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
-							</span><a class="tweet J"><svg class="A svg" viewBox="0 0 24 24">
+							</span><a class="tweet V"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit J" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L665-L669"><svg class="A svg" viewBox="0 0 24 24">
+							</a><a class="edit V" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L665-L669"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
@@ -56,19 +65,9 @@ into
 memory in a tree format. It is not a streaming format, so please be careful when
 parsing
 very large JSON.</p></span>
-					<section class="B N" id="doc.DocumentDoc.JSON.Reading_JSON.Access_to_the_value">
-						<header class="B T">
+					<section class="B g" id="doc.DocumentDoc.JSON.Reading_JSON.Access_to_the_value">
+						<header class="B L">
 							<h3>Access to the value</h3>
-							<div class="P"><span class="perp J"><svg class="A svg" viewBox="0 0 24 24">
-										<use href="main.svg#copy"/>
-									</svg>
-								</span><a class="tweet J"><svg class="A svg" viewBox="0 0 24 24">
-										<use href="main.svg#twitter"/>
-									</svg>
-								</a><a class="edit J" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L674-L676"><svg class="A svg" viewBox="0 0 24 24">
-										<use href="main.svg#edit"/>
-									</svg>
-								</a></div>
 						</header><span class="B"><p>You can access the value by specifying the key.</p><pre class="lang-java"><code>public void readValue() {
     JSON json = I.json(&#34;&#34;&#34;
             {
@@ -80,19 +79,9 @@ very large JSON.</p></span>
     assert json.get(&#34;number&#34;).as(int.class) == 10;
     assert json.get(&#34;bool&#34;).as(boolean.class) == false;
 }</code></pre></span></section>
-					<section class="B N" id="doc.DocumentDoc.JSON.Reading_JSON.Access_to_the_nested_value">
-						<header class="B T">
+					<section class="B g" id="doc.DocumentDoc.JSON.Reading_JSON.Access_to_the_nested_value">
+						<header class="B L">
 							<h3>Access to the nested value</h3>
-							<div class="P"><span class="perp J"><svg class="A svg" viewBox="0 0 24 24">
-										<use href="main.svg#copy"/>
-									</svg>
-								</span><a class="tweet J"><svg class="A svg" viewBox="0 0 24 24">
-										<use href="main.svg#twitter"/>
-									</svg>
-								</a><a class="edit J" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L682-L686"><svg class="A svg" viewBox="0 0 24 24">
-										<use href="main.svg#edit"/>
-									</svg>
-								</a></div>
 						</header><span class="B"><p>You can specify a key multiple times to access nested values.</p><pre class="lang-java"><code>public void readNestedValue() {
     JSON json = I.json(&#34;&#34;&#34;
             {
@@ -129,16 +118,16 @@ very large JSON.</p></span>
     assert found.get(1).equals(&#34;second&#34;);
 }</code></pre></span></section>
 				</section>
-				<section class="H B" id="doc.DocumentDoc.JSON.Writing_JSON">
+				<section class="h B" id="doc.DocumentDoc.JSON.Writing_JSON">
 					<header class="B I">
 						<h2>Writing JSON</h2>
-						<div class="P"><span class="perp J"><svg class="A svg" viewBox="0 0 24 24">
+						<div class="S"><span class="perp V"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
-							</span><a class="tweet J"><svg class="A svg" viewBox="0 0 24 24">
+							</span><a class="tweet V"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit J" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L693-L695"><svg class="A svg" viewBox="0 0 24 24">
+							</a><a class="edit V" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L693-L695"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
@@ -155,8 +144,8 @@ very large JSON.</p></span>
             &#34;&#34;&#34;);
 }</code></pre></span></section>
 			</article>
-			<aside class="f" id="SubNavi">
-				<div class="k"></div>
+			<aside class="X" id="SubNavi">
+				<div class="Z"></div>
 			</aside>
 		</main>
 		<script src="root.js"></script>

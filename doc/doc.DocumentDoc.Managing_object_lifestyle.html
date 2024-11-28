@@ -4,17 +4,26 @@
 		<meta charset="UTF-8"/>
 		<meta content="width=device-width, initial-scale=1" name="viewport"/>
 		<meta content="Explains how to use Sinobu and its API. " name="description"/>
-		<link href="https://fonts.googleapis.com" rel="preconnect"/>
 		<link href="https://cdn.jsdelivr.net" rel="preconnect"/>
+		<link href="https://fonts.googleapis.com" rel="preconnect"/>
+		<link crossorigin="null" href="https://fonts.gstatic.com" rel="preconnect"/>
+		<link as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?display=swap&#38;family=Inter" rel="preload"/>
+		<link href="https://fonts.googleapis.com/css2?display=swap&#38;family=Inter" media="print" onload="this.media=&#39;all&#39;" rel="stylesheet"/>
+		<link as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?display=swap&#38;family=Material+Icons" rel="preload"/>
+		<link href="https://fonts.googleapis.com/css2?display=swap&#38;family=Material+Icons" media="print" onload="this.media=&#39;all&#39;" rel="stylesheet"/>
+		<link as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?display=swap&#38;family=Vollkorn" rel="preload"/>
+		<link href="https://fonts.googleapis.com/css2?display=swap&#38;family=Vollkorn" media="print" onload="this.media=&#39;all&#39;" rel="stylesheet"/>
+		<link as="style" fetchpriority="high" href="https://cdn.jsdelivr.net/npm/ress@4.0.0/dist/ress.min.css" rel="preload"/>
+		<link href="https://cdn.jsdelivr.net/npm/ress@4.0.0/dist/ress.min.css" rel="stylesheet"/>
 		<title>Sinobu API</title>
 		<base href="../"/>
 		<script src="mimic.js" type="module"></script>
 		<link href="main.css" rel="stylesheet"/>
 	</head>
-	<body class="l">
-		<header class="L">
-			<h1 class="O" date="2024-11-18" ver="4.5.2"><code>Sinobu</code></h1>
-			<nav class="Q"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
+	<body class="R">
+		<header class="a">
+			<h1 class="P" date="2024-11-18" ver="4.5.2"><code>Sinobu</code></h1>
+			<nav class="O"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#text"/>
 					</svg>Document</a><a href="api/"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#package"/>
@@ -25,7 +34,7 @@
 					</svg>Activity</a><a href="https://github.com/teletha/sinobu" target="_blank"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#github"/>
 					</svg>Repository</a></nav>
-			<div class="Z" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
+			<div class="Y" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#sun"/>
 					</svg>
 				</a><a id="dark" title="Change to a darker color scheme"><svg class="A svg" viewBox="0 0 24 24">
@@ -33,40 +42,30 @@
 					</svg>
 				</a></div>
 		</header>
-		<main class="a">
-			<nav class="R">
+		<main class="l">
+			<nav class="U">
 				<div></div>
 			</nav>
-			<article class="W" id="Article">
-				<section class="H B" id="doc.DocumentDoc.Managing_object_lifestyle.What_do_you_mean_by_lifestyle_">
+			<article class="T" id="Article">
+				<section class="h B" id="doc.DocumentDoc.Managing_object_lifestyle.What_do_you_mean_by_lifestyle_">
 					<header class="B I">
 						<h2>What do you mean by lifestyle?</h2>
-						<div class="P"><span class="perp J"><svg class="A svg" viewBox="0 0 24 24">
+						<div class="S"><span class="perp V"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
-							</span><a class="tweet J"><svg class="A svg" viewBox="0 0 24 24">
+							</span><a class="tweet V"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit J" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L110-L112"><svg class="A svg" viewBox="0 0 24 24">
+							</a><a class="edit V" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L110-L112"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
 					</header><span class="B"><p>In Sinobu, lifestyle refers to the way an object is created and managed, corresponding to
 the scope in terms of DI containers such as SpringFramework and Guice, but without the
 process of registering with the container or destroying the object.</p></span>
-					<section class="B N" id="doc.DocumentDoc.Managing_object_lifestyle.What_do_you_mean_by_lifestyle_.Creating_an_object">
-						<header class="B T">
+					<section class="B g" id="doc.DocumentDoc.Managing_object_lifestyle.What_do_you_mean_by_lifestyle_.Creating_an_object">
+						<header class="B L">
 							<h3>Creating an object</h3>
-							<div class="P"><span class="perp J"><svg class="A svg" viewBox="0 0 24 24">
-										<use href="main.svg#copy"/>
-									</svg>
-								</span><a class="tweet J"><svg class="A svg" viewBox="0 0 24 24">
-										<use href="main.svg#twitter"/>
-									</svg>
-								</a><a class="edit J" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L117-L134"><svg class="A svg" viewBox="0 0 24 24">
-										<use href="main.svg#edit"/>
-									</svg>
-								</a></div>
 						</header><span class="B"><p>In Java, it is common to use the new operator on the constructor to create a new
 object. In many cases, this is sufficient, but in the following situations, it is a
 bit insufficient.</p><ul>
@@ -86,16 +85,16 @@ shows the creation of an object using DI container.</p><pre class="lang-java"><c
 only one global container in the JVM, and that object cannot be accessed directly. In
 order to create an object from a container, we need to call <code><a href="api/kiss.I.html#make(java.lang.Class)">I#make(Class)</a></code>.</p></span></section>
 				</section>
-				<section class="H B" id="doc.DocumentDoc.Managing_object_lifestyle.Defining_lifestyle">
+				<section class="h B" id="doc.DocumentDoc.Managing_object_lifestyle.Defining_lifestyle">
 					<header class="B I">
 						<h2>Defining lifestyle</h2>
-						<div class="P"><span class="perp J"><svg class="A svg" viewBox="0 0 24 24">
+						<div class="S"><span class="perp V"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
-							</span><a class="tweet J"><svg class="A svg" viewBox="0 0 24 24">
+							</span><a class="tweet V"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit J" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L149-L158"><svg class="A svg" viewBox="0 0 24 24">
+							</a><a class="edit V" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L149-L158"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
@@ -107,19 +106,9 @@ type. It makes the following 3 decisions:</p><ol>
 							<li>How to manage the instances.</li>
 						</ol><p>Sinobu defines two lifestyles that are frequently used. One is the prototype pattern and
 the other is the singleton pattern.</p></span>
-					<section class="B N" id="doc.DocumentDoc.Managing_object_lifestyle.Defining_lifestyle.Prototype">
-						<header class="B T">
+					<section class="B g" id="doc.DocumentDoc.Managing_object_lifestyle.Defining_lifestyle.Prototype">
+						<header class="B L">
 							<h3>Prototype</h3>
-							<div class="P"><span class="perp J"><svg class="A svg" viewBox="0 0 24 24">
-										<use href="main.svg#copy"/>
-									</svg>
-								</span><a class="tweet J"><svg class="A svg" viewBox="0 0 24 24">
-										<use href="main.svg#twitter"/>
-									</svg>
-								</a><a class="edit J" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L163-L166"><svg class="A svg" viewBox="0 0 24 24">
-										<use href="main.svg#edit"/>
-									</svg>
-								</a></div>
 						</header><span class="B"><p>The default lifestyle is Prototype, it creates a new instance on demand. This is
 applied automatically and you have to configure nothing.</p><pre class="lang-java"><code>public void prototype() {
     class Tweet {
@@ -129,19 +118,9 @@ applied automatically and you have to configure nothing.</p><pre class="lang-jav
     Tweet other = I.make(Tweet.class);
     assert one != other; // two different instances
 }</code></pre></span></section>
-					<section class="B N" id="doc.DocumentDoc.Managing_object_lifestyle.Defining_lifestyle.Singleton">
-						<header class="B T">
+					<section class="B g" id="doc.DocumentDoc.Managing_object_lifestyle.Defining_lifestyle.Singleton">
+						<header class="B L">
 							<h3>Singleton</h3>
-							<div class="P"><span class="perp J"><svg class="A svg" viewBox="0 0 24 24">
-										<use href="main.svg#copy"/>
-									</svg>
-								</span><a class="tweet J"><svg class="A svg" viewBox="0 0 24 24">
-										<use href="main.svg#twitter"/>
-									</svg>
-								</a><a class="edit J" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L172-L176"><svg class="A svg" viewBox="0 0 24 24">
-										<use href="main.svg#edit"/>
-									</svg>
-								</a></div>
 						</header><span class="B"><p>The other is the singleton lifestyle, which keeps a single instance in the JVM and
 always returns it. This time, the lifestyle is applied with annotations when defining
 the class.</p><pre class="lang-java"><code>public void singleton() {
@@ -153,19 +132,9 @@ the class.</p><pre class="lang-java"><code>public void singleton() {
     Tweet other = I.make(Tweet.class);
     assert one == other; // same instance
 }</code></pre></span></section>
-					<section class="B N" id="doc.DocumentDoc.Managing_object_lifestyle.Defining_lifestyle.Custom_lifestyle">
-						<header class="B T">
+					<section class="B g" id="doc.DocumentDoc.Managing_object_lifestyle.Defining_lifestyle.Custom_lifestyle">
+						<header class="B L">
 							<h3>Custom lifestyle</h3>
-							<div class="P"><span class="perp J"><svg class="A svg" viewBox="0 0 24 24">
-										<use href="main.svg#copy"/>
-									</svg>
-								</span><a class="tweet J"><svg class="A svg" viewBox="0 0 24 24">
-										<use href="main.svg#twitter"/>
-									</svg>
-								</a><a class="edit J" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L182-L188"><svg class="A svg" viewBox="0 0 24 24">
-										<use href="main.svg#edit"/>
-									</svg>
-								</a></div>
 						</header><span class="B"><p>You can also implement lifestyles tied to specific contexts. Custom class requires to
 implement the Lifestyle interface and receive the requested type in the constructor.
 I&#39;m using <code><a href="api/kiss.I.html#prototype(java.lang.Class)">I#prototype(Class)</a></code> here to make Dependency Injection work, but you
@@ -198,19 +167,9 @@ can use any instantiation technique.</p><pre class="lang-java"><code>class PerTh
         assert user1 != user3; // different
     }).start();
 }</code></pre></span></section>
-					<section class="B N" id="doc.DocumentDoc.Managing_object_lifestyle.Defining_lifestyle.Builtin_lifestyles">
-						<header class="B T">
+					<section class="B g" id="doc.DocumentDoc.Managing_object_lifestyle.Defining_lifestyle.Builtin_lifestyles">
+						<header class="B L">
 							<h3>Builtin lifestyles</h3>
-							<div class="P"><span class="perp J"><svg class="A svg" viewBox="0 0 24 24">
-										<use href="main.svg#copy"/>
-									</svg>
-								</span><a class="tweet J"><svg class="A svg" viewBox="0 0 24 24">
-										<use href="main.svg#twitter"/>
-									</svg>
-								</a><a class="edit J" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L227-L233"><svg class="A svg" viewBox="0 0 24 24">
-										<use href="main.svg#edit"/>
-									</svg>
-								</a></div>
 						</header><span class="B"><p>Sinobu has built-in defined lifestyles for specific types.</p><ul>
 								<li><code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/List.html">List</a></code> - Create new instance each time. (<code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/ArrayList.html">ArrayList</a></code>)</li>
 								<li><code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/Set.html">Set</a></code> - Create new instance each time. (<code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/HashSet.html">HashSet</a></code>)</li>
@@ -219,51 +178,31 @@ can use any instantiation technique.</p><pre class="lang-java"><code>class PerTh
 <code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/Locale.html#getDefault()">Locale#getDefault()</a></code>.</li>
 							</ul></span></section>
 				</section>
-				<section class="H B" id="doc.DocumentDoc.Managing_object_lifestyle.Applying_lifestyle">
+				<section class="h B" id="doc.DocumentDoc.Managing_object_lifestyle.Applying_lifestyle">
 					<header class="B I">
 						<h2>Applying lifestyle</h2>
-						<div class="P"><span class="perp J"><svg class="A svg" viewBox="0 0 24 24">
+						<div class="S"><span class="perp V"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
-							</span><a class="tweet J"><svg class="A svg" viewBox="0 0 24 24">
+							</span><a class="tweet V"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit J" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L240-L241"><svg class="A svg" viewBox="0 0 24 24">
+							</a><a class="edit V" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L240-L241"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
 					</header><span class="B"><p>To apply a non-prototype lifestyle, you need to configure each class individually. There
 are two ways to do this.</p></span>
-					<section class="B N" id="doc.DocumentDoc.Managing_object_lifestyle.Applying_lifestyle.Use_Managed_annotation">
-						<header class="B T">
+					<section class="B g" id="doc.DocumentDoc.Managing_object_lifestyle.Applying_lifestyle.Use_Managed_annotation">
+						<header class="B L">
 							<h3>Use Managed annotation</h3>
-							<div class="P"><span class="perp J"><svg class="A svg" viewBox="0 0 24 24">
-										<use href="main.svg#copy"/>
-									</svg>
-								</span><a class="tweet J"><svg class="A svg" viewBox="0 0 24 24">
-										<use href="main.svg#twitter"/>
-									</svg>
-								</a><a class="edit J" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L246-L249"><svg class="A svg" viewBox="0 0 24 24">
-										<use href="main.svg#edit"/>
-									</svg>
-								</a></div>
 						</header><span class="B"><p>One is to use <code><a href="api/kiss.Managed.html">Managed</a></code> annotation. This method is useful if you want to apply
 lifestyle to classes that are under your control.</p><pre class="lang-java"><code>@Managed(Singleton.class)
 class UnderYourControl {
 }</code></pre></span></section>
-					<section class="B N" id="doc.DocumentDoc.Managing_object_lifestyle.Applying_lifestyle.Use_Lifestyle_extension">
-						<header class="B T">
+					<section class="B g" id="doc.DocumentDoc.Managing_object_lifestyle.Applying_lifestyle.Use_Lifestyle_extension">
+						<header class="B L">
 							<h3>Use Lifestyle extension</h3>
-							<div class="P"><span class="perp J"><svg class="A svg" viewBox="0 0 24 24">
-										<use href="main.svg#copy"/>
-									</svg>
-								</span><a class="tweet J"><svg class="A svg" viewBox="0 0 24 24">
-										<use href="main.svg#twitter"/>
-									</svg>
-								</a><a class="edit J" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L259-L264"><svg class="A svg" viewBox="0 0 24 24">
-										<use href="main.svg#edit"/>
-									</svg>
-								</a></div>
 						</header><span class="B"><p>Another is to load the Lifestyle implementation. Sinobu has a wide variety of
 extension points, and Lifestyle is one of them. This method is useful if you want to
 apply lifestyle to classes that are not under your control.</p><pre class="lang-java"><code>class GlobalThreadPool implements Lifestyle&#60;Executor&#62; {
@@ -278,8 +217,8 @@ apply lifestyle to classes that are not under your control.</p><pre class="lang-
 }</code></pre></span></section>
 				</section>
 			</article>
-			<aside class="f" id="SubNavi">
-				<div class="k"></div>
+			<aside class="X" id="SubNavi">
+				<div class="Z"></div>
 			</aside>
 		</main>
 		<script src="root.js"></script>
