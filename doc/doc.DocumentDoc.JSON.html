@@ -20,10 +20,10 @@
 		<script src="mimic.js" type="module"></script>
 		<link href="main.css" rel="stylesheet"/>
 	</head>
-	<body class="R">
-		<header class="a">
-			<h1 class="P" date="2024-11-18" ver="4.5.2"><code>Sinobu</code></h1>
-			<nav class="O"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
+	<body class="H">
+		<header class="M">
+			<h1 class="Q" date="2024-11-18" ver="4.5.2"><code>Sinobu</code></h1>
+			<nav class="U"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#text"/>
 					</svg>Document</a><a href="api/"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#package"/>
@@ -34,7 +34,7 @@
 					</svg>Activity</a><a href="https://github.com/teletha/sinobu" target="_blank"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#github"/>
 					</svg>Repository</a></nav>
-			<div class="Y" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
+			<div class="g" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
 						<use href="main.svg#sun"/>
 					</svg>
 				</a><a id="dark" title="Change to a darker color scheme"><svg class="A svg" viewBox="0 0 24 24">
@@ -42,21 +42,21 @@
 					</svg>
 				</a></div>
 		</header>
-		<main class="l">
-			<nav class="U">
+		<main class="T">
+			<nav class="k">
 				<div></div>
 			</nav>
-			<article class="T" id="Article">
-				<section class="h B" id="doc.DocumentDoc.JSON.Reading_JSON">
-					<header class="B I">
+			<article class="a" id="Article">
+				<section class="V B" id="doc.DocumentDoc.JSON.Reading_JSON">
+					<header class="B O">
 						<h2>Reading JSON</h2>
-						<div class="S"><span class="perp V"><svg class="A svg" viewBox="0 0 24 24">
+						<div class="N"><span class="perp c"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
-							</span><a class="tweet V"><svg class="A svg" viewBox="0 0 24 24">
+							</span><a class="tweet c"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit V" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L665-L669"><svg class="A svg" viewBox="0 0 24 24">
+							</a><a class="edit c" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L665-L669"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
@@ -65,8 +65,8 @@ into
 memory in a tree format. It is not a streaming format, so please be careful when
 parsing
 very large JSON.</p></span>
-					<section class="B g" id="doc.DocumentDoc.JSON.Reading_JSON.Access_to_the_value">
-						<header class="B L">
+					<section class="B R" id="doc.DocumentDoc.JSON.Reading_JSON.Access_to_the_value">
+						<header class="B b">
 							<h3>Access to the value</h3>
 						</header><span class="B"><p>You can access the value by specifying the key.</p><pre class="lang-java"><code>public void readValue() {
     JSON json = I.json(&#34;&#34;&#34;
@@ -79,8 +79,8 @@ very large JSON.</p></span>
     assert json.get(&#34;number&#34;).as(int.class) == 10;
     assert json.get(&#34;bool&#34;).as(boolean.class) == false;
 }</code></pre></span></section>
-					<section class="B g" id="doc.DocumentDoc.JSON.Reading_JSON.Access_to_the_nested_value">
-						<header class="B L">
+					<section class="B R" id="doc.DocumentDoc.JSON.Reading_JSON.Access_to_the_nested_value">
+						<header class="B b">
 							<h3>Access to the nested value</h3>
 						</header><span class="B"><p>You can specify a key multiple times to access nested values.</p><pre class="lang-java"><code>public void readNestedValue() {
     JSON json = I.json(&#34;&#34;&#34;
@@ -118,16 +118,16 @@ very large JSON.</p></span>
     assert found.get(1).equals(&#34;second&#34;);
 }</code></pre></span></section>
 				</section>
-				<section class="h B" id="doc.DocumentDoc.JSON.Writing_JSON">
-					<header class="B I">
+				<section class="V B" id="doc.DocumentDoc.JSON.Writing_JSON">
+					<header class="B O">
 						<h2>Writing JSON</h2>
-						<div class="S"><span class="perp V"><svg class="A svg" viewBox="0 0 24 24">
+						<div class="N"><span class="perp c"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
-							</span><a class="tweet V"><svg class="A svg" viewBox="0 0 24 24">
+							</span><a class="tweet c"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit V" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L693-L695"><svg class="A svg" viewBox="0 0 24 24">
+							</a><a class="edit c" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L693-L695"><svg class="A svg" viewBox="0 0 24 24">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
@@ -144,8 +144,8 @@ very large JSON.</p></span>
             &#34;&#34;&#34;);
 }</code></pre></span></section>
 			</article>
-			<aside class="X" id="SubNavi">
-				<div class="Z"></div>
+			<aside class="m" id="SubNavi">
+				<div class="h"></div>
 			</aside>
 		</main>
 		<script src="root.js"></script>
