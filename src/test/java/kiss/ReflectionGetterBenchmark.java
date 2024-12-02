@@ -9,21 +9,67 @@
  */
 package kiss;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
 
 import antibug.profiler.Benchmark;
+import antibug.profiler.Inspection;
 
 public class ReflectionGetterBenchmark {
 
-    public static void main(String[] args) throws Throwable {
-        Benchmark benchmark = new Benchmark();
-        ReflectionGetterBenchmark base = new ReflectionGetterBenchmark();
+    private static final MethodHandle StaticHandle;
 
-        Method method = ReflectionGetterBenchmark.class.getMethod("one");
+    static {
+        try {
+            StaticHandle = MethodHandles.publicLookup().unreflect(Target.class.getMethod("getter"));
+        } catch (Throwable e) {
+            throw I.quiet(e);
+        }
+    }
+
+    public static void main(String[] args) throws Throwable {
+        Benchmark benchmark = new Benchmark().visualize(Inspection.CallPerTime);
+        Target base = new Target();
+
+        Method method = Target.class.getMethod("getter");
         benchmark.measure("Reflection", () -> {
             try {
                 return method.invoke(base);
             } catch (Exception e) {
+                throw I.quiet(e);
+            }
+        });
+
+        MethodHandle handle = MethodHandles.publicLookup().unreflect(method);
+        benchmark.measure("MH", () -> {
+            try {
+                return handle.invoke(base);
+            } catch (Throwable e) {
+                throw I.quiet(e);
+            }
+        });
+
+        benchmark.measure("MH#invokeExact", () -> {
+            try {
+                return (String) handle.invokeExact(base);
+            } catch (Throwable e) {
+                throw I.quiet(e);
+            }
+        });
+
+        benchmark.measure("Static MH", () -> {
+            try {
+                return StaticHandle.invoke(base);
+            } catch (Throwable e) {
+                throw I.quiet(e);
+            }
+        });
+
+        benchmark.measure("Static MH#invokeExact", () -> {
+            try {
+                return (String) StaticHandle.invokeExact(base);
+            } catch (Throwable e) {
                 throw I.quiet(e);
             }
         });
@@ -39,7 +85,7 @@ public class ReflectionGetterBenchmark {
 
         benchmark.measure("DirectCall", () -> {
             try {
-                return base.one();
+                return base.getter();
             } catch (Throwable e) {
                 throw I.quiet(e);
             }
@@ -48,7 +94,9 @@ public class ReflectionGetterBenchmark {
         benchmark.perform();
     }
 
-    public String one() {
-        return "text";
+    public static class Target {
+        public String getter() {
+            return "text";
+        }
     }
 }
