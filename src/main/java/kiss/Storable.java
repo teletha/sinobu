@@ -55,7 +55,20 @@ public interface Storable<Self> {
                 try (FileChannel c = FileChannel.open(file.resolveSibling(file.getFileName() + ".lock"), CREATE, WRITE, DELETE_ON_CLOSE)) {
                     c.lock();
                     I.write(this, Files.newBufferedWriter(tmp));
-                    Files.move(tmp, file, ATOMIC_MOVE);
+
+                    // From Javadoc
+                    // The move is performed as an atomic file system operation and all other
+                    // options are ignored. If the target file exists then it is implementation
+                    // specific if the existing file is replaced or this method fails by throwing an
+                    // IOException. If the move cannot be performed as an atomic file system
+                    // operation then AtomicMoveNotSupportedException is thrown. This can arise, for
+                    // example, when the target location is on a different FileStore and would
+                    // require that the file be copied, or target location is associated with a
+                    // different provider to this object.
+                    //
+                    // But some implementation (e.g. jimfs) throws FileAlreadyExistsException,
+                    // so we should remain that option
+                    Files.move(tmp, file, ATOMIC_MOVE, REPLACE_EXISTING);
                 }
             } catch (Throwable e) {
                 // ignore
