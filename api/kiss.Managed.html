@@ -13,85 +13,84 @@
 		<link href="https://fonts.googleapis.com/css2?display=swap&#38;family=Material+Icons" media="print" onload="this.media=&#39;all&#39;" rel="stylesheet"/>
 		<link as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?display=swap&#38;family=Vollkorn" rel="preload"/>
 		<link href="https://fonts.googleapis.com/css2?display=swap&#38;family=Vollkorn" media="print" onload="this.media=&#39;all&#39;" rel="stylesheet"/>
-		<link as="style" fetchpriority="high" href="https://cdn.jsdelivr.net/npm/ress@4.0.0/dist/ress.min.css" rel="preload"/>
-		<link href="https://cdn.jsdelivr.net/npm/ress@4.0.0/dist/ress.min.css" rel="stylesheet"/>
 		<title>Sinobu API</title>
 		<base href="../"/>
 		<script src="mimic.js" type="module"></script>
+		<link href="https://cdn.jsdelivr.net/npm/ress@4.0.0/dist/ress.min.css" rel="stylesheet"/>
 		<link href="main.css" rel="stylesheet"/>
 	</head>
-	<body class="H">
-		<header class="M">
-			<h1 class="Q" date="2024-11-18" ver="4.5.2"><code>Sinobu</code></h1>
-			<nav class="U"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
+	<body class="e">
+		<header class="f" date="2024-11-18" ver="4.5.2">
+			<h1 class="W"><code>Sinobu</code></h1>
+			<nav class="m"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="text A svg" viewBox="0 0 24 24">
 						<use href="main.svg#text"/>
-					</svg>Document</a><a href="api/"><svg class="A svg" viewBox="0 0 24 24">
+					</svg>Document</a><a href="api/" id="API"><svg class="package A svg" viewBox="0 0 24 24">
 						<use href="main.svg#package"/>
-					</svg><code>API</code></a><a href="https://github.com/teletha/sinobu/discussions" target="_blank"><svg class="A svg" viewBox="0 0 24 24">
-						<use href="main.svg#user"/>
-					</svg>Community</a><a href="doc/changelog.html"><svg class="A svg" viewBox="0 0 24 24">
-						<use href="main.svg#activity"/>
-					</svg>Activity</a><a href="https://github.com/teletha/sinobu" target="_blank"><svg class="A svg" viewBox="0 0 24 24">
-						<use href="main.svg#github"/>
-					</svg>Repository</a></nav>
-			<div class="g" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
-						<use href="main.svg#sun"/>
 					</svg>
-				</a><a id="dark" title="Change to a darker color scheme"><svg class="A svg" viewBox="0 0 24 24">
+				</a><a href="https://github.com/teletha/sinobu/discussions" id="Community" target="_blank"><svg class="user A svg" viewBox="0 0 24 24">
+						<use href="main.svg#user"/>
+					</svg>
+				</a><a href="doc/changelog.html" id="Activity"><svg class="activity A svg" viewBox="0 0 24 24">
+						<use href="main.svg#activity"/>
+					</svg>
+				</a><a href="https://github.com/teletha/sinobu" id="Repository" target="_blank"><svg class="github A svg" viewBox="0 0 24 24">
+						<use href="main.svg#github"/>
+					</svg>
+				</a></nav>
+			<div class="n"><a aria-label="Change color scheme" id="theme"><svg class="sun A svg" viewBox="0 0 24 24">
+						<use href="main.svg#sun"/>
+					</svg><svg class="moon A svg" viewBox="0 0 24 24">
 						<use href="main.svg#moon"/>
 					</svg>
 				</a></div>
 		</header>
-		<main class="T">
-			<nav class="k">
-				<div></div>
-			</nav>
-			<article class="a" id="Article">
-				<section class="V"><code class="i">kiss</code>
-					<h2 class="Annotation l"><code class="W">Managed</code></h2>
-					<div class="K">
-						<ul class="C F">
-							<li><code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/annotation/Annotation.html">Annotation</a></code></li>
-						</ul>
-					</div><span class="B"><p>Annotation that is managed by some domain.</p><p>
- When used for any <code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Class.html">Class</a></code>, it means that the instance of that <code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Class.html">Class</a></code> is managed by
- the lifestyle specified by <code><a href="api/kiss.Managed.html#value()">#value()</a></code>.
- 
-							<p>
- When used for any field, it means that the field is managed as <code><a href="api/kiss.Property.html">Property</a></code>. Specifying a
- <code><a href="api/kiss.Lifestyle.html">Lifestyle</a></code> is meaningless.
-</p>
-						</p>
-					</span></section>
-				<section class="V" id="name()">
-					<h2 class="Z"><i class="ABSTRACT"><i class="PUBLIC"></i></i><code class="W">name</code><code class="e">()</code><i class="P"><code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/String.html">String</a></code></i></h2>
-					<table class="j">
-						<tr class="S">
-							<td><code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/String.html">String</a></code></td>
-							<td></td>
-						</tr>
-					</table><span class="B"><p>Configure the name of the associated property. Default value is empty.</p></span></section>
-				<section class="V" id="value()">
-					<h2 class="Z"><i class="ABSTRACT"><i class="PUBLIC"></i></i><code class="W">value</code><code class="e">()</code><i class="P"><code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>?</code><code class="extends"><code><a href="api/kiss.Lifestyle.html">Lifestyle</a></code></code></code></code></i></h2>
-					<table class="j">
-						<tr class="S">
-							<td><code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>?</code><code class="extends"><code><a href="api/kiss.Lifestyle.html">Lifestyle</a></code></code></code></code></td>
-							<td></td>
-						</tr>
-					</table><span class="B"><p>Configure the lifestyle of the instance which is annotated class. The default value is
-<code><a href="api/kiss.I.html#prototype(java.lang.Class)">I#prototype(Class)</a></code>.</p></span></section>
-			</article>
-			<aside class="m" id="SubNavi">
-				<div class="h">
-					<h5 class="Y">Methods</h5>
-					<ul>
-						<li><i class="ABSTRACT"><i class="PUBLIC"></i></i><code><a href="api/kiss.Managed.html#name()">name</a></code><code class="e">()</code><i class="J"><code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/String.html">String</a></code></i></li>
-						<li><i class="ABSTRACT"><i class="PUBLIC"></i></i><code><a href="api/kiss.Managed.html#value()">value</a></code><code class="e">()</code><i class="J"><code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>?</code><code class="extends"><code><a href="api/kiss.Lifestyle.html">Lifestyle</a></code></code></code></code></i></li>
+		<nav class="g"></nav>
+		<article class="R" id="Article">
+			<section class="p"><code class="j">kiss</code>
+				<h2 class="Annotation S"><code class="Z">Managed</code></h2>
+				<div class="L">
+					<ul class="C F">
+						<li><code><a aria-label="java.lang.annotation.Annotation 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/annotation/Annotation.html">Annotation</a></code></li>
 					</ul>
-				</div>
-			</aside>
-		</main>
-		<script src="root.js"></script>
-		<script src="main.js" type="module"></script>
+				</div><span class="B"><p>Annotation that is managed by some domain.</p><p>
+ When used for any <code><a aria-label="java.lang.Class 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Class.html">Class</a></code>, it means that the instance of that <code><a aria-label="java.lang.Class 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Class.html">Class</a></code> is managed by
+ the lifestyle specified by <code><a aria-label="kiss.Managed" href="api/kiss.Managed.html#value()">#value()</a></code>.
+ 
+						<p>
+ When used for any field, it means that the field is managed as <code><a aria-label="kiss.Property" href="api/kiss.Property.html">Property</a></code>. Specifying a
+ <code><a aria-label="kiss.Lifestyle" href="api/kiss.Lifestyle.html">Lifestyle</a></code> is meaningless.
+</p>
+					</p>
+				</span></section>
+			<section class="p" id="name()">
+				<h2 class="M"><i class="ABSTRACT"><i class="PUBLIC"></i></i><code class="Z">name</code><code class="d">()</code><i class="k"><code><a aria-label="java.lang.String 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/String.html">String</a></code></i></h2>
+				<table class="Q">
+					<tr class="U">
+						<td><code><a aria-label="java.lang.String 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/String.html">String</a></code></td>
+						<td></td>
+					</tr>
+				</table><span class="B"><p>Configure the name of the associated property. Default value is empty.</p></span></section>
+			<section class="p" id="value()">
+				<h2 class="M"><i class="ABSTRACT"><i class="PUBLIC"></i></i><code class="Z">value</code><code class="d">()</code><i class="k"><code><a aria-label="java.lang.Class 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>?</code><code class="extends"><code><a aria-label="kiss.Lifestyle" href="api/kiss.Lifestyle.html">Lifestyle</a></code></code></code></code></i></h2>
+				<table class="Q">
+					<tr class="U">
+						<td><code><a aria-label="java.lang.Class 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>?</code><code class="extends"><code><a aria-label="kiss.Lifestyle" href="api/kiss.Lifestyle.html">Lifestyle</a></code></code></code></code></td>
+						<td></td>
+					</tr>
+				</table><span class="B"><p>Configure the lifestyle of the instance which is annotated class. The default value is
+<code><a aria-label="kiss.I" href="api/kiss.I.html#prototype(java.lang.Class)">I#prototype(Class)</a></code>.</p></span></section>
+		</article>
+		<aside class="J">
+			<div class="s">
+				<h5 class="o">Methods</h5>
+				<ul>
+					<li class="T"><i class="ABSTRACT"><i class="PUBLIC"></i></i><code><a href="api/kiss.Managed.html#name()">name</a></code><code class="d">()</code><i class="V"><code><a aria-label="java.lang.String 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/String.html">String</a></code></i></li>
+					<li class="T"><i class="ABSTRACT"><i class="PUBLIC"></i></i><code><a href="api/kiss.Managed.html#value()">value</a></code><code class="d">()</code><i class="V"><code><a aria-label="java.lang.Class 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>?</code><code class="extends"><code><a aria-label="kiss.Lifestyle" href="api/kiss.Lifestyle.html">Lifestyle</a></code></code></code></code></i></li>
+				</ul>
+			</div>
+		</aside>
+		<footer class="l"/>
 	</body>
+	<script src="root.js"></script>
+	<script src="main.js" type="module"></script>
 </html>

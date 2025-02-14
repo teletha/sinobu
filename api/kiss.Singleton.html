@@ -13,93 +13,92 @@
 		<link href="https://fonts.googleapis.com/css2?display=swap&#38;family=Material+Icons" media="print" onload="this.media=&#39;all&#39;" rel="stylesheet"/>
 		<link as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?display=swap&#38;family=Vollkorn" rel="preload"/>
 		<link href="https://fonts.googleapis.com/css2?display=swap&#38;family=Vollkorn" media="print" onload="this.media=&#39;all&#39;" rel="stylesheet"/>
-		<link as="style" fetchpriority="high" href="https://cdn.jsdelivr.net/npm/ress@4.0.0/dist/ress.min.css" rel="preload"/>
-		<link href="https://cdn.jsdelivr.net/npm/ress@4.0.0/dist/ress.min.css" rel="stylesheet"/>
 		<title>Sinobu API</title>
 		<base href="../"/>
 		<script src="mimic.js" type="module"></script>
+		<link href="https://cdn.jsdelivr.net/npm/ress@4.0.0/dist/ress.min.css" rel="stylesheet"/>
 		<link href="main.css" rel="stylesheet"/>
 	</head>
-	<body class="H">
-		<header class="M">
-			<h1 class="Q" date="2024-11-18" ver="4.5.2"><code>Sinobu</code></h1>
-			<nav class="U"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
+	<body class="e">
+		<header class="f" date="2024-11-18" ver="4.5.2">
+			<h1 class="W"><code>Sinobu</code></h1>
+			<nav class="m"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="text A svg" viewBox="0 0 24 24">
 						<use href="main.svg#text"/>
-					</svg>Document</a><a href="api/"><svg class="A svg" viewBox="0 0 24 24">
+					</svg>Document</a><a href="api/" id="API"><svg class="package A svg" viewBox="0 0 24 24">
 						<use href="main.svg#package"/>
-					</svg><code>API</code></a><a href="https://github.com/teletha/sinobu/discussions" target="_blank"><svg class="A svg" viewBox="0 0 24 24">
-						<use href="main.svg#user"/>
-					</svg>Community</a><a href="doc/changelog.html"><svg class="A svg" viewBox="0 0 24 24">
-						<use href="main.svg#activity"/>
-					</svg>Activity</a><a href="https://github.com/teletha/sinobu" target="_blank"><svg class="A svg" viewBox="0 0 24 24">
-						<use href="main.svg#github"/>
-					</svg>Repository</a></nav>
-			<div class="g" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
-						<use href="main.svg#sun"/>
 					</svg>
-				</a><a id="dark" title="Change to a darker color scheme"><svg class="A svg" viewBox="0 0 24 24">
+				</a><a href="https://github.com/teletha/sinobu/discussions" id="Community" target="_blank"><svg class="user A svg" viewBox="0 0 24 24">
+						<use href="main.svg#user"/>
+					</svg>
+				</a><a href="doc/changelog.html" id="Activity"><svg class="activity A svg" viewBox="0 0 24 24">
+						<use href="main.svg#activity"/>
+					</svg>
+				</a><a href="https://github.com/teletha/sinobu" id="Repository" target="_blank"><svg class="github A svg" viewBox="0 0 24 24">
+						<use href="main.svg#github"/>
+					</svg>
+				</a></nav>
+			<div class="n"><a aria-label="Change color scheme" id="theme"><svg class="sun A svg" viewBox="0 0 24 24">
+						<use href="main.svg#sun"/>
+					</svg><svg class="moon A svg" viewBox="0 0 24 24">
 						<use href="main.svg#moon"/>
 					</svg>
 				</a></div>
 		</header>
-		<main class="T">
-			<nav class="k">
-				<div></div>
-			</nav>
-			<article class="a" id="Article">
-				<section class="V"><code class="i">kiss</code>
-					<h2 class="Class l"><code class="W">Singleton</code><code class="e">&#60;<code>M</code>&#62;</code></h2>
-					<div class="K">
-						<ul class="C D">
-							<li><code>M</code><span><p>A <code><a href="api/kiss.Managed.html">Managed</a></code> class.</p></span></li>
-						</ul>
-						<ul class="C F">
-							<li><code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/Callable.html">Callable</a><code class="parameters"><code>M</code></code></code></li>
-							<li><code><a href="api/kiss.Extensible.html">Extensible</a></code></li>
-							<li><code><a href="api/kiss.Lifestyle.html">Lifestyle</a><code class="parameters"><code>M</code></code></code></li>
-							<li><code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code>M</code></code></code></li>
-							<li><code><a href="api/kiss.Wise.html">Wise</a></code></li>
-							<li><code><a href="api/kiss.WiseSupplier.html">WiseSupplier</a><code class="parameters"><code>M</code></code></code></li>
-						</ul>
-					</div><span class="B"><p>This lifestyle guarantees that only one instance of the specific class exists in Sinobu.</p></span></section>
-				<section class="V" id="instance">
-					<h2 class="Z"><i class="FINAL"><i class="PROTECTED"></i></i><code class="W">instance</code><i class="P"><code class="return">M</code></i></h2><span class="B"><p>The singleton instance.</p></span></section>
-				<section class="V" id="Singleton(java.lang.Class)">
-					<h2 class="Z"><i class="PUBLIC"></i><code class="W">Singleton</code><code class="e">(<code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>?</code><code class="extends"><code>M</code></code></code></code><code class="parameterName">modelClass</code>)</code></h2>
-					<table class="j">
-						<tr class="f">
-							<td><code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>?</code><code class="extends"><code>M</code></code></code></code><code>modelClass</code></td>
-							<td><span><p>A target class.</p></span></td>
-						</tr>
-					</table><span class="B"><p>Create Singleton instance.</p></span></section>
-				<section class="V" id="call()">
-					<h2 class="Z"><i class="OVERRIDE PUBLIC"></i><code class="W">call</code><code class="e">()</code><i class="P"><code>M</code></i></h2>
-					<table class="j">
-						<tr class="S">
-							<td><code>M</code></td>
-							<td></td>
-						</tr>
-					</table>
-				</section>
-			</article>
-			<aside class="m" id="SubNavi">
-				<div class="h">
-					<h5 class="Y">Constructors</h5>
-					<ul>
-						<li><i class="PUBLIC"></i><code><a href="api/kiss.Singleton.html#Singleton(java.lang.Class)">Singleton</a></code><code class="e">(<code><a href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>?</code><code class="extends"><code>M</code></code></code></code><code class="parameterName">modelClass</code>)</code></li>
+		<nav class="g"></nav>
+		<article class="R" id="Article">
+			<section class="p"><code class="j">kiss</code>
+				<h2 class="Class S"><code class="Z">Singleton</code><code class="d">&#60;<code>M</code>&#62;</code></h2>
+				<div class="L">
+					<ul class="C D">
+						<li><code>M</code><span><p>A <code><a aria-label="kiss.Managed" href="api/kiss.Managed.html">Managed</a></code> class.</p></span></li>
 					</ul>
-					<h5 class="Y">Fields</h5>
-					<ul>
-						<li><i class="FINAL"><i class="PROTECTED"></i></i><code><a href="api/kiss.Singleton.html#instance">instance</a></code><i class="J"><code class="return">M</code></i></li>
+					<ul class="C F">
+						<li><code><a aria-label="java.util.concurrent.Callable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/Callable.html">Callable</a><code class="parameters"><code>M</code></code></code></li>
+						<li><code><a aria-label="kiss.Extensible" href="api/kiss.Extensible.html">Extensible</a></code></li>
+						<li><code><a aria-label="kiss.Lifestyle" href="api/kiss.Lifestyle.html">Lifestyle</a><code class="parameters"><code>M</code></code></code></li>
+						<li><code><a aria-label="java.util.function.Supplier 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code>M</code></code></code></li>
+						<li><code><a aria-label="kiss.Wise" href="api/kiss.Wise.html">Wise</a></code></li>
+						<li><code><a aria-label="kiss.WiseSupplier" href="api/kiss.WiseSupplier.html">WiseSupplier</a><code class="parameters"><code>M</code></code></code></li>
 					</ul>
-					<h5 class="Y">Methods</h5>
-					<ul>
-						<li><i class="OVERRIDE PUBLIC"></i><code><a href="api/kiss.Singleton.html#call()">call</a></code><code class="e">()</code><i class="J"><code>M</code></i></li>
-					</ul>
-				</div>
-			</aside>
-		</main>
-		<script src="root.js"></script>
-		<script src="main.js" type="module"></script>
+				</div><span class="B"><p>This lifestyle guarantees that only one instance of the specific class exists in Sinobu.</p></span></section>
+			<section class="p" id="instance">
+				<h2 class="M"><i class="FINAL"><i class="PROTECTED"></i></i><code class="Z">instance</code><i class="k"><code class="return">M</code></i></h2><span class="B"><p>The singleton instance.</p></span></section>
+			<section class="p" id="Singleton(java.lang.Class)">
+				<h2 class="M"><i class="PUBLIC"></i><code class="Z">Singleton</code><code class="d">(<code><a aria-label="java.lang.Class 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>?</code><code class="extends"><code>M</code></code></code></code><code class="parameterName">modelClass</code>)</code></h2>
+				<table class="Q">
+					<tr class="h">
+						<td><code><a aria-label="java.lang.Class 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>?</code><code class="extends"><code>M</code></code></code></code><code class="parameterName">modelClass</code></td>
+						<td><span><p>A target class.</p></span></td>
+					</tr>
+				</table><span class="B"><p>Create Singleton instance.</p></span></section>
+			<section class="p" id="call()">
+				<h2 class="M"><i class="OVERRIDE PUBLIC"></i><code class="Z">call</code><code class="d">()</code><i class="k"><code>M</code></i></h2>
+				<table class="Q">
+					<tr class="U">
+						<td><code>M</code></td>
+						<td></td>
+					</tr>
+				</table>
+			</section>
+		</article>
+		<aside class="J">
+			<div class="s">
+				<h5 class="o">Constructors</h5>
+				<ul>
+					<li class="T"><i class="PUBLIC"></i><code><a href="api/kiss.Singleton.html#Singleton(java.lang.Class)">Singleton</a></code><code class="d">(<code><a aria-label="java.lang.Class 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Class.html">Class</a><code class="parameters"><code>?</code><code class="extends"><code>M</code></code></code></code><code class="parameterName">modelClass</code>)</code></li>
+				</ul>
+				<h5 class="o">Fields</h5>
+				<ul>
+					<li class="T"><i class="FINAL"><i class="PROTECTED"></i></i><code><a href="api/kiss.Singleton.html#instance">instance</a></code><i class="V"><code class="return">M</code></i></li>
+				</ul>
+				<h5 class="o">Methods</h5>
+				<ul>
+					<li class="T"><i class="OVERRIDE PUBLIC"></i><code><a href="api/kiss.Singleton.html#call()">call</a></code><code class="d">()</code><i class="V"><code>M</code></i></li>
+				</ul>
+			</div>
+		</aside>
+		<footer class="l"/>
 	</body>
+	<script src="root.js"></script>
+	<script src="main.js" type="module"></script>
 </html>

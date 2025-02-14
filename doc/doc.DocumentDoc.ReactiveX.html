@@ -13,50 +13,50 @@
 		<link href="https://fonts.googleapis.com/css2?display=swap&#38;family=Material+Icons" media="print" onload="this.media=&#39;all&#39;" rel="stylesheet"/>
 		<link as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?display=swap&#38;family=Vollkorn" rel="preload"/>
 		<link href="https://fonts.googleapis.com/css2?display=swap&#38;family=Vollkorn" media="print" onload="this.media=&#39;all&#39;" rel="stylesheet"/>
-		<link as="style" fetchpriority="high" href="https://cdn.jsdelivr.net/npm/ress@4.0.0/dist/ress.min.css" rel="preload"/>
-		<link href="https://cdn.jsdelivr.net/npm/ress@4.0.0/dist/ress.min.css" rel="stylesheet"/>
 		<title>Sinobu API</title>
 		<base href="../"/>
 		<script src="mimic.js" type="module"></script>
+		<link href="https://cdn.jsdelivr.net/npm/ress@4.0.0/dist/ress.min.css" rel="stylesheet"/>
 		<link href="main.css" rel="stylesheet"/>
 	</head>
-	<body class="H">
-		<header class="M">
-			<h1 class="Q" date="2024-11-18" ver="4.5.2"><code>Sinobu</code></h1>
-			<nav class="U"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="A svg" viewBox="0 0 24 24">
+	<body class="e">
+		<header class="f" date="2024-11-18" ver="4.5.2">
+			<h1 class="W"><code>Sinobu</code></h1>
+			<nav class="m"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="text A svg" viewBox="0 0 24 24">
 						<use href="main.svg#text"/>
-					</svg>Document</a><a href="api/"><svg class="A svg" viewBox="0 0 24 24">
+					</svg>Document</a><a href="api/" id="API"><svg class="package A svg" viewBox="0 0 24 24">
 						<use href="main.svg#package"/>
-					</svg><code>API</code></a><a href="https://github.com/teletha/sinobu/discussions" target="_blank"><svg class="A svg" viewBox="0 0 24 24">
-						<use href="main.svg#user"/>
-					</svg>Community</a><a href="doc/changelog.html"><svg class="A svg" viewBox="0 0 24 24">
-						<use href="main.svg#activity"/>
-					</svg>Activity</a><a href="https://github.com/teletha/sinobu" target="_blank"><svg class="A svg" viewBox="0 0 24 24">
-						<use href="main.svg#github"/>
-					</svg>Repository</a></nav>
-			<div class="g" id="ViewMode"><a id="light" title="Change to a brighter color scheme"><svg class="A svg" viewBox="0 0 24 24">
-						<use href="main.svg#sun"/>
 					</svg>
-				</a><a id="dark" title="Change to a darker color scheme"><svg class="A svg" viewBox="0 0 24 24">
+				</a><a href="https://github.com/teletha/sinobu/discussions" id="Community" target="_blank"><svg class="user A svg" viewBox="0 0 24 24">
+						<use href="main.svg#user"/>
+					</svg>
+				</a><a href="doc/changelog.html" id="Activity"><svg class="activity A svg" viewBox="0 0 24 24">
+						<use href="main.svg#activity"/>
+					</svg>
+				</a><a href="https://github.com/teletha/sinobu" id="Repository" target="_blank"><svg class="github A svg" viewBox="0 0 24 24">
+						<use href="main.svg#github"/>
+					</svg>
+				</a></nav>
+			<div class="n"><a aria-label="Change color scheme" id="theme"><svg class="sun A svg" viewBox="0 0 24 24">
+						<use href="main.svg#sun"/>
+					</svg><svg class="moon A svg" viewBox="0 0 24 24">
 						<use href="main.svg#moon"/>
 					</svg>
 				</a></div>
 		</header>
-		<main class="T">
-			<nav class="k">
-				<div></div>
-			</nav>
-			<article class="a" id="Article">
-				<section class="V B" id="doc.DocumentDoc.ReactiveX.Concept">
-					<header class="B O">
+		<nav class="g"></nav>
+		<article class="R" id="Article">
+			<div class="p">
+				<section class="B" id="doc.DocumentDoc.ReactiveX.Concept">
+					<header class="B I">
 						<h2>Concept</h2>
-						<div class="N"><span class="perp c"><svg class="A svg" viewBox="0 0 24 24">
+						<div class="i"><span class="perp q"><svg class="copy A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
-							</span><a class="tweet c"><svg class="A svg" viewBox="0 0 24 24">
+							</span><a class="tweet q"><svg class="twitter A svg" viewBox="0 0 24 24">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit c" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L595-L633"><svg class="A svg" viewBox="0 0 24 24">
+							</a><a class="edit q" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L595-L633"><svg class="edit A svg" viewBox="0 0 24 24">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
@@ -65,38 +65,37 @@ to read there.</p><ul>
 							<li><a href="https://reactivex.io/intro.html">ReactiveX</a></li>
 							<li><a href="https://reactivex.io/documentation/observable.html">Observable</a></li>
 							<li><a href="https://reactivex.io/documentation/operators.html">Operators</a></li>
-						</ul><p>The <code><a href="api/kiss.Signal.html">Signal</a></code> class that implements the Reactive Pattern. This class provides
-methods for subscribing to the <code><a href="api/kiss.Signal.html">Signal</a></code> as well as delegate methods to the various
-observers.</p><p>In Reactive Pattern an observer subscribes to a <code><a href="api/kiss.Signal.html">Signal</a></code>. Then that observer reacts
-to whatever item or sequence of items the <code><a href="api/kiss.Signal.html">Signal</a></code> emits. This pattern facilitates
+						</ul><p>The <code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code> class that implements the Reactive Pattern. This class provides
+methods for subscribing to the <code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code> as well as delegate methods to the various
+observers.</p><p>In Reactive Pattern an observer subscribes to a <code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code>. Then that observer reacts
+to whatever item or sequence of items the <code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code> emits. This pattern facilitates
 concurrent operations because it does not need to block while waiting for the
-<code><a href="api/kiss.Signal.html">Signal</a></code>
+<code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code>
 to emit objects, but instead it creates a sentry in the form of an observer that stands
-ready to react appropriately at whatever future time the <code><a href="api/kiss.Signal.html">Signal</a></code> does so.</p><p>The subscribe method is how you connect an <code><a href="api/kiss.Observer.html">Observer</a></code> to a <code><a href="api/kiss.Signal.html">Signal</a></code>. Your
-<code><a href="api/kiss.Observer.html">Observer</a></code> implements some subset of the following methods:</p><ul>
-							<li><code><a href="api/kiss.Observer.html#accept(java.lang.Object)">Observer#accept(Object)</a></code> - A <code><a href="api/kiss.Signal.html">Signal</a></code> calls this method whenever the
-<code><a href="api/kiss.Signal.html">Signal</a></code> emits an item. This method takes as a parameter the item emitted by the
-<code><a href="api/kiss.Signal.html">Signal</a></code>.</li>
-							<li><code><a href="api/kiss.Observer.html#error(java.lang.Throwable)">Observer#error(Throwable)</a></code> - A <code><a href="api/kiss.Signal.html">Signal</a></code> calls this method to indicate that
+ready to react appropriately at whatever future time the <code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code> does so.</p><p>The subscribe method is how you connect an <code><a aria-label="kiss.Observer" href="api/kiss.Observer.html">Observer</a></code> to a <code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code>. Your
+<code><a aria-label="kiss.Observer" href="api/kiss.Observer.html">Observer</a></code> implements some subset of the following methods:</p><ul>
+							<li><code><a aria-label="kiss.Observer" href="api/kiss.Observer.html#accept(java.lang.Object)">Observer#accept(Object)</a></code> - A <code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code> calls this method whenever the
+<code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code> emits an item. This method takes as a parameter the item emitted by the
+<code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code>.</li>
+							<li><code><a aria-label="kiss.Observer" href="api/kiss.Observer.html#error(java.lang.Throwable)">Observer#error(Throwable)</a></code> - A <code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code> calls this method to indicate that
 it has failed to generate the expected data or has encountered some other error. It will
-not make further calls to <code><a href="api/kiss.Observer.html#error(java.lang.Throwable)">Observer#error(Throwable)</a></code> or
-<code><a href="api/kiss.Observer.html#complete()">Observer#complete()</a></code>. The <code><a href="api/kiss.Observer.html#error(java.lang.Throwable)">Observer#error(Throwable)</a></code> method takes as its
+not make further calls to <code><a aria-label="kiss.Observer" href="api/kiss.Observer.html#error(java.lang.Throwable)">Observer#error(Throwable)</a></code> or
+<code><a aria-label="kiss.Observer" href="api/kiss.Observer.html#complete()">Observer#complete()</a></code>. The <code><a aria-label="kiss.Observer" href="api/kiss.Observer.html#error(java.lang.Throwable)">Observer#error(Throwable)</a></code> method takes as its
 parameter an indication of what caused the error.</li>
-							<li><code><a href="api/kiss.Observer.html#complete()">Observer#complete()</a></code> - A <code><a href="api/kiss.Signal.html">Signal</a></code> calls this method after it has called
-<code><a href="api/kiss.Observer.html#accept(java.lang.Object)">Observer#accept(Object)</a></code> for the final time, if it has not encountered any errors.</li>
-						</ul><p>By the terms of the <code><a href="api/kiss.Signal.html">Signal</a></code> contract, it may call <code><a href="api/kiss.Observer.html#accept(java.lang.Object)">Observer#accept(Object)</a></code>
+							<li><code><a aria-label="kiss.Observer" href="api/kiss.Observer.html#complete()">Observer#complete()</a></code> - A <code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code> calls this method after it has called
+<code><a aria-label="kiss.Observer" href="api/kiss.Observer.html#accept(java.lang.Object)">Observer#accept(Object)</a></code> for the final time, if it has not encountered any errors.</li>
+						</ul><p>By the terms of the <code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code> contract, it may call <code><a aria-label="kiss.Observer" href="api/kiss.Observer.html#accept(java.lang.Object)">Observer#accept(Object)</a></code>
 zero or more times, and then may follow those calls with a call to either
-<code><a href="api/kiss.Observer.html#complete()">Observer#complete()</a></code> or <code><a href="api/kiss.Observer.html#error(java.lang.Throwable)">Observer#error(Throwable)</a></code> but not both, which will
+<code><a aria-label="kiss.Observer" href="api/kiss.Observer.html#complete()">Observer#complete()</a></code> or <code><a aria-label="kiss.Observer" href="api/kiss.Observer.html#error(java.lang.Throwable)">Observer#error(Throwable)</a></code> but not both, which will
 be its last call. By convention, in this document, calls to
-<code><a href="api/kiss.Observer.html#accept(java.lang.Object)">Observer#accept(Object)</a></code> are usually called “emissions” of items,
-whereas calls to <code><a href="api/kiss.Observer.html#complete()">Observer#complete()</a></code> or <code><a href="api/kiss.Observer.html#error(java.lang.Throwable)">Observer#error(Throwable)</a></code> are
+<code><a aria-label="kiss.Observer" href="api/kiss.Observer.html#accept(java.lang.Object)">Observer#accept(Object)</a></code> are usually called “emissions” of items,
+whereas calls to <code><a aria-label="kiss.Observer" href="api/kiss.Observer.html#complete()">Observer#complete()</a></code> or <code><a aria-label="kiss.Observer" href="api/kiss.Observer.html#error(java.lang.Throwable)">Observer#error(Throwable)</a></code> are
 called “notifications.”</p></span></section>
-			</article>
-			<aside class="m" id="SubNavi">
-				<div class="h"></div>
-			</aside>
-		</main>
-		<script src="root.js"></script>
-		<script src="main.js" type="module"></script>
+			</div>
+		</article>
+		<aside class="J"></aside>
+		<footer class="l"/>
 	</body>
+	<script src="root.js"></script>
+	<script src="main.js" type="module"></script>
 </html>
