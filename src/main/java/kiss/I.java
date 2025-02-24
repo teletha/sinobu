@@ -473,6 +473,11 @@ public class I implements ParameterizedType {
                     try {
                         result = method.invoke(fun, args);
                     } catch (InvocationTargetException e) {
+                        // This method predates the general-purpose exception chaining facility. The
+                        // Throwable.getCause() method is now the preferred means of obtaining this
+                        // information.
+                        //
+                        // throw e.getTargetException();
                         throw e.getCause();
                     }
                 }
