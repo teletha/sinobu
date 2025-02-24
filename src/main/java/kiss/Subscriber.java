@@ -12,6 +12,7 @@ package kiss;
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.net.http.WebSocket;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -117,6 +118,8 @@ class Subscriber<T> implements Observer<T>, Disposable, WebSocket.Listener, Stor
             } else if (observer != null) {
                 observer.accept(value);
             }
+        } catch (UndeclaredThrowableException e) {
+            error(e.getUndeclaredThrowable());
         } catch (Throwable e) {
             error(e);
         }
