@@ -467,17 +467,20 @@ public class I implements ParameterizedType {
         return make(type, (proxy, method, args) -> {
             Object result = null;
 
-            if (items != null) for (Object fun : items)
-                if (fun != null) try {
-                    result = method.invoke(fun, args);
-                } catch (InvocationTargetException e) {
-                    // This method predates the general-purpose exception chaining facility. The
-                    // Throwable.getCause() method is now the preferred means of obtaining this
-                    // information.
-                    //
-                    // throw e.getTargetException();
-                    throw e.getCause();
+            if (items != null) for (Object fun : items) {
+                if (fun != null) {
+                    try {
+                        result = method.invoke(fun, args);
+                    } catch (InvocationTargetException e) {
+                        // This method predates the general-purpose exception chaining facility. The
+                        // Throwable.getCause() method is now the preferred means of obtaining this
+                        // information.
+                        //
+                        // throw e.getTargetException();
+                        throw e.getCause();
+                    }
                 }
+            }
             return result;
         });
     }
@@ -730,8 +733,9 @@ public class I implements ParameterizedType {
 
                             // If the expression cannot be evaluated by property resolver,
                             // use the user-defined resolver to try to evaluate the expression.
-                            if (object == null && resolvers != null) for (int k = 0; k < resolvers.length; k++)
+                            if (object == null && resolvers != null) for (int k = 0; k < resolvers.length; k++) {
                                 if ((object = resolvers[k].apply(model, c, e[j])) != null) break;
+                            }
 
                             // Since all resolvers failed to resolve to a non-null value, we
                             // will try to resolve again in a different context.
@@ -761,8 +765,9 @@ public class I implements ParameterizedType {
                                 }
                                 break;
                             }
-                        } else
+                        } else {
                             break;
+                        }
                     }
                     builder.delete(builder.length() - count, builder.length());
 
@@ -786,11 +791,14 @@ public class I implements ParameterizedType {
                     // Processes the text inside a section tag based on the context object.
                     if (type == '^') {
                         if (c == null || c == FALSE || (c instanceof List && ((List) c).isEmpty()) || (c instanceof Map && ((Map) c)
-                                .isEmpty()))
+                                .isEmpty())) {
                             builder.append(I.express(in, open, close, I.array(new Object[] {c}, contexts), resolvers));
-                    } else if (c != null && c != FALSE)
-                        for (Object o : c instanceof List ? (List) c : c instanceof Map ? ((Map) c).values() : List.of(c))
-                        builder.append(I.express(in, open, close, I.array(new Object[] {o}, contexts), resolvers));
+                        }
+                    } else if (c != null && c != FALSE) {
+                        for (Object o : c instanceof List ? (List) c : c instanceof Map ? ((Map) c).values() : List.of(c)) {
+                            builder.append(I.express(in, open, close, I.array(new Object[] {o}, contexts), resolvers));
+                        }
+                    }
                 } else if (c != null) builder.append(I.transform(c, String.class));
             }
         }
@@ -817,10 +825,11 @@ public class I implements ParameterizedType {
      */
     public static <E extends Extensible> List<E> find(Class<E> extensionPoint) {
         return I.signal(findBy(extensionPoint)).flatIterable(Ⅱ::ⅰ).skip(e -> Modifier.isAbstract(e.getModifiers())).flatMap(clazz -> {
-            if (clazz.isEnum())
+            if (clazz.isEnum()) {
                 return I.signal(clazz.getEnumConstants());
-            else
+            } else {
                 return I.signal(I.make(clazz));
+            }
         }).toList();
     }
 
@@ -987,9 +996,10 @@ public class I implements ParameterizedType {
                                 observer.accept(v);
                                 observer.complete();
                                 return;
-                            } else
+                            } else {
                                 e = new HttpRetryException(new String(res.body().readAllBytes(), StandardCharsets.UTF_8), res
                                         .statusCode(), res.uri().toString());
+                            }
                         } catch (Exception x) {
                             e = x; // fall-through to error handling
                         }
@@ -1244,13 +1254,16 @@ public class I implements ParameterizedType {
         // =======================================
         Disposable disposer = Disposable.empty();
 
-        for (String name : names.toSet())
+        for (String name : names.toSet()) {
             // exclude out of the specified package
-            if (name.startsWith(pattern)) try {
-                disposer.add(loadE((Class) loader.loadClass(name)));
-            } catch (Throwable e) {
-                // ignore
+            if (name.startsWith(pattern)) {
+                try {
+                    disposer.add(loadE((Class) loader.loadClass(name)));
+                } catch (Throwable e) {
+                    // ignore
+                }
             }
+        }
         return disposer;
     }
 
@@ -1270,7 +1283,7 @@ public class I implements ParameterizedType {
         Disposable disposer = Disposable.empty();
 
         // search and collect information for all extension points
-        for (Class<E> extensionPoint : Model.collectTypes(extension))
+        for (Class<E> extensionPoint : Model.collectTypes(extension)) {
             if (Arrays.asList(extensionPoint.getInterfaces()).contains(Extensible.class)) {
                 // register as new extension
                 Ⅱ<List<Class<E>>, Map<Class, Lifestyle<E>>> extensions = findBy(extensionPoint);
@@ -1308,6 +1321,7 @@ public class I implements ParameterizedType {
                     }
                 }
             }
+        }
         return disposer;
     }
 
@@ -1473,10 +1487,12 @@ public class I implements ParameterizedType {
                 log.o.ⅰ.put(L, (o - 1) * 5, 5).position(30).put(String.valueOf(msg));
 
                 // Caller Location
-                if (log.a[0] <= o) // Since javac (JDK16) doesn't infer it correctly, we'll put the
+                if (log.a[0] <= o) {
+                    // Since javac (JDK16) doesn't infer it correctly, we'll put the
                     // toString method out there to make the type explicit, although it
                     // increases the footprint slightly.
                     log.o.ⅰ.put("\tat ").put(StackWalker.getInstance().walk(s -> s.skip(deep).findAny().get()).toString());
+                }
 
                 // Cause
                 if (msg instanceof Throwable) {
@@ -1558,22 +1574,23 @@ public class I implements ParameterizedType {
 
         if (type instanceof ParameterizedType) type = ((ParameterizedType) type).getRawType();
 
-        if (type == WiseRunnable.class)
+        if (type == WiseRunnable.class) {
             return (F) (WiseRunnable) handler::invoke;
-        else if (type == WiseSupplier.class)
+        } else if (type == WiseSupplier.class) {
             return (F) (WiseSupplier) handler::invoke;
-        else if (type == WiseConsumer.class)
+        } else if (type == WiseConsumer.class) {
             return (F) (WiseConsumer) handler::invoke;
-        else if (type == WiseFunction.class)
+        } else if (type == WiseFunction.class) {
             return (F) (WiseFunction) handler::invoke;
-        else if (type == WiseBiConsumer.class)
+        } else if (type == WiseBiConsumer.class) {
             return (F) (WiseBiConsumer) handler::invoke;
-        else if (type == WiseBiFunction.class)
+        } else if (type == WiseBiFunction.class) {
             return (F) (WiseBiFunction) handler::invoke;
-        else if (type == WiseTriConsumer.class)
+        } else if (type == WiseTriConsumer.class) {
             return (F) (WiseTriConsumer) handler::invoke;
-        else
+        } else {
             return (F) (WiseTriFunction) handler::invoke;
+        }
     }
 
     /**
@@ -1627,9 +1644,9 @@ public class I implements ParameterizedType {
                 lifestyle = managed == null || managed.value() == Lifestyle.class ? I.prototype(modelClass) : I.make(managed.value());
             }
 
-            if (lifestyles.containsKey(modelClass))
+            if (lifestyles.containsKey(modelClass)) {
                 return lifestyles.get(modelClass);
-            else {
+            } else {
                 lifestyles.put(modelClass, lifestyle);
                 return lifestyle;
             }
@@ -1723,7 +1740,7 @@ public class I implements ParameterizedType {
             if (types.length != 0) {
                 params = new Object[types.length];
 
-                for (int i = 0; i < params.length; i++)
+                for (int i = 0; i < params.length; i++) {
                     if (types[i] == Lifestyle.class) {
                         // In the case of non-static inner classes, references to external classes
                         // are implicitly added, but Executable#getParameterTypes returns an array
@@ -1738,6 +1755,7 @@ public class I implements ParameterizedType {
                         params[i] = Array.get(Array.newInstance(types[i], 1), 0);
                     else
                         params[i] = injector.apply(types[i]);
+                }
             }
             // create new instance
             return (M) constructor.newInstance(params);
@@ -2013,6 +2031,7 @@ public class I implements ParameterizedType {
                 future = exe.scheduleAtFixedRate(task, delayTime, intervalTime, unit);
             else
                 future = exe.scheduleWithFixedDelay(task, delayTime, intervalTime, unit);
+
             return disposer.add(future);
         }).count();
     }
@@ -2207,8 +2226,9 @@ public class I implements ParameterizedType {
      * @return The specified class.
      */
     public static Class type(String fqcn) {
-        if (fqcn.indexOf('.') == -1) for (int i = 0; i < 9; i++)
+        if (fqcn.indexOf('.') == -1) for (int i = 0; i < 9; i++) {
             if (types[i].getName().equals(fqcn)) return types[i];
+        }
 
         try {
             return Class.forName(fqcn, false, ClassLoader.getSystemClassLoader());
@@ -2340,8 +2360,9 @@ public class I implements ParameterizedType {
      * @throws NullPointerException Parameter type is null.
      */
     public static Class wrap(Class type) {
-        if (type.isPrimitive()) for (int i = 0; i < 9; i++)
+        if (type.isPrimitive()) for (int i = 0; i < 9; i++) {
             if (types[i] == type) return types[i + 9];
+        }
         return type;
     }
 
@@ -2493,19 +2514,23 @@ public class I implements ParameterizedType {
 
             // skip whitespaces
             int pos = 0;
-            while (pos < bytes.length && bytes[pos] <= 32)
+            while (pos < bytes.length && bytes[pos] <= 32) {
                 pos++;
+            }
 
-            if (pos + 6 < bytes.length && bytes[pos] == '<')
-                if (bytes[pos + 1] == '!' || (bytes[pos + 1] == 'h' && bytes[pos + 2] == 't' && bytes[pos + 3] == 'm' && bytes[pos + 4] == 'l' && bytes[pos + 5] == '>'))
+            if (pos + 6 < bytes.length && bytes[pos] == '<') {
+                if (bytes[pos + 1] == '!' || (bytes[pos + 1] == 'h' && bytes[pos + 2] == 't' && bytes[pos + 3] == 'm' && bytes[pos + 4] == 'l' && bytes[pos + 5] == '>')) {
                     return new XML(null, null).parse(bytes, StandardCharsets.UTF_8);
+                }
+            }
 
             String value = new String(bytes, StandardCharsets.UTF_8);
             if (xmlLiteral.matcher(value).matches()) {
                 doc = dom.parse(new InputSource(new StringReader("<m>".concat(value.replaceAll("<\\?.+\\?>", "")).concat("</m>"))));
                 return new XML(doc, XML.convert(doc.getFirstChild().getChildNodes()));
-            } else
+            } else {
                 return xml(doc != null ? doc.createTextNode(value) : dom.newDocument().createElementNS(null, value));
+            }
         } catch (Exception e) {
             throw I.quiet(e);
         }
