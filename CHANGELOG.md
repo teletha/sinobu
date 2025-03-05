@@ -1,5 +1,18 @@
 # Changelog
 
+## [4.6.0](https://github.com/teletha/sinobu/compare/v4.5.2...v4.6.0) (2025-03-05)
+
+
+### Features
+
+* logger can write the chain of errors ([ae0783b](https://github.com/teletha/sinobu/commit/ae0783b592734b0ea0859761bfe662414a73769e))
+
+
+### Bug Fixes
+
+* avoid FileAlreadyExistsException on JimFS ([8b7b7a0](https://github.com/teletha/sinobu/commit/8b7b7a0e8d1da06669a195b27c6f3076d080a00f))
+* support UndeclaredThrowableException ([fd74b0e](https://github.com/teletha/sinobu/commit/fd74b0e06baac9cf4e86fd7ab81f36ca39301fb6))
+
 ## [4.5.2](https://github.com/teletha/sinobu/compare/v4.5.1...v4.5.2) (2024-11-18)
 
 
