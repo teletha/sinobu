@@ -119,7 +119,7 @@ With a few exceptions, Sinobu and its APIs are designed to be simple to use and 
 		<dependency>
 			<groupId>org.jsoup</groupId>
 			<artifactId>jsoup</artifactId>
-			<version>1.18.3</version>
+			<version>1.19.1</version>
 			<scope>test</scope>
 			<exclusions/>
 		</dependency>
