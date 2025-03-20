@@ -93,16 +93,12 @@ public class Model<M> {
                 Map<String, Method[]> candidates = new HashMap();
 
                 for (Class clazz : Model.collectTypes(type)) {
-                    if (!Proxy.isProxyClass(clazz)) {
+                    if (!Proxy.isProxyClass(clazz) && clazz.getModule().isOpen(clazz.getPackageName())) {
                         for (Method method : clazz.getDeclaredMethods()) {
                             // exclude the method which modifier is final, static, private or native
                             if (((STATIC | NATIVE) & method.getModifiers()) == 0) {
                                 // exclude the method which is created by compiler
                                 if (!method.isBridge() && !method.isSynthetic()) {
-                                    // if (method.getAnnotations().length != 0) {
-                                    // intercepts.add(method);
-                                    // }
-
                                     int length = 1;
                                     String prefix = "set";
                                     String name = method.getName();
