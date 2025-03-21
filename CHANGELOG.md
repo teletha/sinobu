@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.6.1](https://github.com/teletha/sinobu/compare/4.6.0...4.6.1) (2025-03-21)
+
+
+### Bug Fixes
+
+* use Class#isRecord coz java16 is supported ([dd5c3d9](https://github.com/teletha/sinobu/commit/dd5c3d93af26bebd4ff1489242138b7131345ee4))
+
 ## [4.6.0](https://github.com/teletha/sinobu/compare/v4.5.2...4.6.0) (2025-03-20)
 
 
