@@ -167,9 +167,6 @@ public class Model<M> {
                     }
                 }
 
-                // We are not using Class#isRecord to support java11.
-                boolean isRecord = type.getSuperclass() != null && type.getSuperclass().getName().equals("java.lang.Record");
-
                 // Search field properties.
                 Class clazz = type;
                 while (clazz != null) {
@@ -185,7 +182,7 @@ public class Model<M> {
                             // -- is Record component (implicitly)
                             if ((PUBLIC & modifier) == PUBLIC //
                                     || field.isAnnotationPresent(Managed.class) //
-                                    || (isRecord && (PRIVATE & modifier) == PRIVATE)) {
+                                    || (type.isRecord() && (PRIVATE & modifier) == PRIVATE)) {
                                 field.setAccessible(true);
                                 try {
                                     Model fieldModel = of(specialize(field.getGenericType(), field.getDeclaringClass()
@@ -203,11 +200,11 @@ public class Model<M> {
 
                                         // register it
                                         properties.put(property.name, property);
-                                    } else if ((fieldModel.atomic && notFinal) || !fieldModel.atomic || isRecord) {
+                                    } else if ((fieldModel.atomic && notFinal) || !fieldModel.atomic || type.isRecord()) {
                                         Property property = new Property(fieldModel, field.getName(), field);
 
                                         property.getter = field::get;
-                                        if (isRecord) {
+                                        if (type.isRecord()) {
                                             property.setter = (m, v) -> {
                                                 Constructor c = collectConstructors(type)[0];
                                                 c.setAccessible(true);
