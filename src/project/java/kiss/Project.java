@@ -13,6 +13,8 @@ import static bee.api.License.*;
 
 import javax.lang.model.SourceVersion;
 
+import bee.task.Jar;
+
 public class Project extends bee.api.Project {
 
     {
@@ -76,12 +78,10 @@ public class Project extends bee.api.Project {
         require("ch.qos.logback", "logback-classic").atTest();
 
         versionControlSystem("https://github.com/teletha/sinobu");
-    }
 
-    public static class Jar extends bee.task.Jar {
-        {
-            removeDebugInfo = true;
-            removeTraceInfo = false;
-        }
+        config(Jar.class, conf -> {
+            conf.removeDebugInfo = true;
+            conf.removeTraceInfo = false;
+        });
     }
 }
