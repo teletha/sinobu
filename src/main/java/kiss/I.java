@@ -1563,7 +1563,7 @@ public class I implements ParameterizedType {
 
         // check null (type : implicitly) (handler : in Proxy#newProxyInstance)
         if (!type.isInterface()) throw new IllegalArgumentException("Type must be interface.");
-        return (T) Proxy.newProxyInstance(I.class.getClassLoader(), new Class[] {type}, handler);
+        return (T) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), new Class[] {type}, handler);
     }
 
     /**
