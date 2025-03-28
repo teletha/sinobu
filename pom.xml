@@ -49,7 +49,7 @@ With a few exceptions, Sinobu and its APIs are designed to be simple to use and 
 		<dependency>
 			<groupId>com.github.teletha</groupId>
 			<artifactId>antibug</artifactId>
-			<version>1.12.2</version>
+			<version>1.13.0</version>
 			<scope>test</scope>
 			<exclusions/>
 		</dependency>
@@ -188,7 +188,7 @@ With a few exceptions, Sinobu and its APIs are designed to be simple to use and 
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.14.0</version>
 				<configuration>
-					<release>23</release>
+					<release>24</release>
 					<encoding>UTF-8</encoding>
 					<compilerId>javac</compilerId>
 					<compilerArgs>
