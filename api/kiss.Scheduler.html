@@ -19,10 +19,10 @@
 		<link href="https://cdn.jsdelivr.net/npm/ress@4.0.0/dist/ress.min.css" rel="stylesheet"/>
 		<link href="main.css" rel="stylesheet"/>
 	</head>
-	<body class="r">
-		<header class="l" date="2025-03-20" ver="4.6.0">
-			<h1 class="S"><code>Sinobu</code></h1>
-			<nav class="X"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="text A svg" viewBox="0 0 24 24">
+	<body class="Q">
+		<header class="R" date="2025-03-20" ver="4.6.0">
+			<h1 class="d"><code>Sinobu</code></h1>
+			<nav class="k"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="text A svg" viewBox="0 0 24 24">
 						<use href="main.svg#text"/>
 					</svg>Document</a><a href="api/" id="API"><svg class="package A svg" viewBox="0 0 24 24">
 						<use href="main.svg#package"/>
@@ -37,18 +37,18 @@
 						<use href="main.svg#github"/>
 					</svg>
 				</a></nav>
-			<div class="Q"><a aria-label="Change color scheme" id="theme"><svg class="sun A svg" viewBox="0 0 24 24">
+			<div class="g"><a aria-label="Change color scheme" id="theme"><svg class="sun A svg" viewBox="0 0 24 24">
 						<use href="main.svg#sun"/>
 					</svg><svg class="moon A svg" viewBox="0 0 24 24">
 						<use href="main.svg#moon"/>
 					</svg>
 				</a></div>
 		</header>
-		<nav class="p"></nav>
-		<article class="H" id="Article">
-			<section class="L"><code class="i">kiss</code>
-				<h2 class="Class P"><code class="h">Scheduler</code></h2>
-				<div class="M">
+		<nav class="T"></nav>
+		<article class="S" id="Article">
+			<section class="L"><code class="V">kiss</code>
+				<h2 class="Class n"><code class="l">Scheduler</code></h2>
+				<div class="N">
 					<ul class="C E">
 						<li><code><a aria-label="java.util.concurrent.AbstractExecutorService 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/AbstractExecutorService.html">AbstractExecutorService</a></code></li>
 					</ul>
@@ -95,140 +95,140 @@ using virtual threads to schedule tasks with specified delays or intervals.</p><
  method can be used to block until all tasks are finished executing after a shutdown request.
  </p></span></section>
 			<section class="L" id="runs">
-				<h2 class="o"><i class="FINAL"><i class="PROTECTED"></i></i><code class="h">runs</code><i class="W"><code class="return"><a aria-label="java.util.Set 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/Set.html">Set</a><code class="parameters"><code><a aria-label="kiss.Task" href="api/kiss.Task.html">Task</a></code></code></code></i></h2><span class="B"><p>The the running task manager.</p></span></section>
+				<h2 class="m"><i class="FINAL"><i class="PROTECTED"></i></i><code class="l">runs</code><i class="r"><code class="return"><a aria-label="java.util.Set 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/Set.html">Set</a><code class="parameters"><code><a aria-label="kiss.Task" href="api/kiss.Task.html">Task</a></code></code></code></i></h2><span class="B"><p>The the running task manager.</p></span></section>
 			<section class="L" id="queue">
-				<h2 class="o"><i class="PROTECTED"></i><code class="h">queue</code><i class="W"><code class="return"><a aria-label="java.util.concurrent.DelayQueue 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/DelayQueue.html">DelayQueue</a><code class="parameters"><code><a aria-label="kiss.Task" href="api/kiss.Task.html">Task</a></code></code></code></i></h2><span class="B"><p>The task queue.</p></span></section>
+				<h2 class="m"><i class="PROTECTED"></i><code class="l">queue</code><i class="r"><code class="return"><a aria-label="java.util.concurrent.DelayQueue 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/DelayQueue.html">DelayQueue</a><code class="parameters"><code><a aria-label="kiss.Task" href="api/kiss.Task.html">Task</a></code></code></code></i></h2><span class="B"><p>The task queue.</p></span></section>
 			<section class="L" id="Scheduler()">
-				<h2 class="o"><i class="PUBLIC"></i><code class="h">Scheduler</code><code class="m">()</code></h2><span class="B"><p>Create <code><a aria-label="kiss.Scheduler" href="api/kiss.Scheduler.html">Scheduler</a></code> without the specified concurrency limit.</p></span></section>
+				<h2 class="m"><i class="PUBLIC"></i><code class="l">Scheduler</code><code class="a">()</code></h2><span class="B"><p>Create <code><a aria-label="kiss.Scheduler" href="api/kiss.Scheduler.html">Scheduler</a></code> without the specified concurrency limit.</p></span></section>
 			<section class="L" id="Scheduler(int)">
-				<h2 class="o"><i class="PUBLIC"></i><code class="h">Scheduler</code><code class="m">(<code>int</code><code class="parameterName">limit</code>)</code></h2>
-				<table class="g">
-					<tr class="f">
+				<h2 class="m"><i class="PUBLIC"></i><code class="l">Scheduler</code><code class="a">(<code>int</code><code class="parameterName">limit</code>)</code></h2>
+				<table class="f">
+					<tr class="s">
 						<td><code>int</code><code class="parameterName">limit</code></td>
 						<td><span><p>Controls the number of tasks that can be executed concurrently.</p></span></td>
 					</tr>
 				</table><span class="B"><p>Create <code><a aria-label="kiss.Scheduler" href="api/kiss.Scheduler.html">Scheduler</a></code> with the specified concurrency limit.</p></span></section>
 			<section class="L" id="executeTask(kiss.Task)">
-				<h2 class="o"><i class="PROTECTED"></i><code class="h">executeTask</code><code class="m">(<code><a aria-label="kiss.Task" href="api/kiss.Task.html">Task</a><code class="parameters"><code>?</code></code></code><code class="parameterName">task</code>)</code><i class="W"><code><a aria-label="kiss.Task" href="api/kiss.Task.html">Task</a></code></i></h2>
-				<table class="g">
-					<tr class="f">
+				<h2 class="m"><i class="PROTECTED"></i><code class="l">executeTask</code><code class="a">(<code><a aria-label="kiss.Task" href="api/kiss.Task.html">Task</a><code class="parameters"><code>?</code></code></code><code class="parameterName">task</code>)</code><i class="r"><code><a aria-label="kiss.Task" href="api/kiss.Task.html">Task</a></code></i></h2>
+				<table class="f">
+					<tr class="s">
 						<td><code><a aria-label="kiss.Task" href="api/kiss.Task.html">Task</a><code class="parameters"><code>?</code></code></code><code class="parameterName">task</code></td>
 						<td></td>
 					</tr>
-					<tr class="k">
+					<tr class="e">
 						<td><code><a aria-label="kiss.Task" href="api/kiss.Task.html">Task</a></code></td>
 						<td></td>
 					</tr>
 				</table><span class="B"><p>Execute the task.</p></span></section>
 			<section class="L" id="schedule(java.lang.Runnable,long,java.util.concurrent.TimeUnit)">
-				<h2 class="o"><i class="OVERRIDE PUBLIC"></i><code class="h">schedule</code><code class="m">(<code><a aria-label="java.lang.Runnable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code><code class="parameterName">command</code>, <code>long</code><code class="parameterName">delay</code>, <code><a aria-label="java.util.concurrent.TimeUnit 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/TimeUnit.html">TimeUnit</a></code><code class="parameterName">unit</code>)</code><i class="W"><code><a aria-label="java.util.concurrent.ScheduledFuture 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/ScheduledFuture.html">ScheduledFuture</a><code class="parameters"><code>?</code></code></code></i></h2>
-				<table class="g">
-					<tr class="f">
+				<h2 class="m"><i class="OVERRIDE PUBLIC"></i><code class="l">schedule</code><code class="a">(<code><a aria-label="java.lang.Runnable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code><code class="parameterName">command</code>, <code>long</code><code class="parameterName">delay</code>, <code><a aria-label="java.util.concurrent.TimeUnit 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/TimeUnit.html">TimeUnit</a></code><code class="parameterName">unit</code>)</code><i class="r"><code><a aria-label="java.util.concurrent.ScheduledFuture 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/ScheduledFuture.html">ScheduledFuture</a><code class="parameters"><code>?</code></code></code></i></h2>
+				<table class="f">
+					<tr class="s">
 						<td><code><a aria-label="java.lang.Runnable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code><code class="parameterName">command</code></td>
 						<td></td>
 					</tr>
-					<tr class="f">
+					<tr class="s">
 						<td><code>long</code><code class="parameterName">delay</code></td>
 						<td></td>
 					</tr>
-					<tr class="f">
+					<tr class="s">
 						<td><code><a aria-label="java.util.concurrent.TimeUnit 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/TimeUnit.html">TimeUnit</a></code><code class="parameterName">unit</code></td>
 						<td></td>
 					</tr>
-					<tr class="k">
+					<tr class="e">
 						<td><code><a aria-label="java.util.concurrent.ScheduledFuture 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/ScheduledFuture.html">ScheduledFuture</a><code class="parameters"><code>?</code></code></code></td>
 						<td></td>
 					</tr>
 				</table>
 			</section>
 			<section class="L" id="schedule(java.util.concurrent.Callable,long,java.util.concurrent.TimeUnit)">
-				<h2 class="o"><i class="OVERRIDE PUBLIC"></i><code class="h">schedule</code><code class="m">(<code><a aria-label="java.util.concurrent.Callable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/Callable.html">Callable</a><code class="parameters"><code>V</code></code></code><code class="parameterName">command</code>, <code>long</code><code class="parameterName">delay</code>, <code><a aria-label="java.util.concurrent.TimeUnit 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/TimeUnit.html">TimeUnit</a></code><code class="parameterName">unit</code>)</code><i class="W"><code><a aria-label="java.util.concurrent.ScheduledFuture 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/ScheduledFuture.html">ScheduledFuture</a><code class="parameters"><code>V</code></code></code></i></h2>
-				<table class="g">
-					<tr class="n">
+				<h2 class="m"><i class="OVERRIDE PUBLIC"></i><code class="l">schedule</code><code class="a">(<code><a aria-label="java.util.concurrent.Callable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/Callable.html">Callable</a><code class="parameters"><code>V</code></code></code><code class="parameterName">command</code>, <code>long</code><code class="parameterName">delay</code>, <code><a aria-label="java.util.concurrent.TimeUnit 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/TimeUnit.html">TimeUnit</a></code><code class="parameterName">unit</code>)</code><i class="r"><code><a aria-label="java.util.concurrent.ScheduledFuture 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/ScheduledFuture.html">ScheduledFuture</a><code class="parameters"><code>V</code></code></code></i></h2>
+				<table class="f">
+					<tr class="M">
 						<td><code>V</code></td>
 						<td></td>
 					</tr>
-					<tr class="f">
+					<tr class="s">
 						<td><code><a aria-label="java.util.concurrent.Callable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/Callable.html">Callable</a><code class="parameters"><code>V</code></code></code><code class="parameterName">command</code></td>
 						<td></td>
 					</tr>
-					<tr class="f">
+					<tr class="s">
 						<td><code>long</code><code class="parameterName">delay</code></td>
 						<td></td>
 					</tr>
-					<tr class="f">
+					<tr class="s">
 						<td><code><a aria-label="java.util.concurrent.TimeUnit 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/TimeUnit.html">TimeUnit</a></code><code class="parameterName">unit</code></td>
 						<td></td>
 					</tr>
-					<tr class="k">
+					<tr class="e">
 						<td><code><a aria-label="java.util.concurrent.ScheduledFuture 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/ScheduledFuture.html">ScheduledFuture</a><code class="parameters"><code>V</code></code></code></td>
 						<td></td>
 					</tr>
 				</table>
 			</section>
 			<section class="L" id="scheduleAtFixedRate(java.lang.Runnable,long,long,java.util.concurrent.TimeUnit)">
-				<h2 class="o"><i class="OVERRIDE PUBLIC"></i><code class="h">scheduleAtFixedRate</code><code class="m">(<code><a aria-label="java.lang.Runnable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code><code class="parameterName">command</code>, <code>long</code><code class="parameterName">delay</code>, <code>long</code><code class="parameterName">interval</code>, <code><a aria-label="java.util.concurrent.TimeUnit 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/TimeUnit.html">TimeUnit</a></code><code class="parameterName">unit</code>)</code><i class="W"><code><a aria-label="java.util.concurrent.ScheduledFuture 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/ScheduledFuture.html">ScheduledFuture</a><code class="parameters"><code>?</code></code></code></i></h2>
-				<table class="g">
-					<tr class="f">
+				<h2 class="m"><i class="OVERRIDE PUBLIC"></i><code class="l">scheduleAtFixedRate</code><code class="a">(<code><a aria-label="java.lang.Runnable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code><code class="parameterName">command</code>, <code>long</code><code class="parameterName">delay</code>, <code>long</code><code class="parameterName">interval</code>, <code><a aria-label="java.util.concurrent.TimeUnit 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/TimeUnit.html">TimeUnit</a></code><code class="parameterName">unit</code>)</code><i class="r"><code><a aria-label="java.util.concurrent.ScheduledFuture 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/ScheduledFuture.html">ScheduledFuture</a><code class="parameters"><code>?</code></code></code></i></h2>
+				<table class="f">
+					<tr class="s">
 						<td><code><a aria-label="java.lang.Runnable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code><code class="parameterName">command</code></td>
 						<td></td>
 					</tr>
-					<tr class="f">
+					<tr class="s">
 						<td><code>long</code><code class="parameterName">delay</code></td>
 						<td></td>
 					</tr>
-					<tr class="f">
+					<tr class="s">
 						<td><code>long</code><code class="parameterName">interval</code></td>
 						<td></td>
 					</tr>
-					<tr class="f">
+					<tr class="s">
 						<td><code><a aria-label="java.util.concurrent.TimeUnit 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/TimeUnit.html">TimeUnit</a></code><code class="parameterName">unit</code></td>
 						<td></td>
 					</tr>
-					<tr class="k">
+					<tr class="e">
 						<td><code><a aria-label="java.util.concurrent.ScheduledFuture 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/ScheduledFuture.html">ScheduledFuture</a><code class="parameters"><code>?</code></code></code></td>
 						<td></td>
 					</tr>
 				</table>
 			</section>
 			<section class="L" id="scheduleWithFixedDelay(java.lang.Runnable,long,long,java.util.concurrent.TimeUnit)">
-				<h2 class="o"><i class="OVERRIDE PUBLIC"></i><code class="h">scheduleWithFixedDelay</code><code class="m">(<code><a aria-label="java.lang.Runnable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code><code class="parameterName">command</code>, <code>long</code><code class="parameterName">delay</code>, <code>long</code><code class="parameterName">interval</code>, <code><a aria-label="java.util.concurrent.TimeUnit 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/TimeUnit.html">TimeUnit</a></code><code class="parameterName">unit</code>)</code><i class="W"><code><a aria-label="java.util.concurrent.ScheduledFuture 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/ScheduledFuture.html">ScheduledFuture</a><code class="parameters"><code>?</code></code></code></i></h2>
-				<table class="g">
-					<tr class="f">
+				<h2 class="m"><i class="OVERRIDE PUBLIC"></i><code class="l">scheduleWithFixedDelay</code><code class="a">(<code><a aria-label="java.lang.Runnable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code><code class="parameterName">command</code>, <code>long</code><code class="parameterName">delay</code>, <code>long</code><code class="parameterName">interval</code>, <code><a aria-label="java.util.concurrent.TimeUnit 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/TimeUnit.html">TimeUnit</a></code><code class="parameterName">unit</code>)</code><i class="r"><code><a aria-label="java.util.concurrent.ScheduledFuture 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/ScheduledFuture.html">ScheduledFuture</a><code class="parameters"><code>?</code></code></code></i></h2>
+				<table class="f">
+					<tr class="s">
 						<td><code><a aria-label="java.lang.Runnable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code><code class="parameterName">command</code></td>
 						<td></td>
 					</tr>
-					<tr class="f">
+					<tr class="s">
 						<td><code>long</code><code class="parameterName">delay</code></td>
 						<td></td>
 					</tr>
-					<tr class="f">
+					<tr class="s">
 						<td><code>long</code><code class="parameterName">interval</code></td>
 						<td></td>
 					</tr>
-					<tr class="f">
+					<tr class="s">
 						<td><code><a aria-label="java.util.concurrent.TimeUnit 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/TimeUnit.html">TimeUnit</a></code><code class="parameterName">unit</code></td>
 						<td></td>
 					</tr>
-					<tr class="k">
+					<tr class="e">
 						<td><code><a aria-label="java.util.concurrent.ScheduledFuture 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/ScheduledFuture.html">ScheduledFuture</a><code class="parameters"><code>?</code></code></code></td>
 						<td></td>
 					</tr>
 				</table>
 			</section>
 			<section class="L" id="scheduleAt(java.lang.Runnable,java.lang.String)">
-				<h2 class="o"><i class="PUBLIC"></i><code class="h">scheduleAt</code><code class="m">(<code><a aria-label="java.lang.Runnable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code><code class="parameterName">command</code>, <code><a aria-label="java.lang.String 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/String.html">String</a></code><code class="parameterName">format</code>)</code><i class="W"><code><a aria-label="java.util.concurrent.ScheduledFuture 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/ScheduledFuture.html">ScheduledFuture</a><code class="parameters"><code>?</code></code></code></i></h2>
-				<table class="g">
-					<tr class="f">
+				<h2 class="m"><i class="PUBLIC"></i><code class="l">scheduleAt</code><code class="a">(<code><a aria-label="java.lang.Runnable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code><code class="parameterName">command</code>, <code><a aria-label="java.lang.String 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/String.html">String</a></code><code class="parameterName">format</code>)</code><i class="r"><code><a aria-label="java.util.concurrent.ScheduledFuture 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/ScheduledFuture.html">ScheduledFuture</a><code class="parameters"><code>?</code></code></code></i></h2>
+				<table class="f">
+					<tr class="s">
 						<td><code><a aria-label="java.lang.Runnable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code><code class="parameterName">command</code></td>
 						<td><span><p>The <code>Runnable</code> task to be scheduled for periodic execution.</p></span></td>
 					</tr>
-					<tr class="f">
+					<tr class="s">
 						<td><code><a aria-label="java.lang.String 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/String.html">String</a></code><code class="parameterName">format</code></td>
 						<td><span><p>A valid cron expression that defines the schedule for task execution.
 The cron format is parsed to calculate the next execution time.</p></span></td>
 					</tr>
-					<tr class="k">
+					<tr class="e">
 						<td><code><a aria-label="java.util.concurrent.ScheduledFuture 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/ScheduledFuture.html">ScheduledFuture</a><code class="parameters"><code>?</code></code></code></td>
 						<td><span><p>A <code>ScheduledFuture&#38;lt;?&#38;gt;</code> representing the pending completion of the task.
 The <code>ScheduledFuture</code> can be used to cancel or check the status of the task.</p></span></td>
@@ -350,22 +350,22 @@ The <code>ScheduledFuture</code> can be used to cancel or check the status of th
 						</dl>
 					</p></span></section>
 			<section class="L" id="scheduleAt(java.lang.Runnable,java.lang.String,java.time.ZoneId)">
-				<h2 class="o"><i class="PUBLIC"></i><code class="h">scheduleAt</code><code class="m">(<code><a aria-label="java.lang.Runnable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code><code class="parameterName">command</code>, <code><a aria-label="java.lang.String 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/String.html">String</a></code><code class="parameterName">format</code>, <code><a aria-label="java.time.ZoneId 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/time/ZoneId.html">ZoneId</a></code><code class="parameterName">id</code>)</code><i class="W"><code><a aria-label="java.util.concurrent.ScheduledFuture 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/ScheduledFuture.html">ScheduledFuture</a><code class="parameters"><code>?</code></code></code></i></h2>
-				<table class="g">
-					<tr class="f">
+				<h2 class="m"><i class="PUBLIC"></i><code class="l">scheduleAt</code><code class="a">(<code><a aria-label="java.lang.Runnable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code><code class="parameterName">command</code>, <code><a aria-label="java.lang.String 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/String.html">String</a></code><code class="parameterName">format</code>, <code><a aria-label="java.time.ZoneId 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/time/ZoneId.html">ZoneId</a></code><code class="parameterName">id</code>)</code><i class="r"><code><a aria-label="java.util.concurrent.ScheduledFuture 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/ScheduledFuture.html">ScheduledFuture</a><code class="parameters"><code>?</code></code></code></i></h2>
+				<table class="f">
+					<tr class="s">
 						<td><code><a aria-label="java.lang.Runnable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code><code class="parameterName">command</code></td>
 						<td><span><p>The <code>Runnable</code> task to be scheduled for periodic execution.</p></span></td>
 					</tr>
-					<tr class="f">
+					<tr class="s">
 						<td><code><a aria-label="java.lang.String 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/String.html">String</a></code><code class="parameterName">format</code></td>
 						<td><span><p>A valid cron expression that defines the schedule for task execution.
 The cron format is parsed to calculate the next execution time.</p></span></td>
 					</tr>
-					<tr class="f">
+					<tr class="s">
 						<td><code><a aria-label="java.time.ZoneId 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/time/ZoneId.html">ZoneId</a></code><code class="parameterName">id</code></td>
 						<td><span><p>The time zone.</p></span></td>
 					</tr>
-					<tr class="k">
+					<tr class="e">
 						<td><code><a aria-label="java.util.concurrent.ScheduledFuture 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/ScheduledFuture.html">ScheduledFuture</a><code class="parameters"><code>?</code></code></code></td>
 						<td><span><p>A <code>ScheduledFuture&#38;lt;?&#38;gt;</code> representing the pending completion of the task.
 The <code>ScheduledFuture</code> can be used to cancel or check the status of the task.</p></span></td>
@@ -373,137 +373,137 @@ The <code>ScheduledFuture</code> can be used to cancel or check the status of th
 				</table><span class="B"><p>Schedules the task using the specified time zone.
 For more details, see <code><a aria-label="kiss.Scheduler" href="api/kiss.Scheduler.html#scheduleAt(java.lang.Runnable,java.lang.String)">#scheduleAt(Runnable, String)</a></code>.</p></span></section>
 			<section class="L" id="shutdown()">
-				<h2 class="o"><i class="OVERRIDE PUBLIC"></i><code class="h">shutdown</code><code class="m">()</code><i class="W"><code>void</code></i></h2>
+				<h2 class="m"><i class="OVERRIDE PUBLIC"></i><code class="l">shutdown</code><code class="a">()</code><i class="r"><code>void</code></i></h2>
 			</section>
 			<section class="L" id="shutdownNow()">
-				<h2 class="o"><i class="OVERRIDE PUBLIC"></i><code class="h">shutdownNow</code><code class="m">()</code><i class="W"><code><a aria-label="java.util.List 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/List.html">List</a><code class="parameters"><code><a aria-label="java.lang.Runnable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code></code></code></i></h2>
-				<table class="g">
-					<tr class="k">
+				<h2 class="m"><i class="OVERRIDE PUBLIC"></i><code class="l">shutdownNow</code><code class="a">()</code><i class="r"><code><a aria-label="java.util.List 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/List.html">List</a><code class="parameters"><code><a aria-label="java.lang.Runnable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code></code></code></i></h2>
+				<table class="f">
+					<tr class="e">
 						<td><code><a aria-label="java.util.List 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/List.html">List</a><code class="parameters"><code><a aria-label="java.lang.Runnable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code></code></code></td>
 						<td></td>
 					</tr>
 				</table>
 			</section>
 			<section class="L" id="awaitTermination(long,java.util.concurrent.TimeUnit)">
-				<h2 class="o"><i class="OVERRIDE PUBLIC"></i><code class="h">awaitTermination</code><code class="m">(<code>long</code><code class="parameterName">time</code>, <code><a aria-label="java.util.concurrent.TimeUnit 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/TimeUnit.html">TimeUnit</a></code><code class="parameterName">unit</code>)</code><i class="W"><code>boolean</code></i></h2>
-				<table class="g">
-					<tr class="f">
+				<h2 class="m"><i class="OVERRIDE PUBLIC"></i><code class="l">awaitTermination</code><code class="a">(<code>long</code><code class="parameterName">time</code>, <code><a aria-label="java.util.concurrent.TimeUnit 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/TimeUnit.html">TimeUnit</a></code><code class="parameterName">unit</code>)</code><i class="r"><code>boolean</code></i></h2>
+				<table class="f">
+					<tr class="s">
 						<td><code>long</code><code class="parameterName">time</code></td>
 						<td></td>
 					</tr>
-					<tr class="f">
+					<tr class="s">
 						<td><code><a aria-label="java.util.concurrent.TimeUnit 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/TimeUnit.html">TimeUnit</a></code><code class="parameterName">unit</code></td>
 						<td></td>
 					</tr>
-					<tr class="k">
+					<tr class="e">
 						<td><code>boolean</code></td>
 						<td></td>
 					</tr>
-					<tr class="s">
+					<tr class="i">
 						<td><code><a aria-label="java.lang.InterruptedException 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/InterruptedException.html">InterruptedException</a></code></td>
 						<td></td>
 					</tr>
 				</table>
 			</section>
 			<section class="L" id="isShutdown()">
-				<h2 class="o"><i class="OVERRIDE PUBLIC"></i><code class="h">isShutdown</code><code class="m">()</code><i class="W"><code>boolean</code></i></h2>
-				<table class="g">
-					<tr class="k">
+				<h2 class="m"><i class="OVERRIDE PUBLIC"></i><code class="l">isShutdown</code><code class="a">()</code><i class="r"><code>boolean</code></i></h2>
+				<table class="f">
+					<tr class="e">
 						<td><code>boolean</code></td>
 						<td></td>
 					</tr>
 				</table>
 			</section>
 			<section class="L" id="isTerminated()">
-				<h2 class="o"><i class="OVERRIDE PUBLIC"></i><code class="h">isTerminated</code><code class="m">()</code><i class="W"><code>boolean</code></i></h2>
-				<table class="g">
-					<tr class="k">
+				<h2 class="m"><i class="OVERRIDE PUBLIC"></i><code class="l">isTerminated</code><code class="a">()</code><i class="r"><code>boolean</code></i></h2>
+				<table class="f">
+					<tr class="e">
 						<td><code>boolean</code></td>
 						<td></td>
 					</tr>
 				</table>
 			</section>
 			<section class="L" id="execute(java.lang.Runnable)">
-				<h2 class="o"><i class="OVERRIDE PUBLIC"></i><code class="h">execute</code><code class="m">(<code><a aria-label="java.lang.Runnable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code><code class="parameterName">command</code>)</code><i class="W"><code>void</code></i></h2>
-				<table class="g">
-					<tr class="f">
+				<h2 class="m"><i class="OVERRIDE PUBLIC"></i><code class="l">execute</code><code class="a">(<code><a aria-label="java.lang.Runnable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code><code class="parameterName">command</code>)</code><i class="r"><code>void</code></i></h2>
+				<table class="f">
+					<tr class="s">
 						<td><code><a aria-label="java.lang.Runnable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code><code class="parameterName">command</code></td>
 						<td></td>
 					</tr>
 				</table>
 			</section>
 			<section class="L" id="newTaskFor(java.util.concurrent.Callable)">
-				<h2 class="o"><i class="OVERRIDE PROTECTED"></i><code class="h">newTaskFor</code><code class="m">(<code><a aria-label="java.util.concurrent.Callable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/Callable.html">Callable</a><code class="parameters"><code>T</code></code></code><code class="parameterName">callable</code>)</code><i class="W"><code><a aria-label="java.util.concurrent.RunnableFuture 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/RunnableFuture.html">RunnableFuture</a><code class="parameters"><code>T</code></code></code></i></h2>
-				<table class="g">
-					<tr class="n">
+				<h2 class="m"><i class="OVERRIDE PROTECTED"></i><code class="l">newTaskFor</code><code class="a">(<code><a aria-label="java.util.concurrent.Callable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/Callable.html">Callable</a><code class="parameters"><code>T</code></code></code><code class="parameterName">callable</code>)</code><i class="r"><code><a aria-label="java.util.concurrent.RunnableFuture 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/RunnableFuture.html">RunnableFuture</a><code class="parameters"><code>T</code></code></code></i></h2>
+				<table class="f">
+					<tr class="M">
 						<td><code>T</code></td>
 						<td></td>
 					</tr>
-					<tr class="f">
+					<tr class="s">
 						<td><code><a aria-label="java.util.concurrent.Callable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/Callable.html">Callable</a><code class="parameters"><code>T</code></code></code><code class="parameterName">callable</code></td>
 						<td></td>
 					</tr>
-					<tr class="k">
+					<tr class="e">
 						<td><code><a aria-label="java.util.concurrent.RunnableFuture 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/RunnableFuture.html">RunnableFuture</a><code class="parameters"><code>T</code></code></code></td>
 						<td></td>
 					</tr>
 				</table>
 			</section>
 			<section class="L" id="newTaskFor(java.lang.Runnable,java.lang.Object)">
-				<h2 class="o"><i class="OVERRIDE PROTECTED"></i><code class="h">newTaskFor</code><code class="m">(<code><a aria-label="java.lang.Runnable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code><code class="parameterName">runnable</code>, <code>T</code><code class="parameterName">value</code>)</code><i class="W"><code><a aria-label="java.util.concurrent.RunnableFuture 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/RunnableFuture.html">RunnableFuture</a><code class="parameters"><code>T</code></code></code></i></h2>
-				<table class="g">
-					<tr class="n">
+				<h2 class="m"><i class="OVERRIDE PROTECTED"></i><code class="l">newTaskFor</code><code class="a">(<code><a aria-label="java.lang.Runnable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code><code class="parameterName">runnable</code>, <code>T</code><code class="parameterName">value</code>)</code><i class="r"><code><a aria-label="java.util.concurrent.RunnableFuture 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/RunnableFuture.html">RunnableFuture</a><code class="parameters"><code>T</code></code></code></i></h2>
+				<table class="f">
+					<tr class="M">
 						<td><code>T</code></td>
 						<td></td>
 					</tr>
-					<tr class="f">
+					<tr class="s">
 						<td><code><a aria-label="java.lang.Runnable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code><code class="parameterName">runnable</code></td>
 						<td></td>
 					</tr>
-					<tr class="f">
+					<tr class="s">
 						<td><code>T</code><code class="parameterName">value</code></td>
 						<td></td>
 					</tr>
-					<tr class="k">
+					<tr class="e">
 						<td><code><a aria-label="java.util.concurrent.RunnableFuture 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/RunnableFuture.html">RunnableFuture</a><code class="parameters"><code>T</code></code></code></td>
 						<td></td>
 					</tr>
 				</table>
 			</section>
 		</article>
-		<aside class="q">
-			<div class="b">
-				<h5 class="Y">Constructors</h5>
+		<aside class="H">
+			<div class="K">
+				<h5 class="o">Constructors</h5>
 				<ul>
-					<li class="R"><i class="PUBLIC"></i><code><a href="api/kiss.Scheduler.html#Scheduler()">Scheduler</a></code><code class="m">()</code></li>
-					<li class="R"><i class="PUBLIC"></i><code><a href="api/kiss.Scheduler.html#Scheduler(int)">Scheduler</a></code><code class="m">(<code>int</code><code class="parameterName">limit</code>)</code></li>
+					<li class="c"><i class="PUBLIC"></i><code><a href="api/kiss.Scheduler.html#Scheduler()">Scheduler</a></code><code class="a">()</code></li>
+					<li class="c"><i class="PUBLIC"></i><code><a href="api/kiss.Scheduler.html#Scheduler(int)">Scheduler</a></code><code class="a">(<code>int</code><code class="parameterName">limit</code>)</code></li>
 				</ul>
-				<h5 class="Y">Fields</h5>
+				<h5 class="o">Fields</h5>
 				<ul>
-					<li class="R"><i class="FINAL"><i class="PROTECTED"></i></i><code><a href="api/kiss.Scheduler.html#runs">runs</a></code><i class="e"><code class="return"><a aria-label="java.util.Set 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/Set.html">Set</a><code class="parameters"><code><a aria-label="kiss.Task" href="api/kiss.Task.html">Task</a></code></code></code></i></li>
-					<li class="R"><i class="PROTECTED"></i><code><a href="api/kiss.Scheduler.html#queue">queue</a></code><i class="e"><code class="return"><a aria-label="java.util.concurrent.DelayQueue 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/DelayQueue.html">DelayQueue</a><code class="parameters"><code><a aria-label="kiss.Task" href="api/kiss.Task.html">Task</a></code></code></code></i></li>
+					<li class="c"><i class="FINAL"><i class="PROTECTED"></i></i><code><a href="api/kiss.Scheduler.html#runs">runs</a></code><i class="I"><code class="return"><a aria-label="java.util.Set 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/Set.html">Set</a><code class="parameters"><code><a aria-label="kiss.Task" href="api/kiss.Task.html">Task</a></code></code></code></i></li>
+					<li class="c"><i class="PROTECTED"></i><code><a href="api/kiss.Scheduler.html#queue">queue</a></code><i class="I"><code class="return"><a aria-label="java.util.concurrent.DelayQueue 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/DelayQueue.html">DelayQueue</a><code class="parameters"><code><a aria-label="kiss.Task" href="api/kiss.Task.html">Task</a></code></code></code></i></li>
 				</ul>
-				<h5 class="Y">Methods</h5>
+				<h5 class="o">Methods</h5>
 				<ul>
-					<li class="R"><i class="PROTECTED"></i><code><a href="api/kiss.Scheduler.html#executeTask(kiss.Task)">executeTask</a></code><code class="m">(<code><a aria-label="kiss.Task" href="api/kiss.Task.html">Task</a><code class="parameters"><code>?</code></code></code><code class="parameterName">task</code>)</code><i class="e"><code><a aria-label="kiss.Task" href="api/kiss.Task.html">Task</a></code></i></li>
-					<li class="R"><i class="OVERRIDE PUBLIC"></i><code><a href="api/kiss.Scheduler.html#schedule(java.lang.Runnable,long,java.util.concurrent.TimeUnit)">schedule</a></code><code class="m">(<code><a aria-label="java.lang.Runnable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code><code class="parameterName">command</code>, <code>long</code><code class="parameterName">delay</code>, <code><a aria-label="java.util.concurrent.TimeUnit 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/TimeUnit.html">TimeUnit</a></code><code class="parameterName">unit</code>)</code><i class="e"><code><a aria-label="java.util.concurrent.ScheduledFuture 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/ScheduledFuture.html">ScheduledFuture</a><code class="parameters"><code>?</code></code></code></i></li>
-					<li class="R"><i class="OVERRIDE PUBLIC"></i><code><a href="api/kiss.Scheduler.html#schedule(java.util.concurrent.Callable,long,java.util.concurrent.TimeUnit)">schedule</a></code><code class="m">(<code><a aria-label="java.util.concurrent.Callable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/Callable.html">Callable</a><code class="parameters"><code>V</code></code></code><code class="parameterName">command</code>, <code>long</code><code class="parameterName">delay</code>, <code><a aria-label="java.util.concurrent.TimeUnit 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/TimeUnit.html">TimeUnit</a></code><code class="parameterName">unit</code>)</code><i class="e"><code><a aria-label="java.util.concurrent.ScheduledFuture 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/ScheduledFuture.html">ScheduledFuture</a><code class="parameters"><code>V</code></code></code></i></li>
-					<li class="R"><i class="OVERRIDE PUBLIC"></i><code><a href="api/kiss.Scheduler.html#scheduleAtFixedRate(java.lang.Runnable,long,long,java.util.concurrent.TimeUnit)">scheduleAtFixedRate</a></code><code class="m">(<code><a aria-label="java.lang.Runnable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code><code class="parameterName">command</code>, <code>long</code><code class="parameterName">delay</code>, <code>long</code><code class="parameterName">interval</code>, <code><a aria-label="java.util.concurrent.TimeUnit 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/TimeUnit.html">TimeUnit</a></code><code class="parameterName">unit</code>)</code><i class="e"><code><a aria-label="java.util.concurrent.ScheduledFuture 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/ScheduledFuture.html">ScheduledFuture</a><code class="parameters"><code>?</code></code></code></i></li>
-					<li class="R"><i class="OVERRIDE PUBLIC"></i><code><a href="api/kiss.Scheduler.html#scheduleWithFixedDelay(java.lang.Runnable,long,long,java.util.concurrent.TimeUnit)">scheduleWithFixedDelay</a></code><code class="m">(<code><a aria-label="java.lang.Runnable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code><code class="parameterName">command</code>, <code>long</code><code class="parameterName">delay</code>, <code>long</code><code class="parameterName">interval</code>, <code><a aria-label="java.util.concurrent.TimeUnit 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/TimeUnit.html">TimeUnit</a></code><code class="parameterName">unit</code>)</code><i class="e"><code><a aria-label="java.util.concurrent.ScheduledFuture 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/ScheduledFuture.html">ScheduledFuture</a><code class="parameters"><code>?</code></code></code></i></li>
-					<li class="R"><i class="PUBLIC"></i><code><a href="api/kiss.Scheduler.html#scheduleAt(java.lang.Runnable,java.lang.String)">scheduleAt</a></code><code class="m">(<code><a aria-label="java.lang.Runnable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code><code class="parameterName">command</code>, <code><a aria-label="java.lang.String 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/String.html">String</a></code><code class="parameterName">format</code>)</code><i class="e"><code><a aria-label="java.util.concurrent.ScheduledFuture 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/ScheduledFuture.html">ScheduledFuture</a><code class="parameters"><code>?</code></code></code></i></li>
-					<li class="R"><i class="PUBLIC"></i><code><a href="api/kiss.Scheduler.html#scheduleAt(java.lang.Runnable,java.lang.String,java.time.ZoneId)">scheduleAt</a></code><code class="m">(<code><a aria-label="java.lang.Runnable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code><code class="parameterName">command</code>, <code><a aria-label="java.lang.String 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/String.html">String</a></code><code class="parameterName">format</code>, <code><a aria-label="java.time.ZoneId 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/time/ZoneId.html">ZoneId</a></code><code class="parameterName">id</code>)</code><i class="e"><code><a aria-label="java.util.concurrent.ScheduledFuture 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/ScheduledFuture.html">ScheduledFuture</a><code class="parameters"><code>?</code></code></code></i></li>
-					<li class="R"><i class="OVERRIDE PUBLIC"></i><code><a href="api/kiss.Scheduler.html#shutdown()">shutdown</a></code><code class="m">()</code><i class="e"><code>void</code></i></li>
-					<li class="R"><i class="OVERRIDE PUBLIC"></i><code><a href="api/kiss.Scheduler.html#shutdownNow()">shutdownNow</a></code><code class="m">()</code><i class="e"><code><a aria-label="java.util.List 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/List.html">List</a><code class="parameters"><code><a aria-label="java.lang.Runnable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code></code></code></i></li>
-					<li class="R"><i class="OVERRIDE PUBLIC"></i><code><a href="api/kiss.Scheduler.html#awaitTermination(long,java.util.concurrent.TimeUnit)">awaitTermination</a></code><code class="m">(<code>long</code><code class="parameterName">time</code>, <code><a aria-label="java.util.concurrent.TimeUnit 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/TimeUnit.html">TimeUnit</a></code><code class="parameterName">unit</code>)</code><i class="e"><code>boolean</code></i></li>
-					<li class="R"><i class="OVERRIDE PUBLIC"></i><code><a href="api/kiss.Scheduler.html#isShutdown()">isShutdown</a></code><code class="m">()</code><i class="e"><code>boolean</code></i></li>
-					<li class="R"><i class="OVERRIDE PUBLIC"></i><code><a href="api/kiss.Scheduler.html#isTerminated()">isTerminated</a></code><code class="m">()</code><i class="e"><code>boolean</code></i></li>
-					<li class="R"><i class="OVERRIDE PUBLIC"></i><code><a href="api/kiss.Scheduler.html#execute(java.lang.Runnable)">execute</a></code><code class="m">(<code><a aria-label="java.lang.Runnable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code><code class="parameterName">command</code>)</code><i class="e"><code>void</code></i></li>
-					<li class="R"><i class="OVERRIDE PROTECTED"></i><code><a href="api/kiss.Scheduler.html#newTaskFor(java.util.concurrent.Callable)">newTaskFor</a></code><code class="m">(<code><a aria-label="java.util.concurrent.Callable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/Callable.html">Callable</a><code class="parameters"><code>T</code></code></code><code class="parameterName">callable</code>)</code><i class="e"><code><a aria-label="java.util.concurrent.RunnableFuture 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/RunnableFuture.html">RunnableFuture</a><code class="parameters"><code>T</code></code></code></i></li>
-					<li class="R"><i class="OVERRIDE PROTECTED"></i><code><a href="api/kiss.Scheduler.html#newTaskFor(java.lang.Runnable,java.lang.Object)">newTaskFor</a></code><code class="m">(<code><a aria-label="java.lang.Runnable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code><code class="parameterName">runnable</code>, <code>T</code><code class="parameterName">value</code>)</code><i class="e"><code><a aria-label="java.util.concurrent.RunnableFuture 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/RunnableFuture.html">RunnableFuture</a><code class="parameters"><code>T</code></code></code></i></li>
+					<li class="c"><i class="PROTECTED"></i><code><a href="api/kiss.Scheduler.html#executeTask(kiss.Task)">executeTask</a></code><code class="a">(<code><a aria-label="kiss.Task" href="api/kiss.Task.html">Task</a><code class="parameters"><code>?</code></code></code><code class="parameterName">task</code>)</code><i class="I"><code><a aria-label="kiss.Task" href="api/kiss.Task.html">Task</a></code></i></li>
+					<li class="c"><i class="OVERRIDE PUBLIC"></i><code><a href="api/kiss.Scheduler.html#schedule(java.lang.Runnable,long,java.util.concurrent.TimeUnit)">schedule</a></code><code class="a">(<code><a aria-label="java.lang.Runnable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code><code class="parameterName">command</code>, <code>long</code><code class="parameterName">delay</code>, <code><a aria-label="java.util.concurrent.TimeUnit 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/TimeUnit.html">TimeUnit</a></code><code class="parameterName">unit</code>)</code><i class="I"><code><a aria-label="java.util.concurrent.ScheduledFuture 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/ScheduledFuture.html">ScheduledFuture</a><code class="parameters"><code>?</code></code></code></i></li>
+					<li class="c"><i class="OVERRIDE PUBLIC"></i><code><a href="api/kiss.Scheduler.html#schedule(java.util.concurrent.Callable,long,java.util.concurrent.TimeUnit)">schedule</a></code><code class="a">(<code><a aria-label="java.util.concurrent.Callable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/Callable.html">Callable</a><code class="parameters"><code>V</code></code></code><code class="parameterName">command</code>, <code>long</code><code class="parameterName">delay</code>, <code><a aria-label="java.util.concurrent.TimeUnit 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/TimeUnit.html">TimeUnit</a></code><code class="parameterName">unit</code>)</code><i class="I"><code><a aria-label="java.util.concurrent.ScheduledFuture 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/ScheduledFuture.html">ScheduledFuture</a><code class="parameters"><code>V</code></code></code></i></li>
+					<li class="c"><i class="OVERRIDE PUBLIC"></i><code><a href="api/kiss.Scheduler.html#scheduleAtFixedRate(java.lang.Runnable,long,long,java.util.concurrent.TimeUnit)">scheduleAtFixedRate</a></code><code class="a">(<code><a aria-label="java.lang.Runnable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code><code class="parameterName">command</code>, <code>long</code><code class="parameterName">delay</code>, <code>long</code><code class="parameterName">interval</code>, <code><a aria-label="java.util.concurrent.TimeUnit 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/TimeUnit.html">TimeUnit</a></code><code class="parameterName">unit</code>)</code><i class="I"><code><a aria-label="java.util.concurrent.ScheduledFuture 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/ScheduledFuture.html">ScheduledFuture</a><code class="parameters"><code>?</code></code></code></i></li>
+					<li class="c"><i class="OVERRIDE PUBLIC"></i><code><a href="api/kiss.Scheduler.html#scheduleWithFixedDelay(java.lang.Runnable,long,long,java.util.concurrent.TimeUnit)">scheduleWithFixedDelay</a></code><code class="a">(<code><a aria-label="java.lang.Runnable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code><code class="parameterName">command</code>, <code>long</code><code class="parameterName">delay</code>, <code>long</code><code class="parameterName">interval</code>, <code><a aria-label="java.util.concurrent.TimeUnit 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/TimeUnit.html">TimeUnit</a></code><code class="parameterName">unit</code>)</code><i class="I"><code><a aria-label="java.util.concurrent.ScheduledFuture 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/ScheduledFuture.html">ScheduledFuture</a><code class="parameters"><code>?</code></code></code></i></li>
+					<li class="c"><i class="PUBLIC"></i><code><a href="api/kiss.Scheduler.html#scheduleAt(java.lang.Runnable,java.lang.String)">scheduleAt</a></code><code class="a">(<code><a aria-label="java.lang.Runnable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code><code class="parameterName">command</code>, <code><a aria-label="java.lang.String 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/String.html">String</a></code><code class="parameterName">format</code>)</code><i class="I"><code><a aria-label="java.util.concurrent.ScheduledFuture 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/ScheduledFuture.html">ScheduledFuture</a><code class="parameters"><code>?</code></code></code></i></li>
+					<li class="c"><i class="PUBLIC"></i><code><a href="api/kiss.Scheduler.html#scheduleAt(java.lang.Runnable,java.lang.String,java.time.ZoneId)">scheduleAt</a></code><code class="a">(<code><a aria-label="java.lang.Runnable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code><code class="parameterName">command</code>, <code><a aria-label="java.lang.String 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/String.html">String</a></code><code class="parameterName">format</code>, <code><a aria-label="java.time.ZoneId 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/time/ZoneId.html">ZoneId</a></code><code class="parameterName">id</code>)</code><i class="I"><code><a aria-label="java.util.concurrent.ScheduledFuture 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/ScheduledFuture.html">ScheduledFuture</a><code class="parameters"><code>?</code></code></code></i></li>
+					<li class="c"><i class="OVERRIDE PUBLIC"></i><code><a href="api/kiss.Scheduler.html#shutdown()">shutdown</a></code><code class="a">()</code><i class="I"><code>void</code></i></li>
+					<li class="c"><i class="OVERRIDE PUBLIC"></i><code><a href="api/kiss.Scheduler.html#shutdownNow()">shutdownNow</a></code><code class="a">()</code><i class="I"><code><a aria-label="java.util.List 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/List.html">List</a><code class="parameters"><code><a aria-label="java.lang.Runnable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code></code></code></i></li>
+					<li class="c"><i class="OVERRIDE PUBLIC"></i><code><a href="api/kiss.Scheduler.html#awaitTermination(long,java.util.concurrent.TimeUnit)">awaitTermination</a></code><code class="a">(<code>long</code><code class="parameterName">time</code>, <code><a aria-label="java.util.concurrent.TimeUnit 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/TimeUnit.html">TimeUnit</a></code><code class="parameterName">unit</code>)</code><i class="I"><code>boolean</code></i></li>
+					<li class="c"><i class="OVERRIDE PUBLIC"></i><code><a href="api/kiss.Scheduler.html#isShutdown()">isShutdown</a></code><code class="a">()</code><i class="I"><code>boolean</code></i></li>
+					<li class="c"><i class="OVERRIDE PUBLIC"></i><code><a href="api/kiss.Scheduler.html#isTerminated()">isTerminated</a></code><code class="a">()</code><i class="I"><code>boolean</code></i></li>
+					<li class="c"><i class="OVERRIDE PUBLIC"></i><code><a href="api/kiss.Scheduler.html#execute(java.lang.Runnable)">execute</a></code><code class="a">(<code><a aria-label="java.lang.Runnable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code><code class="parameterName">command</code>)</code><i class="I"><code>void</code></i></li>
+					<li class="c"><i class="OVERRIDE PROTECTED"></i><code><a href="api/kiss.Scheduler.html#newTaskFor(java.util.concurrent.Callable)">newTaskFor</a></code><code class="a">(<code><a aria-label="java.util.concurrent.Callable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/Callable.html">Callable</a><code class="parameters"><code>T</code></code></code><code class="parameterName">callable</code>)</code><i class="I"><code><a aria-label="java.util.concurrent.RunnableFuture 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/RunnableFuture.html">RunnableFuture</a><code class="parameters"><code>T</code></code></code></i></li>
+					<li class="c"><i class="OVERRIDE PROTECTED"></i><code><a href="api/kiss.Scheduler.html#newTaskFor(java.lang.Runnable,java.lang.Object)">newTaskFor</a></code><code class="a">(<code><a aria-label="java.lang.Runnable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code><code class="parameterName">runnable</code>, <code>T</code><code class="parameterName">value</code>)</code><i class="I"><code><a aria-label="java.util.concurrent.RunnableFuture 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/concurrent/RunnableFuture.html">RunnableFuture</a><code class="parameters"><code>T</code></code></code></i></li>
 				</ul>
 			</div>
 		</aside>
-		<footer class="U"/>
+		<footer class="b"/>
 	</body>
 	<script src="root.js"></script>
 	<script src="main.js" type="module"></script>

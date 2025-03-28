@@ -19,10 +19,10 @@
 		<link href="https://cdn.jsdelivr.net/npm/ress@4.0.0/dist/ress.min.css" rel="stylesheet"/>
 		<link href="main.css" rel="stylesheet"/>
 	</head>
-	<body class="r">
-		<header class="l" date="2025-03-20" ver="4.6.0">
-			<h1 class="S"><code>Sinobu</code></h1>
-			<nav class="X"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="text A svg" viewBox="0 0 24 24">
+	<body class="Q">
+		<header class="R" date="2025-03-20" ver="4.6.0">
+			<h1 class="d"><code>Sinobu</code></h1>
+			<nav class="k"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="text A svg" viewBox="0 0 24 24">
 						<use href="main.svg#text"/>
 					</svg>Document</a><a href="api/" id="API"><svg class="package A svg" viewBox="0 0 24 24">
 						<use href="main.svg#package"/>
@@ -37,20 +37,20 @@
 						<use href="main.svg#github"/>
 					</svg>
 				</a></nav>
-			<div class="Q"><a aria-label="Change color scheme" id="theme"><svg class="sun A svg" viewBox="0 0 24 24">
+			<div class="g"><a aria-label="Change color scheme" id="theme"><svg class="sun A svg" viewBox="0 0 24 24">
 						<use href="main.svg#sun"/>
 					</svg><svg class="moon A svg" viewBox="0 0 24 24">
 						<use href="main.svg#moon"/>
 					</svg>
 				</a></div>
 		</header>
-		<nav class="p"></nav>
-		<article class="H" id="Article">
+		<nav class="T"></nav>
+		<article class="S" id="Article">
 			<div class="L">
 				<section class="B" id="doc.DocumentDoc.Model_and_Property.Concept">
-					<header class="B K">
+					<header class="B U">
 						<h2>Concept</h2>
-						<div class="d"><span class="perp j"><svg class="copy A svg" viewBox="0 0 24 24">
+						<div class="P"><span class="perp j"><svg class="copy A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
 							</span><a class="tweet j"><svg class="twitter A svg" viewBox="0 0 24 24">
@@ -105,9 +105,9 @@ code maintainability, reusability, and flexibility.</p></span></section>
 			</div>
 			<div class="L">
 				<section class="B" id="doc.DocumentDoc.Model_and_Property.Models">
-					<header class="B K">
+					<header class="B U">
 						<h2>Models</h2>
-						<div class="d"><span class="perp j"><svg class="copy A svg" viewBox="0 0 24 24">
+						<div class="P"><span class="perp j"><svg class="copy A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
 							</span><a class="tweet j"><svg class="twitter A svg" viewBox="0 0 24 24">
@@ -124,9 +124,9 @@ directly.</p><pre class="lang-java"><code>Model model = Model.of(Person.class);<
 			</div>
 			<div class="L">
 				<section class="B" id="doc.DocumentDoc.Model_and_Property.Property">
-					<header class="B K">
+					<header class="B U">
 						<h2>Property</h2>
-						<div class="d"><span class="perp j"><svg class="copy A svg" viewBox="0 0 24 24">
+						<div class="P"><span class="perp j"><svg class="copy A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
 							</span><a class="tweet j"><svg class="twitter A svg" viewBox="0 0 24 24">
@@ -138,22 +138,22 @@ directly.</p><pre class="lang-java"><code>Model model = Model.of(Person.class);<
 							</a></div>
 					</header><span class="B"><p>In Sinobu, a property refers to a value accessible by name and defined by a field or
 method. Property name is arbitrary.</p></span></section>
-				<section class="B J" id="doc.DocumentDoc.Model_and_Property.Property.By_Field">
-					<header class="B c">
+				<section class="B X" id="doc.DocumentDoc.Model_and_Property.Property.By_Field">
+					<header class="B h">
 						<h3>By Field</h3>
 					</header><span class="B"><p>Property definition by field.</p><pre class="lang-java"><code>public String filedProperty = &#34;This is property&#34;;</code></pre><p>With the final modifier, the value cannot be changed and is therefore not treated as
 a property.</p><pre class="lang-java"><code>public final String finalField = &#34;This is NOT property&#34;;</code></pre><p>Access modifiers other than public are not treated as properties.</p><pre class="lang-java"><code>protected String nonPublicField = &#34;This is NOT property&#34;;</code></pre><p>If you want to treat fields with access modifiers other than public as properties,
 use the <code><a aria-label="kiss.Managed" href="api/kiss.Managed.html">Managed</a></code> annotation.</p><pre class="lang-java"><code>@Managed
 protected String managedField = &#34;This is property&#34;;</code></pre></span></section>
-				<section class="B J" id="doc.DocumentDoc.Model_and_Property.Property.By_Variable_Field">
-					<header class="B c">
+				<section class="B X" id="doc.DocumentDoc.Model_and_Property.Property.By_Variable_Field">
+					<header class="B h">
 						<h3>By Variable Field</h3>
 					</header><span class="B"><p>Property definition by <code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a></code> field.</p><pre class="lang-java"><code>public Variable&#60;String&#62; variableField = Variable.of(&#34;This is property&#34;);</code></pre><p>Unlike normal fields, they are treated as properties even if they have final
 modifier.</p><pre class="lang-java"><code>public final Variable&#60;String&#62; finalField = Variable.of(&#34;This is property&#34;);</code></pre><p>Access modifiers other than public are not treated as properties.</p><pre class="lang-java"><code>protected Variable&#60;String&#62; nonPublicField = Variable.of(&#34;This is NOT property&#34;);</code></pre><p>If you want to treat fields with access modifiers other than public as properties,
 use the <code><a aria-label="kiss.Managed" href="api/kiss.Managed.html">Managed</a></code> annotation.</p><pre class="lang-java"><code>@Managed
 protected Variable&#60;String&#62; managedField = Variable.of(&#34;This is property&#34;);</code></pre></span></section>
-				<section class="B J" id="doc.DocumentDoc.Model_and_Property.Property.By_Method">
-					<header class="B c">
+				<section class="B X" id="doc.DocumentDoc.Model_and_Property.Property.By_Method">
+					<header class="B h">
 						<h3>By Method</h3>
 					</header><span class="B"><p>Property definition by method. The getter and setter methods must be defined
 according to the Java Bean naming conventions.</p><pre class="lang-java"><code>class GetterAndSetter {
@@ -180,9 +180,9 @@ according to the Java Bean naming conventions.</p><pre class="lang-java"><code>c
 			</div>
 			<div class="L">
 				<section class="B" id="doc.DocumentDoc.Model_and_Property.Manipulation">
-					<header class="B K">
+					<header class="B U">
 						<h2>Manipulation</h2>
-						<div class="d"><span class="perp j"><svg class="copy A svg" viewBox="0 0 24 24">
+						<div class="P"><span class="perp j"><svg class="copy A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
 							</span><a class="tweet j"><svg class="twitter A svg" viewBox="0 0 24 24">
@@ -194,8 +194,8 @@ according to the Java Bean naming conventions.</p><pre class="lang-java"><code>c
 							</a></div>
 					</header><span class="B"><p>Normally, end users do not use <code><a aria-label="kiss.Model" href="api/kiss.Model.html">Model</a></code> API to manipulate or traverse properties.
 The following is mainly required for framework and library production.</p><p>Models and properties can be used to get, set and monitor property values.</p></span></section>
-				<section class="B J" id="doc.DocumentDoc.Model_and_Property.Manipulation.Get">
-					<header class="B c">
+				<section class="B X" id="doc.DocumentDoc.Model_and_Property.Manipulation.Get">
+					<header class="B h">
 						<h3>Get</h3>
 					</header><span class="B"><p>Get the value by name.</p><pre class="lang-java"><code>public void getProperty() {
     Person person = new Person();
@@ -206,8 +206,8 @@ The following is mainly required for framework and library production.</p><p>Mod
 
     assert model.get(person, property).equals(1);
 }</code></pre></span></section>
-				<section class="B J" id="doc.DocumentDoc.Model_and_Property.Manipulation.Set">
-					<header class="B c">
+				<section class="B X" id="doc.DocumentDoc.Model_and_Property.Manipulation.Set">
+					<header class="B h">
 						<h3>Set</h3>
 					</header><span class="B"><p>Set the value by name.</p><pre class="lang-java"><code>public void setProperty() {
     Person person = new Person();
@@ -227,8 +227,8 @@ the object. This is necessary because the Record is immutable.</p><pre class="la
     point = model.set(point, model.property(&#34;y&#34;), 20d);
     assert point.y == 20d;
 }</code></pre></span></section>
-				<section class="B J" id="doc.DocumentDoc.Model_and_Property.Manipulation.Monitor">
-					<header class="B c">
+				<section class="B X" id="doc.DocumentDoc.Model_and_Property.Manipulation.Monitor">
+					<header class="B h">
 						<h3>Monitor</h3>
 					</header><span class="B"><p>Monitor the <code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a></code> value.</p><pre class="lang-java"><code>public void observeVariableProperty() {
     class Item {
@@ -249,8 +249,8 @@ the object. This is necessary because the Record is immutable.</p><pre class="la
 }</code></pre></span></section>
 			</div>
 		</article>
-		<aside class="q"></aside>
-		<footer class="U"/>
+		<aside class="H"></aside>
+		<footer class="b"/>
 	</body>
 	<script src="root.js"></script>
 	<script src="main.js" type="module"></script>

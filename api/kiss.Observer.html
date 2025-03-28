@@ -19,10 +19,10 @@
 		<link href="https://cdn.jsdelivr.net/npm/ress@4.0.0/dist/ress.min.css" rel="stylesheet"/>
 		<link href="main.css" rel="stylesheet"/>
 	</head>
-	<body class="r">
-		<header class="l" date="2025-03-20" ver="4.6.0">
-			<h1 class="S"><code>Sinobu</code></h1>
-			<nav class="X"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="text A svg" viewBox="0 0 24 24">
+	<body class="Q">
+		<header class="R" date="2025-03-20" ver="4.6.0">
+			<h1 class="d"><code>Sinobu</code></h1>
+			<nav class="k"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="text A svg" viewBox="0 0 24 24">
 						<use href="main.svg#text"/>
 					</svg>Document</a><a href="api/" id="API"><svg class="package A svg" viewBox="0 0 24 24">
 						<use href="main.svg#package"/>
@@ -37,18 +37,18 @@
 						<use href="main.svg#github"/>
 					</svg>
 				</a></nav>
-			<div class="Q"><a aria-label="Change color scheme" id="theme"><svg class="sun A svg" viewBox="0 0 24 24">
+			<div class="g"><a aria-label="Change color scheme" id="theme"><svg class="sun A svg" viewBox="0 0 24 24">
 						<use href="main.svg#sun"/>
 					</svg><svg class="moon A svg" viewBox="0 0 24 24">
 						<use href="main.svg#moon"/>
 					</svg>
 				</a></div>
 		</header>
-		<nav class="p"></nav>
-		<article class="H" id="Article">
-			<section class="L"><code class="i">kiss</code>
-				<h2 class="Functional P"><code class="h">Observer</code><code class="m">&#60;<code>V</code>&#62;</code></h2>
-				<div class="M">
+		<nav class="T"></nav>
+		<article class="S" id="Article">
+			<section class="L"><code class="V">kiss</code>
+				<h2 class="Functional n"><code class="l">Observer</code><code class="a">&#60;<code>V</code>&#62;</code></h2>
+				<div class="N">
 					<ul class="C D">
 						<li><code>V</code><span><p>The object that provides notification information.</p></span></li>
 					</ul>
@@ -63,27 +63,27 @@ the <code><a aria-label="kiss.Observer" href="api/kiss.Observer.html#accept(java
 call an <code><a aria-label="kiss.Observer" href="api/kiss.Observer.html#complete()">#complete()</a></code> closure exactly once or the Observer&#39;s <code><a aria-label="kiss.Observer" href="api/kiss.Observer.html#error(java.lang.Throwable)">#error(Throwable)</a></code>
 closure exactly once.</p></span></section>
 			<section class="L" id="complete()">
-				<h2 class="o"><i class="DEFAULT"><i class="PUBLIC"></i></i><code class="h">complete</code><code class="m">()</code><i class="W"><code>void</code></i></h2><span class="B"><p>Notifies the observer that the provider has finished sending push-based notifications.</p><p>The <code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code> will not call this closure if it calls <code><a aria-label="kiss.Observer" href="api/kiss.Observer.html#error(java.lang.Throwable)">#error(Throwable)</a></code>.</p></span></section>
+				<h2 class="m"><i class="DEFAULT"><i class="PUBLIC"></i></i><code class="l">complete</code><code class="a">()</code><i class="r"><code>void</code></i></h2><span class="B"><p>Notifies the observer that the provider has finished sending push-based notifications.</p><p>The <code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code> will not call this closure if it calls <code><a aria-label="kiss.Observer" href="api/kiss.Observer.html#error(java.lang.Throwable)">#error(Throwable)</a></code>.</p></span></section>
 			<section class="L" id="error(java.lang.Throwable)">
-				<h2 class="o"><i class="DEFAULT"><i class="PUBLIC"></i></i><code class="h">error</code><code class="m">(<code><a aria-label="java.lang.Throwable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Throwable.html">Throwable</a></code><code class="parameterName">e</code>)</code><i class="W"><code>void</code></i></h2>
-				<table class="g">
-					<tr class="f">
+				<h2 class="m"><i class="DEFAULT"><i class="PUBLIC"></i></i><code class="l">error</code><code class="a">(<code><a aria-label="java.lang.Throwable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Throwable.html">Throwable</a></code><code class="parameterName">e</code>)</code><i class="r"><code>void</code></i></h2>
+				<table class="f">
+					<tr class="s">
 						<td><code><a aria-label="java.lang.Throwable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Throwable.html">Throwable</a></code><code class="parameterName">e</code></td>
 						<td><span><p>An object that provides additional information about the error.</p></span></td>
 					</tr>
 				</table><span class="B"><p>Notifies the observer that the provider has experienced an error condition.</p><p>If the <code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code> calls this closure, it will not thereafter call <code><a aria-label="kiss.Observer" href="api/kiss.Observer.html#accept(java.lang.Object)">#accept(Object)</a></code>
 or <code><a aria-label="kiss.Observer" href="api/kiss.Observer.html#complete()">#complete()</a></code>.</p></span></section>
 		</article>
-		<aside class="q">
-			<div class="b">
-				<h5 class="Y">Methods</h5>
+		<aside class="H">
+			<div class="K">
+				<h5 class="o">Methods</h5>
 				<ul>
-					<li class="R"><i class="DEFAULT"><i class="PUBLIC"></i></i><code><a href="api/kiss.Observer.html#complete()">complete</a></code><code class="m">()</code><i class="e"><code>void</code></i></li>
-					<li class="R"><i class="DEFAULT"><i class="PUBLIC"></i></i><code><a href="api/kiss.Observer.html#error(java.lang.Throwable)">error</a></code><code class="m">(<code><a aria-label="java.lang.Throwable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Throwable.html">Throwable</a></code><code class="parameterName">e</code>)</code><i class="e"><code>void</code></i></li>
+					<li class="c"><i class="DEFAULT"><i class="PUBLIC"></i></i><code><a href="api/kiss.Observer.html#complete()">complete</a></code><code class="a">()</code><i class="I"><code>void</code></i></li>
+					<li class="c"><i class="DEFAULT"><i class="PUBLIC"></i></i><code><a href="api/kiss.Observer.html#error(java.lang.Throwable)">error</a></code><code class="a">(<code><a aria-label="java.lang.Throwable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Throwable.html">Throwable</a></code><code class="parameterName">e</code>)</code><i class="I"><code>void</code></i></li>
 				</ul>
 			</div>
 		</aside>
-		<footer class="U"/>
+		<footer class="b"/>
 	</body>
 	<script src="root.js"></script>
 	<script src="main.js" type="module"></script>
