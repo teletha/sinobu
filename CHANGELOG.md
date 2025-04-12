@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.7.0](https://github.com/teletha/sinobu/compare/4.6.1...4.7.0) (2025-04-12)
+
+
+### Features
+
+* add Signal#joinAllOrNone ([7a99a33](https://github.com/teletha/sinobu/commit/7a99a33d565e6b3e8d97d9e36e5a73386ee6344c))
+
 ## [4.6.1](https://github.com/teletha/sinobu/compare/4.6.0...4.6.1) (2025-03-28)
 
 
