@@ -27,10 +27,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedTransferQueue;
@@ -1824,6 +1826,37 @@ public class Signal<V> {
      */
     public <R> Signal<R> joinAll(WiseFunction<V, R> function, ExecutorService... executor) {
         return map(function::bind).buffer().flatIterable(v -> I.signal(I.vouch(I.Jobs, executor).invokeAll(v)).map(Future::get).toList());
+    }
+
+    /**
+     * Executes all tasks in parallel and returns their results only if all succeed.
+     * If any task fails, all remaining tasks are cancelled and the exception is propagated.
+     *
+     * @param function The task mapper function.
+     * @return {ChainableAPI}
+     */
+    public <R> Signal<R> joinAllOrNone(WiseFunction<V, R> function, ExecutorService... executor) {
+        return map(function::bind).buffer().flatIterable(v -> {
+            List<Future<R>> futures = new ArrayList();
+            ExecutorCompletionService<R> service = new ExecutorCompletionService<>(I.vouch(I.Jobs, executor));
+
+            for (Callable<R> task : v) {
+                futures.add(service.submit(task));
+            }
+
+            try {
+                for (int i = 0; i < v.size(); i++) {
+                    service.take().get();
+                }
+            } catch (Throwable e) {
+                for (Future<R> future : futures) {
+                    future.cancel(true);
+                }
+                throw e;
+            }
+
+            return futures;
+        }).map(Future::get);
     }
 
     /**
