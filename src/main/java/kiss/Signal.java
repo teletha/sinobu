@@ -635,7 +635,7 @@ public class Signal<V> {
      * ─────○───●──◎──●────╂ other
      * ↓ ↓ ↓ ↓
      * ┌──────────────────┐
-     * combine (other, a & b)
+     * combine (other, a and b)
      * └──────────────────┘
      * ↓ ↓ ↓ ↓
      * ─────①───❷──⓷────❹──╂
@@ -697,7 +697,7 @@ public class Signal<V> {
      * ─────○───●──◎──●────╂ other
      * ↓ ↓ ↓ ↓
      * ┌──────────────────┐
-     * combine (other, a & b)
+     * combine (other, a and b)
      * └──────────────────┘
      * ↓ ↓ ↓ ↓
      * ─────①───❷──⓷────❹──╂
@@ -786,7 +786,7 @@ public class Signal<V> {
      * ─────◎───●─────○───╂ other
      * ↓ ↓ ↓
      * ┌─────────────────┐
-     * combineLatest (other, A & B)
+     * combineLatest (other, A and B)
      * └─────────────────┘
      * ↓ ↓ ↓ ↓↓
      * ─────⓶───❷──❸──③④─╂
@@ -834,7 +834,7 @@ public class Signal<V> {
      * ─────◎───●─────○───╂ other
      * ↓ ↓ ↓
      * ┌─────────────────┐
-     * combineLatest (others, A & B)
+     * combineLatest (others, A and B)
      * └─────────────────┘
      * ↓ ↓ ↓ ↓↓
      * ─────⓶───❷──❸──③④──╂
