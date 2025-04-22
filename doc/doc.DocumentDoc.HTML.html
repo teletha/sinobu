@@ -19,10 +19,10 @@
 		<link href="https://cdn.jsdelivr.net/npm/ress@4.0.0/dist/ress.min.css" rel="stylesheet"/>
 		<link href="main.css" rel="stylesheet"/>
 	</head>
-	<body class="H">
-		<header class="I" date="2025-04-12" ver="4.7.0">
-			<h1 class="b"><code>Sinobu</code></h1>
-			<nav class="m"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="text A svg" viewBox="0 0 24 24">
+	<body class="L">
+		<header class="M" date="2025-04-12" ver="4.7.0">
+			<h1 class="K"><code>Sinobu</code></h1>
+			<nav class="b"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="text A svg" viewBox="0 0 24 24">
 						<use href="main.svg#text"/>
 					</svg>Document</a><a href="api/" id="API"><svg class="package A svg" viewBox="0 0 24 24">
 						<use href="main.svg#package"/>
@@ -37,17 +37,704 @@
 						<use href="main.svg#github"/>
 					</svg>
 				</a></nav>
-			<div class="n"><a aria-label="Change color scheme" id="theme"><svg class="sun A svg" viewBox="0 0 24 24">
+			<div class="k"><a aria-label="Change color scheme" id="theme"><svg class="sun A svg" viewBox="0 0 24 24">
 						<use href="main.svg#sun"/>
 					</svg><svg class="moon A svg" viewBox="0 0 24 24">
 						<use href="main.svg#moon"/>
 					</svg>
 				</a></div>
 		</header>
-		<nav class="K"></nav>
-		<article class="J" id="Article"></article>
-		<aside class="L"></aside>
-		<footer class="e"/>
+		<nav class="O"></nav>
+		<article class="N" id="Article">
+			<div class="e">
+				<section class="B" id="doc.DocumentDoc.HTML.Concept">
+					<header class="B H">
+						<h2>Concept</h2>
+						<div class="f"><span class="perp T"><svg class="copy A svg" viewBox="0 0 24 24">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet T"><svg class="twitter A svg" viewBox="0 0 24 24">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit T" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L716-L720"><svg class="edit A svg" viewBox="0 0 24 24">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="B"><p>Sinobu provides functionality for handling HTML and XML documents.
+It uses a built-in, lenient parser (often called tag soup parser)
+that can handle malformed HTML, similar to how web browsers do.
+The core class for this is <code><a aria-label="kiss.XML" href="api/kiss.XML.html">XML</a></code>, which offers a jQuery-like
+API for traversing and manipulating the document structure.</p></span></section>
+			</div>
+			<div class="e">
+				<section class="B" id="doc.DocumentDoc.HTML.Reading">
+					<header class="B H">
+						<h2>Reading</h2>
+						<div class="f"><span class="perp T"><svg class="copy A svg" viewBox="0 0 24 24">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet T"><svg class="twitter A svg" viewBox="0 0 24 24">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit T" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L726-L741"><svg class="edit A svg" viewBox="0 0 24 24">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="B"><p>You can parse HTML/XML from various sources using the <code><a aria-label="kiss.I" href="api/kiss.I.html">I</a></code> class utility methods.
+Sinobu automatically detects whether the input is a URL, file path, or raw string.
+The parser is designed to be tolerant of errors and can handle common issues
+found in real-world HTML, such as missing tags or incorrect nesting.</p><ul>
+							<li><code><a aria-label="kiss.I" href="api/kiss.I.html#xml(java.lang.String)">I#xml(String)</a></code></li>
+							<li><code><a aria-label="kiss.I" href="api/kiss.I.html#xml(java.nio.file.Path)">I#xml(java.nio.file.Path)</a></code></li>
+							<li><code><a aria-label="kiss.I" href="api/kiss.I.html#xml(java.io.InputStream)">I#xml(java.io.InputStream)</a></code></li>
+							<li><code><a aria-label="kiss.I" href="api/kiss.I.html#xml(java.io.Reader)">I#xml(java.io.Reader)</a></code></li>
+							<li><code><a aria-label="kiss.I" href="api/kiss.I.html#xml(org.w3c.dom.Node)">I#xml(Node)</a></code></li>
+						</ul><pre class="lang-java"><code>public void htmlLiteral() {
+    XML root = I.xml(&#34;&#60;html/&#62;&#34;);
+
+    assert root.size() == 1;
+    assert root.name() == &#34;html&#34;;
+}</code></pre><p>And can parse the invalid structure.</p><pre class="lang-java"><code>public void caseInconsistencyLowerUpper() {
+    XML root = parseAsHTML(&#34;&#60;div&#62;crazy&#60;/DIV&#62;&#34;);
+
+    assert root.find(&#34;div&#34;).size() == 1;
+}</code></pre><pre class="lang-java"><code>public void slipOut() {
+    XML root = parseAsHTML(&#34;&#60;a&#62;&#60;b&#62;crazy&#60;/a&#62;&#60;/b&#62;&#34;);
+
+    assert root.find(&#34;a&#34;).text().equals(&#34;crazy&#34;);
+    assert root.find(&#34;b&#34;).text().equals(&#34;crazy&#34;);
+}</code></pre></span></section>
+			</div>
+			<div class="e">
+				<section class="B" id="doc.DocumentDoc.HTML.Writing">
+					<header class="B H">
+						<h2>Writing</h2>
+						<div class="f"><span class="perp T"><svg class="copy A svg" viewBox="0 0 24 24">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet T"><svg class="twitter A svg" viewBox="0 0 24 24">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit T" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L747-L748"><svg class="edit A svg" viewBox="0 0 24 24">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="B"><p>You can serialize the XML structure back into a string or write it to an
+<code><a aria-label="java.lang.Appendable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Appendable.html">Appendable</a></code> (like <code><a aria-label="java.io.Writer 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/io/Writer.html">Writer</a></code> or <code><a aria-label="java.lang.StringBuilder 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/StringBuilder.html">StringBuilder</a></code>).</p></span></section>
+				<section class="B Q" id="doc.DocumentDoc.HTML.Writing.By_toString">
+					<header class="B V">
+						<h3>By toString</h3>
+					</header><span class="B"><p>The <code><a aria-label="kiss.XML" href="api/kiss.XML.html#toString()">XML#toString()</a></code> method provides a compact string representation without
+extra formatting.</p><pre class="lang-java"><code>public void format() {
+    XML root = I.xml(&#34;&#60;root&#62;&#60;child/&#62;&#60;child/&#62;&#60;/root&#62;&#34;);
+
+    assert root.toString().equals(normalize(&#34;&#34;&#34;
+            &#60;root&#62;
+                &#60;child/&#62;
+                &#60;child/&#62;
+            &#60;/root&#62;
+            &#34;&#34;&#34;));
+}</code></pre></span></section>
+				<section class="B Q" id="doc.DocumentDoc.HTML.Writing.By_formatter">
+					<header class="B V">
+						<h3>By formatter</h3>
+					</header><span class="B"><p>The <code><a aria-label="kiss.XML" href="api/kiss.XML.html#to(java.lang.Appendable,java.lang.String,java.lang.String...)">XML#to(Appendable, String, String...)</a></code> method allows for pretty-printing
+with indentation. You can specify the indentation string (e.g. tab or whitespace).</p><pre class="lang-java"><code>public void specialIndent() {
+    StringBuilder out = new StringBuilder();
+    I.xml(&#34;&#60;root&#62;&#60;child&#62;&#60;nested/&#62;&#60;/child&#62;&#60;/root&#62;&#34;).to(out, &#34;*&#34;);
+
+    assert out.toString().equals(normalize(&#34;&#34;&#34;
+            &#60;root&#62;
+            *&#60;child&#62;
+            **&#60;nested/&#62;
+            *&#60;/child&#62;
+            &#60;/root&#62;
+            &#34;&#34;&#34;));
+}</code></pre><p>You can also specify tag names that should be treated as inline elements (no line
+breaks around them).</p><pre class="lang-java"><code>public void inlineElement() {
+    StringBuilder out = new StringBuilder();
+    I.xml(&#34;&#60;root&#62;&#60;inline/&#62;&#60;/root&#62;&#34;).to(out, &#34;\t&#34;, &#34;inline&#34;);
+
+    assert out.toString().equals(&#34;&#60;root&#62;&#60;inline/&#62;&#60;/root&#62;&#34;);
+}</code></pre><p>By using the special prefix, you can also specify tag names that should be treated
+as non-empty elements (always have a closing tag even if it is empty).</p><pre class="lang-java"><code>public void nonEmptyElement() {
+    StringBuilder out = new StringBuilder();
+    I.xml(&#34;&#60;root/&#62;&#34;).to(out, &#34;\t&#34;, &#34;&#38;root&#34;);
+
+    assert out.toString().equals(&#34;&#60;root&#62;&#60;/root&#62;&#34;);
+}</code></pre><p>By passing null indent character, you can ignore formatter.</p><pre class="lang-java"><code>public void withoutFormat() {
+    StringBuilder out = new StringBuilder();
+    I.xml(&#34;&#60;root&#62;&#60;child/&#62;&#60;/root&#62;&#34;).to(out, null);
+
+    assert out.toString().equals(&#34;&#60;root&#62;&#60;child/&#62;&#60;/root&#62;&#34;);
+}</code></pre></span></section>
+			</div>
+			<div class="e">
+				<section class="B" id="doc.DocumentDoc.HTML.CSS_Selector">
+					<header class="B H">
+						<h2>CSS Selector</h2>
+						<div class="f"><span class="perp T"><svg class="copy A svg" viewBox="0 0 24 24">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet T"><svg class="twitter A svg" viewBox="0 0 24 24">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit T" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L781-L787"><svg class="edit A svg" viewBox="0 0 24 24">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="B"><p>Sinobu leverages CSS selectors for querying elements within the document structure using
+the <code><a aria-label="kiss.XML" href="api/kiss.XML.html#find(java.lang.String)">XML#find(String)</a></code> method. This provides a powerful and familiar way to select
+nodes, similar to JavaScript &#39;document#querySelectorAll&#39;.</p><pre class="lang-java"><code>public void type() {
+    String xml = &#34;&#60;m&#62;&#60;E/&#62;&#60;E/&#62;&#60;e&#62;&#60;E/&#62;&#60;/e&#62;&#60;/m&#62;&#34;;
+
+    assert I.xml(xml).find(&#34;E&#34;).size() == 3;
+}</code></pre><pre class="lang-java"><code>public void attribute() {
+    String xml = &#34;&#60;m&#62;&#60;e A=&#39;A&#39; B=&#39;B&#39;/&#62;&#60;e A=&#39;B&#39; B=&#39;A&#39;/&#62;&#60;/m&#62;&#34;;
+
+    assert I.xml(xml).find(&#34;[A]&#34;).size() == 2;
+    assert I.xml(xml).find(&#34;[B]&#34;).size() == 2;
+}</code></pre><pre class="lang-java"><code>public void clazz() {
+    String xml = &#34;&#60;m&#62;&#60;e class=&#39;C&#39;/&#62;&#60;e class=&#39;none&#39;/&#62;&#60;/m&#62;&#34;;
+
+    assert I.xml(xml).find(&#34;.C&#34;).size() == 1;
+}</code></pre><pre class="lang-java"><code>public void child() {
+    String xml = xml(&#34;&#60;m&#62;&#60;P&#62;&#60;Q/&#62;&#60;z&#62;&#60;Q/&#62;&#60;/z&#62;&#60;Q/&#62;&#60;/P&#62;&#60;Q/&#62;&#60;/m&#62;&#34;);
+
+    assert I.xml(xml).find(&#34;P&#62;Q&#34;).size() == 2;
+    assert I.xml(xml).find(&#34;P &#62; Q&#34;).size() == 2;
+    assert I.xml(xml).find(&#34;P   &#62;    Q&#34;).size() == 2;
+}</code></pre></span></section>
+				<section class="B Q" id="doc.DocumentDoc.HTML.CSS_Selector.Combinators">
+					<header class="B V">
+						<h3>Combinators</h3>
+					</header><span class="B"><table>
+							<thead>
+								<tr>
+									<th align="left">Combinator</th>
+									<th align="left">Description</th>
+									<th align="left">Notes</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td align="left"><code></code> (Space)</td>
+									<td align="left">Descendant</td>
+									<td align="left">Default combinator between selectors</td>
+								</tr>
+								<tr>
+									<td align="left"><code>gt</code></td>
+									<td align="left">Child</td>
+									<td align="left">Direct children</td>
+								</tr>
+								<tr>
+									<td align="left"><code>+</code></td>
+									<td align="left">Adjacent Sibling</td>
+									<td align="left">Immediately following sibling</td>
+								</tr>
+								<tr>
+									<td align="left"><code>~</code></td>
+									<td align="left">General Sibling</td>
+									<td align="left">All following siblings</td>
+								</tr>
+								<tr>
+									<td align="left"><code>lt</code></td>
+									<td align="left">Adjacent Previous Sibling</td>
+									<td align="left"><strong>Sinobu Extension</strong></td>
+								</tr>
+								<tr>
+									<td align="left"><code>,</code></td>
+									<td align="left">Selector List</td>
+									<td align="left">Groups multiple selectors</td>
+								</tr>
+								<tr>
+									<td align="left"><code>|</code></td>
+									<td align="left">Namespace Separator</td>
+									<td align="left">Used with type and attribute selectors</td>
+								</tr>
+							</tbody>
+						</table></span></section>
+				<section class="B Q" id="doc.DocumentDoc.HTML.CSS_Selector.Basic_Selectors">
+					<header class="B V">
+						<h3>Basic Selectors</h3>
+					</header><span class="B"><table>
+							<thead>
+								<tr>
+									<th align="left">Selector Type</th>
+									<th align="left">Example</th>
+									<th align="left">Description</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td align="left">Type</td>
+									<td align="left"><code>div</code></td>
+									<td align="left">By element name</td>
+								</tr>
+								<tr>
+									<td align="left">Class</td>
+									<td align="left"><code>.warning</code></td>
+									<td align="left">By <code>class</code> attribute</td>
+								</tr>
+								<tr>
+									<td align="left">ID</td>
+									<td align="left"><code>#main</code></td>
+									<td align="left">By <code>id</code> attribute</td>
+								</tr>
+								<tr>
+									<td align="left">Universal</td>
+									<td align="left"><code>*</code></td>
+									<td align="left">All elements</td>
+								</tr>
+							</tbody>
+						</table></span></section>
+				<section class="B Q" id="doc.DocumentDoc.HTML.CSS_Selector.Attribute_Selectors">
+					<header class="B V">
+						<h3>Attribute Selectors</h3>
+					</header><span class="B"><table>
+							<thead>
+								<tr>
+									<th align="left">Selector Syntax</th>
+									<th align="left">Description</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td align="left"><code>[attr]</code></td>
+									<td align="left">Elements with an <code>attr</code> attribute</td>
+								</tr>
+								<tr>
+									<td align="left"><code>[attr=value]</code></td>
+									<td align="left">Elements where <code>attr</code> equals <code>value</code></td>
+								</tr>
+								<tr>
+									<td align="left"><code>[attr~=value]</code></td>
+									<td align="left">Elements where <code>attr</code> contains the word <code>value</code></td>
+								</tr>
+								<tr>
+									<td align="left"><code>[attr*=value]</code></td>
+									<td align="left">Elements where <code>attr</code> contains substring <code>value</code></td>
+								</tr>
+								<tr>
+									<td align="left"><code>[attr^=value]</code></td>
+									<td align="left">Elements where <code>attr</code> starts with <code>value</code></td>
+								</tr>
+								<tr>
+									<td align="left"><code>[attr$=value]</code></td>
+									<td align="left">Elements where <code>attr</code> ends with <code>value</code></td>
+								</tr>
+								<tr>
+									<td align="left"><code>[ns:attr]</code></td>
+									<td align="left">Elements with attribute <code>attr</code> in namespace <code>ns</code></td>
+								</tr>
+								<tr>
+									<td align="left"><code>[ns:attr=value]</code></td>
+									<td align="left">Elements with namespaced attribute and value</td>
+								</tr>
+							</tbody>
+						</table></span></section>
+				<section class="B Q" id="doc.DocumentDoc.HTML.CSS_Selector.Pseudo_Class_Selectors">
+					<header class="B V">
+						<h3>Pseudo Class Selectors</h3>
+					</header><span class="B"><table>
+							<thead>
+								<tr>
+									<th align="left">Pseudo-Class</th>
+									<th align="left">Description</th>
+									<th align="left">Notes</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td align="left"><code>:first-child</code></td>
+									<td align="left">First element among siblings</td>
+									<td align="left"></td>
+								</tr>
+								<tr>
+									<td align="left"><code>:last-child</code></td>
+									<td align="left">Last element among siblings</td>
+									<td align="left"></td>
+								</tr>
+								<tr>
+									<td align="left"><code>:only-child</code></td>
+									<td align="left">Element that is the only child</td>
+									<td align="left"></td>
+								</tr>
+								<tr>
+									<td align="left"><code>:first-of-type</code></td>
+									<td align="left">First element of its type among siblings</td>
+									<td align="left"></td>
+								</tr>
+								<tr>
+									<td align="left"><code>:last-of-type</code></td>
+									<td align="left">Last element of its type among siblings</td>
+									<td align="left"></td>
+								</tr>
+								<tr>
+									<td align="left"><code>:only-of-type</code></td>
+									<td align="left">Element that is the only one of its type</td>
+									<td align="left"></td>
+								</tr>
+								<tr>
+									<td align="left"><code>:nth-child(n)</code></td>
+									<td align="left">n-th element among siblings</td>
+									<td align="left">keyword</td>
+								</tr>
+								<tr>
+									<td align="left"><code>:nth-last-child(n)</code></td>
+									<td align="left">n-th element among siblings, from last</td>
+									<td align="left">keyword</td>
+								</tr>
+								<tr>
+									<td align="left"><code>:nth-of-type(n)</code></td>
+									<td align="left">n-th element of its type among siblings</td>
+									<td align="left">keyword</td>
+								</tr>
+								<tr>
+									<td align="left"><code>:nth-last-of-type(n)</code></td>
+									<td align="left">n-th element of type among siblings from last</td>
+									<td align="left">keyword</td>
+								</tr>
+								<tr>
+									<td align="left"><code>:empty</code></td>
+									<td align="left">Elements with no children (incl. text)</td>
+									<td align="left"></td>
+								</tr>
+								<tr>
+									<td align="left"><code>:not(selector)</code></td>
+									<td align="left">Elements not matching the inner <code>selector</code></td>
+									<td align="left"></td>
+								</tr>
+								<tr>
+									<td align="left"><code>:has(selector)</code></td>
+									<td align="left">Elements having a descendant matching <code>selector</code></td>
+									<td align="left"></td>
+								</tr>
+								<tr>
+									<td align="left"><code>:root</code></td>
+									<td align="left">Document&#39;s root element</td>
+									<td align="left"></td>
+								</tr>
+								<tr>
+									<td align="left"><code>:contains(text)</code></td>
+									<td align="left">Elements containing <code>text</code> directly</td>
+									<td align="left"><strong>Sinobu Extension</strong></td>
+								</tr>
+								<tr>
+									<td align="left"><code>:parent</code></td>
+									<td align="left">Parent element</td>
+									<td align="left"><strong>Sinobu Extension</strong></td>
+								</tr>
+							</tbody>
+						</table><p>Note: User interface state pseudo-classes (like <code>:hover</code>, <code>:focus</code>, <code>:checked</code>) are
+generally not supported as they relate to browser interactions rather than static
+document structure analysis.</p></span></section>
+			</div>
+			<div class="e">
+				<section class="B" id="doc.DocumentDoc.HTML.Manipulation">
+					<header class="B H">
+						<h2>Manipulation</h2>
+						<div class="f"><span class="perp T"><svg class="copy A svg" viewBox="0 0 24 24">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet T"><svg class="twitter A svg" viewBox="0 0 24 24">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit T" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L859-L861"><svg class="edit A svg" viewBox="0 0 24 24">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="B"><p>The <code><a aria-label="kiss.XML" href="api/kiss.XML.html">XML</a></code> object provides a fluent API for modifying the document structure.
+Changes are made directly to the underlying DOM representation.
+Explore the nested classes for specific manipulation categories.</p></span></section>
+				<section class="B Q" id="doc.DocumentDoc.HTML.Manipulation.Adding_Content">
+					<header class="B V">
+						<h3>Adding Content</h3>
+					</header><span class="B"><p>Methods for inserting new content relative to the selected elements.</p><table>
+							<thead>
+								<tr>
+									<th align="left">Method Link</th>
+									<th align="left">Description</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#append(java.lang.Object)">XML#append(Object)</a></code></td>
+									<td align="left">Insert content at the end of each element.</td>
+								</tr>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#prepend(java.lang.Object)">XML#prepend(Object)</a></code></td>
+									<td align="left">Insert content at the beginning of each element.</td>
+								</tr>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#before(java.lang.Object)">XML#before(Object)</a></code></td>
+									<td align="left">Insert content before each element.</td>
+								</tr>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#after(java.lang.Object)">XML#after(Object)</a></code></td>
+									<td align="left">Insert content after each element.</td>
+								</tr>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#child(java.lang.String)">XML#child(String)</a></code></td>
+									<td align="left">Create and append a new child element.</td>
+								</tr>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#child(java.lang.String,java.util.function.Consumer)">XML#child(String, Consumer)</a></code></td>
+									<td align="left">Create, append, and configure a new child.</td>
+								</tr>
+							</tbody>
+						</table></span></section>
+				<section class="B Q" id="doc.DocumentDoc.HTML.Manipulation.Removing_Content">
+					<header class="B V">
+						<h3>Removing Content</h3>
+					</header><span class="B"><p>Methods for removing content or elements from the document.</p><table>
+							<thead>
+								<tr>
+									<th align="left">Method Link</th>
+									<th align="left">Description</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#empty()">XML#empty()</a></code></td>
+									<td align="left">Remove all child nodes from elements.</td>
+								</tr>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#remove()">XML#remove()</a></code></td>
+									<td align="left">Remove the selected elements from the DOM.</td>
+								</tr>
+							</tbody>
+						</table></span></section>
+				<section class="B Q" id="doc.DocumentDoc.HTML.Manipulation.Wrapping">
+					<header class="B V">
+						<h3>Wrapping</h3>
+					</header><span class="B"><p>Methods for wrapping elements with new structures.</p><table>
+							<thead>
+								<tr>
+									<th align="left">Method Link</th>
+									<th align="left">Description</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#wrap(java.lang.Object)">XML#wrap(Object)</a></code></td>
+									<td align="left">Wrap each selected element individually.</td>
+								</tr>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#wrapAll(java.lang.Object)">XML#wrapAll(Object)</a></code></td>
+									<td align="left">Wrap all elements together with one structure.</td>
+								</tr>
+							</tbody>
+						</table></span></section>
+				<section class="B Q" id="doc.DocumentDoc.HTML.Manipulation.Text_Content">
+					<header class="B V">
+						<h3>Text Content</h3>
+					</header><span class="B"><p>Methods for getting or setting the text content of elements.</p><table>
+							<thead>
+								<tr>
+									<th align="left">Method Link</th>
+									<th align="left">Description</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#text()">XML#text()</a></code></td>
+									<td align="left">Get the combined text content of elements.</td>
+								</tr>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#text(java.lang.String)">XML#text(String)</a></code></td>
+									<td align="left">Set text content, replacing existing.</td>
+								</tr>
+							</tbody>
+						</table></span></section>
+				<section class="B Q" id="doc.DocumentDoc.HTML.Manipulation.Attributes">
+					<header class="B V">
+						<h3>Attributes</h3>
+					</header><span class="B"><p>Methods for managing element attributes.</p><table>
+							<thead>
+								<tr>
+									<th align="left">Method Link</th>
+									<th align="left">Description</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#attr(java.lang.String)">XML#attr(String)</a></code></td>
+									<td align="left">Get attribute value for the first element.</td>
+								</tr>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#attr(java.lang.String,java.lang.Object)">XML#attr(String, Object)</a></code></td>
+									<td align="left">Set attribute value; <code>null</code> removes attribute.</td>
+								</tr>
+							</tbody>
+						</table></span></section>
+				<section class="B Q" id="doc.DocumentDoc.HTML.Manipulation.CSS_Classes">
+					<header class="B V">
+						<h3>CSS Classes</h3>
+					</header><span class="B"><p>Methods for managing CSS classes on elements.</p><table>
+							<thead>
+								<tr>
+									<th align="left">Method Link</th>
+									<th align="left">Description</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#addClass(java.lang.String...)">XML#addClass(String...)</a></code></td>
+									<td align="left">Add one or more classes.</td>
+								</tr>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#removeClass(java.lang.String...)">XML#removeClass(String...)</a></code></td>
+									<td align="left">Remove one or more classes.</td>
+								</tr>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#toggleClass(java.lang.String)">XML#toggleClass(String)</a></code></td>
+									<td align="left">Add or remove a class based on presence.</td>
+								</tr>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#hasClass(java.lang.String)">XML#hasClass(String)</a></code></td>
+									<td align="left">Check if any element has the class.</td>
+								</tr>
+							</tbody>
+						</table></span></section>
+				<section class="B Q" id="doc.DocumentDoc.HTML.Manipulation.Cloning">
+					<header class="B V">
+						<h3>Cloning</h3>
+					</header><span class="B"><p>Method for duplicating elements.</p><table>
+							<thead>
+								<tr>
+									<th align="left">Method Link</th>
+									<th align="left">Description</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#clone()">XML#clone()</a></code></td>
+									<td align="left">Create a deep copy of selected elements.</td>
+								</tr>
+							</tbody>
+						</table></span></section>
+			</div>
+			<div class="e">
+				<section class="B" id="doc.DocumentDoc.HTML.Traversing">
+					<header class="B H">
+						<h2>Traversing</h2>
+						<div class="f"><span class="perp T"><svg class="copy A svg" viewBox="0 0 24 24">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet T"><svg class="twitter A svg" viewBox="0 0 24 24">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit T" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L948-L950"><svg class="edit A svg" viewBox="0 0 24 24">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="B"><p>Navigate the DOM tree relative to the currently selected elements.
+Most traversal methods return a new <code><a aria-label="kiss.XML" href="api/kiss.XML.html">XML</a></code> object containing the resulting elements.
+Explore the nested classes for specific traversal categories.</p></span></section>
+				<section class="B Q" id="doc.DocumentDoc.HTML.Traversing.Filtering">
+					<header class="B V">
+						<h3>Filtering</h3>
+					</header><span class="B"><p>Methods for filtering the current set of selected elements or finding new ones.</p><table>
+							<thead>
+								<tr>
+									<th align="left">Method Link</th>
+									<th align="left">Description</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#first()">XML#first()</a></code></td>
+									<td align="left">Reduce the set to the first element.</td>
+								</tr>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#last()">XML#last()</a></code></td>
+									<td align="left">Reduce the set to the last element.</td>
+								</tr>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#find(java.lang.String)">XML#find(String)</a></code></td>
+									<td align="left">Find descendants matching the selector.</td>
+								</tr>
+							</tbody>
+						</table></span></section>
+				<section class="B Q" id="doc.DocumentDoc.HTML.Traversing.Moving_Upwards">
+					<header class="B V">
+						<h3>Moving Upwards</h3>
+					</header><span class="B"><p>Method for moving up the DOM tree.</p><table>
+							<thead>
+								<tr>
+									<th align="left">Method Link</th>
+									<th align="left">Description</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#parent()">XML#parent()</a></code></td>
+									<td align="left">Get the direct parent of each element.</td>
+								</tr>
+							</tbody>
+						</table></span></section>
+				<section class="B Q" id="doc.DocumentDoc.HTML.Traversing.Moving_Downwards">
+					<header class="B V">
+						<h3>Moving Downwards</h3>
+					</header><span class="B"><p>Methods for moving down the DOM tree to child elements.</p><table>
+							<thead>
+								<tr>
+									<th align="left">Method Link</th>
+									<th align="left">Description</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#children()">XML#children()</a></code></td>
+									<td align="left">Get the direct children of each element.</td>
+								</tr>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#firstChild()">XML#firstChild()</a></code></td>
+									<td align="left">Get the first direct child of each element.</td>
+								</tr>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#lastChild()">XML#lastChild()</a></code></td>
+									<td align="left">Get the last direct child of each element.</td>
+								</tr>
+							</tbody>
+						</table></span></section>
+				<section class="B Q" id="doc.DocumentDoc.HTML.Traversing.Moving_Sideways">
+					<header class="B V">
+						<h3>Moving Sideways</h3>
+					</header><span class="B"><p>Methods for moving sideways to sibling elements.</p><table>
+							<thead>
+								<tr>
+									<th align="left">Method Link</th>
+									<th align="left">Description</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#prev()">XML#prev()</a></code></td>
+									<td align="left">Get the immediately preceding sibling.</td>
+								</tr>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#next()">XML#next()</a></code></td>
+									<td align="left">Get the immediately following sibling.</td>
+								</tr>
+							</tbody>
+						</table></span></section>
+				<section class="B Q" id="doc.DocumentDoc.HTML.Traversing.Iteration">
+					<header class="B V">
+						<h3>Iteration</h3>
+					</header><span class="B"><p>The <code><a aria-label="kiss.XML" href="api/kiss.XML.html">XML</a></code> object implements <code><a aria-label="java.lang.Iterable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Iterable.html">Iterable</a></code>, allowing iteration
+over each element in the set individually using a standard for-each loop.</p><pre class="lang-java"><code>void iterate() {
+    XML elements = I.xml(&#34;&#60;div&#62;&#60;p&#62;1&#60;/p&#62;&#60;p&#62;2&#60;/p&#62;&#60;/div&#62;&#34;).find(&#34;p&#34;);
+
+    for (XML p : elements) {
+        System.out.println(p.text());
+    }
+}</code></pre></span></section>
+			</div>
+		</article>
+		<aside class="P"></aside>
+		<footer class="S"/>
 	</body>
 	<script src="root.js"></script>
 	<script src="main.js" type="module"></script>

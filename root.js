@@ -269,29 +269,128 @@ const root = {
 			"path": "doc/doc.DocumentDoc.HTML.html",
 			"subs": [
 				{
-					"path": "doc/doc.DocumentDoc.HTML.html#doc.DocumentDoc.HTML.Parsing",
+					"path": "doc/doc.DocumentDoc.HTML.html#doc.DocumentDoc.HTML.Concept",
 					"subs": [],
-					"title": "Parsing"
+					"title": "Concept"
+				},
+				{
+					"path": "doc/doc.DocumentDoc.HTML.html#doc.DocumentDoc.HTML.Reading",
+					"subs": [],
+					"title": "Reading"
 				},
 				{
 					"path": "doc/doc.DocumentDoc.HTML.html#doc.DocumentDoc.HTML.Writing",
-					"subs": [],
+					"subs": [
+						{
+							"path": "doc/doc.DocumentDoc.HTML.html#doc.DocumentDoc.HTML.Writing.By_toString",
+							"subs": [],
+							"title": "By toString"
+						},
+						{
+							"path": "doc/doc.DocumentDoc.HTML.html#doc.DocumentDoc.HTML.Writing.By_formatter",
+							"subs": [],
+							"title": "By formatter"
+						}
+					],
 					"title": "Writing"
 				},
 				{
-					"path": "doc/doc.DocumentDoc.HTML.html#doc.DocumentDoc.HTML.Support_CSS_Selector",
-					"subs": [],
-					"title": "Support CSS Selector"
+					"path": "doc/doc.DocumentDoc.HTML.html#doc.DocumentDoc.HTML.CSS_Selector",
+					"subs": [
+						{
+							"path": "doc/doc.DocumentDoc.HTML.html#doc.DocumentDoc.HTML.CSS_Selector.Combinators",
+							"subs": [],
+							"title": "Combinators"
+						},
+						{
+							"path": "doc/doc.DocumentDoc.HTML.html#doc.DocumentDoc.HTML.CSS_Selector.Basic_Selectors",
+							"subs": [],
+							"title": "Basic Selectors"
+						},
+						{
+							"path": "doc/doc.DocumentDoc.HTML.html#doc.DocumentDoc.HTML.CSS_Selector.Attribute_Selectors",
+							"subs": [],
+							"title": "Attribute Selectors"
+						},
+						{
+							"path": "doc/doc.DocumentDoc.HTML.html#doc.DocumentDoc.HTML.CSS_Selector.Pseudo_Class_Selectors",
+							"subs": [],
+							"title": "Pseudo Class Selectors"
+						}
+					],
+					"title": "CSS Selector"
 				},
 				{
 					"path": "doc/doc.DocumentDoc.HTML.html#doc.DocumentDoc.HTML.Manipulation",
-					"subs": [],
+					"subs": [
+						{
+							"path": "doc/doc.DocumentDoc.HTML.html#doc.DocumentDoc.HTML.Manipulation.Adding_Content",
+							"subs": [],
+							"title": "Adding Content"
+						},
+						{
+							"path": "doc/doc.DocumentDoc.HTML.html#doc.DocumentDoc.HTML.Manipulation.Removing_Content",
+							"subs": [],
+							"title": "Removing Content"
+						},
+						{
+							"path": "doc/doc.DocumentDoc.HTML.html#doc.DocumentDoc.HTML.Manipulation.Wrapping",
+							"subs": [],
+							"title": "Wrapping"
+						},
+						{
+							"path": "doc/doc.DocumentDoc.HTML.html#doc.DocumentDoc.HTML.Manipulation.Text_Content",
+							"subs": [],
+							"title": "Text Content"
+						},
+						{
+							"path": "doc/doc.DocumentDoc.HTML.html#doc.DocumentDoc.HTML.Manipulation.Attributes",
+							"subs": [],
+							"title": "Attributes"
+						},
+						{
+							"path": "doc/doc.DocumentDoc.HTML.html#doc.DocumentDoc.HTML.Manipulation.CSS_Classes",
+							"subs": [],
+							"title": "CSS Classes"
+						},
+						{
+							"path": "doc/doc.DocumentDoc.HTML.html#doc.DocumentDoc.HTML.Manipulation.Cloning",
+							"subs": [],
+							"title": "Cloning"
+						}
+					],
 					"title": "Manipulation"
 				},
 				{
-					"path": "doc/doc.DocumentDoc.HTML.html#doc.DocumentDoc.HTML.Traverse",
-					"subs": [],
-					"title": "Traverse"
+					"path": "doc/doc.DocumentDoc.HTML.html#doc.DocumentDoc.HTML.Traversing",
+					"subs": [
+						{
+							"path": "doc/doc.DocumentDoc.HTML.html#doc.DocumentDoc.HTML.Traversing.Filtering",
+							"subs": [],
+							"title": "Filtering"
+						},
+						{
+							"path": "doc/doc.DocumentDoc.HTML.html#doc.DocumentDoc.HTML.Traversing.Moving_Upwards",
+							"subs": [],
+							"title": "Moving Upwards"
+						},
+						{
+							"path": "doc/doc.DocumentDoc.HTML.html#doc.DocumentDoc.HTML.Traversing.Moving_Downwards",
+							"subs": [],
+							"title": "Moving Downwards"
+						},
+						{
+							"path": "doc/doc.DocumentDoc.HTML.html#doc.DocumentDoc.HTML.Traversing.Moving_Sideways",
+							"subs": [],
+							"title": "Moving Sideways"
+						},
+						{
+							"path": "doc/doc.DocumentDoc.HTML.html#doc.DocumentDoc.HTML.Traversing.Iteration",
+							"subs": [],
+							"title": "Iteration"
+						}
+					],
+					"title": "Traversing"
 				}
 			],
 			"title": "HTML"
