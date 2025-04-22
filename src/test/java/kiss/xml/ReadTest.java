@@ -23,62 +23,68 @@ import antibug.CleanRoom;
 import kiss.I;
 import kiss.XML;
 
-class ReadTest {
+public class ReadTest {
 
     @RegisterExtension
     CleanRoom room = new CleanRoom(true);
 
     @Test
-    void elementName() {
-        XML xml = I.xml("test");
-        assert xml.size() == 1;
-        assert xml.name().equals("test");
+    public void elementName() {
+        XML root = I.xml("test");
+
+        assert root.size() == 1;
+        assert root.name().equals("test");
     }
 
     @Test
-    void xmlLiteral() {
-        XML xml = I.xml("<test/>");
-        assert xml.size() == 1;
-        assert xml.name() == "test";
+    public void xmlLiteral() {
+        XML root = I.xml("<test/>");
+
+        assert root.size() == 1;
+        assert root.name() == "test";
     }
 
     @Test
-    void htmlLiteral() {
-        XML xml = I.xml("<html/>");
-        assert xml.size() == 1;
-        assert xml.name() == "html";
+    public void htmlLiteral() {
+        XML root = I.xml("<html/>");
+
+        assert root.size() == 1;
+        assert root.name() == "html";
     }
 
     @Test
-    void inputStream() {
-        XML xml = I.xml(new ByteArrayInputStream("<html/>".getBytes()));
-        assert xml.size() == 1;
-        assert xml.name() == "html";
+    public void inputStream() {
+        XML root = I.xml(new ByteArrayInputStream("<html/>".getBytes()));
+
+        assert root.size() == 1;
+        assert root.name() == "html";
     }
 
     @Test
-    void reader() {
-        XML xml = I.xml(new StringReader("<html/>"));
-        assert xml.size() == 1;
-        assert xml.name() == "html";
+    public void reader() {
+        XML root = I.xml(new StringReader("<html/>"));
+
+        assert root.size() == 1;
+        assert root.name() == "html";
     }
 
     @Test
-    void path() {
-        XML xml = I.xml(room.locateFile("temp", "<html/>"));
-        assert xml.size() == 1;
-        assert xml.name() == "html";
+    public void path() {
+        XML root = I.xml(room.locateFile("temp", "<html/>"));
+
+        assert root.size() == 1;
+        assert root.name() == "html";
     }
 
     @Test
-    void inputNull() {
+    public void inputNull() {
         assertThrows(NullPointerException.class, () -> {
             I.xml((Path) null);
         });
     }
 
     @Test
-    void invalidLiteral() {
+    public void invalidLiteral() {
         assertThrows(SAXParseException.class, () -> {
             I.xml("<m><></m>");
         });

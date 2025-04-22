@@ -9,6 +9,7 @@
  */
 package doc;
 
+import java.io.Writer;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,6 +20,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.function.Consumer;
+
+import org.w3c.dom.Node;
 
 import doc.ExtensionTest.Codec;
 import doc.ExtensionTest.LocalDateCodec;
@@ -33,6 +37,7 @@ import kiss.Observer;
 import kiss.Signal;
 import kiss.Singleton;
 import kiss.Variable;
+import kiss.XML;
 import kiss.instantiation.ConstructorInjectionTest;
 import kiss.instantiation.ConstructorInjectionTest.CircularLifestyleA;
 import kiss.instantiation.ConstructorInjectionTest.CircularLifestyleB;
@@ -41,6 +46,10 @@ import kiss.json.ManipulateTest;
 import kiss.lifestyle.PrototypeTest;
 import kiss.lifestyle.SingletonTest;
 import kiss.model.ModelLensTest;
+import kiss.xml.HTMLSoupTest;
+import kiss.xml.ReadTest;
+import kiss.xml.XMLFindTest;
+import kiss.xml.XMLWriterTest;
 
 public class DocumentDoc {
 
@@ -663,10 +672,8 @@ public class DocumentDoc {
 
         /**
          * You can read JSON from strings, files, and various inputs. All data will be expanded
-         * into
-         * memory in a tree format. It is not a streaming format, so please be careful when
-         * parsing
-         * very large JSON.
+         * into memory in a tree format. It is not a streaming format, so please be careful when
+         * parsing very large JSON.
          */
         public class Reading_JSON {
 
@@ -705,19 +712,305 @@ public class DocumentDoc {
     }
 
     public class HTML {
-        public class Parsing {
+        /**
+         * Sinobu provides functionality for handling HTML and XML documents.
+         * It uses a built-in, lenient parser (often called tag soup parser)
+         * that can handle malformed HTML, similar to how web browsers do.
+         * The core class for this is {@link XML}, which offers a jQuery-like
+         * API for traversing and manipulating the document structure.
+         */
+        public class Concept {
         }
 
+        /**
+         * You can parse HTML/XML from various sources using the {@link I} class utility methods.
+         * Sinobu automatically detects whether the input is a URL, file path, or raw string.
+         * The parser is designed to be tolerant of errors and can handle common issues
+         * found in real-world HTML, such as missing tags or incorrect nesting.
+         *
+         * - {@link I#xml(String)}
+         * - {@link I#xml(java.nio.file.Path)}
+         * - {@link I#xml(java.io.InputStream)}
+         * - {@link I#xml(java.io.Reader)}
+         * - {@link I#xml(Node)}
+         * 
+         * {@link ReadTest#htmlLiteral() @}
+         * 
+         * And can parse the invalid structure.
+         * {@link HTMLSoupTest#caseInconsistencyLowerUpper() @}
+         * {@link HTMLSoupTest#slipOut() @}
+         */
+        public class Reading {
+        }
+
+        /**
+         * You can serialize the XML structure back into a string or write it to an
+         * {@link Appendable} (like {@link Writer} or {@link StringBuilder}).
+         */
         public class Writing {
+
+            /**
+             * The {@link XML#toString()} method provides a compact string representation without
+             * extra formatting.
+             * {@link XMLWriterTest#format() @}
+             */
+            public class By_toString {
+            }
+
+            /**
+             * The {@link XML#to(Appendable, String, String...)} method allows for pretty-printing
+             * with indentation. You can specify the indentation string (e.g. tab or whitespace).
+             * {@link XMLWriterTest#specialIndent() @}
+             * 
+             * You can also specify tag names that should be treated as inline elements (no line
+             * breaks around them).
+             * {@link XMLWriterTest#inlineElement() @}
+             *
+             * By using the special prefix, you can also specify tag names that should be treated
+             * as non-empty elements (always have a closing tag even if it is empty).
+             * {@link XMLWriterTest#nonEmptyElement() @}
+             * 
+             * By passing null indent character, you can ignore formatter.
+             * {@link XMLWriterTest#withoutFormat() @}
+             */
+            public class By_formatter {
+            }
         }
 
-        public class Support_CSS_Selector {
+        /**
+         * Sinobu leverages CSS selectors for querying elements within the document structure using
+         * the {@link XML#find(String)} method. This provides a powerful and familiar way to select
+         * nodes, similar to JavaScript 'document#querySelectorAll'.
+         * {@link XMLFindTest#type() @}
+         * {@link XMLFindTest#attribute() @}
+         * {@link XMLFindTest#clazz() @}
+         * {@link XMLFindTest#child() @}
+         */
+        public class CSS_Selector {
+            /**
+             * | Combinator | Description | Notes |
+             * | :---------- | :----------- | :------------ |
+             * | ` ` (Space) | Descendant | Default combinator between selectors |
+             * | `gt` | Child | Direct children |
+             * | `+` | Adjacent Sibling | Immediately following sibling |
+             * | `~` | General Sibling | All following siblings |
+             * | `lt` | Adjacent Previous Sibling | **Sinobu Extension** |
+             * | `,` | Selector List | Groups multiple selectors |
+             * | `\|` | Namespace Separator | Used with type and attribute selectors |
+             */
+            public class Combinators {
+            }
+
+            /**
+             * | Selector Type | Example | Description |
+             * | :------------ | :--------- | :------------------- |
+             * | Type | `div` | By element name |
+             * | Class | `.warning` | By `class` attribute |
+             * | ID | `#main` | By `id` attribute |
+             * | Universal | `*` | All elements |
+             */
+            public class Basic_Selectors {
+            }
+
+            /**
+             * | Selector Syntax | Description |
+             * | :----------------- | :------------------------------------------- |
+             * | `[attr]` | Elements with an `attr` attribute |
+             * | `[attr=value]` | Elements where `attr` equals `value` |
+             * | `[attr~=value]` | Elements where `attr` contains the word `value` |
+             * | `[attr*=value]` | Elements where `attr` contains substring `value`|
+             * | `[attr^=value]` | Elements where `attr` starts with `value` |
+             * | `[attr$=value]` | Elements where `attr` ends with `value` |
+             * | `[ns:attr]` | Elements with attribute `attr` in namespace `ns` |
+             * | `[ns:attr=value]` | Elements with namespaced attribute and value |
+             */
+            public class Attribute_Selectors {
+            }
+
+            /**
+             * | Pseudo-Class | Description | Notes |
+             * | :------------ | :----------------- | :------------------- |
+             * | `:first-child` | First element among siblings | |
+             * | `:last-child` | Last element among siblings | |
+             * | `:only-child` | Element that is the only child | |
+             * | `:first-of-type` | First element of its type among siblings | |
+             * | `:last-of-type` | Last element of its type among siblings | |
+             * | `:only-of-type` | Element that is the only one of its type | |
+             * | `:nth-child(n)` | n-th element among siblings | keyword |
+             * | `:nth-last-child(n)` | n-th element among siblings, from last | keyword |
+             * | `:nth-of-type(n)` | n-th element of its type among siblings | keyword |
+             * | `:nth-last-of-type(n)`| n-th element of type among siblings from last | keyword |
+             * | `:empty` | Elements with no children (incl. text) | |
+             * | `:not(selector)` | Elements not matching the inner `selector` | |
+             * | `:has(selector)` | Elements having a descendant matching `selector` | |
+             * | `:root` | Document's root element | |
+             * | `:contains(text)` | Elements containing `text` directly | **Sinobu Extension** |
+             * | `:parent` | Parent element | **Sinobu Extension** |
+             * 
+             * Note: User interface state pseudo-classes (like `:hover`, `:focus`, `:checked`) are
+             * generally not supported as they relate to browser interactions rather than static
+             * document structure analysis.
+             */
+            public class Pseudo_Class_Selectors {
+            }
         }
 
+        /**
+         * The {@link XML} object provides a fluent API for modifying the document structure.
+         * Changes are made directly to the underlying DOM representation.
+         * Explore the nested classes for specific manipulation categories.
+         */
         public class Manipulation {
+            /**
+             * Methods for inserting new content relative to the selected elements.
+             *
+             * | Method Link | Description |
+             * | :--------------- | :---------------- |
+             * | {@link XML#append(Object)} | Insert content at the end of each element. |
+             * | {@link XML#prepend(Object)} | Insert content at the beginning of each element.|
+             * | {@link XML#before(Object)} | Insert content before each element. |
+             * | {@link XML#after(Object)} | Insert content after each element. |
+             * | {@link XML#child(String)} | Create and append a new child element. |
+             * | {@link XML#child(String, Consumer)} | Create, append, and configure a new child. |
+             */
+            public class Adding_Content {
+            }
+
+            /**
+             * Methods for removing content or elements from the document.
+             *
+             * | Method Link | Description |
+             * | :--------------- | :---------------------------------------- |
+             * | {@link XML#empty()} | Remove all child nodes from elements. |
+             * | {@link XML#remove()} | Remove the selected elements from the DOM.|
+             */
+            public class Removing_Content {
+            }
+
+            /**
+             * Methods for wrapping elements with new structures.
+             *
+             * | Method Link | Description |
+             * | :------------------- | :----------------------------------------- |
+             * | {@link XML#wrap(Object)} | Wrap each selected element individually. |
+             * | {@link XML#wrapAll(Object)}| Wrap all elements together with one structure.|
+             */
+            public class Wrapping {
+            }
+
+            /**
+             * Methods for getting or setting the text content of elements.
+             *
+             * | Method Link | Description |
+             * | :------------------- | :---------------------------------------- |
+             * | {@link XML#text()} | Get the combined text content of elements.|
+             * | {@link XML#text(String)}| Set text content, replacing existing. |
+             */
+            public class Text_Content {
+            }
+
+            /**
+             * Methods for managing element attributes.
+             *
+             * | Method Link | Description |
+             * | :-------------------------------- | :------------------------------------------- |
+             * | {@link XML#attr(String)} | Get attribute value for the first element. |
+             * | {@link XML#attr(String, Object)} | Set attribute value; `null` removes attribute.|
+             */
+            public class Attributes {
+            }
+
+            /**
+             * Methods for managing CSS classes on elements.
+             *
+             * | Method Link | Description |
+             * | :------------------------------- | :------------------------------------- |
+             * | {@link XML#addClass(String...)} | Add one or more classes. |
+             * | {@link XML#removeClass(String...)}| Remove one or more classes. |
+             * | {@link XML#toggleClass(String)} | Add or remove a class based on presence.|
+             * | {@link XML#hasClass(String)} | Check if any element has the class. |
+             */
+            public class CSS_Classes {
+            }
+
+            /**
+             * Method for duplicating elements.
+             *
+             * | Method Link | Description |
+             * | :-------------- | :------------------------------------ |
+             * | {@link XML#clone()} | Create a deep copy of selected elements.|
+             */
+            public class Cloning {
+            }
         }
 
-        public class Traverse {
+        /**
+         * Navigate the DOM tree relative to the currently selected elements.
+         * Most traversal methods return a new {@link XML} object containing the resulting elements.
+         * Explore the nested classes for specific traversal categories.
+         */
+        public class Traversing {
+
+            /**
+             * Methods for filtering the current set of selected elements or finding new ones.
+             *
+             * | Method Link | Description |
+             * | :-------------------- | :-------------------------------------- |
+             * | {@link XML#first()} | Reduce the set to the first element. |
+             * | {@link XML#last()} | Reduce the set to the last element. |
+             * | {@link XML#find(String)}| Find descendants matching the selector. |
+             */
+            public class Filtering {
+            }
+
+            /**
+             * Method for moving up the DOM tree.
+             *
+             * | Method Link | Description |
+             * | :---------------- | :---------------------------------------- |
+             * | {@link XML#parent()} | Get the direct parent of each element. |
+             */
+            public class Moving_Upwards {
+            }
+
+            /**
+             * Methods for moving down the DOM tree to child elements.
+             *
+             * | Method Link | Description |
+             * | :------------------- | :------------------------------------- |
+             * | {@link XML#children()} | Get the direct children of each element. |
+             * | {@link XML#firstChild()} | Get the first direct child of each element.|
+             * | {@link XML#lastChild()} | Get the last direct child of each element. |
+             */
+            public class Moving_Downwards {
+            }
+
+            /**
+             * Methods for moving sideways to sibling elements.
+             *
+             * | Method Link | Description |
+             * | :-------------- | :----------------------------------------- |
+             * | {@link XML#prev()} | Get the immediately preceding sibling. |
+             * | {@link XML#next()} | Get the immediately following sibling. |
+             */
+            public class Moving_Sideways {
+            }
+
+            /**
+             * The {@link XML} object implements {@link Iterable}, allowing iteration
+             * over each element in the set individually using a standard for-each loop.
+             * {@link #iterate() @}
+             */
+            public class Iteration {
+
+                void iterate() {
+                    XML elements = I.xml("<div><p>1</p><p>2</p></div>").find("p");
+
+                    for (XML p : elements) {
+                        System.out.println(p.text());
+                    }
+                }
+            }
         }
     }
 

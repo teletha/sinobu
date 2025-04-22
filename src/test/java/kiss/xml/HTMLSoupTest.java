@@ -14,37 +14,42 @@ import org.junit.jupiter.api.Test;
 import kiss.I;
 import kiss.XML;
 
-class HTMLSoupTest {
+public class HTMLSoupTest {
 
     @Test
-    void noEndTag() {
-        XML xml = parseAsHTML("<link>");
-        assert xml.find("link").size() == 1;
+    public void noEndTag() {
+        XML root = parseAsHTML("<link>");
+
+        assert root.find("link").size() == 1;
     }
 
     @Test
-    void caseInconsistencyLowerUpper() {
-        XML xml = parseAsHTML("<div>crazy</DIV>");
-        assert xml.find("div").size() == 1;
+    public void caseInconsistencyLowerUpper() {
+        XML root = parseAsHTML("<div>crazy</DIV>");
+
+        assert root.find("div").size() == 1;
     }
 
     @Test
-    void caseInconsistencyUpperLower() {
-        XML xml = parseAsHTML("<DIV>crazy</div>");
-        assert xml.find("div").size() == 1;
+    public void caseInconsistencyUpperLower() {
+        XML root = parseAsHTML("<DIV>crazy</div>");
+
+        assert root.find("div").size() == 1;
     }
 
     @Test
-    void rootMultiple() {
-        XML xml = I.xml("<html><body/></html><other><body/></other>");
-        assert xml.find("body").size() == 2;
+    public void rootMultiple() {
+        XML root = I.xml("<html><body/></html><other><body/></other>");
+
+        assert root.find("body").size() == 2;
     }
 
     @Test
-    void slipOut() {
-        XML xml = parseAsHTML("<a><b>crazy</a></b>");
-        assert xml.find("a").text().equals("crazy");
-        assert xml.find("b").text().equals("crazy");
+    public void slipOut() {
+        XML root = parseAsHTML("<a><b>crazy</a></b>");
+
+        assert root.find("a").text().equals("crazy");
+        assert root.find("b").text().equals("crazy");
     }
 
     /**

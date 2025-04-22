@@ -22,293 +22,304 @@ import org.w3c.dom.Node;
 import kiss.I;
 import kiss.XML;
 
-class XMLParserTest {
+public class XMLParserTest {
 
     @Test
-    void html() {
-        XML xml = I.xml("<html><head></head><body></body></html>");
+    public void html() {
+        XML root = I.xml("""
+                <html>
+                    <head/>
+                    <body/>
+                </html>
+                """);
 
-        assert xml.find("> *").size() == 2;
+        assert root.find("*").size() == 2;
     }
 
     @Test
-    void htmlWithHeadSpaces() {
-        XML xml = I.xml(" \r\n\t<html><head></head><body></body></html>");
+    public void htmlWithHeadSpaces() {
+        XML root = I.xml(" \r\n\t<html><head></head><body></body></html>");
 
-        assert xml.find("> *").size() == 2;
+        assert root.find("*").size() == 2;
     }
 
     @Test
-    void htmlWithTailSapces() {
-        XML xml = I.xml("<html><head></head><body></body></html> \r\n\t");
+    public void htmlWithTailSapces() {
+        XML root = I.xml("<html><head></head><body></body></html> \r\n\t");
 
-        assert xml.find("> *").size() == 2;
+        assert root.find("*").size() == 2;
     }
 
     @Test
-    void htmlWithDoctype() {
-        XML xml = I.xml("<!DOCTYPE html><html><body/></html>");
+    public void htmlWithDoctype() {
+        XML root = I.xml("<!DOCTYPE html><html><body/></html>");
 
-        assert xml.find("body").size() == 1;
+        assert root.find("body").size() == 1;
     }
 
     @Test
-    void htmlWithDoctypeWithHeadSpaces() {
-        XML xml = I.xml(" \r\n\t<!DOCTYPE html><html><body/></html>");
+    public void htmlWithDoctypeWithHeadSpaces() {
+        XML root = I.xml(" \r\n\t<!DOCTYPE html><html><body/></html>");
 
-        assert xml.find("body").size() == 1;
+        assert root.find("body").size() == 1;
     }
 
     @Test
-    void htmlWithDoctypeWithTailSpaces() {
-        XML xml = I.xml("<!DOCTYPE html><html><body/></html> \r\n\t");
+    public void htmlWithDoctypeWithTailSpaces() {
+        XML root = I.xml("<!DOCTYPE html><html><body/></html> \r\n\t");
 
-        assert xml.find("body").size() == 1;
+        assert root.find("body").size() == 1;
     }
 
     @Test
-    void xml() {
-        XML xml = I.xml("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><html><item/></html>");
+    public void xml() {
+        XML root = I.xml("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?><html><item/></html>");
 
-        assert xml.find("item").size() == 1;
+        assert root.find("item").size() == 1;
     }
 
     @Test
-    void emptyElement() {
-        XML xml = I.xml("<html><item/></html>");
+    public void emptyElement() {
+        XML root = I.xml("<html><item/></html>");
 
-        assert xml.find("item").size() == 1;
+        assert root.find("item").size() == 1;
     }
 
     @Test
-    void emptyWithoutSlash() {
-        XML xml = I.xml("<html><meta><meta></html>");
+    public void emptyWithoutSlash() {
+        XML root = I.xml("<html><meta><meta></html>");
 
-        assert xml.find("> meta").size() == 2;
+        assert root.find("> meta").size() == 2;
     }
 
     @Test
-    void attribute() {
-        XML xml = I.xml("<html><item name=\"value\"/></html>");
+    public void attribute() {
+        XML root = I.xml("<html><item name=\"value\"/></html>");
 
-        assert xml.find("item[name=value]").size() == 1;
+        assert root.find("item[name=value]").size() == 1;
     }
 
     @Test
-    void attributeMultiple() {
-        XML xml = I.xml("<html><item name=\"value\" content-type=\"some\"/></html>");
+    public void attributeMultiple() {
+        XML root = I.xml("<html><item name=\"value\" content-type=\"some\"/></html>");
 
-        assert xml.find("item[name=value][content-type=some]").size() == 1;
+        assert root.find("item[name=value][content-type=some]").size() == 1;
     }
 
     @Test
-    void attributeApostrophe() {
-        XML xml = I.xml("<html><item name='value'/></html>");
+    public void attributeApostrophe() {
+        XML root = I.xml("<html><item name='value'/></html>");
 
-        assert xml.find("item[name=value]").size() == 1;
+        assert root.find("item[name=value]").size() == 1;
     }
 
     @Test
-    void attributeNaked() {
-        XML xml = I.xml("<html><item name=value/></html>");
+    public void attributeNaked() {
+        XML root = I.xml("<html><item name=value/></html>");
 
-        assert xml.find("item").attr("name").equals("value");
+        assert root.find("item").attr("name").equals("value");
     }
 
     @Test
-    void attributeNakedURI() {
-        XML xml = I.xml("<html><item name=http://test.org/index.html /></html>");
+    public void attributeNakedURI() {
+        XML root = I.xml("<html><item name=http://test.org/index.html /></html>");
 
-        assert xml.find("item").attr("name").equalsIgnoreCase("http://test.org/index.html");
+        assert root.find("item").attr("name").equalsIgnoreCase("http://test.org/index.html");
     }
 
     @Test
-    void attributeNakedMultiples() {
-        XML xml = I.xml("<html><item name=value one=other/></html>");
+    public void attributeNakedMultiples() {
+        XML root = I.xml("<html><item name=value one=other/></html>");
 
-        XML item = xml.find("item");
+        XML item = root.find("item");
         assert item.attr("name").equals("value");
         assert item.attr("one").equals("other");
     }
 
     @Test
-    void attributeNoValue() {
-        XML xml = I.xml("<html><item disabled/></html>");
+    public void attributeNoValue() {
+        XML root = I.xml("<html><item disabled/></html>");
 
-        assert xml.find("item").attr("disabled").equals("disabled");
+        assert root.find("item").attr("disabled").equals("disabled");
     }
 
     @Test
-    void attributeWithSpace() {
-        XML xml = I.xml("<html><item  name = 'value' /></html>");
+    public void attributeWithSpace() {
+        XML root = I.xml("<html><item  name = 'value' /></html>");
 
-        assert xml.find("item").attr("name").equals("value");
+        assert root.find("item").attr("name").equals("value");
     }
 
     @Test
-    void comment() {
-        XML xml = I.xml("<html><!-- comment -><a/><!-- comment -></html>");
+    public void comment() {
+        XML root = I.xml("<html><!-- comment -><a/><!-- comment -></html>");
 
-        assert xml.find("a").size() == 1;
+        assert root.find("a").size() == 1;
     }
 
     @Test
-    void text() {
-        XML xml = I.xml("<html><p>text</p></html>");
+    public void text() {
+        XML root = I.xml("""
+                <html>
+                    <body>
+                        <p>text</p>
+                    </body>
+                </html>
+                """);
 
-        assert xml.find("p").text().equals("text");
+        assert root.find("p").text().equals("text");
     }
 
     @Test
-    void reserveWhitespace() {
-        XML xml = I.xml("<html> remaining <em>all</em> whitespaces </html>");
+    public void reserveWhitespace() {
+        XML root = I.xml("<html> remaining <em>all</em> whitespaces </html>");
 
-        assert xml.text().equals(" remaining all whitespaces ");
+        assert root.text().equals(" remaining all whitespaces ");
     }
 
     @Test
-    void inline() {
-        XML xml = I.xml("<html><p>b<span>o</span>o<span>o</span>k</p></html>");
+    public void inline() {
+        XML root = I.xml("<html><p>b<span>o</span>o<span>o</span>k</p></html>");
 
-        assert xml.find("p").text().equals("boook");
-        assert xml.find("span").size() == 2;
+        assert root.find("p").text().equals("boook");
+        assert root.find("span").size() == 2;
     }
 
     @Test
-    void script() {
-        XML xml = I.xml("<html><script>var test;</script></html>");
+    public void script() {
+        XML root = I.xml("<html><script>var test;</script></html>");
 
-        assert xml.find("script").text().equals("var test;");
+        assert root.find("script").text().equals("var test;");
     }
 
     @Test
-    void scriptEscape() {
-        XML xml = I.xml("<html><script>var test = '<test/>';</script></html>");
+    public void scriptEscape() {
+        XML root = I.xml("<html><script>var test = '<test/>';</script></html>");
 
-        assert xml.find("script").text().equals("var test = '<test/>';");
-        assert xml.find("test").size() == 0;
+        assert root.find("script").text().equals("var test = '<test/>';");
+        assert root.find("test").size() == 0;
     }
 
     @Test
-    void upperCase() {
-        XML xml = I.xml("<html><SCRIPT></SCRIPT></html>");
+    public void upperCase() {
+        XML root = I.xml("<html><SCRIPT></SCRIPT></html>");
 
-        assert xml.find("script").size() == 1;
-        assert xml.find("script").text().length() == 0;
+        assert root.find("script").size() == 1;
+        assert root.find("script").text().length() == 0;
     }
 
     @Test
-    void processingInstruction() {
-        XML xml = I.xml("<?xml-stylesheet type=\"text/xsl\" href=\"test.xsl\"?><html><head/></html>");
+    public void processingInstruction() {
+        XML root = I.xml("<?xml-stylesheet type=\"text/xsl\" href=\"test.xsl\"?><html><head/></html>");
 
-        assert xml.find("head").size() == 1;
-        assert xml.parent().text().length() == 0;
+        assert root.find("head").size() == 1;
+        assert root.parent().text().length() == 0;
     }
 
     @Test
-    void doctype() {
-        XML xml = I.xml("<!DOCTYPE html><html><head/></html>");
+    public void doctype() {
+        XML root = I.xml("<!DOCTYPE html><html><head/></html>");
 
-        assert xml.find("head").size() == 1;
-        assert xml.parent().text().length() == 0;
+        assert root.find("head").size() == 1;
+        assert root.parent().text().length() == 0;
     }
 
     @Test
-    void doctypeWithWhitespace() {
-        XML xml = I.xml("<!DOCTYPE html>\r\n<html><head/></html>");
+    public void doctypeWithWhitespace() {
+        XML root = I.xml("<!DOCTYPE html>\r\n<html><head/></html>");
 
-        assert xml.find("head").size() == 1;
-        assert xml.parent().text().length() == 0;
+        assert root.find("head").size() == 1;
+        assert root.parent().text().length() == 0;
     }
 
     @Test
-    void doctypeWithComment() {
-        XML xml = I.xml("<!DOCTYPE html><!-- comment --><html><head/></html>");
+    public void doctypeWithComment() {
+        XML root = I.xml("<!DOCTYPE html><!-- comment --><html><head/></html>");
 
-        assert xml.find("head").size() == 1;
-        assert xml.parent().text().length() == 0;
+        assert root.find("head").size() == 1;
+        assert root.parent().text().length() == 0;
     }
 
     @Test
-    void doctypeWithCommentAndWhitespace() {
-        XML xml = I.xml("<!DOCTYPE html> <!-- comment --> <html><head/></html>");
+    public void doctypeWithCommentAndWhitespace() {
+        XML root = I.xml("<!DOCTYPE html> <!-- comment --> <html><head/></html>");
 
-        assert xml.find("head").size() == 1;
-        assert xml.parent().text().length() == 0;
+        assert root.find("head").size() == 1;
+        assert root.parent().text().length() == 0;
     }
 
     @Test
-    void doctypeWith() {
-        XML xml = I.xml("<!DOCTYPE html  \"-//W3C//DTD XHTML 1.0 Transitional//EN\"><html><head/></html>");
+    public void doctypeWith() {
+        XML root = I.xml("<!DOCTYPE html  \"-//W3C//DTD XHTML 1.0 Transitional//EN\"><html><head/></html>");
 
-        assert xml.find("head").size() == 1;
-        assert xml.parent().text().length() == 0;
+        assert root.find("head").size() == 1;
+        assert root.parent().text().length() == 0;
     }
 
     @Test
-    void doctypeWithAndSystem() {
-        XML xml = I
+    public void doctypeWithAndSystem() {
+        XML root = I
                 .xml("<!DOCTYPE html  \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\"><html><head/></html>");
 
-        assert xml.find("head").size() == 1;
-        assert xml.parent().text().length() == 0;
+        assert root.find("head").size() == 1;
+        assert root.parent().text().length() == 0;
     }
 
     @Test
-    void whitespace() {
-        XML xml = I.xml("   <xml>   </xml>   ");
-        assert xml.name().equals("xml");
+    public void whitespace() {
+        XML root = I.xml("   <xml>   </xml>   ");
+        assert root.name().equals("xml");
     }
 
     @Test
-    void lineFeed() {
-        XML xml = I.xml("\r<xml>\r\n</xml>\n");
-        assert xml.name().equals("xml");
+    public void lineFeed() {
+        XML root = I.xml("\r<xml>\r\n</xml>\n");
+        assert root.name().equals("xml");
     }
 
     @Test
-    void tab() {
-        XML xml = I.xml("\t<xml>\t</xml>\t");
-        assert xml.name().equals("xml");
+    public void tab() {
+        XML root = I.xml("\t<xml>\t</xml>\t");
+        assert root.name().equals("xml");
     }
 
     @Test
-    void invalidSlashPosition() {
-        XML xml = I.xml("<html><img height='0' / width='64'></html>");
+    public void invalidSlashPosition() {
+        XML root = I.xml("<html><img height='0' / width='64'></html>");
 
-        assert xml.find("img").attr("height").equals("0");
+        assert root.find("img").attr("height").equals("0");
     }
 
     @Test
-    void invalidQuotePosition() {
-        XML xml = I.xml("<html><img alt=\"value\"\"></html>");
+    public void invalidQuotePosition() {
+        XML root = I.xml("<html><img alt=\"value\"\"></html>");
 
-        assert xml.find("img").attr("alt").equals("value");
+        assert root.find("img").attr("alt").equals("value");
     }
 
     @Test
-    void invalidSingleQuotePosition() {
-        XML xml = I.xml("<html><img alt='value''></html>");
+    public void invalidSingleQuotePosition() {
+        XML root = I.xml("<html><img alt='value''></html>");
 
-        assert xml.find("img").attr("alt").equals("value");
+        assert root.find("img").attr("alt").equals("value");
     }
 
     @Test
-    void invalidAttribute() {
-        XML xml = I.xml("<html><img alt=\"value\"(0)\"></html>");
+    public void invalidAttribute() {
+        XML root = I.xml("<html><img alt=\"value\"(0)\"></html>");
 
-        assert xml.find("img").attr("alt").equals("value");
+        assert root.find("img").attr("alt").equals("value");
     }
 
     @Test
-    void illegal() {
-        XML xml = I.xml("<html><Q/><Q/><Q><p/><Q><p/></html>");
+    public void illegal() {
+        XML root = I.xml("<html><Q/><Q/><Q><p/><Q><p/></html>");
 
-        assert xml.children().size() == 3;
+        assert root.children().size() == 3;
     }
 
     @Test
-    void variousNullInputs() {
+    public void variousNullInputs() {
         assertThrows(NullPointerException.class, () -> I.xml((String) null));
         assertThrows(NullPointerException.class, () -> I.xml((Path) null));
         assertThrows(NullPointerException.class, () -> I.xml((InputStream) null));
@@ -317,17 +328,17 @@ class XMLParserTest {
     }
 
     @Test
-    void empty() {
+    public void empty() {
         assertThrows(DOMException.class, () -> I.xml(""));
     }
 
     @Test
-    void whitespaceOnly() {
+    public void whitespaceOnly() {
         assertThrows(DOMException.class, () -> I.xml("  \t\r\n  "));
     }
 
     @Test
-    void parserCreateElementNS() {
+    public void parserCreateElementNS() {
         Node e = I.xml("<Q/>").to();
         assert e.getLocalName().equals("Q");
         assert e.getNodeName().equals("Q");
