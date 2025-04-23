@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.8.0](https://github.com/teletha/sinobu/compare/4.7.0...4.8.0) (2025-04-23)
+
+
+### Features
+
+* expose XML#escape ([d05ec2b](https://github.com/teletha/sinobu/commit/d05ec2bf909312a92c9a489adaf14ecbd8f7f57e))
+
 ## [4.7.0](https://github.com/teletha/sinobu/compare/4.6.1...4.7.0) (2025-04-12)
 
 
