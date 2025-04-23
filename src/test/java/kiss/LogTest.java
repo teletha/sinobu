@@ -32,7 +32,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import antibug.CleanRoom;
 
-class LogTest extends LogInitializer {
+public class LogTest extends LogInitializer {
 
     private PrintStream original;
 
@@ -194,37 +194,37 @@ class LogTest extends LogInitializer {
     }
 
     @Test
-    void trace() {
+    public void trace() {
         I.trace("Message");
         assert assumeLog(Level.TRACE, "Message");
     }
 
     @Test
-    void debug() {
+    public void debug() {
         I.debug("Message");
         assert assumeLog(Level.DEBUG, "Message");
     }
 
     @Test
-    void info() {
+    public void info() {
         I.info("Message");
         assert assumeLog(Level.INFO, "Message");
     }
 
     @Test
-    void warn() {
+    public void warn() {
         I.warn("Message");
         assert assumeLog(Level.WARNING, "Message");
     }
 
     @Test
-    void error() {
+    public void error() {
         I.error("Message");
         assert assumeLog(Level.ERROR, "Message");
     }
 
     @Test
-    void useLoggerName() {
+    public void useLoggerName() {
         String loggerName = "your-logger";
 
         I.info(loggerName, "Message");
@@ -233,7 +233,7 @@ class LogTest extends LogInitializer {
     }
 
     @Test
-    void useMessageWithCallerInfomation() {
+    public void useMessageWithCallerInfomation() {
         String loggerName = "enable-caller-infomation";
 
         // enable caller infomation
@@ -268,7 +268,7 @@ class LogTest extends LogInitializer {
     }
 
     @Test
-    void checkAnyLoggerFilterByItsLevel() {
+    public void checkAnyLoggerFilterByItsLevel() {
         String loggerName = "change-logger-level";
 
         // change logger's level
@@ -282,7 +282,7 @@ class LogTest extends LogInitializer {
     }
 
     @Test
-    void checkFileLoggerChangeLogDirectory() {
+    public void checkFileLoggerChangeLogDirectory() {
         String loggerName = "change-directory";
         String date = LocalDate.now().format(DateTimeFormatter.ISO_DATE);
 

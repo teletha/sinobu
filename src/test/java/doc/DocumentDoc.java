@@ -10,6 +10,8 @@
 package doc;
 
 import java.io.Writer;
+import java.lang.System.Logger.Level;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,6 +23,7 @@ import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import org.w3c.dom.Node;
 
@@ -1461,6 +1464,128 @@ public class DocumentDoc {
                 I.schedule("0 0 * * *").take(5).to(() -> {
                     // execute your job
                 });
+            }
+        }
+    }
+
+    public class Logging {
+
+        /**
+         * Sinobu provides a simple logging facility.
+         * 
+         * **Avoid Boilerplate Code**<br/>
+         * Logging is performed using static methods like {@link I#info(Object)}. Therefore, you
+         * don't have to create a logger insntace for each class.
+         * {@link #log() @}
+         * 
+         * **Garbage Less**<br/>
+         * Logging operations are highly optimized so that no new objects are created unless call
+         * stack information is used.
+         * 
+         * **High Performance**<br/>
+         * Designed for speed, often outperforming other common logging libraries.
+         */
+        public class Features {
+
+            void log() {
+                I.info("Hello Logging");
+            }
+        }
+
+        /**
+         * Basic methods for logging messages at different levels.
+         * These methods accept a single message object, which can be {@link Object} (using its
+         * toString() representation), {@link Supplier} which is evaluated lazily only if the log
+         * level is enabled, or {@link Throwable} (printing stack traces).
+         *
+         * Alternatively, most methods accept a {@code String category} as the first argument,
+         * followed by the message object (e.g., {@link I#info(String, Object)}),
+         * to direct the log to a specific category configuration. If no category is provided,
+         * a default 'system' category is used.
+         *
+         * | Method | Description |
+         * | :---------------------------- | :------------------ |
+         * | {@link I#trace(Object)} {@link I#trace(String, Object)} | Log message at TRACE level. |
+         * | {@link I#debug(Object)} {@link I#debug(String, Object)} | Log message at DEBUG level. |
+         * | {@link I#info(Object)} {@link I#info(String, Object)} | Log message at INFO level. |
+         * | {@link I#warn(Object)} {@link I#warn(String, Object)} | Log message at WARNING level. |
+         * | {@link I#error(Object)} {@link I#error(String, Object)} | Log message at ERROR level. |
+         *
+         * Example with category : {@code I.info("database", "Connection established.")}
+         */
+        public class Basic_Usage {
+        }
+
+        /**
+         * Logging behavior can be configured using {@link I#env(String, Object)}.
+         * Configuration keys typically follow the pattern `category.property` (or just `.property`
+         * for the default logger), where `category` is the name specified in logging calls (e.g.,
+         * "database" in the example above).
+         */
+        public class Configuration {
+
+            /**
+             * Configure where log messages are sent. By default, logs might go to the console
+             * depending on the underlying {@link java.lang.System.Logger} implementation, but kiss
+             * allows explicit configuration. Multiple destinations can be configured for the same
+             * logger category.
+             *
+             * | Property Key | Value Type | Description |
+             * | :------------------ | :------------- | :------------------- |
+             * | `category.console` | {@link Level} | Enables console logging for the specified
+             * category at or above the given level.|
+             * | `category.file` | {@link Level} | Enables file logging for the specified category
+             * at or above the given level. |
+             */
+            public class Output_Destinations {
+            }
+
+            /**
+             * Options specific to file logging when `category.file` is enabled.
+             * Log files are typically named `category<Date>.log` (e.g., `database2024-10-27.log`).
+             *
+             * | Property Key | Value Type | Description |
+             * | :------------------ | :------------- | :-------------------------- |
+             * | `category.dir` | {@link Path} or String | Specifies the directory where log files
+             * for this category should be created. |
+             * | `category.append` | `boolean` | If `true`, appends to existing log files for this
+             * category. If `false` (default), overwrites. |
+             * | `category.rotate` | `int` | Number of past daily log files to keep for this
+             * category. Older files are deleted. `0` disables rotation. Default is 90. |
+             */
+            public class File_Logging_Options {
+            }
+
+            /**
+             * Options related to the formatting of log messages for a specific category.
+             *
+             * | Property Key | Value Type | Description |
+             * | :------------------ | :------------- | :--------------------------------- |
+             * | `category.caller` | {@link Level} | Includes caller info for messages in this
+             * category at or above the given level. Can impact performance. |
+             */
+            public class Formatting_Options {
+            }
+
+            /**
+             * Standard logging levels from {@link java.lang.System.Logger.Level}. When a level is
+             * set for an output destination (e.g., `database.console = Level.INFO`), only messages
+             * logged to that Category with that level or higher (INFO, WARNING, ERROR) will be
+             * written to that destination.
+             * 
+             * This filtering happens efficiently before message formatting or supplier evaluation,
+             * contributing to performance and low GC pressure when levels are disabled.
+             *
+             * Available Levels (in increasing order of severity):
+             * - {@link Level#ALL}
+             * - {@link Level#TRACE}
+             * - {@link Level#DEBUG}
+             * - {@link Level#INFO}
+             * - {@link Level#WARNING}
+             * - {@link Level#ERROR}
+             * - {@link Level#OFF}
+             */
+            public class Log_Levels {
             }
         }
     }
