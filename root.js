@@ -520,6 +520,48 @@ const root = {
 				}
 			],
 			"title": "Cron"
+		},
+		{
+			"path": "doc/doc.DocumentDoc.Logging.html",
+			"subs": [
+				{
+					"path": "doc/doc.DocumentDoc.Logging.html#doc.DocumentDoc.Logging.Features",
+					"subs": [],
+					"title": "Features"
+				},
+				{
+					"path": "doc/doc.DocumentDoc.Logging.html#doc.DocumentDoc.Logging.Basic_Usage",
+					"subs": [],
+					"title": "Basic Usage"
+				},
+				{
+					"path": "doc/doc.DocumentDoc.Logging.html#doc.DocumentDoc.Logging.Configuration",
+					"subs": [
+						{
+							"path": "doc/doc.DocumentDoc.Logging.html#doc.DocumentDoc.Logging.Configuration.Output_Destinations",
+							"subs": [],
+							"title": "Output Destinations"
+						},
+						{
+							"path": "doc/doc.DocumentDoc.Logging.html#doc.DocumentDoc.Logging.Configuration.File_Logging_Options",
+							"subs": [],
+							"title": "File Logging Options"
+						},
+						{
+							"path": "doc/doc.DocumentDoc.Logging.html#doc.DocumentDoc.Logging.Configuration.Formatting_Options",
+							"subs": [],
+							"title": "Formatting Options"
+						},
+						{
+							"path": "doc/doc.DocumentDoc.Logging.html#doc.DocumentDoc.Logging.Configuration.Log_Levels",
+							"subs": [],
+							"title": "Log Levels"
+						}
+					],
+					"title": "Configuration"
+				}
+			],
+			"title": "Logging"
 		}
 	],
 	"modules": [],

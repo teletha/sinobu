@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8"/>
+		<meta content="width=device-width, initial-scale=1" name="viewport"/>
+		<meta content="Explains how to use Sinobu and its API. " name="description"/>
+		<link href="https://cdn.jsdelivr.net" rel="preconnect"/>
+		<link href="https://fonts.googleapis.com" rel="preconnect"/>
+		<link crossorigin="null" href="https://fonts.gstatic.com" rel="preconnect"/>
+		<link as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Inter" rel="preload"/>
+		<link href="https://fonts.googleapis.com/css2?display=swap&amp;family=Inter" media="print" onload="this.media=&apos;all&apos;" rel="stylesheet"/>
+		<link as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Material+Icons" rel="preload"/>
+		<link href="https://fonts.googleapis.com/css2?display=swap&amp;family=Material+Icons" media="print" onload="this.media=&apos;all&apos;" rel="stylesheet"/>
+		<link as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Vollkorn" rel="preload"/>
+		<link href="https://fonts.googleapis.com/css2?display=swap&amp;family=Vollkorn" media="print" onload="this.media=&apos;all&apos;" rel="stylesheet"/>
+		<title>Sinobu API</title>
+		<base href="../"/>
+		<script src="mimic.js" type="module"></script>
+		<link href="https://cdn.jsdelivr.net/npm/ress@4.0.0/dist/ress.min.css" rel="stylesheet"/>
+		<link href="main.css" rel="stylesheet"/>
+	</head>
+	<body class="P">
+		<header class="Q" date="2025-04-23" ver="4.8.0">
+			<h1 class="f"><code>Sinobu</code></h1>
+			<nav class="V"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="text A svg" viewBox="0 0 24 24">
+						<use href="main.svg#text"/>
+					</svg>Document</a><a href="api/" id="API"><svg class="package A svg" viewBox="0 0 24 24">
+						<use href="main.svg#package"/>
+					</svg>
+				</a><a href="https://github.com/teletha/sinobu/discussions" id="Community" target="_blank"><svg class="user A svg" viewBox="0 0 24 24">
+						<use href="main.svg#user"/>
+					</svg>
+				</a><a href="doc/changelog.html" id="Activity"><svg class="activity A svg" viewBox="0 0 24 24">
+						<use href="main.svg#activity"/>
+					</svg>
+				</a><a href="https://github.com/teletha/sinobu" id="Repository" target="_blank"><svg class="github A svg" viewBox="0 0 24 24">
+						<use href="main.svg#github"/>
+					</svg>
+				</a></nav>
+			<div class="W"><a aria-label="Change color scheme" id="theme"><svg class="sun A svg" viewBox="0 0 24 24">
+						<use href="main.svg#sun"/>
+					</svg><svg class="moon A svg" viewBox="0 0 24 24">
+						<use href="main.svg#moon"/>
+					</svg>
+				</a></div>
+		</header>
+		<nav class="R"></nav>
+		<article class="J" id="Article">
+			<div class="j">
+				<section class="B" id="doc.DocumentDoc.Logging.Features">
+					<header class="B a">
+						<h2>Features</h2>
+						<div class="s"><span class="perp c"><svg class="copy A svg" viewBox="0 0 24 24">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet c"><svg class="twitter A svg" viewBox="0 0 24 24">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit c" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L1474-L1486"><svg class="edit A svg" viewBox="0 0 24 24">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="B"><p>Sinobu provides a simple logging facility.</p><p><strong>Avoid Boilerplate Code</strong>
+							<br/>
+Logging is performed using static methods like <code><a aria-label="kiss.I" href="api/kiss.I.html#info(java.lang.Object)">I#info(Object)</a></code>. Therefore, you
+don&apos;t have to create a logger insntace for each class.</p><pre class="lang-java"><code>void log() {
+    I.info(&quot;Hello Logging&quot;);
+}</code></pre><p><strong>Garbage Less</strong>
+							<br/>
+Logging operations are highly optimized so that no new objects are created unless call
+stack information is used.</p><p><strong>High Performance</strong>
+							<br/>
+Designed for speed, often outperforming other common logging libraries.</p></span></section>
+			</div>
+			<div class="j">
+				<section class="B" id="doc.DocumentDoc.Logging.Basic_Usage">
+					<header class="B a">
+						<h2>Basic Usage</h2>
+						<div class="s"><span class="perp c"><svg class="copy A svg" viewBox="0 0 24 24">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet c"><svg class="twitter A svg" viewBox="0 0 24 24">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit c" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L1496-L1514"><svg class="edit A svg" viewBox="0 0 24 24">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="B"><p>Basic methods for logging messages at different levels.
+These methods accept a single message object, which can be <code><a aria-label="java.lang.Object 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Object.html">Object</a></code> (using its
+toString() representation), <code><a aria-label="java.util.function.Supplier 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/util/function/Supplier.html">Supplier</a></code> which is evaluated lazily only if the log
+level is enabled, or <code><a aria-label="java.lang.Throwable 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/Throwable.html">Throwable</a></code> (printing stack traces).</p><p>Alternatively, most methods accept a <code>String category</code> as the first argument,
+followed by the message object (e.g., <code><a aria-label="kiss.I" href="api/kiss.I.html#info(java.lang.String,java.lang.Object)">I#info(String, Object)</a></code>),
+to direct the log to a specific category configuration. If no category is provided,
+a default &apos;system&apos; category is used.</p><table>
+							<thead>
+								<tr>
+									<th align="left">Method</th>
+									<th align="left">Description</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.I" href="api/kiss.I.html#trace(java.lang.Object)">I#trace(Object)</a></code><code><a aria-label="kiss.I" href="api/kiss.I.html#trace(java.lang.String,java.lang.Object)">I#trace(String, Object)</a></code></td>
+									<td align="left">Log message at TRACE level.</td>
+								</tr>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.I" href="api/kiss.I.html#debug(java.lang.Object)">I#debug(Object)</a></code><code><a aria-label="kiss.I" href="api/kiss.I.html#debug(java.lang.String,java.lang.Object)">I#debug(String, Object)</a></code></td>
+									<td align="left">Log message at DEBUG level.</td>
+								</tr>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.I" href="api/kiss.I.html#info(java.lang.Object)">I#info(Object)</a></code><code><a aria-label="kiss.I" href="api/kiss.I.html#info(java.lang.String,java.lang.Object)">I#info(String, Object)</a></code></td>
+									<td align="left">Log message at INFO level.</td>
+								</tr>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.I" href="api/kiss.I.html#warn(java.lang.Object)">I#warn(Object)</a></code><code><a aria-label="kiss.I" href="api/kiss.I.html#warn(java.lang.String,java.lang.Object)">I#warn(String, Object)</a></code></td>
+									<td align="left">Log message at WARNING level.</td>
+								</tr>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.I" href="api/kiss.I.html#error(java.lang.Object)">I#error(Object)</a></code><code><a aria-label="kiss.I" href="api/kiss.I.html#error(java.lang.String,java.lang.Object)">I#error(String, Object)</a></code></td>
+									<td align="left">Log message at ERROR level.</td>
+								</tr>
+							</tbody>
+						</table><p>Example with category : <code>I.info(&quot;database&quot;, &quot;Connection established.&quot;)</code></p></span></section>
+			</div>
+			<div class="j">
+				<section class="B" id="doc.DocumentDoc.Logging.Configuration">
+					<header class="B a">
+						<h2>Configuration</h2>
+						<div class="s"><span class="perp c"><svg class="copy A svg" viewBox="0 0 24 24">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet c"><svg class="twitter A svg" viewBox="0 0 24 24">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit c" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L1520-L1523"><svg class="edit A svg" viewBox="0 0 24 24">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="B"><p>Logging behavior can be configured using <code><a aria-label="kiss.I" href="api/kiss.I.html#env(java.lang.String,java.lang.Object)">I#env(String, Object)</a></code>.
+Configuration keys typically follow the pattern <code>category.property</code> (or just <code>.property</code>
+for the default logger), where <code>category</code> is the name specified in logging calls (e.g.,
+&quot;database&quot; in the example above).</p></span></section>
+				<section class="B m" id="doc.DocumentDoc.Logging.Configuration.Output_Destinations">
+					<header class="B d">
+						<h3>Output Destinations</h3>
+					</header><span class="B"><p>Configure where log messages are sent. By default, logs might go to the console
+depending on the underlying <code><a aria-label="java.lang.System.Logger 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/System.Logger.html">java.lang.System.Logger</a></code> implementation, but kiss
+allows explicit configuration. Multiple destinations can be configured for the same
+logger category.</p><table>
+							<thead>
+								<tr>
+									<th align="left">Property Key</th>
+									<th align="left">Value Type</th>
+									<th align="left">Description</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td align="left"><code>category.console</code></td>
+									<td align="left"><code><a aria-label="java.lang.System.Logger.Level 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/System.Logger.Level.html">Level</a></code></td>
+									<td align="left">Enables console logging for the specified</td>
+								</tr>
+								<tr>
+									<td align="left">category at or above the given level.</td>
+									<td align="left"></td>
+									<td align="left"></td>
+								</tr>
+								<tr>
+									<td align="left"><code>category.file</code></td>
+									<td align="left"><code><a aria-label="java.lang.System.Logger.Level 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/System.Logger.Level.html">Level</a></code></td>
+									<td align="left">Enables file logging for the specified category</td>
+								</tr>
+								<tr>
+									<td align="left">at or above the given level.</td>
+									<td align="left"></td>
+									<td align="left"></td>
+								</tr>
+							</tbody>
+						</table></span></section>
+				<section class="B m" id="doc.DocumentDoc.Logging.Configuration.File_Logging_Options">
+					<header class="B d">
+						<h3>File Logging Options</h3>
+					</header><span class="B"><p>Options specific to file logging when <code>category.file</code> is enabled.
+Log files are typically named <code>category&lt;Date&gt;.log</code> (e.g., <code>database2024-10-27.log</code>).</p><table>
+							<thead>
+								<tr>
+									<th align="left">Property Key</th>
+									<th align="left">Value Type</th>
+									<th align="left">Description</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td align="left"><code>category.dir</code></td>
+									<td align="left"><code><a aria-label="java.nio.file.Path 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/nio/file/Path.html">Path</a></code> or String</td>
+									<td align="left">Specifies the directory where log files</td>
+								</tr>
+								<tr>
+									<td align="left">for this category should be created.</td>
+									<td align="left"></td>
+									<td align="left"></td>
+								</tr>
+								<tr>
+									<td align="left"><code>category.append</code></td>
+									<td align="left"><code>boolean</code></td>
+									<td align="left">If <code>true</code>, appends to existing log files for this</td>
+								</tr>
+								<tr>
+									<td align="left">category. If <code>false</code> (default), overwrites.</td>
+									<td align="left"></td>
+									<td align="left"></td>
+								</tr>
+								<tr>
+									<td align="left"><code>category.rotate</code></td>
+									<td align="left"><code>int</code></td>
+									<td align="left">Number of past daily log files to keep for this</td>
+								</tr>
+								<tr>
+									<td align="left">category. Older files are deleted. <code>0</code> disables rotation. Default is 90.</td>
+									<td align="left"></td>
+									<td align="left"></td>
+								</tr>
+							</tbody>
+						</table></span></section>
+				<section class="B m" id="doc.DocumentDoc.Logging.Configuration.Formatting_Options">
+					<header class="B d">
+						<h3>Formatting Options</h3>
+					</header><span class="B"><p>Options related to the formatting of log messages for a specific category.</p><table>
+							<thead>
+								<tr>
+									<th align="left">Property Key</th>
+									<th align="left">Value Type</th>
+									<th align="left">Description</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td align="left"><code>category.caller</code></td>
+									<td align="left"><code><a aria-label="java.lang.System.Logger.Level 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/System.Logger.Level.html">Level</a></code></td>
+									<td align="left">Includes caller info for messages in this</td>
+								</tr>
+								<tr>
+									<td align="left">category at or above the given level. Can impact performance.</td>
+									<td align="left"></td>
+									<td align="left"></td>
+								</tr>
+							</tbody>
+						</table></span></section>
+				<section class="B m" id="doc.DocumentDoc.Logging.Configuration.Log_Levels">
+					<header class="B d">
+						<h3>Log Levels</h3>
+					</header><span class="B"><p>Standard logging levels from <code><a aria-label="java.lang.System.Logger.Level 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/System.Logger.Level.html">java.lang.System.Logger.Level</a></code>. When a level is
+set for an output destination (e.g., <code>database.console = Level.INFO</code>), only messages
+logged to that Category with that level or higher (INFO, WARNING, ERROR) will be
+written to that destination.</p><p>This filtering happens efficiently before message formatting or supplier evaluation,
+contributing to performance and low GC pressure when levels are disabled.</p><p>Available Levels (in increasing order of severity):</p><ul>
+							<li><code><a aria-label="java.lang.System.Logger.Level 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/System.Logger.Level.html#ALL">Level#ALL</a></code></li>
+							<li><code><a aria-label="java.lang.System.Logger.Level 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/System.Logger.Level.html#TRACE">Level#TRACE</a></code></li>
+							<li><code><a aria-label="java.lang.System.Logger.Level 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/System.Logger.Level.html#DEBUG">Level#DEBUG</a></code></li>
+							<li><code><a aria-label="java.lang.System.Logger.Level 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/System.Logger.Level.html#INFO">Level#INFO</a></code></li>
+							<li><code><a aria-label="java.lang.System.Logger.Level 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/System.Logger.Level.html#WARNING">Level#WARNING</a></code></li>
+							<li><code><a aria-label="java.lang.System.Logger.Level 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/System.Logger.Level.html#ERROR">Level#ERROR</a></code></li>
+							<li><code><a aria-label="java.lang.System.Logger.Level 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/lang/System.Logger.Level.html#OFF">Level#OFF</a></code></li>
+						</ul></span></section>
+			</div>
+		</article>
+		<aside class="S"></aside>
+		<footer class="N"/>
+	</body>
+	<script src="root.js"></script>
+	<script src="main.js" type="module"></script>
+</html>
