@@ -349,11 +349,6 @@ const root = {
 							"title": "Attributes"
 						},
 						{
-							"path": "doc/doc.DocumentDoc.HTML.html#doc.DocumentDoc.HTML.Manipulation.CSS_Classes",
-							"subs": [],
-							"title": "CSS Classes"
-						},
-						{
 							"path": "doc/doc.DocumentDoc.HTML.html#doc.DocumentDoc.HTML.Manipulation.Cloning",
 							"subs": [],
 							"title": "Cloning"
@@ -370,14 +365,9 @@ const root = {
 							"title": "Filtering"
 						},
 						{
-							"path": "doc/doc.DocumentDoc.HTML.html#doc.DocumentDoc.HTML.Traversing.Vertical_Movement",
+							"path": "doc/doc.DocumentDoc.HTML.html#doc.DocumentDoc.HTML.Traversing.Tree_Navigation",
 							"subs": [],
-							"title": "Vertical Movement"
-						},
-						{
-							"path": "doc/doc.DocumentDoc.HTML.html#doc.DocumentDoc.HTML.Traversing.Horizontal_Movement",
-							"subs": [],
-							"title": "Horizontal Movement"
+							"title": "Tree Navigation"
 						},
 						{
 							"path": "doc/doc.DocumentDoc.HTML.html#doc.DocumentDoc.HTML.Traversing.Iteration",
