@@ -525,22 +525,22 @@ const root = {
 			"path": "doc/doc.DocumentDoc.Logging.html",
 			"subs": [
 				{
-					"path": "doc/doc.DocumentDoc.Logging.html#doc.DocumentDoc.Logging.Features",
+					"path": "doc/doc.DocumentDoc.Logging.html#doc.DocumentDoc.Logging.Overview",
 					"subs": [],
-					"title": "Features"
+					"title": "Overview"
 				},
 				{
-					"path": "doc/doc.DocumentDoc.Logging.html#doc.DocumentDoc.Logging.Basic_Usage",
+					"path": "doc/doc.DocumentDoc.Logging.html#doc.DocumentDoc.Logging.Usage",
 					"subs": [],
-					"title": "Basic Usage"
+					"title": "Usage"
 				},
 				{
 					"path": "doc/doc.DocumentDoc.Logging.html#doc.DocumentDoc.Logging.Configuration",
 					"subs": [
 						{
-							"path": "doc/doc.DocumentDoc.Logging.html#doc.DocumentDoc.Logging.Configuration.Output_Destinations",
+							"path": "doc/doc.DocumentDoc.Logging.html#doc.DocumentDoc.Logging.Configuration.Log_Appender",
 							"subs": [],
-							"title": "Output Destinations"
+							"title": "Log Appender"
 						},
 						{
 							"path": "doc/doc.DocumentDoc.Logging.html#doc.DocumentDoc.Logging.Configuration.File_Logging_Options",
@@ -551,11 +551,6 @@ const root = {
 							"path": "doc/doc.DocumentDoc.Logging.html#doc.DocumentDoc.Logging.Configuration.Formatting_Options",
 							"subs": [],
 							"title": "Formatting Options"
-						},
-						{
-							"path": "doc/doc.DocumentDoc.Logging.html#doc.DocumentDoc.Logging.Configuration.Log_Levels",
-							"subs": [],
-							"title": "Log Levels"
 						}
 					],
 					"title": "Configuration"

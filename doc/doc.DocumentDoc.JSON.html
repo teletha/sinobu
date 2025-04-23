@@ -19,10 +19,10 @@
 		<link href="https://cdn.jsdelivr.net/npm/ress@4.0.0/dist/ress.min.css" rel="stylesheet"/>
 		<link href="main.css" rel="stylesheet"/>
 	</head>
-	<body class="P">
-		<header class="Q" date="2025-04-23" ver="4.8.0">
-			<h1 class="f"><code>Sinobu</code></h1>
-			<nav class="V"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="text A svg" viewBox="0 0 24 24">
+	<body class="o">
+		<header class="Y" date="2025-04-23" ver="4.8.0">
+			<h1 class="Z"><code>Sinobu</code></h1>
+			<nav class="T"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="text A svg" viewBox="0 0 24 24">
 						<use href="main.svg#text"/>
 					</svg>Document</a><a href="api/" id="API"><svg class="package A svg" viewBox="0 0 24 24">
 						<use href="main.svg#package"/>
@@ -37,34 +37,34 @@
 						<use href="main.svg#github"/>
 					</svg>
 				</a></nav>
-			<div class="W"><a aria-label="Change color scheme" id="theme"><svg class="sun A svg" viewBox="0 0 24 24">
+			<div class="a"><a aria-label="Change color scheme" id="theme"><svg class="sun A svg" viewBox="0 0 24 24">
 						<use href="main.svg#sun"/>
 					</svg><svg class="moon A svg" viewBox="0 0 24 24">
 						<use href="main.svg#moon"/>
 					</svg>
 				</a></div>
 		</header>
-		<nav class="R"></nav>
-		<article class="J" id="Article">
-			<div class="j">
+		<nav class="p"></nav>
+		<article class="d" id="Article">
+			<div class="U">
 				<section class="B" id="doc.DocumentDoc.JSON.Reading_JSON">
-					<header class="B a">
+					<header class="B R">
 						<h2>Reading JSON</h2>
-						<div class="s"><span class="perp c"><svg class="copy A svg" viewBox="0 0 24 24">
+						<div class="Q"><span class="perp S"><svg class="copy A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
-							</span><a class="tweet c"><svg class="twitter A svg" viewBox="0 0 24 24">
+							</span><a class="tweet S"><svg class="twitter A svg" viewBox="0 0 24 24">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit c" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L679-L681"><svg class="edit A svg" viewBox="0 0 24 24">
+							</a><a class="edit S" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L678-L680"><svg class="edit A svg" viewBox="0 0 24 24">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
 					</header><span class="B"><p>You can read JSON from strings, files, and various inputs. All data will be expanded
 into memory in a tree format. It is not a streaming format, so please be careful when
 parsing very large JSON.</p></span></section>
-				<section class="B m" id="doc.DocumentDoc.JSON.Reading_JSON.Access_to_the_value">
-					<header class="B d">
+				<section class="B h" id="doc.DocumentDoc.JSON.Reading_JSON.Access_to_the_value">
+					<header class="B g">
 						<h3>Access to the value</h3>
 					</header><span class="B"><p>You can access the value by specifying the key.</p><pre class="lang-java"><code>public void readValue() {
     JSON json = I.json(&quot;&quot;&quot;
@@ -77,8 +77,8 @@ parsing very large JSON.</p></span></section>
     assert json.get(&quot;number&quot;).as(int.class) == 10;
     assert json.get(&quot;bool&quot;).as(boolean.class) == false;
 }</code></pre></span></section>
-				<section class="B m" id="doc.DocumentDoc.JSON.Reading_JSON.Access_to_the_nested_value">
-					<header class="B d">
+				<section class="B h" id="doc.DocumentDoc.JSON.Reading_JSON.Access_to_the_nested_value">
+					<header class="B g">
 						<h3>Access to the nested value</h3>
 					</header><span class="B"><p>You can specify a key multiple times to access nested values.</p><pre class="lang-java"><code>public void readNestedValue() {
     JSON json = I.json(&quot;&quot;&quot;
@@ -116,17 +116,17 @@ parsing very large JSON.</p></span></section>
     assert found.get(1).equals(&quot;second&quot;);
 }</code></pre></span></section>
 			</div>
-			<div class="j">
+			<div class="U">
 				<section class="B" id="doc.DocumentDoc.JSON.Writing_JSON">
-					<header class="B a">
+					<header class="B R">
 						<h2>Writing JSON</h2>
-						<div class="s"><span class="perp c"><svg class="copy A svg" viewBox="0 0 24 24">
+						<div class="Q"><span class="perp S"><svg class="copy A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
-							</span><a class="tweet c"><svg class="twitter A svg" viewBox="0 0 24 24">
+							</span><a class="tweet S"><svg class="twitter A svg" viewBox="0 0 24 24">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit c" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L705-L707"><svg class="edit A svg" viewBox="0 0 24 24">
+							</a><a class="edit S" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L704-L706"><svg class="edit A svg" viewBox="0 0 24 24">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
@@ -144,8 +144,8 @@ parsing very large JSON.</p></span></section>
 }</code></pre></span></section>
 			</div>
 		</article>
-		<aside class="S"></aside>
-		<footer class="N"/>
+		<aside class="O"></aside>
+		<footer class="q"/>
 	</body>
 	<script src="root.js"></script>
 	<script src="main.js" type="module"></script>

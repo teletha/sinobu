@@ -19,10 +19,10 @@
 		<link href="https://cdn.jsdelivr.net/npm/ress@4.0.0/dist/ress.min.css" rel="stylesheet"/>
 		<link href="main.css" rel="stylesheet"/>
 	</head>
-	<body class="P">
-		<header class="Q" date="2025-04-23" ver="4.8.0">
-			<h1 class="f"><code>Sinobu</code></h1>
-			<nav class="V"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="text A svg" viewBox="0 0 24 24">
+	<body class="o">
+		<header class="Y" date="2025-04-23" ver="4.8.0">
+			<h1 class="Z"><code>Sinobu</code></h1>
+			<nav class="T"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="text A svg" viewBox="0 0 24 24">
 						<use href="main.svg#text"/>
 					</svg>Document</a><a href="api/" id="API"><svg class="package A svg" viewBox="0 0 24 24">
 						<use href="main.svg#package"/>
@@ -37,26 +37,26 @@
 						<use href="main.svg#github"/>
 					</svg>
 				</a></nav>
-			<div class="W"><a aria-label="Change color scheme" id="theme"><svg class="sun A svg" viewBox="0 0 24 24">
+			<div class="a"><a aria-label="Change color scheme" id="theme"><svg class="sun A svg" viewBox="0 0 24 24">
 						<use href="main.svg#sun"/>
 					</svg><svg class="moon A svg" viewBox="0 0 24 24">
 						<use href="main.svg#moon"/>
 					</svg>
 				</a></div>
 		</header>
-		<nav class="R"></nav>
-		<article class="J" id="Article">
-			<div class="j">
+		<nav class="p"></nav>
+		<article class="d" id="Article">
+			<div class="U">
 				<section class="B" id="doc.DocumentDoc.Dependency_Injection.Concept">
-					<header class="B a">
+					<header class="B R">
 						<h2>Concept</h2>
-						<div class="s"><span class="perp c"><svg class="copy A svg" viewBox="0 0 24 24">
+						<div class="Q"><span class="perp S"><svg class="copy A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
-							</span><a class="tweet c"><svg class="twitter A svg" viewBox="0 0 24 24">
+							</span><a class="tweet S"><svg class="twitter A svg" viewBox="0 0 24 24">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit c" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L300-L309"><svg class="edit A svg" viewBox="0 0 24 24">
+							</a><a class="edit S" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L299-L308"><svg class="edit A svg" viewBox="0 0 24 24">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
@@ -68,15 +68,15 @@ layered architecture.
 having to work hard manually.</p><p>In modern Java application development, DI is an almost indispensable mechanism.
 The detailed explanation of the DI concept is left to <a href="https://en.wikipedia.org/wiki/Dependency_injection">another
 website</a>.</p></span></section>
-				<section class="B m" id="doc.DocumentDoc.Dependency_Injection.Concept.DI_Container">
-					<header class="B d">
+				<section class="B h" id="doc.DocumentDoc.Dependency_Injection.Concept.DI_Container">
+					<header class="B g">
 						<h3>DI Container</h3>
 					</header><span class="B"><p>Unlike other DI frameworks, there is no explicit DI container in Sinobu. It has only
 one container implicitly inside, but the user is not aware of it. Therefore, there is
 also no need to define dependencies explicitly by means of code or external files.
 All dependencies are automatically resolved based on type.</p></span></section>
-				<section class="B m" id="doc.DocumentDoc.Dependency_Injection.Concept.Injection_Type">
-					<header class="B d">
+				<section class="B h" id="doc.DocumentDoc.Dependency_Injection.Concept.Injection_Type">
+					<header class="B g">
 						<h3>Injection Type</h3>
 					</header><span class="B"><p>Commonly, there are four main types in which a client can receive injected services.</p><ul>
 							<li>Constructor injection, where dependencies are provided through a client&apos;s class
@@ -90,17 +90,17 @@ that will inject the dependency into any client passed to it.</li>
 types will <strong>not be supported in the future</strong> due to their significant disruption
 to object safety.</p></span></section>
 			</div>
-			<div class="j">
+			<div class="U">
 				<section class="B" id="doc.DocumentDoc.Dependency_Injection.Constructor_Injection">
-					<header class="B a">
+					<header class="B R">
 						<h2>Constructor Injection</h2>
-						<div class="s"><span class="perp c"><svg class="copy A svg" viewBox="0 0 24 24">
+						<div class="Q"><span class="perp S"><svg class="copy A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
-							</span><a class="tweet c"><svg class="twitter A svg" viewBox="0 0 24 24">
+							</span><a class="tweet S"><svg class="twitter A svg" viewBox="0 0 24 24">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit c" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L342-L346"><svg class="edit A svg" viewBox="0 0 24 24">
+							</a><a class="edit S" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L341-L345"><svg class="edit A svg" viewBox="0 0 24 24">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
@@ -120,8 +120,8 @@ state, since it cannot be instantiated without its necessary dependencies.</p><p
 
     assert I.make(Injection.class).value != null;
 }</code></pre></span></section>
-				<section class="B m" id="doc.DocumentDoc.Dependency_Injection.Constructor_Injection.Injectable_Type">
-					<header class="B d">
+				<section class="B h" id="doc.DocumentDoc.Dependency_Injection.Constructor_Injection.Injectable_Type">
+					<header class="B g">
 						<h3>Injectable Type</h3>
 					</header><span class="B"><p>Any type can be injectable, but there are a few types that receive special treatment.</p><ul>
 							<li>Primitives - A default value (0 for int, false for boolean) is assigned.</li>
@@ -172,8 +172,8 @@ available when implementing the special generic <code><a aria-label="kiss.Lifest
 
     assert I.make(Injection.class).type == null;
 }</code></pre></span></section>
-				<section class="B m" id="doc.DocumentDoc.Dependency_Injection.Constructor_Injection.Priority">
-					<header class="B d">
+				<section class="B h" id="doc.DocumentDoc.Dependency_Injection.Constructor_Injection.Priority">
+					<header class="B g">
 						<h3>Priority</h3>
 					</header><span class="B"><p>If only one constructor is defined for the class being injected, it is used. If more
 than one constructor is defined, it must detect which constructor is to be used.</p><p>The constructor with the <code><a aria-label="kiss.Managed" href="api/kiss.Managed.html">Managed</a></code> annotation has the highest priority.</p><pre class="lang-java"><code>public void priorityManaged() {
@@ -247,8 +247,8 @@ constructor found among them is used. (which is implementation-dependent in the 
 
     assert I.make(Injection.class).value == 10;
 }</code></pre></span></section>
-				<section class="B m" id="doc.DocumentDoc.Dependency_Injection.Constructor_Injection.Circular_Reference">
-					<header class="B d">
+				<section class="B h" id="doc.DocumentDoc.Dependency_Injection.Constructor_Injection.Circular_Reference">
+					<header class="B g">
 						<h3>Circular Reference</h3>
 					</header><span class="B"><p>One of the problems with constructor injection is that it cannot resolve circular
 dependencies. To partially solve this problem, Sinobu provides a delayed dependency
@@ -276,8 +276,8 @@ not possible, an error will occur.</p><pre class="lang-java"><code>public static
 }</code></pre></span></section>
 			</div>
 		</article>
-		<aside class="S"></aside>
-		<footer class="N"/>
+		<aside class="O"></aside>
+		<footer class="q"/>
 	</body>
 	<script src="root.js"></script>
 	<script src="main.js" type="module"></script>
