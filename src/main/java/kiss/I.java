@@ -575,6 +575,25 @@ public class I implements ParameterizedType {
     }
 
     /**
+     * Write {@link java.lang.System.Logger.Level#DEBUG} log.
+     * 
+     * @param msg A message log.
+     */
+    public static void debug(WiseSupplier msg) {
+        log("system", msg, 2, 2);
+    }
+
+    /**
+     * Write {@link java.lang.System.Logger.Level#DEBUG} log.
+     * 
+     * @param name A logger name.
+     * @param msg A message log.
+     */
+    public static void debug(String name, WiseSupplier msg) {
+        log(name, msg, 2, 2);
+    }
+
+    /**
      * Read environment variables based on the following priorities (sources higher in the list take
      * precedence over those located lower).
      * <ol>
@@ -628,6 +647,25 @@ public class I implements ParameterizedType {
      * @param msg A message log.
      */
     public static void error(String name, Object msg) {
+        log(name, msg, 5, 2);
+    }
+
+    /**
+     * Write {@link java.lang.System.Logger.Level#ERROR} log.
+     * 
+     * @param msg A message log.
+     */
+    public static void error(WiseSupplier msg) {
+        log("system", msg, 5, 2);
+    }
+
+    /**
+     * Write {@link java.lang.System.Logger.Level#ERROR} log.
+     * 
+     * @param name A logger name.
+     * @param msg A message log.
+     */
+    public static void error(String name, WiseSupplier msg) {
         log(name, msg, 5, 2);
     }
 
@@ -1051,6 +1089,25 @@ public class I implements ParameterizedType {
      * @param msg A message log.
      */
     public static void info(String name, Object msg) {
+        log(name, msg, 3, 2);
+    }
+
+    /**
+     * Write {@link java.lang.System.Logger.Level#INFO} log.
+     * 
+     * @param msg A message log.
+     */
+    public static void info(WiseSupplier msg) {
+        log("system", msg, 3, 2);
+    }
+
+    /**
+     * Write {@link java.lang.System.Logger.Level#INFO} log.
+     * 
+     * @param name A logger name.
+     * @param msg A message log.
+     */
+    public static void info(String name, WiseSupplier msg) {
         log(name, msg, 3, 2);
     }
 
@@ -2141,6 +2198,26 @@ public class I implements ParameterizedType {
     public static void trace(String name, Object msg) {
         log(name, msg, 1, 2);
     }
+    
+
+    /**
+     * Write {@link java.lang.System.Logger.Level#TRACE} log.
+     * 
+     * @param msg A message log.
+     */
+    public static void trace(WiseSupplier msg) {
+        log("system", msg, 1, 2);
+    }
+
+    /**
+     * Write {@link java.lang.System.Logger.Level#TRACE} log.
+     * 
+     * @param name A logger name.
+     * @param msg A message log.
+     */
+    public static void trace(String name, WiseSupplier msg) {
+        log(name, msg, 1, 2);
+    }
 
     /**
      * Transform any type object into the specified type if possible.
@@ -2266,6 +2343,25 @@ public class I implements ParameterizedType {
      * @param msg A message log.
      */
     public static void warn(String name, Object msg) {
+        log(name, msg, 4, 2);
+    }
+
+    /**
+     * Write {@link java.lang.System.Logger.Level#WARNING} log.
+     * 
+     * @param msg A message log.
+     */
+    public static void warn(WiseSupplier msg) {
+        log("system", msg, 4, 2);
+    }
+
+    /**
+     * Write {@link java.lang.System.Logger.Level#WARNING} log.
+     * 
+     * @param name A logger name.
+     * @param msg A message log.
+     */
+    public static void warn(String name, WiseSupplier msg) {
         log(name, msg, 4, 2);
     }
 
