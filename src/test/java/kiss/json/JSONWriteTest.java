@@ -25,12 +25,14 @@ public class JSONWriteTest {
     }
 
     @Test
-    public void testName() {
+    public void writeRecord() {
         record Person(String name, int age) {
         }
 
         Person person = new Person("Joe", 23);
-        assertText(I.write(person), """
+        String json = I.write(person);
+
+        assertSame(json, """
                 {
                     "age": 23,
                     "name": "Joe"
@@ -38,7 +40,7 @@ public class JSONWriteTest {
                 """);
     }
 
-    private void assertText(String one, String other) {
+    private void assertSame(String one, String other) {
         one = one.strip().replaceAll("\\t", "    ");
         other = other.strip().replaceAll("\\t", "    ");
         assert one.equals(other);

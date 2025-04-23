@@ -29,8 +29,8 @@ public class ManipulateTest {
                 }
                 """);
 
-        assert json.get("number").as(int.class) == 10;
-        assert json.get("bool").as(boolean.class) == false;
+        assert json.get(int.class, "number") == 10;
+        assert json.get(boolean.class, "bool") == false;
     }
 
     @Test

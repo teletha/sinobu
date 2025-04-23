@@ -98,7 +98,7 @@ public class DocumentDoc {
          * - [Type safety](https://en.wikipedia.org/wiki/Type_safety)
          * - Refactoring safety
          */
-        public class Purpose_of_use {
+        public class Overview {
         }
 
         /**
@@ -117,14 +117,14 @@ public class DocumentDoc {
         }
     }
 
-    public class Managing_object_lifestyle {
+    public class Lifestyle_Management {
 
         /**
          * In Sinobu, lifestyle refers to the way an object is created and managed, corresponding to
          * the scope in terms of DI containers such as SpringFramework and Guice, but without the
          * process of registering with the container or destroying the object.
          */
-        public class What_do_you_mean_by_lifestyle_ {
+        public class Concept {
 
             /**
              * In Java, it is common to use the new operator on the constructor to create a new
@@ -401,7 +401,7 @@ public class DocumentDoc {
         }
     }
 
-    public class Model_and_Property {
+    public class Object_Modeling {
         /**
          * In the context of Java programming, a 'property' generally refers to the characteristics
          * or attributes of a class or object. These properties define the state of an object and
@@ -603,83 +603,187 @@ public class DocumentDoc {
         }
     }
 
-    public class ReactiveX {
+    public class Extensibility {
+
         /**
-         * The concept of ReactiveX is very well summarized on the official website, so it is better
-         * to read there.
-         * 
-         * - [ReactiveX](https://reactivex.io/intro.html)
-         * - [Observable](https://reactivex.io/documentation/observable.html)
-         * - [Operators](https://reactivex.io/documentation/operators.html)
-         * 
-         * The {@link Signal} class that implements the Reactive Pattern. This class provides
-         * methods for subscribing to the {@link Signal} as well as delegate methods to the various
-         * observers.
-         * 
-         * In Reactive Pattern an observer subscribes to a {@link Signal}. Then that observer reacts
-         * to whatever item or sequence of items the {@link Signal} emits. This pattern facilitates
-         * concurrent operations because it does not need to block while waiting for the
-         * {@link Signal}
-         * to emit objects, but instead it creates a sentry in the form of an observer that stands
-         * ready to react appropriately at whatever future time the {@link Signal} does so.
-         * 
-         * The subscribe method is how you connect an {@link Observer} to a {@link Signal}. Your
-         * {@link Observer} implements some subset of the following methods:
-         * 
-         * - {@link Observer#accept(Object)} - A {@link Signal} calls this method whenever the
-         * {@link Signal} emits an item. This method takes as a parameter the item emitted by the
-         * {@link Signal}.
-         * - {@link Observer#error(Throwable)} - A {@link Signal} calls this method to indicate that
-         * it has failed to generate the expected data or has encountered some other error. It will
-         * not make further calls to {@link Observer#error(Throwable)} or
-         * {@link Observer#complete()}. The {@link Observer#error(Throwable)} method takes as its
-         * parameter an indication of what caused the error.
-         * - {@link Observer#complete()} - A {@link Signal} calls this method after it has called
-         * {@link Observer#accept(Object)} for the final time, if it has not encountered any errors.
-         * 
-         * By the terms of the {@link Signal} contract, it may call {@link Observer#accept(Object)}
-         * zero or more times, and then may follow those calls with a call to either
-         * {@link Observer#complete()} or {@link Observer#error(Throwable)} but not both, which will
-         * be its last call. By convention, in this document, calls to
-         * {@link Observer#accept(Object)} are usually called &ldquo;emissions&rdquo; of items,
-         * whereas calls to {@link Observer#complete()} or {@link Observer#error(Throwable)} are
-         * called &ldquo;notifications.&rdquo;
+         * {@link ExtensionTest @}
          */
-        public class Concept {
+        public class Usage {
         }
 
-        public class Subscribe {
+        /**
+         * Sinobu has a general-purpose plug-in mechanism for extending application functions.
+         * An
+         * extensible place is called Extension Point, and its substance is a type (interface or
+         * class) marked with the {@link Extensible} interface.
+         * 
+         * We give a definition of <em>Extension Point</em> like the following.
+         * 
+         * - It implements {@link Extensible} interface directly.
+         * 
+         * {@link ThisIsExtensionPoint @}
+         * {@link ThisIsAlsoExtensionPoint @}
+         * {@link ThisIsNotExtensionPoint @}
+         * 
+         * In the usage example, Codec is the extension point that converts any object to a
+         * string
+         * representation.
+         * {@link Codec @}
+         */
+        public class Extension_Point {
+
+            interface ThisIsExtensionPoint extends Extensible {
+            }
+
+            interface ThisIsNotExtensionPoint extends ThisIsExtensionPoint {
+            }
+
+            class ThisIsAlsoExtensionPoint implements Extensible {
+                // This class is both Extension Point and Extension.
+            }
         }
 
-        public class Unsubscribe {
+        /**
+         * We give a definition of <em>Extension</em> like the following.
+         * 
+         * - It implements any Extension Point or is Extension Point itself.
+         * - It must be concrete class and has a suitable constructor for Sinobu (see also
+         * {@link I#make(Class)} method).
+         * 
+         * {@link ThisIsExtension @}
+         * {@link ThisIsAlsoExtension @}
+         * {@link ThisIsNotExtension @}
+         * 
+         * In the usage example, LocalDateCodec is the extension that is special implementation
+         * for
+         * {@link LocalDate}.
+         * {@link LocalDateCodec @}
+         */
+        public class Extension {
+            class ThisIsExtension implements Extensible {
+                // This class is both Extension Point and Extension.
+            }
+
+            class ThisIsAlsoExtension extends ThisIsExtension {
+                // But not Extension Point.
+            }
+
+            class ThisIsNotExtension extends ThisIsExtension {
+
+                public ThisIsNotExtension(NotInjectable object) {
+                    // because of invalid constructor
+                }
+            }
+
+            private class NotInjectable {
+            }
         }
 
-        public class Operators {
-        }
-    }
+        /**
+         * You can provide <em>Extension Key</em> for each Extensions by using parameter.
+         * 
+         * {@link ExtensionPointWithKey @}
+         * {@link ExtensionWithStringKey @}
+         * {@link ExtensionWithListKey @}
+         * 
+         * The key makes easy finding an Extension you need (see also
+         * {@link I#find(Class, Class)}).
+         * {@link Extension_Key#findExtensionByKey() @}
+         */
 
-    public class HTTP {
-        public class Request_and_Response {
+        public class Extension_Key {
+            interface ExtensionPointWithKey<K> extends Extensible {
+            }
+
+            class ExtensionWithStringKey implements ExtensionPointWithKey<String> {
+                // Associate this Extension with String class.
+            }
+
+            class ExtensionWithListKey implements ExtensionPointWithKey<List> {
+                // Associate this Extension with List interface.
+            }
+
+            void findExtensionByKey() {
+                assert I.find(ExtensionPointWithKey.class, String.class) instanceof ExtensionWithStringKey;
+            }
         }
 
-        public class Supported_Type {
-        }
+        /**
+         * All extensions are not recognized automatically, you have to load them explicitly
+         * using
+         * {@link I#load(Class)}.
+         * {@link ExtensionUser @}
+         * {@link ApplicationMain @}
+         */
+        public class Dynamic_Loading {
+            class ExtensionUser {
+                static {
+                    I.load(ExtensionUser.class);
+                }
 
-        public class Cookie {
-        }
+                // write your code
+            }
 
-        public class Authentication {
+            class ApplicationMain {
+                public static void main(String[] args) {
+                    I.load(ApplicationMain.class);
+
+                    // start your application
+                }
+            }
         }
     }
 
     public class JSON {
 
         /**
+         * JSON (JavaScript Object Notation) is a lightweight data-interchange format.
+         * It is easy for humans to read and write and easy for machines to parse and generate.
+         * It has become a de facto standard for data exchange on the web, especially for APIs.
+         * ([JSON on Wikipedia](https://en.wikipedia.org/wiki/JSON))
+         *
+         * Sinobu offers built-in support for JSON processing with an emphasis on performance,
+         * usability, and integration with Java object models.
+         *
+         * ✅ Simplicity<br/>
+         * Offering straightforward APIs for parsing JSON from various sources and serializing Java
+         * objects into JSON.
+         * {@link Concept#read() @}
+         *
+         * 🧩 Model-Centric<br/>
+         * Seamlessly mapping JSON data to and from Java objects
+         * (POJOs or Records) based on Sinobu's property model, reducing boilerplate.
+         * {@link JSONWriteTest#writeRecord() @}
+         *
+         * 👉 Direct Manipulation<br/>
+         * Parsed JSON can be navigated and mutated via a DOM-like tree model using the {@link JSON}
+         * class. Access elements by key or index, modify values, or restructure nodes with
+         * intuitive syntax.
+         * {@link ManipulateTest#readValue() @}
+         * 
+         * ⚡ High Performance<br/>
+         * Engineered for speed, Sinobu's JSON parser and model mapper often outperform
+         * other popular libraries, minimizing overhead in data-intensive applications.
+         * 
+         * ![Benchmark](https://raw.githubusercontent.com/teletha/sinobu/refs/heads/master/benchmark/JSONParseShortBenchmark.svg)
+         */
+        public class Concept {
+            void read() {
+                I.json("""
+                            {
+                            "name": "Misa",
+                            "age": 21
+                        }
+                        """);
+            }
+        }
+
+        /**
          * You can read JSON from strings, files, and various inputs. All data will be expanded
          * into memory in a tree format. It is not a streaming format, so please be careful when
          * parsing very large JSON.
          */
-        public class Reading_JSON {
+        public class Reading {
 
             /**
              * You can access the value by specifying the key.
@@ -703,15 +807,12 @@ public class DocumentDoc {
         /**
          * You can write JSON from property-based model.
          * 
-         * {@link JSONWriteTest#testName() @}
+         * {@link JSONWriteTest#writeRecord() @}
          */
-        public class Writing_JSON {
+        public class Writing {
         }
 
-        public class Mapping_to_Model {
-        }
-
-        public class Mapping_from_Model {
+        public class Mapping {
         }
     }
 
@@ -722,7 +823,31 @@ public class DocumentDoc {
          * that can handle malformed HTML, similar to how web browsers do.
          * The core class for this is {@link XML}, which offers a jQuery-like
          * API for traversing and manipulating the document structure.
-         * This approach allows for robust parsing of real-world web content.
+         *
+         * 🍜 Tag Soup Friendly<br/>
+         * Handles malformed HTML gracefully, tolerating missing or mismatched tags
+         * commonly found in real-world web content.
+         * {@link HTMLSoupTest#caseInconsistencyLowerUpper() @}
+         *
+         * 🎯 CSS Selector Power<br/>
+         * Leverages CSS selectors for efficient and flexible element selection,
+         * similar to JavaScript libraries like jQuery.
+         * {@link XMLFindTest#type() @}
+         * 
+         * 🛠️ jQuery-Like API<br/>
+         * Provides a fluent and chainable API for easy DOM manipulation,
+         * inspired by the familiar jQuery syntax.
+         * {@link XMLManipulationTest#append() @}
+         *
+         * 🌐 XML Ready<br/>
+         * Supports not only HTML but also XML documents, providing a unified interface
+         * for structured data processing.
+         * 
+         * ⚡ High Performance<br/>
+         * Optimized for speed, the parser handles both HTML soup and standard XML
+         * quickly, making it suitable for performance-sensitive tasks like web scraping.
+         * 
+         * ![Benchmark](https://raw.githubusercontent.com/teletha/sinobu/refs/heads/master/benchmark/XMLParseBenchmark.svg)
          */
         public class Concept {
         }
@@ -1047,7 +1172,7 @@ public class DocumentDoc {
         }
     }
 
-    public class Template_Literal {
+    public class Template_Engine {
 
         /**
          * {@link MustacheTest @}
@@ -1122,182 +1247,116 @@ public class DocumentDoc {
              */
             public class Usage_at_Sinobu {
             }
-        }
 
-        public class Section {
-        }
-
-        public class Comment {
-        }
-    }
-
-    public class Plugin {
-
-        /**
-         * {@link ExtensionTest @}
-         */
-        public class Usage {
-        }
-
-        /**
-         * Sinobu has a general-purpose plug-in mechanism for extending application functions.
-         * An
-         * extensible place is called Extension Point, and its substance is a type (interface or
-         * class) marked with the {@link Extensible} interface.
-         * 
-         * We give a definition of <em>Extension Point</em> like the following.
-         * 
-         * - It implements {@link Extensible} interface directly.
-         * 
-         * {@link ThisIsExtensionPoint @}
-         * {@link ThisIsAlsoExtensionPoint @}
-         * {@link ThisIsNotExtensionPoint @}
-         * 
-         * In the usage example, Codec is the extension point that converts any object to a
-         * string
-         * representation.
-         * {@link Codec @}
-         */
-        public class Extension_Point {
-
-            interface ThisIsExtensionPoint extends Extensible {
+            public class Section {
             }
 
-            interface ThisIsNotExtensionPoint extends ThisIsExtensionPoint {
-            }
-
-            class ThisIsAlsoExtensionPoint implements Extensible {
-                // This class is both Extension Point and Extension.
-            }
-        }
-
-        /**
-         * We give a definition of <em>Extension</em> like the following.
-         * 
-         * - It implements any Extension Point or is Extension Point itself.
-         * - It must be concrete class and has a suitable constructor for Sinobu (see also
-         * {@link I#make(Class)} method).
-         * 
-         * {@link ThisIsExtension @}
-         * {@link ThisIsAlsoExtension @}
-         * {@link ThisIsNotExtension @}
-         * 
-         * In the usage example, LocalDateCodec is the extension that is special implementation
-         * for
-         * {@link LocalDate}.
-         * {@link LocalDateCodec @}
-         */
-        public class Extension {
-            class ThisIsExtension implements Extensible {
-                // This class is both Extension Point and Extension.
-            }
-
-            class ThisIsAlsoExtension extends ThisIsExtension {
-                // But not Extension Point.
-            }
-
-            class ThisIsNotExtension extends ThisIsExtension {
-
-                public ThisIsNotExtension(NotInjectable object) {
-                    // because of invalid constructor
-                }
-            }
-
-            private class NotInjectable {
-            }
-        }
-
-        /**
-         * You can provide <em>Extension Key</em> for each Extensions by using parameter.
-         * 
-         * {@link ExtensionPointWithKey @}
-         * {@link ExtensionWithStringKey @}
-         * {@link ExtensionWithListKey @}
-         * 
-         * The key makes easy finding an Extension you need (see also
-         * {@link I#find(Class, Class)}).
-         * {@link Extension_Key#findExtensionByKey() @}
-         */
-
-        public class Extension_Key {
-            interface ExtensionPointWithKey<K> extends Extensible {
-            }
-
-            class ExtensionWithStringKey implements ExtensionPointWithKey<String> {
-                // Associate this Extension with String class.
-            }
-
-            class ExtensionWithListKey implements ExtensionPointWithKey<List> {
-                // Associate this Extension with List interface.
-            }
-
-            void findExtensionByKey() {
-                assert I.find(ExtensionPointWithKey.class, String.class) instanceof ExtensionWithStringKey;
-            }
-        }
-
-        /**
-         * All extensions are not recognized automatically, you have to load them explicitly
-         * using
-         * {@link I#load(Class)}.
-         * {@link ExtensionUser @}
-         * {@link ApplicationMain @}
-         */
-        public class Dynamic_Loading {
-            class ExtensionUser {
-                static {
-                    I.load(ExtensionUser.class);
-                }
-
-                // write your code
-            }
-
-            class ApplicationMain {
-                public static void main(String[] args) {
-                    I.load(ApplicationMain.class);
-
-                    // start your application
-                }
+            public class Comment {
             }
         }
     }
 
-    public class Persistence {
-        public class Save_Data {
+    public class HTTP {
+        public class Request_and_Response {
         }
 
-        public class Save_Automatically {
+        public class Supported_Type {
         }
 
-        public class Config_Location {
+        public class Cookie {
+        }
+
+        public class Authentication {
         }
     }
 
-    public class Cron {
-
+    public class Reactivity {
         /**
-         * Cron is a job scheduler for UNIX-like operating systems, developed by Ken Thompson of
-         * the Bell Labs in 1975. The name derives from the Greek word ‘chronos’ (time). It was
-         * initially created to automate administrative tasks on UNIX systems, but is now used
-         * in a wide range of applications.
+         * The concept of ReactiveX is very well summarized on the official website, so it is better
+         * to read there.
          * 
-         * Cron has the following characteristics:
+         * - [ReactiveX](https://reactivex.io/intro.html)
+         * - [Observable](https://reactivex.io/documentation/observable.html)
+         * - [Operators](https://reactivex.io/documentation/operators.html)
          * 
-         * - Routine tasks such as system administration tasks, backups and log rotation can be
-         * automated.
-         * - It is a standard feature of UNIX/Linux-based systems and has developed into an
-         * important element in system administration.
-         * - Complex execution schedules, from minutes to years, can be expressed concisely.
+         * The {@link Signal} class that implements the Reactive Pattern. This class provides
+         * methods for subscribing to the {@link Signal} as well as delegate methods to the various
+         * observers.
          * 
-         * Cron is used in modern systems in a variety of situations, including
+         * In Reactive Pattern an observer subscribes to a {@link Signal}. Then that observer reacts
+         * to whatever item or sequence of items the {@link Signal} emits. This pattern facilitates
+         * concurrent operations because it does not need to block while waiting for the
+         * {@link Signal}
+         * to emit objects, but instead it creates a sentry in the form of an observer that stands
+         * ready to react appropriately at whatever future time the {@link Signal} does so.
          * 
-         * - It is also used by AWS CloudWatch Events, Google Cloud Scheduler and other cloud
-         * services.
-         * - It is also standard in many modern tools, such as Jenkins and Kubernetes CronJob.
-         * - It is used to control batch processing and scheduled tasks in microservice
-         * architectures.
+         * The subscribe method is how you connect an {@link Observer} to a {@link Signal}. Your
+         * {@link Observer} implements some subset of the following methods:
+         * 
+         * - {@link Observer#accept(Object)} - A {@link Signal} calls this method whenever the
+         * {@link Signal} emits an item. This method takes as a parameter the item emitted by the
+         * {@link Signal}.
+         * - {@link Observer#error(Throwable)} - A {@link Signal} calls this method to indicate that
+         * it has failed to generate the expected data or has encountered some other error. It will
+         * not make further calls to {@link Observer#error(Throwable)} or
+         * {@link Observer#complete()}. The {@link Observer#error(Throwable)} method takes as its
+         * parameter an indication of what caused the error.
+         * - {@link Observer#complete()} - A {@link Signal} calls this method after it has called
+         * {@link Observer#accept(Object)} for the final time, if it has not encountered any errors.
+         * 
+         * By the terms of the {@link Signal} contract, it may call {@link Observer#accept(Object)}
+         * zero or more times, and then may follow those calls with a call to either
+         * {@link Observer#complete()} or {@link Observer#error(Throwable)} but not both, which will
+         * be its last call. By convention, in this document, calls to
+         * {@link Observer#accept(Object)} are usually called &ldquo;emissions&rdquo; of items,
+         * whereas calls to {@link Observer#complete()} or {@link Observer#error(Throwable)} are
+         * called &ldquo;notifications.&rdquo;
          */
         public class Concept {
+        }
+
+        public class Subscribe {
+        }
+
+        public class Unsubscribe {
+        }
+
+        public class Operators {
+        }
+    }
+
+    public class Scheduling {
+
+        /**
+         * Scheduling tasks to run at specific times or intervals is a common requirement.
+         * Sinobu provides a simple yet powerful mechanism for this, based on the well-known
+         * Cron expression format. It integrates seamlessly with Sinobu's reactive streams.
+         *
+         * ✨ Simple API<br/>
+         * Schedule tasks with a single static method call: {@link I#schedule(String)}.
+         * No complex setup or scheduler instances needed.
+         * {@link Concept#scheduling() @}
+         * 
+         * 🗓️ Cron Expression Syntax<br/>
+         * Define complex schedules using the standard Cron format, specifying minutes,
+         * hours, days, months, and weekdays. Sinobu supports standard fields and special
+         * characters like `*`, `/`, `-`, `,`, `L`, `W`, `#`, `?`, and the randomizer `R`.
+         *
+         * 🔄 Reactive Integration<br/>
+         * Scheduled events are delivered as a {@link Signal}, allowing you to use
+         * reactive operators for flow control (e.g., {@link Signal#take(long) take}),
+         * transformation, and lifecycle management ({@link Disposable}).
+         */
+        public class Concept {
+            void scheduling() {
+                I.schedule(() -> {
+                    // execute your job immediately on job thread
+                });
+
+                I.schedule("0 0 * * *").to(() -> {
+                    // execute your job regularly on job thread
+                });
+            }
         }
 
         /**
@@ -1607,6 +1666,17 @@ public class DocumentDoc {
              */
             public class Formatting_Options {
             }
+        }
+    }
+
+    public class Persistence {
+        public class Saving_Objects {
+        }
+
+        public class Automatic_Saving {
+        }
+
+        public class Storage_Location {
         }
     }
 }
