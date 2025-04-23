@@ -370,19 +370,14 @@ const root = {
 							"title": "Filtering"
 						},
 						{
-							"path": "doc/doc.DocumentDoc.HTML.html#doc.DocumentDoc.HTML.Traversing.Moving_Upwards",
+							"path": "doc/doc.DocumentDoc.HTML.html#doc.DocumentDoc.HTML.Traversing.Vertical_Movement",
 							"subs": [],
-							"title": "Moving Upwards"
+							"title": "Vertical Movement"
 						},
 						{
-							"path": "doc/doc.DocumentDoc.HTML.html#doc.DocumentDoc.HTML.Traversing.Moving_Downwards",
+							"path": "doc/doc.DocumentDoc.HTML.html#doc.DocumentDoc.HTML.Traversing.Horizontal_Movement",
 							"subs": [],
-							"title": "Moving Downwards"
-						},
-						{
-							"path": "doc/doc.DocumentDoc.HTML.html#doc.DocumentDoc.HTML.Traversing.Moving_Sideways",
-							"subs": [],
-							"title": "Moving Sideways"
+							"title": "Horizontal Movement"
 						},
 						{
 							"path": "doc/doc.DocumentDoc.HTML.html#doc.DocumentDoc.HTML.Traversing.Iteration",

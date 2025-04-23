@@ -7,22 +7,22 @@
 		<link href="https://cdn.jsdelivr.net" rel="preconnect"/>
 		<link href="https://fonts.googleapis.com" rel="preconnect"/>
 		<link crossorigin="null" href="https://fonts.gstatic.com" rel="preconnect"/>
-		<link as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?display=swap&#38;family=Inter" rel="preload"/>
-		<link href="https://fonts.googleapis.com/css2?display=swap&#38;family=Inter" media="print" onload="this.media=&#39;all&#39;" rel="stylesheet"/>
-		<link as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?display=swap&#38;family=Material+Icons" rel="preload"/>
-		<link href="https://fonts.googleapis.com/css2?display=swap&#38;family=Material+Icons" media="print" onload="this.media=&#39;all&#39;" rel="stylesheet"/>
-		<link as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?display=swap&#38;family=Vollkorn" rel="preload"/>
-		<link href="https://fonts.googleapis.com/css2?display=swap&#38;family=Vollkorn" media="print" onload="this.media=&#39;all&#39;" rel="stylesheet"/>
+		<link as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Inter" rel="preload"/>
+		<link href="https://fonts.googleapis.com/css2?display=swap&amp;family=Inter" media="print" onload="this.media=&apos;all&apos;" rel="stylesheet"/>
+		<link as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Material+Icons" rel="preload"/>
+		<link href="https://fonts.googleapis.com/css2?display=swap&amp;family=Material+Icons" media="print" onload="this.media=&apos;all&apos;" rel="stylesheet"/>
+		<link as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Vollkorn" rel="preload"/>
+		<link href="https://fonts.googleapis.com/css2?display=swap&amp;family=Vollkorn" media="print" onload="this.media=&apos;all&apos;" rel="stylesheet"/>
 		<title>Sinobu API</title>
 		<base href="../"/>
 		<script src="mimic.js" type="module"></script>
 		<link href="https://cdn.jsdelivr.net/npm/ress@4.0.0/dist/ress.min.css" rel="stylesheet"/>
 		<link href="main.css" rel="stylesheet"/>
 	</head>
-	<body class="V">
-		<header class="W" date="2025-04-12" ver="4.8.0">
-			<h1 class="f"><code>Sinobu</code></h1>
-			<nav class="g"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="text A svg" viewBox="0 0 24 24">
+	<body class="X">
+		<header class="T" date="2025-04-23" ver="4.8.0">
+			<h1 class="P"><code>Sinobu</code></h1>
+			<nav class="U"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="text A svg" viewBox="0 0 24 24">
 						<use href="main.svg#text"/>
 					</svg>Document</a><a href="api/" id="API"><svg class="package A svg" viewBox="0 0 24 24">
 						<use href="main.svg#package"/>
@@ -37,26 +37,26 @@
 						<use href="main.svg#github"/>
 					</svg>
 				</a></nav>
-			<div class="h"><a aria-label="Change color scheme" id="theme"><svg class="sun A svg" viewBox="0 0 24 24">
+			<div class="Q"><a aria-label="Change color scheme" id="theme"><svg class="sun A svg" viewBox="0 0 24 24">
 						<use href="main.svg#sun"/>
 					</svg><svg class="moon A svg" viewBox="0 0 24 24">
 						<use href="main.svg#moon"/>
 					</svg>
 				</a></div>
 		</header>
-		<nav class="H"></nav>
-		<article class="X" id="Article">
-			<div class="q">
+		<nav class="V"></nav>
+		<article class="Y" id="Article">
+			<div class="n">
 				<section class="B" id="doc.DocumentDoc.Template_Literal.Usage">
-					<header class="B j">
+					<header class="B L">
 						<h2>Usage</h2>
-						<div class="o"><span class="perp r"><svg class="copy A svg" viewBox="0 0 24 24">
+						<div class="e"><span class="perp k"><svg class="copy A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
-							</span><a class="tweet r"><svg class="twitter A svg" viewBox="0 0 24 24">
+							</span><a class="tweet k"><svg class="twitter A svg" viewBox="0 0 24 24">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit r" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L1021-L1021"><svg class="edit A svg" viewBox="0 0 24 24">
+							</a><a class="edit k" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L1040-L1040"><svg class="edit A svg" viewBox="0 0 24 24">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
@@ -65,43 +65,43 @@ import kiss.I;
 
 class MustacheTest {
 
-    String template = &#34;She is {name}, {age} years old.&#34;;
+    String template = &quot;She is {name}, {age} years old.&quot;;
 
     record Person(String name, int age) {
     }
 
     @Test
     void use() {
-        Person data = new Person(&#34;Takina Inoue&#34;, 16);
-        assert I.express(template, data).equals(&#34;She is Takina Inoue, 16 years old.&#34;);
+        Person data = new Person(&quot;Takina Inoue&quot;, 16);
+        assert I.express(template, data).equals(&quot;She is Takina Inoue, 16 years old.&quot;);
     }
 }</code></pre>
 					</span></section>
 			</div>
-			<div class="q">
+			<div class="n">
 				<section class="B" id="doc.DocumentDoc.Template_Literal.Mustache">
-					<header class="B j">
+					<header class="B L">
 						<h2>Mustache</h2>
-						<div class="o"><span class="perp r"><svg class="copy A svg" viewBox="0 0 24 24">
+						<div class="e"><span class="perp k"><svg class="copy A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
-							</span><a class="tweet r"><svg class="twitter A svg" viewBox="0 0 24 24">
+							</span><a class="tweet k"><svg class="twitter A svg" viewBox="0 0 24 24">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit r" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L1027-L1036"><svg class="edit A svg" viewBox="0 0 24 24">
+							</a><a class="edit k" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L1046-L1055"><svg class="edit A svg" viewBox="0 0 24 24">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
 					</header><span class="B"><p>Mustache can be used for HTML, config files, source code - anything. It works by
 expanding tags in a template using values provided in a hash or object. We call it
-&#38;quot;logic-less&#38;quot; because there are no if statements, else clauses, or for loops. Instead
+&quot;logic-less&quot; because there are no if statements, else clauses, or for loops. Instead
 there are only tags. Some tags are replaced with a value, some nothing, and others a
 series of values.</p><p>Java19 does not yet have a language built-in template syntax. Therefore, Sinobu
 provides
 a mechanism to parse <a href="https://mustache.github.io/">Mustache</a> syntax
 instead.</p></span></section>
-				<section class="B i" id="doc.DocumentDoc.Template_Literal.Mustache.Syntax">
-					<header class="B k">
+				<section class="B K" id="doc.DocumentDoc.Template_Literal.Mustache.Syntax">
+					<header class="B m">
 						<h3>Syntax</h3>
 					</header><span class="B"><p>To use Mustache, you must first create a Mustache template, which is written
 using a
@@ -109,16 +109,16 @@ markup language such as HTML or XML. In template, you use special symbols called
 Mustache delimiters to specify where the data should be inserted. Mustache
 delimiters
 are written in the following format:</p><pre class="lang-"><code>{placeholder}</code></pre><p>As you can see, Mustache delimiter is a string of characters enclosed in single
-brace, such as &#38;quot;{placeholder}&#38;quot;. This string specifies the location
+brace, such as &quot;{placeholder}&quot;. This string specifies the location
 where
 the data should be inserted. For example, consider the following Mustache
-template:</p><pre class="lang-java"><code>String template = &#34;She is {name}, {age} years old.&#34;;</code></pre><p>When using this template, you need to provide data for placeholders. For
+template:</p><pre class="lang-java"><code>String template = &quot;She is {name}, {age} years old.&quot;;</code></pre><p>When using this template, you need to provide data for placeholders. For
 instance,
 you might have the following JavaBean object as data:</p><pre class="lang-java"><code>record Person(String name, int age)</code></pre><p>Passing the template string and context data to method
 <code><a aria-label="kiss.I" href="api/kiss.I.html#express(java.lang.String,java.lang.Object...)">I#express(String, Object...)</a></code>, we get a string in which the various
-placeholders are replaced by its data.</p><pre class="lang-java"><code>Person data = new Person(&#34;Takina Inoue&#34;, 16);
+placeholders are replaced by its data.</p><pre class="lang-java"><code>Person data = new Person(&quot;Takina Inoue&quot;, 16);
 
-assert I.express(template, data).equals(&#34;She is Takina Inoue, 16 years old.&#34;);</code></pre><p>Next, within the program that uses the Mustache template, the Mustache engine is
+assert I.express(template, data).equals(&quot;She is Takina Inoue, 16 years old.&quot;);</code></pre><p>Next, within the program that uses the Mustache template, the Mustache engine is
 initialized. At this point, the Mustache engine is passed the template and the
 data.
 The data is written using data structures such as JavaScript objects.</p><p>Finally, the Mustache engine is used to render the Mustache template. At this
@@ -128,8 +128,8 @@ the
 data to produce a finished HTML, XML, or other markup language document.</p><p>The specific usage varies depending on the programming language and framework,
 but
 the above steps are a rough outline of the basic procedure for using Mustache.</p></span></section>
-				<section class="B i" id="doc.DocumentDoc.Template_Literal.Mustache.Usage_at_Sinobu">
-					<header class="B k">
+				<section class="B K" id="doc.DocumentDoc.Template_Literal.Mustache.Usage_at_Sinobu">
+					<header class="B m">
 						<h3>Usage at Sinobu</h3>
 					</header><span class="B"><p>In SInobu, Mustache can be used by calling the
 <code><a aria-label="kiss.I" href="api/kiss.I.html#express(java.lang.String,java.lang.Object...)">I#express(String, Object...)</a></code>
@@ -138,8 +138,8 @@ the
 context, substitutes them, and returns the resulting string.</p></span></section>
 			</div>
 		</article>
-		<aside class="K"></aside>
-		<footer class="S"/>
+		<aside class="Z"></aside>
+		<footer class="J"/>
 	</body>
 	<script src="root.js"></script>
 	<script src="main.js" type="module"></script>
