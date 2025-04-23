@@ -933,28 +933,20 @@ public class DocumentDoc {
             }
 
             /**
-             * Methods for managing element attributes (e.g., `href`, `src`, `id`).
+             * Methods for managing element attributes (e.g., `href`, `src`, `id`). Since the
+             * `class` attribute is frequently manipulated, dedicated helper methods are provided
+             * for convenience.
              *
              * | Method Link | Description |
              * | :-------------------------------- | :------------------------------------------- |
              * | {@link XML#attr(String)} | Get attribute value for the first element. |
              * | {@link XML#attr(String, Object)} | Set attribute value; `null` removes attribute.|
-             */
-            public class Attributes {
-            }
-
-            /**
-             * Methods for managing CSS classes on elements. Since the `class` attribute is
-             * frequently manipulated, dedicated helper methods are provided for convenience.
-             *
-             * | Method Link | Description |
-             * | :------------------------------- | :------------------------------------- |
              * | {@link XML#addClass(String...)} | Add one or more classes. |
              * | {@link XML#removeClass(String...)}| Remove one or more classes. |
              * | {@link XML#toggleClass(String)} | Add or remove a class based on presence.|
              * | {@link XML#hasClass(String)} | Check if any element has the class. |
              */
-            public class CSS_Classes {
+            public class Attributes {
             }
 
             /**
@@ -990,29 +982,23 @@ public class DocumentDoc {
             }
 
             /**
-             * Methods for moving vertically up or down the DOM tree, relative to the current
-             * elements.
+             * Methods for navigating the DOM tree relative to the current elements,
+             * including moving vertically (up to parents, down to children) and
+             * horizontally (sideways to siblings).
              *
              * | Method Link | Description |
-             * | :---------------- | :---------------------------------------- |
-             * | {@link XML#parent()} | Get the direct parent of each element in the current set. |
+             * | :------------------ | :------------------------ |
+             * | {@link XML#parent()} | Get the direct parent of each element in the current set.
+             * Duplicates are removed. |
              * | {@link XML#children()} | Get the direct children of each element in the set. |
              * | {@link XML#firstChild()} | Get the first direct child of each element in the set. |
              * | {@link XML#lastChild()} | Get the last direct child of each element in the set. |
+             * | {@link XML#prev()} | Get the immediately preceding sibling of each element in the
+             * set. |
+             * | {@link XML#next()} | Get the immediately following sibling of each element in the
+             * set. |
              */
-            public class Vertical_Movement {
-            }
-
-            /**
-             * Methods for moving sideways to sibling elements (elements at the same level in the
-             * DOM tree).
-             *
-             * | Method Link | Description |
-             * | :-------------- | :----------------------------------------- |
-             * | {@link XML#prev()} | Get the immediately preceding sibling. |
-             * | {@link XML#next()} | Get the immediately following sibling. |
-             */
-            public class Horizontal_Movement {
+            public class Tree_Navigation {
             }
 
             /**
