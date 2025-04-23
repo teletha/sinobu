@@ -714,10 +714,11 @@ public class DocumentDoc {
     public class HTML {
         /**
          * Sinobu provides functionality for handling HTML and XML documents.
-         * It uses a built-in, lenient parser (often called tag soup parser)
+         * It uses a built-in, lenient parser (often called a tag soup parser)
          * that can handle malformed HTML, similar to how web browsers do.
          * The core class for this is {@link XML}, which offers a jQuery-like
          * API for traversing and manipulating the document structure.
+         * This approach allows for robust parsing of real-world web content.
          */
         public class Concept {
         }
@@ -727,6 +728,7 @@ public class DocumentDoc {
          * Sinobu automatically detects whether the input is a URL, file path, or raw string.
          * The parser is designed to be tolerant of errors and can handle common issues
          * found in real-world HTML, such as missing tags or incorrect nesting.
+         * This makes it suitable for scraping or processing potentially messy markup.
          *
          * - {@link I#xml(String)}
          * - {@link I#xml(java.nio.file.Path)}
@@ -744,8 +746,9 @@ public class DocumentDoc {
         }
 
         /**
-         * You can serialize the XML structure back into a string or write it to an
+         * You can serialize the XML structure back into a string representation or write it to an
          * {@link Appendable} (like {@link Writer} or {@link StringBuilder}).
+         * Sinobu offers both compact and formatted output options.
          */
         public class Writing {
 
@@ -759,18 +762,22 @@ public class DocumentDoc {
 
             /**
              * The {@link XML#to(Appendable, String, String...)} method allows for pretty-printing
-             * with indentation. You can specify the indentation string (e.g. tab or whitespace).
+             * the XML structure with configurable indentation for improved readability.
+             * You can specify the indentation string (e.g., a tab character `\t` or spaces).
              * {@link XMLWriterTest#specialIndent() @}
              * 
              * You can also specify tag names that should be treated as inline elements (no line
-             * breaks around them).
+             * breaks around them), preserving the original formatting for elements like `<span>` or
+             * `<a>`.
              * {@link XMLWriterTest#inlineElement() @}
              *
-             * By using the special prefix, you can also specify tag names that should be treated
-             * as non-empty elements (always have a closing tag even if it is empty).
+             * By using the special prefix `&` before a tag name, you can also specify tags that
+             * should always be treated as non-empty elements (always have a closing tag like
+             * `<script></script>`, even if empty).
              * {@link XMLWriterTest#nonEmptyElement() @}
              * 
-             * By passing null indent character, you can ignore formatter.
+             * By passing `null` as the indent character, formatting (indentation and line breaks)
+             * is disabled, similar to {@code toString()} but writing to an {@link Appendable}.
              * {@link XMLWriterTest#withoutFormat() @}
              */
             public class By_formatter {
@@ -780,7 +787,8 @@ public class DocumentDoc {
         /**
          * Sinobu leverages CSS selectors for querying elements within the document structure using
          * the {@link XML#find(String)} method. This provides a powerful and familiar way to select
-         * nodes, similar to JavaScript 'document#querySelectorAll'.
+         * nodes, similar to JavaScript's `document.querySelectorAll`.
+         * This library supports many standard CSS3 selectors and includes some useful extensions.
          * {@link XMLFindTest#type() @}
          * {@link XMLFindTest#attribute() @}
          * {@link XMLFindTest#clazz() @}
@@ -788,21 +796,24 @@ public class DocumentDoc {
          */
         public class CSS_Selector {
 
-            /**
-             * | Combinator | Description | Notes |
-             * | :---------- | :----------- | :------------ |
-             * | ` ` (Space) | Descendant | Default combinator between selectors |
-             * | `>` | Child | Direct children |
-             * | `+` | Adjacent Sibling | Immediately following sibling |
-             * | `~` | General Sibling | All following siblings |
-             * | `lt` | Adjacent Previous Sibling | **Sinobu Extension** |
-             * | `,` | Selector List | Groups multiple selectors |
-             * | `\|` | Namespace Separator | Used with type and attribute selectors |
-             */
+            /// Combinators define the relationship between selectors.
+            ///
+            /// | Combinator | Description | Notes |
+            /// | :---------- | :----------- | :------------ |
+            /// | ` ` (Space) | Descendant | Default combinator between selectors |
+            /// | `>` | Child | Direct children |
+            /// | `+` | Adjacent Sibling | Immediately following sibling |
+            /// | `~` | General Sibling | All following siblings |
+            /// | `<` | Adjacent Previous Sibling | **Sinobu Extension** |
+            /// | `,` | Selector List | Groups multiple selectors |
+            /// | `\|` | Namespace Separator | Used with type and attribute selectors |
+            ///
             public class Combinators {
             }
 
             /**
+             * Basic selectors target elements based on their type, class, or ID.
+             * 
              * | Selector Type | Example | Description |
              * | :------------ | :--------- | :------------------- |
              * | Type | `div` | By element name |
@@ -814,6 +825,9 @@ public class DocumentDoc {
             }
 
             /**
+             * Attribute selectors target elements based on the presence or value of their
+             * attributes.
+             * 
              * | Selector Syntax | Description |
              * | :----------------- | :------------------------------------------- |
              * | `[attr]` | Elements with an `attr` attribute |
@@ -829,6 +843,10 @@ public class DocumentDoc {
             }
 
             /**
+             * Pseudo-classes select elements based on their state, position, or characteristics not
+             * reflected by simple selectors. The table includes standard pseudo-classes and kiss
+             * library specific extensions (marked as Sinobu Extension).
+             * 
              * | Pseudo-Class | Description | Notes |
              * | :------------ | :----------------- | :------------------- |
              * | `:first-child` | First element among siblings | |
@@ -857,13 +875,16 @@ public class DocumentDoc {
         }
 
         /**
-         * The {@link XML} object provides a fluent API for modifying the document structure.
-         * Changes are made directly to the underlying DOM representation.
+         * The {@link XML} object provides a fluent API, similar to jQuery, for modifying the
+         * document structure.
+         * **Important:** These manipulation methods modify the underlying DOM structure directly;
+         * the {@link XML} object itself is mutable in this regard.
          * Explore the nested classes for specific manipulation categories.
          */
         public class Manipulation {
             /**
-             * Methods for inserting new content relative to the selected elements.
+             * Methods for inserting new content (elements, text, or other XML structures)
+             * relative to the selected elements in the document.
              *
              * | Method Link | Description |
              * | :--------------- | :---------------- |
@@ -889,7 +910,7 @@ public class DocumentDoc {
             }
 
             /**
-             * Methods for wrapping elements with new structures.
+             * Methods for wrapping selected elements with new HTML structures.
              *
              * | Method Link | Description |
              * | :------------------- | :----------------------------------------- |
@@ -901,6 +922,7 @@ public class DocumentDoc {
 
             /**
              * Methods for getting or setting the text content of elements.
+             * Text content represents the combined text of an element and its descendants.
              *
              * | Method Link | Description |
              * | :------------------- | :---------------------------------------- |
@@ -911,7 +933,7 @@ public class DocumentDoc {
             }
 
             /**
-             * Methods for managing element attributes.
+             * Methods for managing element attributes (e.g., `href`, `src`, `id`).
              *
              * | Method Link | Description |
              * | :-------------------------------- | :------------------------------------------- |
@@ -922,7 +944,8 @@ public class DocumentDoc {
             }
 
             /**
-             * Methods for managing CSS classes on elements.
+             * Methods for managing CSS classes on elements. Since the `class` attribute is
+             * frequently manipulated, dedicated helper methods are provided for convenience.
              *
              * | Method Link | Description |
              * | :------------------------------- | :------------------------------------- |
@@ -935,7 +958,7 @@ public class DocumentDoc {
             }
 
             /**
-             * Method for duplicating elements.
+             * Method for duplicating elements, creating a deep copy.
              *
              * | Method Link | Description |
              * | :-------------- | :------------------------------------ |
@@ -947,13 +970,15 @@ public class DocumentDoc {
 
         /**
          * Navigate the DOM tree relative to the currently selected elements.
-         * Most traversal methods return a new {@link XML} object containing the resulting elements.
+         * Most traversal methods return a new {@link XML} object containing the resulting elements,
+         * allowing for method chaining without modifying the original selection (unless intended).
          * Explore the nested classes for specific traversal categories.
          */
         public class Traversing {
 
             /**
-             * Methods for filtering the current set of selected elements or finding new ones.
+             * Methods for filtering the current set of selected elements or finding new ones within
+             * the current context.
              *
              * | Method Link | Description |
              * | :-------------------- | :-------------------------------------- |
@@ -965,41 +990,35 @@ public class DocumentDoc {
             }
 
             /**
-             * Method for moving up the DOM tree.
+             * Methods for moving vertically up or down the DOM tree, relative to the current
+             * elements.
              *
              * | Method Link | Description |
              * | :---------------- | :---------------------------------------- |
-             * | {@link XML#parent()} | Get the direct parent of each element. |
+             * | {@link XML#parent()} | Get the direct parent of each element in the current set. |
+             * | {@link XML#children()} | Get the direct children of each element in the set. |
+             * | {@link XML#firstChild()} | Get the first direct child of each element in the set. |
+             * | {@link XML#lastChild()} | Get the last direct child of each element in the set. |
              */
-            public class Moving_Upwards {
+            public class Vertical_Movement {
             }
 
             /**
-             * Methods for moving down the DOM tree to child elements.
-             *
-             * | Method Link | Description |
-             * | :------------------- | :------------------------------------- |
-             * | {@link XML#children()} | Get the direct children of each element. |
-             * | {@link XML#firstChild()} | Get the first direct child of each element.|
-             * | {@link XML#lastChild()} | Get the last direct child of each element. |
-             */
-            public class Moving_Downwards {
-            }
-
-            /**
-             * Methods for moving sideways to sibling elements.
+             * Methods for moving sideways to sibling elements (elements at the same level in the
+             * DOM tree).
              *
              * | Method Link | Description |
              * | :-------------- | :----------------------------------------- |
              * | {@link XML#prev()} | Get the immediately preceding sibling. |
              * | {@link XML#next()} | Get the immediately following sibling. |
              */
-            public class Moving_Sideways {
+            public class Horizontal_Movement {
             }
 
             /**
-             * The {@link XML} object implements {@link Iterable}, allowing iteration
-             * over each element in the set individually using a standard for-each loop.
+             * The {@link XML} object implements {@link Iterable}, allowing easy iteration
+             * over each selected DOM element individually using a standard Java for-each loop.
+             * This is useful for processing each element in a selection.
              * {@link #iterate() @}
              */
             public class Iteration {
