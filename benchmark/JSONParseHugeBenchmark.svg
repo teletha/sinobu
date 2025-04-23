@@ -43,30 +43,30 @@
   <rect x="400" y="204" width="30" fill="#4FB84B" class="bar"/>
   <text x="440" y="216">GC</text>
   <text x="160" y="37" text-anchor="end">FastJson</text>
-  <text x="160" y="47" text-anchor="end" class="desc">2.0.53.android8</text>
-  <rect x="175" y="20" width="194.46" rx="2" ry="2" fill="#4886CD" class="bar"/>
-  <text x="376.46" y="30" class="desc">7735434</text>
+  <text x="160" y="47" text-anchor="end" class="desc">2.0.57.android8</text>
+  <rect x="175" y="20" width="241.16" rx="2" ry="2" fill="#4886CD" class="bar"/>
+  <text x="423.16" y="30" class="desc">7904002</text>
   <rect x="175" y="32" width="93.33" rx="2" ry="2" fill="#4FB84B" class="bar"/>
   <text x="275.33" y="42" class="desc">2</text>
   <text x="160" y="81" text-anchor="end">Sinobu</text>
-  <text x="160" y="91" text-anchor="end" class="desc">4.0.0</text>
-  <rect x="175" y="64" width="200.98" rx="2" ry="2" fill="#4886CD" class="bar"/>
-  <text x="382.98" y="74" class="desc">7994949</text>
+  <text x="160" y="91" text-anchor="end" class="desc">4.8.0</text>
+  <rect x="175" y="64" width="242.71" rx="2" ry="2" fill="#4886CD" class="bar"/>
+  <text x="424.71" y="74" class="desc">7955019</text>
   <rect x="175" y="76" width="140.00" rx="2" ry="2" fill="#4FB84B" class="bar"/>
   <text x="322.00" y="86" class="desc">3</text>
   <text x="160" y="125" text-anchor="end">Jackson</text>
-  <text x="160" y="135" text-anchor="end" class="desc">2.18.0</text>
-  <rect x="175" y="108" width="280.19" rx="2" ry="2" fill="#4886CD" class="bar"/>
-  <text x="462.19" y="118" class="desc">11145531</text>
+  <text x="160" y="135" text-anchor="end" class="desc">2.19.0-rc2</text>
+  <rect x="175" y="108" width="316.69" rx="2" ry="2" fill="#4886CD" class="bar"/>
+  <text x="498.69" y="118" class="desc">10379847</text>
   <rect x="175" y="120" width="93.33" rx="2" ry="2" fill="#4FB84B" class="bar"/>
   <text x="275.33" y="130" class="desc">2</text>
   <text x="160" y="169" text-anchor="end">Gson</text>
-  <text x="160" y="179" text-anchor="end" class="desc">2.11.0</text>
+  <text x="160" y="179" text-anchor="end" class="desc">2.13.0</text>
   <rect x="175" y="152" width="350.00" rx="2" ry="2" fill="#4886CD" class="bar"/>
-  <text x="532.00" y="162" class="desc">13922623</text>
-  <rect x="175" y="164" width="93.33" rx="2" ry="2" fill="#4FB84B" class="bar"/>
-  <text x="275.33" y="174" class="desc">2</text>
-  <text x="175" y="236" class="desc">Java: 21</text>
+  <text x="532.00" y="162" class="desc">11471458</text>
+  <rect x="175" y="164" width="140.00" rx="2" ry="2" fill="#4FB84B" class="bar"/>
+  <text x="322.00" y="174" class="desc">3</text>
+  <text x="175" y="236" class="desc">Java: 24</text>
   <text x="245" y="236" class="desc">Memory: 4072MB</text>
   <text x="345" y="236" class="desc">CPU: Intel(R) Core(TM) i7-3770K CPU @ 3.50GHz 3.501GHz</text>
 </svg>
