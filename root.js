@@ -4,9 +4,9 @@ const root = {
 			"path": "doc/doc.DocumentDoc.Introduction.html",
 			"subs": [
 				{
-					"path": "doc/doc.DocumentDoc.Introduction.html#doc.DocumentDoc.Introduction.Purpose_of_use",
+					"path": "doc/doc.DocumentDoc.Introduction.html#doc.DocumentDoc.Introduction.Overview",
 					"subs": [],
-					"title": "Purpose of use"
+					"title": "Overview"
 				},
 				{
 					"path": "doc/doc.DocumentDoc.Introduction.html#doc.DocumentDoc.Introduction.How_to_install",
@@ -17,39 +17,39 @@ const root = {
 			"title": "Introduction"
 		},
 		{
-			"path": "doc/doc.DocumentDoc.Managing_object_lifestyle.html",
+			"path": "doc/doc.DocumentDoc.Lifestyle_Management.html",
 			"subs": [
 				{
-					"path": "doc/doc.DocumentDoc.Managing_object_lifestyle.html#doc.DocumentDoc.Managing_object_lifestyle.What_do_you_mean_by_lifestyle_",
+					"path": "doc/doc.DocumentDoc.Lifestyle_Management.html#doc.DocumentDoc.Lifestyle_Management.Concept",
 					"subs": [
 						{
-							"path": "doc/doc.DocumentDoc.Managing_object_lifestyle.html#doc.DocumentDoc.Managing_object_lifestyle.What_do_you_mean_by_lifestyle_.Creating_an_object",
+							"path": "doc/doc.DocumentDoc.Lifestyle_Management.html#doc.DocumentDoc.Lifestyle_Management.Concept.Creating_an_object",
 							"subs": [],
 							"title": "Creating an object"
 						}
 					],
-					"title": "What do you mean by lifestyle?"
+					"title": "Concept"
 				},
 				{
-					"path": "doc/doc.DocumentDoc.Managing_object_lifestyle.html#doc.DocumentDoc.Managing_object_lifestyle.Defining_lifestyle",
+					"path": "doc/doc.DocumentDoc.Lifestyle_Management.html#doc.DocumentDoc.Lifestyle_Management.Defining_lifestyle",
 					"subs": [
 						{
-							"path": "doc/doc.DocumentDoc.Managing_object_lifestyle.html#doc.DocumentDoc.Managing_object_lifestyle.Defining_lifestyle.Prototype",
+							"path": "doc/doc.DocumentDoc.Lifestyle_Management.html#doc.DocumentDoc.Lifestyle_Management.Defining_lifestyle.Prototype",
 							"subs": [],
 							"title": "Prototype"
 						},
 						{
-							"path": "doc/doc.DocumentDoc.Managing_object_lifestyle.html#doc.DocumentDoc.Managing_object_lifestyle.Defining_lifestyle.Singleton",
+							"path": "doc/doc.DocumentDoc.Lifestyle_Management.html#doc.DocumentDoc.Lifestyle_Management.Defining_lifestyle.Singleton",
 							"subs": [],
 							"title": "Singleton"
 						},
 						{
-							"path": "doc/doc.DocumentDoc.Managing_object_lifestyle.html#doc.DocumentDoc.Managing_object_lifestyle.Defining_lifestyle.Custom_lifestyle",
+							"path": "doc/doc.DocumentDoc.Lifestyle_Management.html#doc.DocumentDoc.Lifestyle_Management.Defining_lifestyle.Custom_lifestyle",
 							"subs": [],
 							"title": "Custom lifestyle"
 						},
 						{
-							"path": "doc/doc.DocumentDoc.Managing_object_lifestyle.html#doc.DocumentDoc.Managing_object_lifestyle.Defining_lifestyle.Builtin_lifestyles",
+							"path": "doc/doc.DocumentDoc.Lifestyle_Management.html#doc.DocumentDoc.Lifestyle_Management.Defining_lifestyle.Builtin_lifestyles",
 							"subs": [],
 							"title": "Builtin lifestyles"
 						}
@@ -57,15 +57,15 @@ const root = {
 					"title": "Defining lifestyle"
 				},
 				{
-					"path": "doc/doc.DocumentDoc.Managing_object_lifestyle.html#doc.DocumentDoc.Managing_object_lifestyle.Applying_lifestyle",
+					"path": "doc/doc.DocumentDoc.Lifestyle_Management.html#doc.DocumentDoc.Lifestyle_Management.Applying_lifestyle",
 					"subs": [
 						{
-							"path": "doc/doc.DocumentDoc.Managing_object_lifestyle.html#doc.DocumentDoc.Managing_object_lifestyle.Applying_lifestyle.Use_Managed_annotation",
+							"path": "doc/doc.DocumentDoc.Lifestyle_Management.html#doc.DocumentDoc.Lifestyle_Management.Applying_lifestyle.Use_Managed_annotation",
 							"subs": [],
 							"title": "Use Managed annotation"
 						},
 						{
-							"path": "doc/doc.DocumentDoc.Managing_object_lifestyle.html#doc.DocumentDoc.Managing_object_lifestyle.Applying_lifestyle.Use_Lifestyle_extension",
+							"path": "doc/doc.DocumentDoc.Lifestyle_Management.html#doc.DocumentDoc.Lifestyle_Management.Applying_lifestyle.Use_Lifestyle_extension",
 							"subs": [],
 							"title": "Use Lifestyle extension"
 						}
@@ -73,7 +73,7 @@ const root = {
 					"title": "Applying lifestyle"
 				}
 			],
-			"title": "Managing object lifestyle"
+			"title": "Lifestyle Management"
 		},
 		{
 			"path": "doc/doc.DocumentDoc.Dependency_Injection.html",
@@ -119,33 +119,33 @@ const root = {
 			"title": "Dependency Injection"
 		},
 		{
-			"path": "doc/doc.DocumentDoc.Model_and_Property.html",
+			"path": "doc/doc.DocumentDoc.Object_Modeling.html",
 			"subs": [
 				{
-					"path": "doc/doc.DocumentDoc.Model_and_Property.html#doc.DocumentDoc.Model_and_Property.Concept",
+					"path": "doc/doc.DocumentDoc.Object_Modeling.html#doc.DocumentDoc.Object_Modeling.Concept",
 					"subs": [],
 					"title": "Concept"
 				},
 				{
-					"path": "doc/doc.DocumentDoc.Model_and_Property.html#doc.DocumentDoc.Model_and_Property.Models",
+					"path": "doc/doc.DocumentDoc.Object_Modeling.html#doc.DocumentDoc.Object_Modeling.Models",
 					"subs": [],
 					"title": "Models"
 				},
 				{
-					"path": "doc/doc.DocumentDoc.Model_and_Property.html#doc.DocumentDoc.Model_and_Property.Property",
+					"path": "doc/doc.DocumentDoc.Object_Modeling.html#doc.DocumentDoc.Object_Modeling.Property",
 					"subs": [
 						{
-							"path": "doc/doc.DocumentDoc.Model_and_Property.html#doc.DocumentDoc.Model_and_Property.Property.By_Field",
+							"path": "doc/doc.DocumentDoc.Object_Modeling.html#doc.DocumentDoc.Object_Modeling.Property.By_Field",
 							"subs": [],
 							"title": "By Field"
 						},
 						{
-							"path": "doc/doc.DocumentDoc.Model_and_Property.html#doc.DocumentDoc.Model_and_Property.Property.By_Variable_Field",
+							"path": "doc/doc.DocumentDoc.Object_Modeling.html#doc.DocumentDoc.Object_Modeling.Property.By_Variable_Field",
 							"subs": [],
 							"title": "By Variable Field"
 						},
 						{
-							"path": "doc/doc.DocumentDoc.Model_and_Property.html#doc.DocumentDoc.Model_and_Property.Property.By_Method",
+							"path": "doc/doc.DocumentDoc.Object_Modeling.html#doc.DocumentDoc.Object_Modeling.Property.By_Method",
 							"subs": [],
 							"title": "By Method"
 						}
@@ -153,20 +153,20 @@ const root = {
 					"title": "Property"
 				},
 				{
-					"path": "doc/doc.DocumentDoc.Model_and_Property.html#doc.DocumentDoc.Model_and_Property.Manipulation",
+					"path": "doc/doc.DocumentDoc.Object_Modeling.html#doc.DocumentDoc.Object_Modeling.Manipulation",
 					"subs": [
 						{
-							"path": "doc/doc.DocumentDoc.Model_and_Property.html#doc.DocumentDoc.Model_and_Property.Manipulation.Get",
+							"path": "doc/doc.DocumentDoc.Object_Modeling.html#doc.DocumentDoc.Object_Modeling.Manipulation.Get",
 							"subs": [],
 							"title": "Get"
 						},
 						{
-							"path": "doc/doc.DocumentDoc.Model_and_Property.html#doc.DocumentDoc.Model_and_Property.Manipulation.Set",
+							"path": "doc/doc.DocumentDoc.Object_Modeling.html#doc.DocumentDoc.Object_Modeling.Manipulation.Set",
 							"subs": [],
 							"title": "Set"
 						},
 						{
-							"path": "doc/doc.DocumentDoc.Model_and_Property.html#doc.DocumentDoc.Model_and_Property.Manipulation.Monitor",
+							"path": "doc/doc.DocumentDoc.Object_Modeling.html#doc.DocumentDoc.Object_Modeling.Manipulation.Monitor",
 							"subs": [],
 							"title": "Monitor"
 						}
@@ -174,93 +174,72 @@ const root = {
 					"title": "Manipulation"
 				}
 			],
-			"title": "Model and Property"
+			"title": "Object Modeling"
 		},
 		{
-			"path": "doc/doc.DocumentDoc.ReactiveX.html",
+			"path": "doc/doc.DocumentDoc.Extensibility.html",
 			"subs": [
 				{
-					"path": "doc/doc.DocumentDoc.ReactiveX.html#doc.DocumentDoc.ReactiveX.Concept",
+					"path": "doc/doc.DocumentDoc.Extensibility.html#doc.DocumentDoc.Extensibility.Usage",
 					"subs": [],
-					"title": "Concept"
+					"title": "Usage"
 				},
 				{
-					"path": "doc/doc.DocumentDoc.ReactiveX.html#doc.DocumentDoc.ReactiveX.Subscribe",
+					"path": "doc/doc.DocumentDoc.Extensibility.html#doc.DocumentDoc.Extensibility.Extension_Point",
 					"subs": [],
-					"title": "Subscribe"
+					"title": "Extension Point"
 				},
 				{
-					"path": "doc/doc.DocumentDoc.ReactiveX.html#doc.DocumentDoc.ReactiveX.Unsubscribe",
+					"path": "doc/doc.DocumentDoc.Extensibility.html#doc.DocumentDoc.Extensibility.Extension",
 					"subs": [],
-					"title": "Unsubscribe"
+					"title": "Extension"
 				},
 				{
-					"path": "doc/doc.DocumentDoc.ReactiveX.html#doc.DocumentDoc.ReactiveX.Operators",
+					"path": "doc/doc.DocumentDoc.Extensibility.html#doc.DocumentDoc.Extensibility.Extension_Key",
 					"subs": [],
-					"title": "Operators"
+					"title": "Extension Key"
+				},
+				{
+					"path": "doc/doc.DocumentDoc.Extensibility.html#doc.DocumentDoc.Extensibility.Dynamic_Loading",
+					"subs": [],
+					"title": "Dynamic Loading"
 				}
 			],
-			"title": "ReactiveX"
-		},
-		{
-			"path": "doc/doc.DocumentDoc.HTTP.html",
-			"subs": [
-				{
-					"path": "doc/doc.DocumentDoc.HTTP.html#doc.DocumentDoc.HTTP.Request_and_Response",
-					"subs": [],
-					"title": "Request and Response"
-				},
-				{
-					"path": "doc/doc.DocumentDoc.HTTP.html#doc.DocumentDoc.HTTP.Supported_Type",
-					"subs": [],
-					"title": "Supported Type"
-				},
-				{
-					"path": "doc/doc.DocumentDoc.HTTP.html#doc.DocumentDoc.HTTP.Cookie",
-					"subs": [],
-					"title": "Cookie"
-				},
-				{
-					"path": "doc/doc.DocumentDoc.HTTP.html#doc.DocumentDoc.HTTP.Authentication",
-					"subs": [],
-					"title": "Authentication"
-				}
-			],
-			"title": "HTTP"
+			"title": "Extensibility"
 		},
 		{
 			"path": "doc/doc.DocumentDoc.JSON.html",
 			"subs": [
 				{
-					"path": "doc/doc.DocumentDoc.JSON.html#doc.DocumentDoc.JSON.Reading_JSON",
+					"path": "doc/doc.DocumentDoc.JSON.html#doc.DocumentDoc.JSON.Concept",
+					"subs": [],
+					"title": "Concept"
+				},
+				{
+					"path": "doc/doc.DocumentDoc.JSON.html#doc.DocumentDoc.JSON.Reading",
 					"subs": [
 						{
-							"path": "doc/doc.DocumentDoc.JSON.html#doc.DocumentDoc.JSON.Reading_JSON.Access_to_the_value",
+							"path": "doc/doc.DocumentDoc.JSON.html#doc.DocumentDoc.JSON.Reading.Access_to_the_value",
 							"subs": [],
 							"title": "Access to the value"
 						},
 						{
-							"path": "doc/doc.DocumentDoc.JSON.html#doc.DocumentDoc.JSON.Reading_JSON.Access_to_the_nested_value",
+							"path": "doc/doc.DocumentDoc.JSON.html#doc.DocumentDoc.JSON.Reading.Access_to_the_nested_value",
 							"subs": [],
 							"title": "Access to the nested value"
 						}
 					],
-					"title": "Reading JSON"
+					"title": "Reading"
 				},
 				{
-					"path": "doc/doc.DocumentDoc.JSON.html#doc.DocumentDoc.JSON.Writing_JSON",
+					"path": "doc/doc.DocumentDoc.JSON.html#doc.DocumentDoc.JSON.Writing",
 					"subs": [],
-					"title": "Writing JSON"
+					"title": "Writing"
 				},
 				{
-					"path": "doc/doc.DocumentDoc.JSON.html#doc.DocumentDoc.JSON.Mapping_to_Model",
+					"path": "doc/doc.DocumentDoc.JSON.html#doc.DocumentDoc.JSON.Mapping",
 					"subs": [],
-					"title": "Mapping to Model"
-				},
-				{
-					"path": "doc/doc.DocumentDoc.JSON.html#doc.DocumentDoc.JSON.Mapping_from_Model",
-					"subs": [],
-					"title": "Mapping from Model"
+					"title": "Mapping"
 				}
 			],
 			"title": "JSON"
@@ -381,132 +360,132 @@ const root = {
 			"title": "HTML"
 		},
 		{
-			"path": "doc/doc.DocumentDoc.Template_Literal.html",
+			"path": "doc/doc.DocumentDoc.Template_Engine.html",
 			"subs": [
 				{
-					"path": "doc/doc.DocumentDoc.Template_Literal.html#doc.DocumentDoc.Template_Literal.Usage",
+					"path": "doc/doc.DocumentDoc.Template_Engine.html#doc.DocumentDoc.Template_Engine.Usage",
 					"subs": [],
 					"title": "Usage"
 				},
 				{
-					"path": "doc/doc.DocumentDoc.Template_Literal.html#doc.DocumentDoc.Template_Literal.Mustache",
+					"path": "doc/doc.DocumentDoc.Template_Engine.html#doc.DocumentDoc.Template_Engine.Mustache",
 					"subs": [
 						{
-							"path": "doc/doc.DocumentDoc.Template_Literal.html#doc.DocumentDoc.Template_Literal.Mustache.Syntax",
+							"path": "doc/doc.DocumentDoc.Template_Engine.html#doc.DocumentDoc.Template_Engine.Mustache.Syntax",
 							"subs": [],
 							"title": "Syntax"
 						},
 						{
-							"path": "doc/doc.DocumentDoc.Template_Literal.html#doc.DocumentDoc.Template_Literal.Mustache.Usage_at_Sinobu",
+							"path": "doc/doc.DocumentDoc.Template_Engine.html#doc.DocumentDoc.Template_Engine.Mustache.Usage_at_Sinobu",
 							"subs": [],
 							"title": "Usage at Sinobu"
+						},
+						{
+							"path": "doc/doc.DocumentDoc.Template_Engine.html#doc.DocumentDoc.Template_Engine.Mustache.Section",
+							"subs": [],
+							"title": "Section"
+						},
+						{
+							"path": "doc/doc.DocumentDoc.Template_Engine.html#doc.DocumentDoc.Template_Engine.Mustache.Comment",
+							"subs": [],
+							"title": "Comment"
 						}
 					],
 					"title": "Mustache"
-				},
-				{
-					"path": "doc/doc.DocumentDoc.Template_Literal.html#doc.DocumentDoc.Template_Literal.Section",
-					"subs": [],
-					"title": "Section"
-				},
-				{
-					"path": "doc/doc.DocumentDoc.Template_Literal.html#doc.DocumentDoc.Template_Literal.Comment",
-					"subs": [],
-					"title": "Comment"
 				}
 			],
-			"title": "Template Literal"
+			"title": "Template Engine"
 		},
 		{
-			"path": "doc/doc.DocumentDoc.Plugin.html",
+			"path": "doc/doc.DocumentDoc.HTTP.html",
 			"subs": [
 				{
-					"path": "doc/doc.DocumentDoc.Plugin.html#doc.DocumentDoc.Plugin.Usage",
+					"path": "doc/doc.DocumentDoc.HTTP.html#doc.DocumentDoc.HTTP.Request_and_Response",
 					"subs": [],
-					"title": "Usage"
+					"title": "Request and Response"
 				},
 				{
-					"path": "doc/doc.DocumentDoc.Plugin.html#doc.DocumentDoc.Plugin.Extension_Point",
+					"path": "doc/doc.DocumentDoc.HTTP.html#doc.DocumentDoc.HTTP.Supported_Type",
 					"subs": [],
-					"title": "Extension Point"
+					"title": "Supported Type"
 				},
 				{
-					"path": "doc/doc.DocumentDoc.Plugin.html#doc.DocumentDoc.Plugin.Extension",
+					"path": "doc/doc.DocumentDoc.HTTP.html#doc.DocumentDoc.HTTP.Cookie",
 					"subs": [],
-					"title": "Extension"
+					"title": "Cookie"
 				},
 				{
-					"path": "doc/doc.DocumentDoc.Plugin.html#doc.DocumentDoc.Plugin.Extension_Key",
+					"path": "doc/doc.DocumentDoc.HTTP.html#doc.DocumentDoc.HTTP.Authentication",
 					"subs": [],
-					"title": "Extension Key"
-				},
-				{
-					"path": "doc/doc.DocumentDoc.Plugin.html#doc.DocumentDoc.Plugin.Dynamic_Loading",
-					"subs": [],
-					"title": "Dynamic Loading"
+					"title": "Authentication"
 				}
 			],
-			"title": "Plugin"
+			"title": "HTTP"
 		},
 		{
-			"path": "doc/doc.DocumentDoc.Persistence.html",
+			"path": "doc/doc.DocumentDoc.Reactivity.html",
 			"subs": [
 				{
-					"path": "doc/doc.DocumentDoc.Persistence.html#doc.DocumentDoc.Persistence.Save_Data",
-					"subs": [],
-					"title": "Save Data"
-				},
-				{
-					"path": "doc/doc.DocumentDoc.Persistence.html#doc.DocumentDoc.Persistence.Save_Automatically",
-					"subs": [],
-					"title": "Save Automatically"
-				},
-				{
-					"path": "doc/doc.DocumentDoc.Persistence.html#doc.DocumentDoc.Persistence.Config_Location",
-					"subs": [],
-					"title": "Config Location"
-				}
-			],
-			"title": "Persistence"
-		},
-		{
-			"path": "doc/doc.DocumentDoc.Cron.html",
-			"subs": [
-				{
-					"path": "doc/doc.DocumentDoc.Cron.html#doc.DocumentDoc.Cron.Concept",
+					"path": "doc/doc.DocumentDoc.Reactivity.html#doc.DocumentDoc.Reactivity.Concept",
 					"subs": [],
 					"title": "Concept"
 				},
 				{
-					"path": "doc/doc.DocumentDoc.Cron.html#doc.DocumentDoc.Cron.Usage",
+					"path": "doc/doc.DocumentDoc.Reactivity.html#doc.DocumentDoc.Reactivity.Subscribe",
+					"subs": [],
+					"title": "Subscribe"
+				},
+				{
+					"path": "doc/doc.DocumentDoc.Reactivity.html#doc.DocumentDoc.Reactivity.Unsubscribe",
+					"subs": [],
+					"title": "Unsubscribe"
+				},
+				{
+					"path": "doc/doc.DocumentDoc.Reactivity.html#doc.DocumentDoc.Reactivity.Operators",
+					"subs": [],
+					"title": "Operators"
+				}
+			],
+			"title": "Reactivity"
+		},
+		{
+			"path": "doc/doc.DocumentDoc.Scheduling.html",
+			"subs": [
+				{
+					"path": "doc/doc.DocumentDoc.Scheduling.html#doc.DocumentDoc.Scheduling.Concept",
+					"subs": [],
+					"title": "Concept"
+				},
+				{
+					"path": "doc/doc.DocumentDoc.Scheduling.html#doc.DocumentDoc.Scheduling.Usage",
 					"subs": [],
 					"title": "Usage"
 				},
 				{
-					"path": "doc/doc.DocumentDoc.Cron.html#doc.DocumentDoc.Cron.Format",
+					"path": "doc/doc.DocumentDoc.Scheduling.html#doc.DocumentDoc.Scheduling.Format",
 					"subs": [
 						{
-							"path": "doc/doc.DocumentDoc.Cron.html#doc.DocumentDoc.Cron.Format.Second",
+							"path": "doc/doc.DocumentDoc.Scheduling.html#doc.DocumentDoc.Scheduling.Format.Second",
 							"subs": [],
 							"title": "Second"
 						},
 						{
-							"path": "doc/doc.DocumentDoc.Cron.html#doc.DocumentDoc.Cron.Format.Hour",
+							"path": "doc/doc.DocumentDoc.Scheduling.html#doc.DocumentDoc.Scheduling.Format.Hour",
 							"subs": [],
 							"title": "Hour"
 						},
 						{
-							"path": "doc/doc.DocumentDoc.Cron.html#doc.DocumentDoc.Cron.Format.Day",
+							"path": "doc/doc.DocumentDoc.Scheduling.html#doc.DocumentDoc.Scheduling.Format.Day",
 							"subs": [],
 							"title": "Day"
 						},
 						{
-							"path": "doc/doc.DocumentDoc.Cron.html#doc.DocumentDoc.Cron.Format.Month",
+							"path": "doc/doc.DocumentDoc.Scheduling.html#doc.DocumentDoc.Scheduling.Format.Month",
 							"subs": [],
 							"title": "Month"
 						},
 						{
-							"path": "doc/doc.DocumentDoc.Cron.html#doc.DocumentDoc.Cron.Format.Day_of_Week",
+							"path": "doc/doc.DocumentDoc.Scheduling.html#doc.DocumentDoc.Scheduling.Format.Day_of_Week",
 							"subs": [],
 							"title": "Day of Week"
 						}
@@ -514,12 +493,12 @@ const root = {
 					"title": "Format"
 				},
 				{
-					"path": "doc/doc.DocumentDoc.Cron.html#doc.DocumentDoc.Cron.Special_Characters",
+					"path": "doc/doc.DocumentDoc.Scheduling.html#doc.DocumentDoc.Scheduling.Special_Characters",
 					"subs": [],
 					"title": "Special Characters"
 				}
 			],
-			"title": "Cron"
+			"title": "Scheduling"
 		},
 		{
 			"path": "doc/doc.DocumentDoc.Logging.html",
@@ -557,6 +536,27 @@ const root = {
 				}
 			],
 			"title": "Logging"
+		},
+		{
+			"path": "doc/doc.DocumentDoc.Persistence.html",
+			"subs": [
+				{
+					"path": "doc/doc.DocumentDoc.Persistence.html#doc.DocumentDoc.Persistence.Saving_Objects",
+					"subs": [],
+					"title": "Saving Objects"
+				},
+				{
+					"path": "doc/doc.DocumentDoc.Persistence.html#doc.DocumentDoc.Persistence.Automatic_Saving",
+					"subs": [],
+					"title": "Automatic Saving"
+				},
+				{
+					"path": "doc/doc.DocumentDoc.Persistence.html#doc.DocumentDoc.Persistence.Storage_Location",
+					"subs": [],
+					"title": "Storage Location"
+				}
+			],
+			"title": "Persistence"
 		}
 	],
 	"modules": [],
