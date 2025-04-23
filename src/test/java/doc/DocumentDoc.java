@@ -11,7 +11,6 @@ package doc;
 
 import java.io.Writer;
 import java.lang.System.Logger.Level;
-import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -1471,21 +1470,30 @@ public class DocumentDoc {
     public class Logging {
 
         /**
-         * Sinobu provides a simple logging facility.
+         * Sinobu provides a minimalist, high-performance logging library designed with an emphasis
+         * on garbage-less operation and zero-boilerplate code. It is especially well-suited for
+         * high-throughput applications where every microsecond and memory allocation matters.
          * 
-         * **Avoid Boilerplate Code**<br/>
-         * Logging is performed using static methods like {@link I#info(Object)}. Therefore, you
-         * don't have to create a logger insntace for each class.
+         * 🚀 No Boilerplate<br/>
+         * Logging is as simple as calling a static method like {@link I#info(Object)}. Therefore,
+         * there’s no need to create logger instances per class. This approach dramatically reduces
+         * code clutter and eliminates repetitive logger setup.
          * {@link #log() @}
          * 
-         * **Garbage Less**<br/>
-         * Logging operations are highly optimized so that no new objects are created unless call
-         * stack information is used.
+         * ♻️ Garbage Less<br/>
+         * Many logging libraries create temporary objects (log events, strings, byte arrays, etc.)
+         * each time they output logs, causing GC latency; Sinobu tackles this problem head on and
+         * does not create new objects unless you explicitly request stack trace.
          * 
-         * **High Performance**<br/>
-         * Designed for speed, often outperforming other common logging libraries.
+         * ⚡ High Performance<br/>
+         * Sinobu is engineered for speed. Its optimized encoding, buffer reuse, and minimal
+         * synchronization mean it can outperform many mainstream logging libraries. Even under
+         * heavy logging loads, it maintains consistent performance with minimal CPU and memory
+         * impact.
+         * 
+         * ![Benchmark](https://raw.githubusercontent.com/teletha/sinobu/refs/heads/master/benchmark/LogBenchmark.svg)
          */
-        public class Features {
+        public class Overview {
 
             void log() {
                 I.info("Hello Logging");
@@ -1493,63 +1501,96 @@ public class DocumentDoc {
         }
 
         /**
-         * Basic methods for logging messages at different levels.
-         * These methods accept a single message object, which can be {@link Object} (using its
-         * toString() representation), {@link Supplier} which is evaluated lazily only if the log
-         * level is enabled, or {@link Throwable} (printing stack traces).
+         * Logging is performed via static methods such as {@link I#info(Object)} or
+         * {@link I#info(String, Object)}. These methods support various input types:
+         * 
+         * - {@link Object} - Use {@link Object#toString()} representation as message.
+         * - {@link Supplier} - Delaying the construction of message avoids
+         * extra processing when the log level prevents writing.
+         * - {@link Throwable} - A message and a stack trace back to the cause are written.
+         * {@link Usage#basic() @}
+         * {@link Usage#lazyEvaluation() @}
+         * {@link Usage#throwable() @}
+         * 
+         * 
+         * Most methods come in two forms:
+         * - Without category - logs to the default <b>system</b> category.
+         * - With category - the first argument specifies the log category, allowing fine-grained
+         * control.
          *
-         * Alternatively, most methods accept a {@code String category} as the first argument,
-         * followed by the message object (e.g., {@link I#info(String, Object)}),
-         * to direct the log to a specific category configuration. If no category is provided,
-         * a default 'system' category is used.
-         *
-         * | Method | Description |
-         * | :---------------------------- | :------------------ |
-         * | {@link I#trace(Object)} {@link I#trace(String, Object)} | Log message at TRACE level. |
-         * | {@link I#debug(Object)} {@link I#debug(String, Object)} | Log message at DEBUG level. |
-         * | {@link I#info(Object)} {@link I#info(String, Object)} | Log message at INFO level. |
-         * | {@link I#warn(Object)} {@link I#warn(String, Object)} | Log message at WARNING level. |
-         * | {@link I#error(Object)} {@link I#error(String, Object)} | Log message at ERROR level. |
-         *
-         * Example with category : {@code I.info("database", "Connection established.")}
+         * {@link Usage#categorized() @}
          */
-        public class Basic_Usage {
+        public class Usage {
+
+            void basic() {
+                I.trace("Write your message");
+            }
+
+            void lazyEvaluation() {
+                I.debug(() -> "Delaying the construction of message.");
+            }
+
+            void throwable() {
+                try {
+                    mayBeThrowError();
+                } catch (Exception e) {
+                    I.error("Write message and stack trace");
+                    I.error(e);
+                }
+            }
+
+            private void mayBeThrowError() {
+            }
+
+            void categorized() {
+                I.debug("Write message in system category");
+                I.warn("database", "Write message in database category");
+            }
         }
 
         /**
-         * Logging behavior can be configured using {@link I#env(String, Object)}.
-         * Configuration keys typically follow the pattern `category.property` (or just `.property`
-         * for the default logger), where `category` is the name specified in logging calls (e.g.,
-         * "database" in the example above).
+         * Logging behavior can be configured via environment variables ({@link I#env(String)}
+         * Configuration keys follow a specific pattern to allow both fine-grained and global
+         * control.
+         * 
+         * Resolution Order<br/>
+         * When any environment variable is required, configuration values are resolved in the
+         * following order:
+         * 
+         * 1. Look for `category.property` (e.g. `system.file`)
+         * 2. If not found, look for `*.property` (e.g. `*.file`)
+         * 3. If still not found, use the built-in default (e.g. {@link Level#WARNING})
          */
         public class Configuration {
 
             /**
-             * Configure where log messages are sent. By default, logs might go to the console
-             * depending on the underlying {@link java.lang.System.Logger} implementation, but kiss
-             * allows explicit configuration. Multiple destinations can be configured for the same
-             * logger category.
-             *
+             * Log messages can be routed to different output destinations. While logs may go to the
+             * console by default (depending on the underlying {@link System#out} implementation),
+             * Sinobu allows you to explicitly configure destinations. You can even configure
+             * **multiple destinations** for the same logger category.
+             * 
              * | Property Key | Value Type | Description |
-             * | :------------------ | :------------- | :------------------- |
-             * | `category.console` | {@link Level} | Enables console logging for the specified
-             * category at or above the given level.|
-             * | `category.file` | {@link Level} | Enables file logging for the specified category
-             * at or above the given level. |
+             * |----------------------|--------------|-----------------------------------------------------------------------------|
+             * | `category.console` | {@link Level} | Enables **console logging** for the specified
+             * category. |
+             * | `category.file` | {@link Level} | Enables **file logging** for the specified
+             * category. |
+             * | `category.extra` | {@link Level} | Enables **extra logging** for the specified
+             * category.<br/> You must define {@link I#Logger} as extra logger. |
              */
-            public class Output_Destinations {
+            public class Log_Appender {
             }
 
             /**
              * Options specific to file logging when `category.file` is enabled.
-             * Log files are typically named `category<Date>.log` (e.g., `database2024-10-27.log`).
+             * Log files are typically named `category<Date>.log` (e.g. `database2024-10-27.log`).
              *
              * | Property Key | Value Type | Description |
              * | :------------------ | :------------- | :-------------------------- |
-             * | `category.dir` | {@link Path} or String | Specifies the directory where log files
-             * for this category should be created. |
-             * | `category.append` | `boolean` | If `true`, appends to existing log files for this
-             * category. If `false` (default), overwrites. |
+             * | `category.dir` | {@link String} | Specifies the directory where log files
+             * for this category should be created. Default is `.log` |
+             * | `category.append` | `boolean` | If `true`, appends to existing log files
+             * for this category. If `false`, overwrites. Default is `true`. |
              * | `category.rotate` | `int` | Number of past daily log files to keep for this
              * category. Older files are deleted. `0` disables rotation. Default is 90. |
              */
@@ -1565,27 +1606,6 @@ public class DocumentDoc {
              * category at or above the given level. Can impact performance. |
              */
             public class Formatting_Options {
-            }
-
-            /**
-             * Standard logging levels from {@link java.lang.System.Logger.Level}. When a level is
-             * set for an output destination (e.g., `database.console = Level.INFO`), only messages
-             * logged to that Category with that level or higher (INFO, WARNING, ERROR) will be
-             * written to that destination.
-             * 
-             * This filtering happens efficiently before message formatting or supplier evaluation,
-             * contributing to performance and low GC pressure when levels are disabled.
-             *
-             * Available Levels (in increasing order of severity):
-             * - {@link Level#ALL}
-             * - {@link Level#TRACE}
-             * - {@link Level#DEBUG}
-             * - {@link Level#INFO}
-             * - {@link Level#WARNING}
-             * - {@link Level#ERROR}
-             * - {@link Level#OFF}
-             */
-            public class Log_Levels {
             }
         }
     }
