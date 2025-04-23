@@ -39,6 +39,17 @@ import org.w3c.dom.NodeList;
 
 public class XML implements Iterable<XML>, Consumer<XML> {
 
+    /** The escapable character pattern. */
+    private static final Pattern ESCAPE = Pattern.compile(
+            // Group 1: Match named entities that should be preserved (amp, lt, gt, quot, apos)
+            "&(amp|lt|gt|quot|apos);"
+                    // Match decimal numeric entities (preserve as-is)
+                    + "|&#[0-9]+;"
+                    // Match hexadecimal numeric entities (preserve as-is)
+                    + "|&#x[0-9a-fA-F]+;"
+                    // Group 2: Match raw characters that need escaping
+                    + "|([&\"'<>])");
+
     /**
      * <p>
      * Original pattern.
@@ -736,35 +747,66 @@ public class XML implements Iterable<XML>, Consumer<XML> {
     }
 
     /**
-     * Escape XML special characters.
-     * 
-     * @param s A target literal.
-     * @return
+     * Escape XML special characters (&amp;, &lt;, %gt;, &quot;, &apos;) in an idempotent way.
+     * <p>
+     * This method replaces the characters {@code &, <, >, ", '} with their
+     * corresponding XML entity references ({@code &amp;, &lt;, &gt;, &quot;, &apos;}).
+     * It ensures <strong>idempotency</strong>, meaning the same result is returned
+     * even if the method is called multiple times on the same string.
+     * <p>
+     * Existing entities (both named and numeric, like {@code &amp;} or {@code &#38;})
+     * are preserved as-is and are not re-escaped.
+     *
+     * @param input The input string to escape. Null is treated as an empty string.
+     * @return A string with XML-escaped characters, safe for use in XML contexts.
      */
-    private String escape(String s) {
-        StringBuilder o = new StringBuilder();
-        for (int i = 0; i < s.length(); i++) {
-            char c = s.charAt(i);
-            switch (c) {
-            case '"':
-            case '\'':
-            case '<':
-            case '>':
-                o.append("&#").append((int) c).append(';');
-                break;
+    public static String escape(String input) {
+        if (input == null) {
+            return "";
+        }
 
-            case '&':
-                if (i + 1 == s.length() || s.charAt(i + 1) != '#') {
-                    o.append("&#").append((int) c).append(';');
+        // Use regex matcher to find XML special characters or existing entities
+        Matcher matcher = ESCAPE.matcher(input);
+        StringBuilder builder = new StringBuilder();
+        int pos = 0;
+
+        while (matcher.find()) {
+            // Append the segment before the current match
+            builder.append(input, pos, matcher.start());
+
+            // Group 2 matches unescaped special characters (e.g., &, <, >, etc.)
+            String match = matcher.group(2);
+            if (match != null) {
+                switch (match.charAt(0)) {
+                case '&':
+                    builder.append("&amp;");
+                    break;
+                case '<':
+                    builder.append("&lt;");
+                    break;
+                case '>':
+                    builder.append("&gt;");
+                    break;
+                case '"':
+                    builder.append("&quot;");
+                    break;
+                case '\'':
+                    builder.append("&apos;");
                     break;
                 }
-                // fall-through to the default process
-            default:
-                o.append(c);
-                break;
+            } else {
+                // Group 1 matched an already escaped entity — preserve it
+                builder.append(matcher.group(0));
             }
+
+            // Update position to end of current match
+            pos = matcher.end();
         }
-        return o.toString();
+
+        // Append remaining content after the last match
+        builder.append(input, pos, input.length());
+
+        return builder.toString();
     }
 
     /**

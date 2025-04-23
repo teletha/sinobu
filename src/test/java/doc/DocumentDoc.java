@@ -787,11 +787,12 @@ public class DocumentDoc {
          * {@link XMLFindTest#child() @}
          */
         public class CSS_Selector {
+
             /**
              * | Combinator | Description | Notes |
              * | :---------- | :----------- | :------------ |
              * | ` ` (Space) | Descendant | Default combinator between selectors |
-             * | `gt` | Child | Direct children |
+             * | `>` | Child | Direct children |
              * | `+` | Adjacent Sibling | Immediately following sibling |
              * | `~` | General Sibling | All following siblings |
              * | `lt` | Adjacent Previous Sibling | **Sinobu Extension** |
