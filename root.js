@@ -473,9 +473,14 @@ const root = {
 			"path": "doc/doc.DocumentDoc.Cron.html",
 			"subs": [
 				{
-					"path": "doc/doc.DocumentDoc.Cron.html#doc.DocumentDoc.Cron.Features_and_Roles",
+					"path": "doc/doc.DocumentDoc.Cron.html#doc.DocumentDoc.Cron.Concept",
 					"subs": [],
-					"title": "Features and Roles"
+					"title": "Concept"
+				},
+				{
+					"path": "doc/doc.DocumentDoc.Cron.html#doc.DocumentDoc.Cron.Usage",
+					"subs": [],
+					"title": "Usage"
 				},
 				{
 					"path": "doc/doc.DocumentDoc.Cron.html#doc.DocumentDoc.Cron.Format",
@@ -512,11 +517,6 @@ const root = {
 					"path": "doc/doc.DocumentDoc.Cron.html#doc.DocumentDoc.Cron.Special_Characters",
 					"subs": [],
 					"title": "Special Characters"
-				},
-				{
-					"path": "doc/doc.DocumentDoc.Cron.html#doc.DocumentDoc.Cron.API",
-					"subs": [],
-					"title": "API"
 				}
 			],
 			"title": "Cron"
@@ -525,9 +525,9 @@ const root = {
 			"path": "doc/doc.DocumentDoc.Logging.html",
 			"subs": [
 				{
-					"path": "doc/doc.DocumentDoc.Logging.html#doc.DocumentDoc.Logging.Overview",
+					"path": "doc/doc.DocumentDoc.Logging.html#doc.DocumentDoc.Logging.Concept",
 					"subs": [],
-					"title": "Overview"
+					"title": "Concept"
 				},
 				{
 					"path": "doc/doc.DocumentDoc.Logging.html#doc.DocumentDoc.Logging.Usage",

@@ -19,10 +19,10 @@
 		<link href="https://cdn.jsdelivr.net/npm/ress@4.0.0/dist/ress.min.css" rel="stylesheet"/>
 		<link href="main.css" rel="stylesheet"/>
 	</head>
-	<body class="o">
-		<header class="Y" date="2025-04-23" ver="4.8.0">
+	<body class="I">
+		<header class="J" date="2025-04-23" ver="4.8.0">
 			<h1 class="Z"><code>Sinobu</code></h1>
-			<nav class="T"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="text A svg" viewBox="0 0 24 24">
+			<nav class="c"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="text A svg" viewBox="0 0 24 24">
 						<use href="main.svg#text"/>
 					</svg>Document</a><a href="api/" id="API"><svg class="package A svg" viewBox="0 0 24 24">
 						<use href="main.svg#package"/>
@@ -37,26 +37,26 @@
 						<use href="main.svg#github"/>
 					</svg>
 				</a></nav>
-			<div class="a"><a aria-label="Change color scheme" id="theme"><svg class="sun A svg" viewBox="0 0 24 24">
+			<div class="R"><a aria-label="Change color scheme" id="theme"><svg class="sun A svg" viewBox="0 0 24 24">
 						<use href="main.svg#sun"/>
 					</svg><svg class="moon A svg" viewBox="0 0 24 24">
 						<use href="main.svg#moon"/>
 					</svg>
 				</a></div>
 		</header>
-		<nav class="p"></nav>
-		<article class="d" id="Article">
-			<div class="U">
-				<section class="B" id="doc.DocumentDoc.Cron.Features_and_Roles">
-					<header class="B R">
-						<h2>Features and Roles</h2>
-						<div class="Q"><span class="perp S"><svg class="copy A svg" viewBox="0 0 24 24">
+		<nav class="L"></nav>
+		<article class="K" id="Article">
+			<div class="T">
+				<section class="B" id="doc.DocumentDoc.Cron.Concept">
+					<header class="B P">
+						<h2>Concept</h2>
+						<div class="H"><span class="perp q"><svg class="copy A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
-							</span><a class="tweet S"><svg class="twitter A svg" viewBox="0 0 24 24">
+							</span><a class="tweet q"><svg class="twitter A svg" viewBox="0 0 24 24">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit S" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L1279-L1298"><svg class="edit A svg" viewBox="0 0 24 24">
+							</a><a class="edit q" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L1279-L1298"><svg class="edit A svg" viewBox="0 0 24 24">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
@@ -77,17 +77,48 @@ services.</li>
 architectures.</li>
 						</ul></span></section>
 			</div>
-			<div class="U">
-				<section class="B" id="doc.DocumentDoc.Cron.Format">
-					<header class="B R">
-						<h2>Format</h2>
-						<div class="Q"><span class="perp S"><svg class="copy A svg" viewBox="0 0 24 24">
+			<div class="T">
+				<section class="B" id="doc.DocumentDoc.Cron.Usage">
+					<header class="B P">
+						<h2>Usage</h2>
+						<div class="H"><span class="perp q"><svg class="copy A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
-							</span><a class="tweet S"><svg class="twitter A svg" viewBox="0 0 24 24">
+							</span><a class="tweet q"><svg class="twitter A svg" viewBox="0 0 24 24">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit S" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L1303-L1326"><svg class="edit A svg" viewBox="0 0 24 24">
+							</a><a class="edit q" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L1304-L1311"><svg class="edit A svg" viewBox="0 0 24 24">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="B"><p>You can use <code><a aria-label="kiss.I" href="api/kiss.I.html#schedule(java.lang.String)">I#schedule(String)</a></code> to schedule jobs by cron expression.</p><pre class="lang-java"><code>void scheduling() {
+    I.schedule(&quot;0 0 * * *&quot;).to(() -&gt; {
+        // execute your job
+    });
+}</code></pre><p>To stop continuous task scheduling, execute the return value <code><a aria-label="kiss.Disposable" href="api/kiss.Disposable.html">Disposable</a></code>.</p><pre class="lang-java"><code>void stopScheduling() {
+    Disposable disposer = I.schedule(&quot;0 0 * * *&quot;).to(() -&gt; {
+        // execute your job
+    });
+
+    // stop scheduling
+    disposer.dispose();
+}</code></pre><p>Since the return value is <code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code>, it is easy to stop after five executions.</p><pre class="lang-java"><code>void stopSchedulingAfter5Executions() {
+    I.schedule(&quot;0 0 * * *&quot;).take(5).to(() -&gt; {
+        // execute your job
+    });
+}</code></pre></span></section>
+			</div>
+			<div class="T">
+				<section class="B" id="doc.DocumentDoc.Cron.Format">
+					<header class="B P">
+						<h2>Format</h2>
+						<div class="H"><span class="perp q"><svg class="copy A svg" viewBox="0 0 24 24">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet q"><svg class="twitter A svg" viewBox="0 0 24 24">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit q" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L1337-L1360"><svg class="edit A svg" viewBox="0 0 24 24">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
@@ -144,8 +175,8 @@ The possible values for each field are as follows, and some special function cha
 								</tr>
 							</tbody>
 						</table></span></section>
-				<section class="B h" id="doc.DocumentDoc.Cron.Format.Second">
-					<header class="B g">
+				<section class="B O" id="doc.DocumentDoc.Cron.Format.Second">
+					<header class="B j">
 						<h3>Second</h3>
 					</header><span class="B"><p>The seconds field can be a number from 0 to 59. It is optional and does not have to be specified.</p><table>
 							<thead>
@@ -189,8 +220,8 @@ The possible values for each field are as follows, and some special function cha
 								</tr>
 							</tbody>
 						</table></span></section>
-				<section class="B h" id="doc.DocumentDoc.Cron.Format.Hour">
-					<header class="B g">
+				<section class="B O" id="doc.DocumentDoc.Cron.Format.Hour">
+					<header class="B j">
 						<h3>Hour</h3>
 					</header><span class="B"><p>The time field can be a number from 0 to 23.</p><table>
 							<thead>
@@ -234,8 +265,8 @@ The possible values for each field are as follows, and some special function cha
 								</tr>
 							</tbody>
 						</table></span></section>
-				<section class="B h" id="doc.DocumentDoc.Cron.Format.Day">
-					<header class="B g">
+				<section class="B O" id="doc.DocumentDoc.Cron.Format.Day">
+					<header class="B j">
 						<h3>Day</h3>
 					</header><span class="B"><p>The date field can be a number between 1 and 31.</p><table>
 							<thead>
@@ -285,8 +316,8 @@ The possible values for each field are as follows, and some special function cha
 								</tr>
 							</tbody>
 						</table></span></section>
-				<section class="B h" id="doc.DocumentDoc.Cron.Format.Month">
-					<header class="B g">
+				<section class="B O" id="doc.DocumentDoc.Cron.Format.Month">
+					<header class="B j">
 						<h3>Month</h3>
 					</header><span class="B"><p>The month field can be a number from 1 to 12.
 It can also be specified in English abbreviations such as <code>JUN</code>, <code>FEB</code>, <code>MAR</code>, etc.</p><table>
@@ -331,8 +362,8 @@ It can also be specified in English abbreviations such as <code>JUN</code>, <cod
 								</tr>
 							</tbody>
 						</table></span></section>
-				<section class="B h" id="doc.DocumentDoc.Cron.Format.Day_of_Week">
-					<header class="B g">
+				<section class="B O" id="doc.DocumentDoc.Cron.Format.Day_of_Week">
+					<header class="B j">
 						<h3>Day of Week</h3>
 					</header><span class="B"><p>The day of the week field can be a number from 0 to 7, where 0 is Sunday, 1 is Monday, 2 is Tuesday, and so on, returning to Sunday at 7.
 You can also specify the English abbreviation of <code>SUN</code>, <code>MON</code>, <code>TUE</code>, etc.</p><table>
@@ -378,17 +409,17 @@ You can also specify the English abbreviation of <code>SUN</code>, <code>MON</co
 							</tbody>
 						</table></span></section>
 			</div>
-			<div class="U">
+			<div class="T">
 				<section class="B" id="doc.DocumentDoc.Cron.Special_Characters">
-					<header class="B R">
+					<header class="B P">
 						<h2>Special Characters</h2>
-						<div class="Q"><span class="perp S"><svg class="copy A svg" viewBox="0 0 24 24">
+						<div class="H"><span class="perp q"><svg class="copy A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
-							</span><a class="tweet S"><svg class="twitter A svg" viewBox="0 0 24 24">
+							</span><a class="tweet q"><svg class="twitter A svg" viewBox="0 0 24 24">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit S" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L1393-L1431"><svg class="edit A svg" viewBox="0 0 24 24">
+							</a><a class="edit q" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L1427-L1465"><svg class="edit A svg" viewBox="0 0 24 24">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
@@ -548,40 +579,9 @@ You can also specify the English abbreviation of <code>SUN</code>, <code>MON</co
 							</tbody>
 						</table></span></section>
 			</div>
-			<div class="U">
-				<section class="B" id="doc.DocumentDoc.Cron.API">
-					<header class="B R">
-						<h2>API</h2>
-						<div class="Q"><span class="perp S"><svg class="copy A svg" viewBox="0 0 24 24">
-									<use href="main.svg#copy"/>
-								</svg>
-							</span><a class="tweet S"><svg class="twitter A svg" viewBox="0 0 24 24">
-									<use href="main.svg#twitter"/>
-								</svg>
-							</a><a class="edit S" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L1436-L1443"><svg class="edit A svg" viewBox="0 0 24 24">
-									<use href="main.svg#edit"/>
-								</svg>
-							</a></div>
-					</header><span class="B"><p>You can use <code><a aria-label="kiss.I" href="api/kiss.I.html#schedule(java.lang.String)">I#schedule(String)</a></code> to schedule jobs by cron expression.</p><pre class="lang-java"><code>void scheduling() {
-    I.schedule(&quot;0 0 * * *&quot;).to(() -&gt; {
-        // execute your job
-    });
-}</code></pre><p>To stop continuous task scheduling, execute the return value <code><a aria-label="kiss.Disposable" href="api/kiss.Disposable.html">Disposable</a></code>.</p><pre class="lang-java"><code>void stopScheduling() {
-    Disposable disposer = I.schedule(&quot;0 0 * * *&quot;).to(() -&gt; {
-        // execute your job
-    });
-
-    // stop scheduling
-    disposer.dispose();
-}</code></pre><p>Since the return value is <code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code>, it is easy to stop after five executions.</p><pre class="lang-java"><code>void stopSchedulingAfter5Executions() {
-    I.schedule(&quot;0 0 * * *&quot;).take(5).to(() -&gt; {
-        // execute your job
-    });
-}</code></pre></span></section>
-			</div>
 		</article>
-		<aside class="O"></aside>
-		<footer class="q"/>
+		<aside class="M"></aside>
+		<footer class="k"/>
 	</body>
 	<script src="root.js"></script>
 	<script src="main.js" type="module"></script>
