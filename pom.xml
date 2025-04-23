@@ -18,7 +18,7 @@ This library aims to simplify and highly condense the functions related to domai
 - [HTML](https://en.wikipedia.org/wiki/HTML) (including Tag Soup)
 - [XML](https://en.wikipedia.org/wiki/XML)
 - Reactive Programming ([Rx](http://reactivex.io))
-- Asynchronous &#38; Parallel processing
+- Asynchronous &amp; Parallel processing
 - Multilingualization
 - Template Engine ([Mustache](https://mustache.github.io/mustache.5.html))
 - Dynamic plug-in mechanism
