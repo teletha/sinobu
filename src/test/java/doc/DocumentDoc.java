@@ -1297,7 +1297,41 @@ public class DocumentDoc {
          * - It is used to control batch processing and scheduled tasks in microservice
          * architectures.
          */
-        public class Features_and_Roles {
+        public class Concept {
+        }
+
+        /**
+         * You can use {@link I#schedule(String)} to schedule jobs by cron expression.
+         * {@link Usage#scheduling() @}
+         * 
+         * To stop continuous task scheduling, execute the return value {@link Disposable}.
+         * {@link Usage#stopScheduling() @}
+         * 
+         * Since the return value is {@link Signal}, it is easy to stop after five executions.
+         * {@link Usage#stopSchedulingAfter5Executions() @}
+         */
+        public class Usage {
+
+            void scheduling() {
+                I.schedule("0 0 * * *").to(() -> {
+                    // execute your job
+                });
+            }
+
+            void stopScheduling() {
+                Disposable disposer = I.schedule("0 0 * * *").to(() -> {
+                    // execute your job
+                });
+
+                // stop scheduling
+                disposer.dispose();
+            }
+
+            void stopSchedulingAfter5Executions() {
+                I.schedule("0 0 * * *").take(5).to(() -> {
+                    // execute your job
+                });
+            }
         }
 
         ///  ## Format
@@ -1431,40 +1465,6 @@ public class DocumentDoc {
         /// | `0 1-5/2,10-15 * * *`        |  at every 2 hours from 01:00 to 05:00 and every hour from 10:00 to 15:00 every day |
         public class Special_Characters {
         }
-
-        /**
-         * You can use {@link I#schedule(String)} to schedule jobs by cron expression.
-         * {@link API#scheduling() @}
-         * 
-         * To stop continuous task scheduling, execute the return value {@link Disposable}.
-         * {@link API#stopScheduling() @}
-         * 
-         * Since the return value is {@link Signal}, it is easy to stop after five executions.
-         * {@link API#stopSchedulingAfter5Executions() @}
-         */
-        public class API {
-
-            void scheduling() {
-                I.schedule("0 0 * * *").to(() -> {
-                    // execute your job
-                });
-            }
-
-            void stopScheduling() {
-                Disposable disposer = I.schedule("0 0 * * *").to(() -> {
-                    // execute your job
-                });
-
-                // stop scheduling
-                disposer.dispose();
-            }
-
-            void stopSchedulingAfter5Executions() {
-                I.schedule("0 0 * * *").take(5).to(() -> {
-                    // execute your job
-                });
-            }
-        }
     }
 
     public class Logging {
@@ -1478,7 +1478,7 @@ public class DocumentDoc {
          * Logging is as simple as calling a static method like {@link I#info(Object)}. Therefore,
          * there’s no need to create logger instances per class. This approach dramatically reduces
          * code clutter and eliminates repetitive logger setup.
-         * {@link #log() @}
+         * {@link Concept#log() @}
          * 
          * ♻️ Garbage Less<br/>
          * Many logging libraries create temporary objects (log events, strings, byte arrays, etc.)
@@ -1493,7 +1493,7 @@ public class DocumentDoc {
          * 
          * ![Benchmark](https://raw.githubusercontent.com/teletha/sinobu/refs/heads/master/benchmark/LogBenchmark.svg)
          */
-        public class Overview {
+        public class Concept {
 
             void log() {
                 I.info("Hello Logging");
