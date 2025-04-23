@@ -14,40 +14,40 @@ import org.junit.jupiter.api.Test;
 import kiss.I;
 import kiss.XML;
 
-class XMLTraversingTest {
+public class XMLTraversingTest {
 
     @Test
-    void first() {
-        String xml = "<m><Q class='first'/><Q/><Q class='last'/></m>";
+    public void first() {
+        String text = "<m><Q class='first'/><Q/><Q class='last'/></m>";
 
-        assert I.xml(xml).find("Q").first().attr("class").equals("first");
+        assert I.xml(text).find("Q").first().attr("class").equals("first");
     }
 
     @Test
-    void firstAtEmpty() {
-        XML xml = I.xml("<m/>");
+    public void firstAtEmpty() {
+        XML root = I.xml("<m/>");
 
-        assert xml.find("Q").size() == 0;
-        assert xml.find("Q").first().size() == 0;
+        assert root.find("Q").size() == 0;
+        assert root.find("Q").first().size() == 0;
     }
 
     @Test
-    void last() {
-        String xml = "<m><Q class='first'/><Q/><Q class='last'/></m>";
+    public void last() {
+        String text = "<m><Q class='first'/><Q/><Q class='last'/></m>";
 
-        assert I.xml(xml).find("Q").last().attr("class").equals("last");
+        assert I.xml(text).find("Q").last().attr("class").equals("last");
     }
 
     @Test
-    void lastAtEmpty() {
-        XML xml = I.xml("<m/>");
+    public void lastAtEmpty() {
+        XML root = I.xml("<m/>");
 
-        assert xml.find("Q").size() == 0;
-        assert xml.find("Q").last().size() == 0;
+        assert root.find("Q").size() == 0;
+        assert root.find("Q").last().size() == 0;
     }
 
     @Test
-    void parent() {
+    public void parent() {
         // traverse to parent element
         XML root = I.xml("<root><first/><center/><last/></root>");
         assert root.find("first").parent().name() == "root";
@@ -60,7 +60,7 @@ class XMLTraversingTest {
     }
 
     @Test
-    void children() {
+    public void children() {
         // traverse to child elements
         XML root = I.xml("<root><first/><center/><last/></root>");
         assert root.children().size() == 3;
@@ -75,7 +75,7 @@ class XMLTraversingTest {
     }
 
     @Test
-    void firstChild() {
+    public void firstChild() {
         // traverse to first child element
         XML root = I.xml("<root><first/><center/><last/></root>");
         assert root.firstChild().name() == "first";
@@ -90,7 +90,7 @@ class XMLTraversingTest {
     }
 
     @Test
-    void lastChild() {
+    public void lastChild() {
         // traverse to last child element
         XML root = I.xml("<root><first/><center/><last/></root>");
         assert root.lastChild().name() == "last";
@@ -105,7 +105,7 @@ class XMLTraversingTest {
     }
 
     @Test
-    void prev() {
+    public void prev() {
         XML root = I.xml("<root><first/>text is ignored<center/><last/></root>");
 
         // traverse to previous element
@@ -122,7 +122,7 @@ class XMLTraversingTest {
     }
 
     @Test
-    void next() {
+    public void next() {
         XML root = I.xml("<root><first/><center/>text is ignored<last/></root>");
 
         // traverse to next element

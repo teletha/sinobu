@@ -49,6 +49,8 @@ import kiss.model.ModelLensTest;
 import kiss.xml.HTMLSoupTest;
 import kiss.xml.ReadTest;
 import kiss.xml.XMLFindTest;
+import kiss.xml.XMLManipulationTest;
+import kiss.xml.XMLTraversingTest;
 import kiss.xml.XMLWriterTest;
 
 public class DocumentDoc {
@@ -877,9 +879,10 @@ public class DocumentDoc {
         /**
          * The {@link XML} object provides a fluent API, similar to jQuery, for modifying the
          * document structure.
+         * 
          * **Important:** These manipulation methods modify the underlying DOM structure directly;
-         * the {@link XML} object itself is mutable in this regard.
-         * Explore the nested classes for specific manipulation categories.
+         * the {@link XML} object itself is mutable in this regard. Explore the nested classes for
+         * specific manipulation categories.
          */
         public class Manipulation {
             /**
@@ -894,6 +897,9 @@ public class DocumentDoc {
              * | {@link XML#after(Object)} | Insert content after each element. |
              * | {@link XML#child(String)} | Create and append a new child element. |
              * | {@link XML#child(String, Consumer)} | Create, append, and configure a new child. |
+             *
+             * {@link XMLManipulationTest#append() @}
+             * {@link XMLManipulationTest#prepend() @}
              */
             public class Adding_Content {
             }
@@ -905,6 +911,9 @@ public class DocumentDoc {
              * | :--------------- | :---------------------------------------- |
              * | {@link XML#empty()} | Remove all child nodes from elements. |
              * | {@link XML#remove()} | Remove the selected elements from the DOM.|
+             * 
+             * {@link XMLManipulationTest#empty() @}
+             * {@link XMLManipulationTest#remove() @}
              */
             public class Removing_Content {
             }
@@ -916,6 +925,9 @@ public class DocumentDoc {
              * | :------------------- | :----------------------------------------- |
              * | {@link XML#wrap(Object)} | Wrap each selected element individually. |
              * | {@link XML#wrapAll(Object)}| Wrap all elements together with one structure.|
+             * 
+             * {@link XMLManipulationTest#wrap() @}
+             * {@link XMLManipulationTest#wrapAll() @}
              */
             public class Wrapping {
             }
@@ -928,6 +940,9 @@ public class DocumentDoc {
              * | :------------------- | :---------------------------------------- |
              * | {@link XML#text()} | Get the combined text content of elements.|
              * | {@link XML#text(String)}| Set text content, replacing existing. |
+             * 
+             * {@link XMLManipulationTest#textGet() @}
+             * {@link XMLManipulationTest#textSet() @}
              */
             public class Text_Content {
             }
@@ -945,6 +960,10 @@ public class DocumentDoc {
              * | {@link XML#removeClass(String...)}| Remove one or more classes. |
              * | {@link XML#toggleClass(String)} | Add or remove a class based on presence.|
              * | {@link XML#hasClass(String)} | Check if any element has the class. |
+             * 
+             * {@link XMLManipulationTest#attrGet() @}
+             * {@link XMLManipulationTest#attrSet() @}
+             * {@link XMLManipulationTest#addClass() @}
              */
             public class Attributes {
             }
@@ -977,6 +996,9 @@ public class DocumentDoc {
              * | {@link XML#first()} | Reduce the set to the first element. |
              * | {@link XML#last()} | Reduce the set to the last element. |
              * | {@link XML#find(String)}| Find descendants matching the selector. |
+             * 
+             * {@link XMLTraversingTest#first() @}
+             * {@link XMLFindTest#type() @}
              */
             public class Filtering {
             }
@@ -997,6 +1019,9 @@ public class DocumentDoc {
              * set. |
              * | {@link XML#next()} | Get the immediately following sibling of each element in the
              * set. |
+             * 
+             * {@link XMLTraversingTest#children() @}
+             * {@link XMLTraversingTest#next() @}
              */
             public class Tree_Navigation {
             }

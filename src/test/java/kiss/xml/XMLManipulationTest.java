@@ -20,21 +20,19 @@ public class XMLManipulationTest {
 
     @Test
     public void append() {
-        String xml = "<m><Q><P/></Q><Q><P/></Q></m>";
+        XML root = I.xml("<m><Q><P/></Q><Q><P/></Q></m>");
 
-        XML e = I.xml(xml);
-        assert e.find("Q").append("<R/><R/>").find("R").size() == 4;
-        assert e.find("Q > R").size() == 4;
-        assert e.find("Q > R:first-child").size() == 0;
+        assert root.find("Q").append("<R/><R/>").find("R").size() == 4;
+        assert root.find("Q > R").size() == 4;
+        assert root.find("Q > R:first-child").size() == 0;
     }
 
     @Test
     public void appendText() {
-        String xml = "<m><Q><P/></Q><Q><P/></Q></m>";
+        XML root = I.xml("<m><Q><P/></Q><Q><P/></Q></m>");
 
-        XML e = I.xml(xml);
-        assert e.find("Q").append("text").find("P").size() == 2;
-        assert e.find("Q").text().equals("texttext");
+        assert root.find("Q").append("text").find("P").size() == 2;
+        assert root.find("Q").text().equals("texttext");
     }
 
     @Test
@@ -114,23 +112,19 @@ public class XMLManipulationTest {
 
     @Test
     public void empty() {
-        String xml = "<Q><P/><P/></Q>";
+        XML root = I.xml("<Q><P/><P/></Q>");
+        root.empty();
 
-        XML e = I.xml(xml);
-        e.empty();
-
-        assert e.find("P").size() == 0;
+        assert root.find("P").size() == 0;
     }
 
     @Test
     public void remove() {
-        String xml = "<Q><S/><T/><S/></Q>";
+        XML root = I.xml("<Q><S/><T/><S/></Q>");
+        assert root.find("*").remove().size() == 3;
 
-        XML e = I.xml(xml);
-        assert e.find("*").remove().size() == 3;
-
-        assert e.find("S").size() == 0;
-        assert e.find("T").size() == 0;
+        assert root.find("S").size() == 0;
+        assert root.find("T").size() == 0;
     }
 
     @Test
