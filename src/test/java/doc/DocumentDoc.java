@@ -27,7 +27,6 @@ import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.w3c.dom.Node;
@@ -70,14 +69,19 @@ public class DocumentDoc {
 
     public class Introduction {
         /**
+         * Sinobu is not obsolete framework but utility.
+         * It acts as an extremely condensed facade for common development tasks,
+         * designed to be intuitive and efficient.
+         *
+         * Weighing in at approximately 120 KB with zero external dependencies,
+         * Sinobu prioritizes lightweight deployment and avoids dependency conflicts.
+         * Despite its small size, its various operations are engineered for high performance,
+         * often rivaling or exceeding competing specialized libraries (see
+         * {@link doc.DocumentDoc.Benchmark benchmark}).
          * 
-         * Sinobu is not obsolete framework but utility, which can manipulate objects as a
-         * extremely-condensed facade.
-         * This is extremely lightweight at approximately 120 KB without relying on other libraries,
-         * and its various operations are designed to run as fast as other competing libraries.
-         * 
-         * This library aims to simplify and highly condense the functions related to domains that
-         * are frequently encountered in real-world development projects, making them easier to use.
+         * This library aims to simplify and consolidate functionalities frequently
+         * encountered in real-world projects, making them easier and safer to use.
+         * Key areas covered include:
          * 
          * - [Dependency Injection](https://en.wikipedia.org/wiki/Dependency_injection)
          * - Object lifecycle management
@@ -85,32 +89,58 @@ public class DocumentDoc {
          * - HTTP(S) Client
          * - Web Socket Client
          * - [JSON](https://en.wikipedia.org/wiki/JSON)
-         * - [HTML](https://en.wikipedia.org/wiki/HTML) (including Tag Soup)
+         * - [HTML](https://en.wikipedia.org/wiki/HTML) (Tag Soup Tolerant)
          * - [XML](https://en.wikipedia.org/wiki/XML)
          * - Reactive Programming ([Rx](http://reactivex.io))
-         * - Asynchronous & Parallel processing
+         * - Asynchronous &amp; Parallel processing
          * - Multilingualization
-         * - Template Engine ([Mustache](https://mustache.github.io/mustache.5.html))
-         * - Dynamic plug-in mechanism
+         * - Template Engine ([Mustache](https://mustache.github.io/mustache.5.html) Syntax)
+         * - Dynamic Extensibility / Plugin System
          * - Object persistence
-         * - Logging (Garbage-Free)
+         * - Logging (Garbage-Less)
          * - Virtual Job Scheduler
-         * - [Cron](https://en.wikipedia.org/wiki/Cron) Scheduling
+         * - Task Scheduling ([Cron](https://en.wikipedia.org/wiki/Cron) Syntax)
          * 
-         * With a few exceptions, Sinobu and its APIs are designed to be simple to use and easy to
-         * understand by adhering to the following principles.
-         * 
-         * - [Keep it stupid simple](https://en.wikipedia.org/wiki/KISS_principle)
-         * - [Less is more](https://en.wikipedia.org/wiki/Less_is_more_(architecture))
-         * - [Type safety](https://en.wikipedia.org/wiki/Type_safety)
-         * - Refactoring safety
+         * Sinobu adheres to core principles ensuring ease of use, safety, and efficiency.
          */
         public class Overview {
         }
 
         /**
+         * Sinobu's design philosophy is guided by several core principles:
+         *
+         * #### 🚀 Lightweight &amp; Zero Dependency
+         * A minimal footprint (~120 KB) and no external dependencies mean faster startup,
+         * smaller deployment sizes, and freedom from dependency hell.
+         *
+         * #### ⚡ High Performance
+         * Speed is a key design goal. Operations like JSON parsing, logging, and template
+         * rendering are optimized for minimal overhead and garbage generation.
+         * Refer to the {@link doc.DocumentDoc.Benchmark benchmark} section for
+         * comparative results.
+         *
+         * #### ✨ Simplicity (Keep it simple stupid &amp; Less is more)
+         * APIs are designed to be concise, intuitive, and require minimal boilerplate.
+         * Often, static methods on the {@link I} class provide direct access to functionality.
+         * {@link Core_Principles#access() @}
+         *
+         * #### 🛡️ Safety (Type safety &amp; Refactoring safety)
+         * Leverages Java's static typing to catch errors at compile time. APIs are designed
+         * to be refactoring-friendly, reducing the risk of runtime errors during code changes.
+         * Constructor injection is preferred over less safe alternatives.
+         */
+        public class Core_Principles {
+            void access() {
+                I.http("http://xxx.com/", XML.class).to(html -> {
+                    String name = html.find("#user").text();
+                });
+            }
+        }
+
+        /**
          * It is probably easiest to use a build tool such as
          * [Maven](https://maven.apache.org) or [Gradle](https://gradle.org).
+         * Replace `{@var version}` with the desired version number.
          * 
          * {@snippet lang = xml :
          * <dependency>
@@ -121,6 +151,18 @@ public class DocumentDoc {
          * }
          */
         public class How_to_install {
+        }
+
+        /**
+         * Sinobu is an open-source project hosted on GitHub. Contributions, bug reports,
+         * and feature requests are welcome.
+         *
+         * - **Repository:** [https://github.com/teletha/sinobu](https://github.com/teletha/sinobu)
+         * - **Issues:** Please report bugs or suggest features via GitHub Issues.
+         * - **Contributions:** Pull requests are welcome! Please ensure code style consistency and
+         * include tests where applicable.
+         */
+        public class Getting_Involved {
         }
     }
 
@@ -336,9 +378,10 @@ public class DocumentDoc {
              * - Interface injection, where the dependency's interface provides an injector method
              * that will inject the dependency into any client passed to it.
              * 
-             * Of these, **only constructor injection is supported** by Sinobu. Other injection
-             * types will **not be supported in the future** due to their significant disruption
-             * to object safety.
+             * [!CAUTION]
+             * Sinobu supports constructor injection exclusively.
+             * Other forms of injection are intentionally not supported, as they compromise object
+             * safety and are unlikely to be supported in the future.
              */
             public class Injection_Type {
             }
@@ -1901,102 +1944,80 @@ public class DocumentDoc {
          * This is achieved using the {@link Storable#auto()} method.
          * 
          * [!IMPORTANT]
-         * Only properties defined in Variable can be detected, as trying to detect value changes of
-         * arbitrary properties would be prohibitively expensive.
+         * Since monitoring the values of arbitrary properties would be prohibitively expensive,
+         * value detection is only possible for properties defined by {@link Variable}.
          *
-         * #### Enabling Auto-Save
-         * Calling {@link Storable#auto()} instance monitors its properties (and nested `Storable`
-         * properties). When a change is detected, it schedules a `store()` operation. By default,
-         * this operation is debounced (typically waiting 1 second after the last change) to avoid
-         * excessive writes during rapid changes.
-         *
-         * {@snippet lang = java :
-         * AppSettings settings = I.make(AppSettings.class);
-         * Disposable autoSaveStopper = settings.auto(); // Start auto-saving
-         *
-         * // ... later in the application ...
-         * settings.userName = "New User"; // Change triggers auto-save after debounce period
-         *
-         * // To stop auto-saving if needed (e.g., on application shutdown)
-         * // autoSaveStopper.dispose();
-         * }
-         *
-         * <p>
-         * <b>Customizing Auto-Save Timing:</b>
-         * </p>
-         * An overloaded version, {@link Storable#auto(Function)}, allows customizing the timing
-         * behavior using {@link Signal} operators. For example, you could change the debounce
-         * duration
-         * or use a different strategy like throttling.
-         *
-         * {@snippet lang = java :
-         * import static java.util.concurrent.TimeUnit.*;
-         *
-         * // Auto-save with a 5-second debounce
-         * settings.auto(timing -> timing.debounce(5, SECONDS));
-         *
-         * // Auto-save immediately on change (throttled to once per 500ms)
-         * // settings.auto(timing -> timing.throttle(500, MILLISECONDS));
-         * }
-         *
-         * The `auto()` method returns a {@link Disposable}. Calling `dispose()` on this object
-         * will stop the automatic saving process for that instance.
+         * Calling {@link Storable#auto()} instance monitors its (and nested) properties.
+         * When a change is detected, it schedules a save operation. By default, this operation is
+         * debounced (typically waiting 1 second after the last change) to avoid excessive writes
+         * during rapid changes.
+         * {@link Automatic_Saving#autoSave() @}
+         * 
+         * Calling {@link Disposable#dispose()} on the returned object will stop the automatic
+         * saving process for that instance.
+         * {@link Automatic_Saving#stopAutoSave() @}
          */
         public class Automatic_Saving {
+            void autoSave() {
+                class Data implements Storable<Data> {
+                    public final Variable<String> name = Variable.empty();
+                }
+
+                Data data = new Data();
+                data.auto(); // enable auto-save
+
+                data.name.set("Misa"); // save after 1 sec
+            }
+
+            void stopAutoSave() {
+                class Data implements Storable<Data> {
+                    public final Variable<String> name = Variable.empty();
+                }
+
+                Data data = new Data();
+                Disposable stopper = data.auto();
+
+                stopper.dispose(); // stop auto-save
+            }
         }
 
         /**
-         * By default, persistence files are stored in a directory named `.preferences` within
+         * By default, persistence file is stored in a directory named `.preferences` within
          * the application's working directory. The filename is derived from the fully qualified
-         * class name of the `Storable` object, ending with `.json`.
+         * class name of the storable object, ending with `.json`.
          * (e.g., `.preferences/com.example.MyAppSettings.json`).
          *
          * This location can be customized in two main ways:
-         *
-         * <p>
-         * <b>1. Overriding `locate()`:</b>
-         * </p>
-         * You can override the {@link Storable#locate()} method within your implementing class
-         * to return a custom {@link Path} for the persistence file.
-         *
-         * {@snippet lang = java :
-         * class CustomLocationSettings implements Storable<CustomLocationSettings> {
-         *     public String data;
-         *
-         *     &#64;Override
-         *     public Path locate() {
-         *         // Store in user home directory, for example
-         *         return Path.of(System.getProperty("user.home"), ".myApp", "settings.json");
-         *     }
-         *
-         *     private CustomLocationSettings() {
-         *         restore();
-         *     }
-         * }
-         * }
-         *
-         * <p>
-         * <b>2. Using Environment Variable:</b>
-         * </p>
-         * You can set a global preference directory by defining the environment variable
-         * `PreferenceDirectory` using {@link I#env(String, Object)}. If this variable is set,
-         * the default `locate()` implementation will use this directory instead of `.preferences`.
-         *
-         * {@snippet lang = java :
-         * // Set the preference directory globally (e.g., at application startup)
-         * I.env("PreferenceDirectory", "/etc/myApp/config");
-         *
-         * // Now, AppSettings (if using default locate()) will save to
-         * // /etc/myApp/config/com.example.AppSettings.json
-         * AppSettings settings = I.make(AppSettings.class);
-         * settings.store();
-         * }
-         *
-         * The environment variable method takes precedence over the default `.preferences`
-         * directory
-         * but is overridden if the `locate()` method is explicitly implemented in the class.
          */
         public class Storage_Location {
+
+            /**
+             * You can override the {@link Storable#locate()} method within your implementing class
+             * to return a custom {@link Path} for the persistence file.
+             * {@link Custom @}
+             */
+            public class Location_Method {
+                class Custom implements Storable<Custom> {
+
+                    @Override
+                    public Path locate() {
+                        return Path.of("setting.txt");
+                    }
+                }
+            }
+
+            /**
+             * You can set a global preference directory by defining the environment variable
+             * `PreferenceDirectory` using {@link I#env(String, Object)}. If this variable is set,
+             * the default implementation will use this directory instead of `.preferences`.
+             * {@link Environment_Variable#define() @}
+             */
+            public class Environment_Variable {
+
+                void define() {
+                    I.env("PreferenceDirectory", "/user/home/setting");
+                }
+            }
         }
     }
 
@@ -2034,6 +2055,7 @@ public class DocumentDoc {
          * * Garbage collection load (allocation rate)
          * * Memory consumption (footprint, retained size - though less frequently shown in graphs)
          *
+         * [!NOTE]
          * Lower values for time and allocation generally indicate better performance, while higher
          * values for throughput are better.
          *
