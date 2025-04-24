@@ -259,18 +259,7 @@ const root = {
 				},
 				{
 					"path": "doc/doc.DocumentDoc.HTML.html#doc.DocumentDoc.HTML.Writing",
-					"subs": [
-						{
-							"path": "doc/doc.DocumentDoc.HTML.html#doc.DocumentDoc.HTML.Writing.By_toString",
-							"subs": [],
-							"title": "By toString"
-						},
-						{
-							"path": "doc/doc.DocumentDoc.HTML.html#doc.DocumentDoc.HTML.Writing.By_formatter",
-							"subs": [],
-							"title": "By formatter"
-						}
-					],
+					"subs": [],
 					"title": "Writing"
 				},
 				{
@@ -400,6 +389,11 @@ const root = {
 			"path": "doc/doc.DocumentDoc.HTTP.html",
 			"subs": [
 				{
+					"path": "doc/doc.DocumentDoc.HTTP.html#doc.DocumentDoc.HTTP.Concept",
+					"subs": [],
+					"title": "Concept"
+				},
+				{
 					"path": "doc/doc.DocumentDoc.HTTP.html#doc.DocumentDoc.HTTP.Request_and_Response",
 					"subs": [],
 					"title": "Request and Response"
@@ -410,14 +404,14 @@ const root = {
 					"title": "Supported Type"
 				},
 				{
-					"path": "doc/doc.DocumentDoc.HTTP.html#doc.DocumentDoc.HTTP.Cookie",
+					"path": "doc/doc.DocumentDoc.HTTP.html#doc.DocumentDoc.HTTP.WebSocket_Support",
 					"subs": [],
-					"title": "Cookie"
+					"title": "WebSocket Support"
 				},
 				{
-					"path": "doc/doc.DocumentDoc.HTTP.html#doc.DocumentDoc.HTTP.Authentication",
+					"path": "doc/doc.DocumentDoc.HTTP.html#doc.DocumentDoc.HTTP.Custom_HttpClient",
 					"subs": [],
-					"title": "Authentication"
+					"title": "Custom HttpClient"
 				}
 			],
 			"title": "HTTP"
@@ -541,9 +535,14 @@ const root = {
 			"path": "doc/doc.DocumentDoc.Persistence.html",
 			"subs": [
 				{
-					"path": "doc/doc.DocumentDoc.Persistence.html#doc.DocumentDoc.Persistence.Saving_Objects",
+					"path": "doc/doc.DocumentDoc.Persistence.html#doc.DocumentDoc.Persistence.Usage",
 					"subs": [],
-					"title": "Saving Objects"
+					"title": "Usage"
+				},
+				{
+					"path": "doc/doc.DocumentDoc.Persistence.html#doc.DocumentDoc.Persistence.Transient",
+					"subs": [],
+					"title": "Transient"
 				},
 				{
 					"path": "doc/doc.DocumentDoc.Persistence.html#doc.DocumentDoc.Persistence.Automatic_Saving",
@@ -557,6 +556,63 @@ const root = {
 				}
 			],
 			"title": "Persistence"
+		},
+		{
+			"path": "doc/doc.DocumentDoc.Benchmark.html",
+			"subs": [
+				{
+					"path": "doc/doc.DocumentDoc.Benchmark.html#doc.DocumentDoc.Benchmark.Overview",
+					"subs": [],
+					"title": "Overview"
+				},
+				{
+					"path": "doc/doc.DocumentDoc.Benchmark.html#doc.DocumentDoc.Benchmark.Logging",
+					"subs": [],
+					"title": "Logging"
+				},
+				{
+					"path": "doc/doc.DocumentDoc.Benchmark.html#doc.DocumentDoc.Benchmark.JSON",
+					"subs": [
+						{
+							"path": "doc/doc.DocumentDoc.Benchmark.html#doc.DocumentDoc.Benchmark.JSON.Parse_Small",
+							"subs": [],
+							"title": "Parse Small"
+						},
+						{
+							"path": "doc/doc.DocumentDoc.Benchmark.html#doc.DocumentDoc.Benchmark.JSON.Parse_Large",
+							"subs": [],
+							"title": "Parse Large"
+						},
+						{
+							"path": "doc/doc.DocumentDoc.Benchmark.html#doc.DocumentDoc.Benchmark.JSON.Parse_Huge",
+							"subs": [],
+							"title": "Parse Huge"
+						},
+						{
+							"path": "doc/doc.DocumentDoc.Benchmark.html#doc.DocumentDoc.Benchmark.JSON.Traversing",
+							"subs": [],
+							"title": "Traversing"
+						},
+						{
+							"path": "doc/doc.DocumentDoc.Benchmark.html#doc.DocumentDoc.Benchmark.JSON.Mapping",
+							"subs": [],
+							"title": "Mapping"
+						}
+					],
+					"title": "JSON"
+				},
+				{
+					"path": "doc/doc.DocumentDoc.Benchmark.html#doc.DocumentDoc.Benchmark.HTML",
+					"subs": [],
+					"title": "HTML"
+				},
+				{
+					"path": "doc/doc.DocumentDoc.Benchmark.html#doc.DocumentDoc.Benchmark.Template_Engine",
+					"subs": [],
+					"title": "Template Engine"
+				}
+			],
+			"title": "Benchmark"
 		}
 	],
 	"modules": [],

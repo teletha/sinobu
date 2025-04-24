@@ -19,10 +19,10 @@
 		<link href="https://cdn.jsdelivr.net/npm/ress@4.0.0/dist/ress.min.css" rel="stylesheet"/>
 		<link href="main.css" rel="stylesheet"/>
 	</head>
-	<body class="g">
-		<header class="M" date="2025-04-23" ver="4.8.0">
-			<h1 class="N"><code>Sinobu</code></h1>
-			<nav class="O"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="text A svg" viewBox="0 0 24 24">
+	<body class="e">
+		<header class="T" date="2025-04-23" ver="4.8.0">
+			<h1 class="U"><code>Sinobu</code></h1>
+			<nav class="V"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="text A svg" viewBox="0 0 24 24">
 						<use href="main.svg#text"/>
 					</svg>Document</a><a href="api/" id="API"><svg class="package A svg" viewBox="0 0 24 24">
 						<use href="main.svg#package"/>
@@ -37,17 +37,179 @@
 						<use href="main.svg#github"/>
 					</svg>
 				</a></nav>
-			<div class="P"><a aria-label="Change color scheme" id="theme"><svg class="sun A svg" viewBox="0 0 24 24">
+			<div class="W"><a aria-label="Change color scheme" id="theme"><svg class="sun A svg" viewBox="0 0 24 24">
 						<use href="main.svg#sun"/>
 					</svg><svg class="moon A svg" viewBox="0 0 24 24">
 						<use href="main.svg#moon"/>
 					</svg>
 				</a></div>
 		</header>
-		<nav class="V"></nav>
-		<article class="h" id="Article"></article>
-		<aside class="T"></aside>
-		<footer class="J"/>
+		<nav class="L"></nav>
+		<article class="b" id="Article">
+			<div class="h">
+				<section class="B" id="doc.DocumentDoc.Persistence.Usage">
+					<header class="B I">
+						<h4>🦤 Interface Based</h4>
+						<div class="K"><span class="perp g"><svg class="copy A svg" viewBox="0 0 24 24">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet g"><svg class="twitter A svg" viewBox="0 0 24 24">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit g" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L1823-L1842"><svg class="edit A svg" viewBox="0 0 24 24">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="B"><p>Sinobu provides a simple mechanism for persisting the state of objects
+using the <code><a aria-label="kiss.Storable" href="api/kiss.Storable.html">Storable</a></code> interface. This allows objects to save their properties
+to JSON file and restore them later, making it easy to maintain application
+state across restarts.</p><p>Implement the <code><a aria-label="kiss.Storable" href="api/kiss.Storable.html">Storable</a></code> interface on your class to enable persistence.</p><pre class="lang-java"><code>class Data implements Storable&lt;Data&gt; {
+
+    public int property;
+}</code></pre><h4>⚒️ Saving Data</h4><p>The <code><a aria-label="kiss.Storable" href="api/kiss.Storable.html#store()">Storable#store()</a></code> method saves the current state of the object&apos;s properties
+to file. (check doc.DocumentDoc.Object_Modeling.Property)</p><pre class="lang-java"><code>void save() {
+    Data data = new Data();
+    data.property = 10;
+
+    data.store(); // save data to file
+}</code></pre><h4>⚒️ Restoring Data</h4><p>The <code><a aria-label="kiss.Storable" href="api/kiss.Storable.html#restore()">Storable#restore()</a></code> method restores the object&apos;s properties from file (check
+doc.DocumentDoc.Object_Modeling.Property). If the file doesn&apos;t exist or
+an error occurs during reading/parsing, the operation typically fails silently, leaving
+the object in its current state (often default values).</p><pre class="lang-java"><code>void restore() {
+    Data other = new Data();
+    other.restore(); // load data from file
+
+    assert other.property == 10;
+}</code></pre></span></section>
+			</div>
+			<div class="h">
+				<section class="B" id="doc.DocumentDoc.Persistence.Transient">
+					<header class="B I">
+						<h2>Transient</h2>
+						<div class="K"><span class="perp g"><svg class="copy A svg" viewBox="0 0 24 24">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet g"><svg class="twitter A svg" viewBox="0 0 24 24">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit g" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L1866-L1875"><svg class="edit A svg" viewBox="0 0 24 24">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="B"><p>Normally all properties are eligible for preservation, but there are several ways to make
+explicit which properties you do not want to preserve.</p><p>If the property is defined by field, add the transient modifier to the field
+declaration.</p><pre class="lang-java"><code>class TransientField implements Storable&lt;TransientField&gt; {
+
+    public transient int unstorableProperty;
+}</code></pre><p>If the property is defined by method, add <code><a aria-label="java.beans.Transient 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.desktop/java/beans/Transient.html">java.beans.Transient</a></code> annotation. (You
+only need to add it to either the setter or the getter)</p><pre class="lang-java"><code>class TransientMethod implements Storable&lt;TransientMethod&gt; {
+
+    private int value;
+
+    @java.beans.Transient
+    public int getUnstorableProperty() {
+        return value;
+    }
+
+    public void setUnstorableProperty(int value) {
+        this.value = value;
+    }
+}</code></pre></span></section>
+			</div>
+			<div class="h">
+				<section class="B" id="doc.DocumentDoc.Persistence.Automatic_Saving">
+					<header class="B I">
+						<h4>Enabling Auto-Save</h4>
+						<div class="K"><span class="perp g"><svg class="copy A svg" viewBox="0 0 24 24">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet g"><svg class="twitter A svg" viewBox="0 0 24 24">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit g" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L1899-L1943"><svg class="edit A svg" viewBox="0 0 24 24">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="B"><p>Instead of manually calling <code><a aria-label="kiss.Storable" href="api/kiss.Storable.html#store()">Storable#store()</a></code> every time a change occurs,
+you can be configured to save their state automatically when their properties change.
+This is achieved using the <code><a aria-label="kiss.Storable" href="api/kiss.Storable.html#auto()">Storable#auto()</a></code> method.</p><p>[!IMPORTANT]
+Only properties defined in Variable can be detected, as trying to detect value changes of
+arbitrary properties would be prohibitively expensive.</p><p>Calling <code><a aria-label="kiss.Storable" href="api/kiss.Storable.html#auto()">Storable#auto()</a></code> instance monitors its properties (and nested <code>Storable</code>
+properties). When a change is detected, it schedules a <code>store()</code> operation. By default,
+this operation is debounced (typically waiting 1 second after the last change) to avoid
+excessive writes during rapid changes.</p><pre class="lang-java"><code>AppSettings settings = I.make(AppSettings.class);
+ Disposable autoSaveStopper = settings.auto(); // Start auto-saving
+
+ // ... later in the application ...
+ settings.userName = &quot;New User&quot;; // Change triggers auto-save after debounce period
+
+ // To stop auto-saving if needed (e.g., on application shutdown)
+ // autoSaveStopper.dispose();</code></pre><p><b>Customizing Auto-Save Timing:</b>
+						</p>
+ An overloaded version, <code><a aria-label="kiss.Storable" href="api/kiss.Storable.html#auto(java.util.function.Function)">Storable#auto(Function)</a></code>, allows customizing the timing
+ behavior using <code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code> operators. For example, you could change the debounce
+ duration
+ or use a different strategy like throttling.
+ <pre class="lang-java"><code>import static java.util.concurrent.TimeUnit.*;
+
+ // Auto-save with a 5-second debounce
+ settings.auto(timing -&gt; timing.debounce(5, SECONDS));
+
+ // Auto-save immediately on change (throttled to once per 500ms)
+ // settings.auto(timing -&gt; timing.throttle(500, MILLISECONDS));</code></pre><p>The <code>auto()</code> method returns a <code><a aria-label="kiss.Disposable" href="api/kiss.Disposable.html">Disposable</a></code>. Calling <code>dispose()</code> on this object
+will stop the automatic saving process for that instance.</p></span></section>
+			</div>
+			<div class="h">
+				<section class="B" id="doc.DocumentDoc.Persistence.Storage_Location">
+					<header class="B I">
+						<h2>Storage Location</h2>
+						<div class="K"><span class="perp g"><svg class="copy A svg" viewBox="0 0 24 24">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet g"><svg class="twitter A svg" viewBox="0 0 24 24">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit g" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L1949-L1997"><svg class="edit A svg" viewBox="0 0 24 24">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="B"><p>By default, persistence files are stored in a directory named <code>.preferences</code> within
+the application&apos;s working directory. The filename is derived from the fully qualified
+class name of the <code>Storable</code> object, ending with <code>.json</code>.
+(e.g., <code>.preferences/com.example.MyAppSettings.json</code>).</p><p>This location can be customized in two main ways:</p><p><b>1. Overriding `locate()`:</b>
+						</p>
+ You can override the <code><a aria-label="kiss.Storable" href="api/kiss.Storable.html#locate()">Storable#locate()</a></code> method within your implementing class
+ to return a custom <code><a aria-label="java.nio.file.Path 🚀" href="https://docs.oracle.com/en/java/javase/19/docs/api/java.base/java/nio/file/Path.html">Path</a></code> for the persistence file.
+ <pre class="lang-java"><code>class CustomLocationSettings implements Storable&lt;CustomLocationSettings&gt; {
+     public String data;
+
+     &#64;Override
+     public Path locate() {
+         // Store in user home directory, for example
+         return Path.of(System.getProperty(&quot;user.home&quot;), &quot;.myApp&quot;, &quot;settings.json&quot;);
+     }
+
+     private CustomLocationSettings() {
+         restore();
+     }
+ }</code></pre><p><b>2. Using Environment Variable:</b>
+						</p>
+ You can set a global preference directory by defining the environment variable
+ `PreferenceDirectory` using <code><a aria-label="kiss.I" href="api/kiss.I.html#env(java.lang.String,java.lang.Object)">I#env(String, Object)</a></code>. If this variable is set,
+ the default `locate()` implementation will use this directory instead of `.preferences`.
+ <pre class="lang-java"><code>// Set the preference directory globally (e.g., at application startup)
+ I.env(&quot;PreferenceDirectory&quot;, &quot;/etc/myApp/config&quot;);
+
+ // Now, AppSettings (if using default locate()) will save to
+ // /etc/myApp/config/com.example.AppSettings.json
+ AppSettings settings = I.make(AppSettings.class);
+ settings.store();</code></pre><p>The environment variable method takes precedence over the default <code>.preferences</code>
+directory
+but is overridden if the <code>locate()</code> method is explicitly implemented in the class.</p></span></section>
+			</div>
+		</article>
+		<aside class="J"></aside>
+		<footer class="n"/>
 	</body>
 	<script src="root.js"></script>
 	<script src="main.js" type="module"></script>
