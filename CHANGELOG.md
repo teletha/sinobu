@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.9.0](https://github.com/teletha/sinobu/compare/4.8.0...4.9.0) (2025-04-24)
+
+
+### Features
+
+* add log methods overloaded by WiseSupplier ([13b8ecc](https://github.com/teletha/sinobu/commit/13b8ecc4bf29de0da1729fc82128dd430b59dca4))
+
 ## [4.8.0](https://github.com/teletha/sinobu/compare/4.7.0...4.8.0) (2025-04-23)
 
 
