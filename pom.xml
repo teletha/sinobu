@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.github.teletha</groupId>
 	<artifactId>sinobu</artifactId>
-	<version>4.8.0</version>
+	<version>4.9.0</version>
 	<packaging>jar</packaging>
 	<name>sinobu</name>
 	<description>Sinobu is not obsolete framework but utility, which can manipulate objects as a extremely-condensed facade.
@@ -77,7 +77,7 @@ With a few exceptions, Sinobu and its APIs are designed to be simple to use and 
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
-			<version>2.13.0</version>
+			<version>2.13.1</version>
 			<scope>test</scope>
 			<exclusions/>
 		</dependency>
