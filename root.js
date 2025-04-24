@@ -9,9 +9,19 @@ const root = {
 					"title": "Overview"
 				},
 				{
+					"path": "doc/doc.DocumentDoc.Introduction.html#doc.DocumentDoc.Introduction.Core_Principles",
+					"subs": [],
+					"title": "Core Principles"
+				},
+				{
 					"path": "doc/doc.DocumentDoc.Introduction.html#doc.DocumentDoc.Introduction.How_to_install",
 					"subs": [],
 					"title": "How to install"
+				},
+				{
+					"path": "doc/doc.DocumentDoc.Introduction.html#doc.DocumentDoc.Introduction.Getting_Involved",
+					"subs": [],
+					"title": "Getting Involved"
 				}
 			],
 			"title": "Introduction"
@@ -551,7 +561,18 @@ const root = {
 				},
 				{
 					"path": "doc/doc.DocumentDoc.Persistence.html#doc.DocumentDoc.Persistence.Storage_Location",
-					"subs": [],
+					"subs": [
+						{
+							"path": "doc/doc.DocumentDoc.Persistence.html#doc.DocumentDoc.Persistence.Storage_Location.Location_Method",
+							"subs": [],
+							"title": "Location Method"
+						},
+						{
+							"path": "doc/doc.DocumentDoc.Persistence.html#doc.DocumentDoc.Persistence.Storage_Location.Environment_Variable",
+							"subs": [],
+							"title": "Environment Variable"
+						}
+					],
 					"title": "Storage Location"
 				}
 			],

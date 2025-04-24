@@ -19,10 +19,10 @@
 		<link href="https://cdn.jsdelivr.net/npm/ress@4.0.0/dist/ress.min.css" rel="stylesheet"/>
 		<link href="main.css" rel="stylesheet"/>
 	</head>
-	<body class="e">
-		<header class="T" date="2025-04-23" ver="4.8.0">
-			<h1 class="U"><code>Sinobu</code></h1>
-			<nav class="V"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="text A svg" viewBox="0 0 24 24">
+	<body class="d">
+		<header class="e" date="2025-04-23" ver="4.8.0">
+			<h1 class="l"><code>Sinobu</code></h1>
+			<nav class="o"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="text A svg" viewBox="0 0 24 24">
 						<use href="main.svg#text"/>
 					</svg>Document</a><a href="api/" id="API"><svg class="package A svg" viewBox="0 0 24 24">
 						<use href="main.svg#package"/>
@@ -37,83 +37,131 @@
 						<use href="main.svg#github"/>
 					</svg>
 				</a></nav>
-			<div class="W"><a aria-label="Change color scheme" id="theme"><svg class="sun A svg" viewBox="0 0 24 24">
+			<div class="j"><a aria-label="Change color scheme" id="theme"><svg class="sun A svg" viewBox="0 0 24 24">
 						<use href="main.svg#sun"/>
 					</svg><svg class="moon A svg" viewBox="0 0 24 24">
 						<use href="main.svg#moon"/>
 					</svg>
 				</a></div>
 		</header>
-		<nav class="L"></nav>
-		<article class="b" id="Article">
-			<div class="h">
+		<nav class="Z"></nav>
+		<article class="f" id="Article">
+			<div class="q">
 				<section class="B" id="doc.DocumentDoc.Introduction.Overview">
-					<header class="B I">
+					<header class="B P">
 						<h2>Overview</h2>
-						<div class="K"><span class="perp g"><svg class="copy A svg" viewBox="0 0 24 24">
+						<div class="H"><span class="perp b"><svg class="copy A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
-							</span><a class="tweet g"><svg class="twitter A svg" viewBox="0 0 24 24">
+							</span><a class="tweet b"><svg class="twitter A svg" viewBox="0 0 24 24">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit g" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L74-L106"><svg class="edit A svg" viewBox="0 0 24 24">
+							</a><a class="edit b" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L72-L104"><svg class="edit A svg" viewBox="0 0 24 24">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
-					</header><span class="B"><p>Sinobu is not obsolete framework but utility, which can manipulate objects as a
-extremely-condensed facade.
-This is extremely lightweight at approximately 120 KB without relying on other libraries,
-and its various operations are designed to run as fast as other competing libraries.</p><p>This library aims to simplify and highly condense the functions related to domains that
-are frequently encountered in real-world development projects, making them easier to use.</p><ul>
+					</header><span class="B"><p>Sinobu is not obsolete framework but utility.
+It acts as an extremely condensed facade for common development tasks,
+designed to be intuitive and efficient.</p><p>Weighing in at approximately 120 KB with zero external dependencies,
+Sinobu prioritizes lightweight deployment and avoids dependency conflicts.
+Despite its small size, its various operations are engineered for high performance,
+often rivaling or exceeding competing specialized libraries (see
+doc.DocumentDoc.Benchmark).</p><p>This library aims to simplify and consolidate functionalities frequently
+encountered in real-world projects, making them easier and safer to use.
+Key areas covered include:</p><ul>
 							<li><a href="https://en.wikipedia.org/wiki/Dependency_injection">Dependency Injection</a></li>
 							<li>Object lifecycle management</li>
 							<li>Property based object modeling</li>
 							<li>HTTP(S) Client</li>
 							<li>Web Socket Client</li>
 							<li><a href="https://en.wikipedia.org/wiki/JSON">JSON</a></li>
-							<li><a href="https://en.wikipedia.org/wiki/HTML">HTML</a> (including Tag Soup)</li>
+							<li><a href="https://en.wikipedia.org/wiki/HTML">HTML</a> (Tag Soup Tolerant)</li>
 							<li><a href="https://en.wikipedia.org/wiki/XML">XML</a></li>
 							<li>Reactive Programming (<a href="http://reactivex.io">Rx</a>)</li>
-							<li>Asynchronous  Parallel processing</li>
+							<li>Asynchronous &amp; Parallel processing</li>
 							<li>Multilingualization</li>
-							<li>Template Engine (<a href="https://mustache.github.io/mustache.5.html">Mustache</a>)</li>
-							<li>Dynamic plug-in mechanism</li>
+							<li>Template Engine (<a href="https://mustache.github.io/mustache.5.html">Mustache</a> Syntax)</li>
+							<li>Dynamic Extensibility / Plugin System</li>
 							<li>Object persistence</li>
-							<li>Logging (Garbage-Free)</li>
+							<li>Logging (Garbage-Less)</li>
 							<li>Virtual Job Scheduler</li>
-							<li><a href="https://en.wikipedia.org/wiki/Cron">Cron</a> Scheduling</li>
-						</ul><p>With a few exceptions, Sinobu and its APIs are designed to be simple to use and easy to
-understand by adhering to the following principles.</p><ul>
-							<li><a href="https://en.wikipedia.org/wiki/KISS_principle">Keep it stupid simple</a></li>
-							<li><a href="https://en.wikipedia.org/wiki/Less_is_more_(architecture)">Less is more</a></li>
-							<li><a href="https://en.wikipedia.org/wiki/Type_safety">Type safety</a></li>
-							<li>Refactoring safety</li>
-						</ul></span></section>
+							<li>Task Scheduling (<a href="https://en.wikipedia.org/wiki/Cron">Cron</a> Syntax)</li>
+						</ul><p>Sinobu adheres to core principles ensuring ease of use, safety, and efficiency.</p></span></section>
 			</div>
-			<div class="h">
-				<section class="B" id="doc.DocumentDoc.Introduction.How_to_install">
-					<header class="B I">
-						<h2>How to install</h2>
-						<div class="K"><span class="perp g"><svg class="copy A svg" viewBox="0 0 24 24">
+			<div class="q">
+				<section class="B" id="doc.DocumentDoc.Introduction.Core_Principles">
+					<header class="B P">
+						<h4>🚀 Lightweight &amp; Zero Dependency</h4>
+						<div class="H"><span class="perp b"><svg class="copy A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
-							</span><a class="tweet g"><svg class="twitter A svg" viewBox="0 0 24 24">
+							</span><a class="tweet b"><svg class="twitter A svg" viewBox="0 0 24 24">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit g" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L112-L121"><svg class="edit A svg" viewBox="0 0 24 24">
+							</a><a class="edit b" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L110-L130"><svg class="edit A svg" viewBox="0 0 24 24">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="B"><p>Sinobu&apos;s design philosophy is guided by several core principles:</p><p>A minimal footprint (~120 KB) and no external dependencies mean faster startup,
+smaller deployment sizes, and freedom from dependency hell.</p><h4>⚡ High Performance</h4><p>Speed is a key design goal. Operations like JSON parsing, logging, and template
+rendering are optimized for minimal overhead and garbage generation.
+Refer to the doc.DocumentDoc.Benchmark section for
+comparative results.</p><h4>✨ Simplicity (Keep it simple stupid &amp; Less is more)</h4><p>APIs are designed to be concise, intuitive, and require minimal boilerplate.
+Often, static methods on the <code><a aria-label="kiss.I" href="api/kiss.I.html">I</a></code> class provide direct access to functionality.</p><pre class="lang-java"><code>void access() {
+    I.http(&quot;http://xxx.com/&quot;, XML.class).to(html -&gt; {
+        String name = html.find(&quot;#user&quot;).text();
+    });
+}</code></pre><h4>🛡️ Safety (Type safety &amp; Refactoring safety)</h4><p>Leverages Java&apos;s static typing to catch errors at compile time. APIs are designed
+to be refactoring-friendly, reducing the risk of runtime errors during code changes.
+Constructor injection is preferred over less safe alternatives.</p></span></section>
+			</div>
+			<div class="q">
+				<section class="B" id="doc.DocumentDoc.Introduction.How_to_install">
+					<header class="B P">
+						<h2>How to install</h2>
+						<div class="H"><span class="perp b"><svg class="copy A svg" viewBox="0 0 24 24">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet b"><svg class="twitter A svg" viewBox="0 0 24 24">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit b" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L141-L151"><svg class="edit A svg" viewBox="0 0 24 24">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
 					</header><span class="B"><p>It is probably easiest to use a build tool such as
-<a href="https://maven.apache.org">Maven</a> or <a href="https://gradle.org">Gradle</a>.</p><pre class="lang-xml"><code>&lt;dependency&gt;
+<a href="https://maven.apache.org">Maven</a> or <a href="https://gradle.org">Gradle</a>.
+Replace <code>4.8.0</code> with the desired version number.</p><pre class="lang-xml"><code>&lt;dependency&gt;
      &lt;groupId&gt;com.github.teletha&lt;/groupId&gt;
      &lt;artifactId&gt;Sinobu&lt;/artifactId&gt;
      &lt;version&gt;4.8.0&lt;version&gt;
  &lt;/dependency&gt;</code></pre></span></section>
 			</div>
+			<div class="q">
+				<section class="B" id="doc.DocumentDoc.Introduction.Getting_Involved">
+					<header class="B P">
+						<h2>Getting Involved</h2>
+						<div class="H"><span class="perp b"><svg class="copy A svg" viewBox="0 0 24 24">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet b"><svg class="twitter A svg" viewBox="0 0 24 24">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit b" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L157-L163"><svg class="edit A svg" viewBox="0 0 24 24">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="B"><p>Sinobu is an open-source project hosted on GitHub. Contributions, bug reports,
+and feature requests are welcome.</p><ul>
+							<li><strong>Repository:</strong><a href="https://github.com/teletha/sinobu">https://github.com/teletha/sinobu</a></li>
+							<li><strong>Issues:</strong> Please report bugs or suggest features via GitHub Issues.</li>
+							<li><strong>Contributions:</strong> Pull requests are welcome! Please ensure code style consistency and
+include tests where applicable.</li>
+						</ul></span></section>
+			</div>
 		</article>
-		<aside class="J"></aside>
-		<footer class="n"/>
+		<aside class="g"></aside>
+		<footer class="a"/>
 	</body>
 	<script src="root.js"></script>
 	<script src="main.js" type="module"></script>
