@@ -19,10 +19,10 @@
 		<link href="https://cdn.jsdelivr.net/npm/ress@4.0.0/dist/ress.min.css" rel="stylesheet"/>
 		<link href="main.css" rel="stylesheet"/>
 	</head>
-	<body class="d">
-		<header class="e" date="2025-04-23" ver="4.8.0">
-			<h1 class="l"><code>Sinobu</code></h1>
-			<nav class="o"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="text A svg" viewBox="0 0 24 24">
+	<body class="L">
+		<header class="M" date="2025-04-23" ver="4.9.0">
+			<h1 class="W"><code>Sinobu</code></h1>
+			<nav class="Z"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="text A svg" viewBox="0 0 24 24">
 						<use href="main.svg#text"/>
 					</svg>Document</a><a href="api/" id="API"><svg class="package A svg" viewBox="0 0 24 24">
 						<use href="main.svg#package"/>
@@ -37,33 +37,33 @@
 						<use href="main.svg#github"/>
 					</svg>
 				</a></nav>
-			<div class="j"><a aria-label="Change color scheme" id="theme"><svg class="sun A svg" viewBox="0 0 24 24">
+			<div class="a"><a aria-label="Change color scheme" id="theme"><svg class="sun A svg" viewBox="0 0 24 24">
 						<use href="main.svg#sun"/>
 					</svg><svg class="moon A svg" viewBox="0 0 24 24">
 						<use href="main.svg#moon"/>
 					</svg>
 				</a></div>
 		</header>
-		<nav class="Z"></nav>
-		<article class="f" id="Article">
-			<div class="q">
+		<nav class="O"></nav>
+		<article class="N" id="Article">
+			<div class="X">
 				<section class="B" id="doc.DocumentDoc.Benchmark.Overview">
-					<header class="B P">
-						<h4>🔬 Methodology</h4>
-						<div class="H"><span class="perp b"><svg class="copy A svg" viewBox="0 0 24 24">
+					<header class="B j">
+						<h2>Overview</h2>
+						<div class="n"><span class="perp K"><svg class="copy A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
-							</span><a class="tweet b"><svg class="twitter A svg" viewBox="0 0 24 24">
+							</span><a class="tweet K"><svg class="twitter A svg" viewBox="0 0 24 24">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit b" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L2027-L2065"><svg class="edit A svg" viewBox="0 0 24 24">
+							</a><a class="edit K" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L2027-L2065"><svg class="edit A svg" viewBox="0 0 24 24">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
 					</header><span class="B"><p>This section presents benchmark results comparing the performance of Sinobu
 with other popular libraries for various common tasks. The goal is to provide
 objective data on Sinobu&apos;s efficiency in terms of execution speed,
-memory allocation, and garbage collection impact.</p><p>Benchmarks were conducted using a custom benchmarking framework inspired by principles
+memory allocation, and garbage collection impact.</p><h4>🔬 Methodology</h4><p>Benchmarks were conducted using a custom benchmarking framework inspired by principles
 similar to JMH (Java Microbenchmark Harness). This includes dedicated warm-up phases
 to allow for JIT compilation and stabilization, and techniques like blackholes to prevent
 dead code elimination and ensure accurate measurement of the intended operations.
@@ -81,23 +81,22 @@ rendering) are performed to measure key performance indicators such as:</p><ul>
 							<li>Execution speed (throughput or time per operation)</li>
 							<li>Garbage collection load (allocation rate)</li>
 							<li>Memory consumption (footprint, retained size - though less frequently shown in graphs)</li>
-						</ul><p>[!NOTE]
-Lower values for time and allocation generally indicate better performance, while higher
+						</ul><p class="NOTE">Lower values for time and allocation generally indicate better performance, while higher
 values for throughput are better.</p><h4>⚠️ Disclaimer</h4><p>Benchmark results can vary depending on the execution environment (JVM version, OS,
 hardware). These results should be considered indicative rather than absolute measures of
 performance in all scenarios.</p></span></section>
 			</div>
-			<div class="q">
+			<div class="X">
 				<section class="B" id="doc.DocumentDoc.Benchmark.Logging">
-					<header class="B P">
+					<header class="B j">
 						<h2>Logging</h2>
-						<div class="H"><span class="perp b"><svg class="copy A svg" viewBox="0 0 24 24">
+						<div class="n"><span class="perp K"><svg class="copy A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
-							</span><a class="tweet b"><svg class="twitter A svg" viewBox="0 0 24 24">
+							</span><a class="tweet K"><svg class="twitter A svg" viewBox="0 0 24 24">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit b" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L2071-L2077"><svg class="edit A svg" viewBox="0 0 24 24">
+							</a><a class="edit K" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L2071-L2077"><svg class="edit A svg" viewBox="0 0 24 24">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
@@ -105,17 +104,17 @@ performance in all scenarios.</p></span></section>
 Focuses on throughput (operations per second) and garbage generation under different
 scenarios, highlighting Sinobu&apos;s garbage-less design advantage.</p><img src="https://raw.githubusercontent.com/teletha/sinobu/refs/heads/master/benchmark/LogBenchmark.svg" width="700"/></span></section>
 			</div>
-			<div class="q">
+			<div class="X">
 				<section class="B" id="doc.DocumentDoc.Benchmark.JSON">
-					<header class="B P">
+					<header class="B j">
 						<h2>JSON</h2>
-						<div class="H"><span class="perp b"><svg class="copy A svg" viewBox="0 0 24 24">
+						<div class="n"><span class="perp K"><svg class="copy A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
-							</span><a class="tweet b"><svg class="twitter A svg" viewBox="0 0 24 24">
+							</span><a class="tweet K"><svg class="twitter A svg" viewBox="0 0 24 24">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit b" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L2083-L2090"><svg class="edit A svg" viewBox="0 0 24 24">
+							</a><a class="edit K" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L2083-L2090"><svg class="edit A svg" viewBox="0 0 24 24">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
@@ -127,40 +126,40 @@ Results highlight performance across various operations and document sizes.</p><
 							<li><a href="https://github.com/FasterXML/jackson">Jackson</a></li>
 							<li><a href="https://github.com/google/gson">GSON</a></li>
 						</ul></span></section>
-				<section class="B O" id="doc.DocumentDoc.Benchmark.JSON.Parse_Small">
-					<header class="B N">
+				<section class="B i" id="doc.DocumentDoc.Benchmark.JSON.Parse_Small">
+					<header class="B b">
 						<h3>Parse Small</h3>
 					</header><span class="B"><p>Measures the time and resources required to parse small JSON documents.</p><img src="https://raw.githubusercontent.com/teletha/sinobu/refs/heads/master/benchmark/JSONParseShortBenchmark.svg" width="700"/></span></section>
-				<section class="B O" id="doc.DocumentDoc.Benchmark.JSON.Parse_Large">
-					<header class="B N">
+				<section class="B i" id="doc.DocumentDoc.Benchmark.JSON.Parse_Large">
+					<header class="B b">
 						<h3>Parse Large</h3>
 					</header><span class="B"><p>Measures the performance of parsing larger JSON documents, testing scalability.</p><img src="https://raw.githubusercontent.com/teletha/sinobu/refs/heads/master/benchmark/JSONParseLongBenchmark.svg" width="700"/></span></section>
-				<section class="B O" id="doc.DocumentDoc.Benchmark.JSON.Parse_Huge">
-					<header class="B N">
+				<section class="B i" id="doc.DocumentDoc.Benchmark.JSON.Parse_Huge">
+					<header class="B b">
 						<h3>Parse Huge</h3>
 					</header><span class="B"><p>Measures the performance of parsing very large (huge) JSON documents, stressing
 memory and CPU usage.</p><img src="https://raw.githubusercontent.com/teletha/sinobu/refs/heads/master/benchmark/JSONParseHugeBenchmark.svg" width="700"/></span></section>
-				<section class="B O" id="doc.DocumentDoc.Benchmark.JSON.Traversing">
-					<header class="B N">
+				<section class="B i" id="doc.DocumentDoc.Benchmark.JSON.Traversing">
+					<header class="B b">
 						<h3>Traversing</h3>
 					</header><span class="B"><p>Evaluates the efficiency of navigating and accessing data within a parsed JSON
 structure (DOM-like access).</p><img src="https://raw.githubusercontent.com/teletha/sinobu/refs/heads/master/benchmark/JSONTraverseBenchmark.svg" width="700"/></span></section>
-				<section class="B O" id="doc.DocumentDoc.Benchmark.JSON.Mapping">
-					<header class="B N">
+				<section class="B i" id="doc.DocumentDoc.Benchmark.JSON.Mapping">
+					<header class="B b">
 						<h3>Mapping</h3>
 					</header><span class="B"><p>Benchmarks the process of mapping JSON data directly to Java objects (POJOs/Records).</p><img src="https://raw.githubusercontent.com/teletha/sinobu/refs/heads/master/benchmark/JSONMappingBenchmark.svg" width="700"/></span></section>
 			</div>
-			<div class="q">
+			<div class="X">
 				<section class="B" id="doc.DocumentDoc.Benchmark.HTML">
-					<header class="B P">
+					<header class="B j">
 						<h2>HTML</h2>
-						<div class="H"><span class="perp b"><svg class="copy A svg" viewBox="0 0 24 24">
+						<div class="n"><span class="perp K"><svg class="copy A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
-							</span><a class="tweet b"><svg class="twitter A svg" viewBox="0 0 24 24">
+							</span><a class="tweet K"><svg class="twitter A svg" viewBox="0 0 24 24">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit b" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L2147-L2153"><svg class="edit A svg" viewBox="0 0 24 24">
+							</a><a class="edit K" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L2147-L2153"><svg class="edit A svg" viewBox="0 0 24 24">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
@@ -168,17 +167,17 @@ structure (DOM-like access).</p><img src="https://raw.githubusercontent.com/tele
 against other Java parsers. Focuses on parsing speed and memory usage for typical
 web documents.</p><img src="https://raw.githubusercontent.com/teletha/sinobu/refs/heads/master/benchmark/XMLParseBenchmark.svg" width="700"/></span></section>
 			</div>
-			<div class="q">
+			<div class="X">
 				<section class="B" id="doc.DocumentDoc.Benchmark.Template_Engine">
-					<header class="B P">
+					<header class="B j">
 						<h2>Template Engine</h2>
-						<div class="H"><span class="perp b"><svg class="copy A svg" viewBox="0 0 24 24">
+						<div class="n"><span class="perp K"><svg class="copy A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
-							</span><a class="tweet b"><svg class="twitter A svg" viewBox="0 0 24 24">
+							</span><a class="tweet K"><svg class="twitter A svg" viewBox="0 0 24 24">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit b" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L2159-L2164"><svg class="edit A svg" viewBox="0 0 24 24">
+							</a><a class="edit K" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L2159-L2164"><svg class="edit A svg" viewBox="0 0 24 24">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
@@ -186,8 +185,8 @@ web documents.</p><img src="https://raw.githubusercontent.com/teletha/sinobu/ref
 Measures rendering speed and overhead for template processing with context data.</p><img src="https://raw.githubusercontent.com/teletha/sinobu/refs/heads/master/benchmark/ExpressionBenchmark.svg" width="700"/></span></section>
 			</div>
 		</article>
-		<aside class="g"></aside>
-		<footer class="a"/>
+		<aside class="P"></aside>
+		<footer class="l"/>
 	</body>
 	<script src="root.js"></script>
 	<script src="main.js" type="module"></script>

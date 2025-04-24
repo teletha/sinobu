@@ -19,10 +19,10 @@
 		<link href="https://cdn.jsdelivr.net/npm/ress@4.0.0/dist/ress.min.css" rel="stylesheet"/>
 		<link href="main.css" rel="stylesheet"/>
 	</head>
-	<body class="d">
-		<header class="e" date="2025-04-23" ver="4.8.0">
-			<h1 class="l"><code>Sinobu</code></h1>
-			<nav class="o"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="text A svg" viewBox="0 0 24 24">
+	<body class="L">
+		<header class="M" date="2025-04-23" ver="4.9.0">
+			<h1 class="W"><code>Sinobu</code></h1>
+			<nav class="Z"><a href="doc/doc.DocumentDoc.Introduction.html"><svg class="text A svg" viewBox="0 0 24 24">
 						<use href="main.svg#text"/>
 					</svg>Document</a><a href="api/" id="API"><svg class="package A svg" viewBox="0 0 24 24">
 						<use href="main.svg#package"/>
@@ -37,32 +37,32 @@
 						<use href="main.svg#github"/>
 					</svg>
 				</a></nav>
-			<div class="j"><a aria-label="Change color scheme" id="theme"><svg class="sun A svg" viewBox="0 0 24 24">
+			<div class="a"><a aria-label="Change color scheme" id="theme"><svg class="sun A svg" viewBox="0 0 24 24">
 						<use href="main.svg#sun"/>
 					</svg><svg class="moon A svg" viewBox="0 0 24 24">
 						<use href="main.svg#moon"/>
 					</svg>
 				</a></div>
 		</header>
-		<nav class="Z"></nav>
-		<article class="f" id="Article">
-			<div class="q">
+		<nav class="O"></nav>
+		<article class="N" id="Article">
+			<div class="X">
 				<section class="B" id="doc.DocumentDoc.Scheduling.Concept">
-					<header class="B P">
-						<h4>✨ Simple API</h4>
-						<div class="H"><span class="perp b"><svg class="copy A svg" viewBox="0 0 24 24">
+					<header class="B j">
+						<h2>Concept</h2>
+						<div class="n"><span class="perp K"><svg class="copy A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
-							</span><a class="tweet b"><svg class="twitter A svg" viewBox="0 0 24 24">
+							</span><a class="tweet K"><svg class="twitter A svg" viewBox="0 0 24 24">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit b" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L1526-L1543"><svg class="edit A svg" viewBox="0 0 24 24">
+							</a><a class="edit K" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L1526-L1543"><svg class="edit A svg" viewBox="0 0 24 24">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
 					</header><span class="B"><p>Scheduling tasks to run at specific times or intervals is a common requirement.
 Sinobu provides a simple yet powerful mechanism for this, based on the well-known
-Cron expression format. It integrates seamlessly with Sinobu&apos;s reactive streams.</p><p>Schedule tasks with a single static method call: <code><a aria-label="kiss.I" href="api/kiss.I.html#schedule(java.lang.String)">I#schedule(String)</a></code>.
+Cron expression format. It integrates seamlessly with Sinobu&apos;s reactive streams.</p><h4>✨ Simple API</h4><p>Schedule tasks with a single static method call: <code><a aria-label="kiss.I" href="api/kiss.I.html#schedule(java.lang.String)">I#schedule(String)</a></code>.
 No complex setup or scheduler instances needed.</p><pre class="lang-java"><code>void scheduling() {
     I.schedule(() -&gt; {
         // execute your job immediately on job thread
@@ -74,20 +74,20 @@ No complex setup or scheduler instances needed.</p><pre class="lang-java"><code>
 }</code></pre><h4>🗓️ Cron Expression Syntax</h4><p>Define complex schedules using the standard Cron format, specifying minutes,
 hours, days, months, and weekdays. Sinobu supports standard fields and special
 characters like <code>*</code>, <code>/</code>, <code>-</code>, <code>,</code>, <code>L</code>, <code>W</code>, <code>#</code>, <code>?</code>, and the randomizer <code>R</code>.</p><h4>🔄 Reactive Integration</h4><p>Scheduled events are delivered as a <code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code>, allowing you to use
-reactive operators for flow control (e.g., <code><a aria-label="kiss.Signal" href="api/kiss.Signal.html#take(long)">Signal#take(long)</a></code>),
+reactive operators for flow control (e.g., <a aria-label="kiss.Signal" href="api/kiss.Signal.html#take(long)">take</a>),
 transformation, and lifecycle management (<code><a aria-label="kiss.Disposable" href="api/kiss.Disposable.html">Disposable</a></code>).</p></span></section>
 			</div>
-			<div class="q">
+			<div class="X">
 				<section class="B" id="doc.DocumentDoc.Scheduling.Usage">
-					<header class="B P">
+					<header class="B j">
 						<h2>Usage</h2>
-						<div class="H"><span class="perp b"><svg class="copy A svg" viewBox="0 0 24 24">
+						<div class="n"><span class="perp K"><svg class="copy A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
-							</span><a class="tweet b"><svg class="twitter A svg" viewBox="0 0 24 24">
+							</span><a class="tweet K"><svg class="twitter A svg" viewBox="0 0 24 24">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit b" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L1558-L1565"><svg class="edit A svg" viewBox="0 0 24 24">
+							</a><a class="edit K" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L1558-L1565"><svg class="edit A svg" viewBox="0 0 24 24">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
@@ -108,17 +108,17 @@ transformation, and lifecycle management (<code><a aria-label="kiss.Disposable" 
     });
 }</code></pre></span></section>
 			</div>
-			<div class="q">
+			<div class="X">
 				<section class="B" id="doc.DocumentDoc.Scheduling.Format">
-					<header class="B P">
+					<header class="B j">
 						<h2>Format</h2>
-						<div class="H"><span class="perp b"><svg class="copy A svg" viewBox="0 0 24 24">
+						<div class="n"><span class="perp K"><svg class="copy A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
-							</span><a class="tweet b"><svg class="twitter A svg" viewBox="0 0 24 24">
+							</span><a class="tweet K"><svg class="twitter A svg" viewBox="0 0 24 24">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit b" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L1591-L1612"><svg class="edit A svg" viewBox="0 0 24 24">
+							</a><a class="edit K" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L1591-L1612"><svg class="edit A svg" viewBox="0 0 24 24">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
@@ -175,8 +175,8 @@ The possible values for each field are as follows, and some special function cha
 								</tr>
 							</tbody>
 						</table></span></section>
-				<section class="B O" id="doc.DocumentDoc.Scheduling.Format.Second">
-					<header class="B N">
+				<section class="B i" id="doc.DocumentDoc.Scheduling.Format.Second">
+					<header class="B b">
 						<h3>Second</h3>
 					</header><span class="B"><p>The seconds field can be a number from 0 to 59. It is optional and does not have to be specified.</p><table>
 							<thead>
@@ -220,8 +220,8 @@ The possible values for each field are as follows, and some special function cha
 								</tr>
 							</tbody>
 						</table></span></section>
-				<section class="B O" id="doc.DocumentDoc.Scheduling.Format.Hour">
-					<header class="B N">
+				<section class="B i" id="doc.DocumentDoc.Scheduling.Format.Hour">
+					<header class="B b">
 						<h3>Hour</h3>
 					</header><span class="B"><p>The time field can be a number from 0 to 23.</p><table>
 							<thead>
@@ -265,8 +265,8 @@ The possible values for each field are as follows, and some special function cha
 								</tr>
 							</tbody>
 						</table></span></section>
-				<section class="B O" id="doc.DocumentDoc.Scheduling.Format.Day">
-					<header class="B N">
+				<section class="B i" id="doc.DocumentDoc.Scheduling.Format.Day">
+					<header class="B b">
 						<h3>Day</h3>
 					</header><span class="B"><p>The date field can be a number between 1 and 31.</p><table>
 							<thead>
@@ -316,8 +316,8 @@ The possible values for each field are as follows, and some special function cha
 								</tr>
 							</tbody>
 						</table></span></section>
-				<section class="B O" id="doc.DocumentDoc.Scheduling.Format.Month">
-					<header class="B N">
+				<section class="B i" id="doc.DocumentDoc.Scheduling.Format.Month">
+					<header class="B b">
 						<h3>Month</h3>
 					</header><span class="B"><p>The month field can be a number from 1 to 12.
 It can also be specified in English abbreviations such as <code>JUN</code>, <code>FEB</code>, <code>MAR</code>, etc.</p><table>
@@ -362,8 +362,8 @@ It can also be specified in English abbreviations such as <code>JUN</code>, <cod
 								</tr>
 							</tbody>
 						</table></span></section>
-				<section class="B O" id="doc.DocumentDoc.Scheduling.Format.Day_of_Week">
-					<header class="B N">
+				<section class="B i" id="doc.DocumentDoc.Scheduling.Format.Day_of_Week">
+					<header class="B b">
 						<h3>Day of Week</h3>
 					</header><span class="B"><p>The day of the week field can be a number from 0 to 7, where 0 is Sunday, 1 is Monday, 2 is Tuesday, and so on, returning to Sunday at 7.
 You can also specify the English abbreviation of <code>SUN</code>, <code>MON</code>, <code>TUE</code>, etc.</p><table>
@@ -409,17 +409,17 @@ You can also specify the English abbreviation of <code>SUN</code>, <code>MON</co
 							</tbody>
 						</table></span></section>
 			</div>
-			<div class="q">
+			<div class="X">
 				<section class="B" id="doc.DocumentDoc.Scheduling.Special_Characters">
-					<header class="B P">
+					<header class="B j">
 						<h2>Special Characters</h2>
-						<div class="H"><span class="perp b"><svg class="copy A svg" viewBox="0 0 24 24">
+						<div class="n"><span class="perp K"><svg class="copy A svg" viewBox="0 0 24 24">
 									<use href="main.svg#copy"/>
 								</svg>
-							</span><a class="tweet b"><svg class="twitter A svg" viewBox="0 0 24 24">
+							</span><a class="tweet K"><svg class="twitter A svg" viewBox="0 0 24 24">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit b" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L1679-L1717"><svg class="edit A svg" viewBox="0 0 24 24">
+							</a><a class="edit K" href="https://github.com/teletha/sinobu/edit/master/src/test/java/doc/DocumentDoc.java#L1679-L1717"><svg class="edit A svg" viewBox="0 0 24 24">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
@@ -580,8 +580,8 @@ You can also specify the English abbreviation of <code>SUN</code>, <code>MON</co
 						</table></span></section>
 			</div>
 		</article>
-		<aside class="g"></aside>
-		<footer class="a"/>
+		<aside class="P"></aside>
+		<footer class="l"/>
 	</body>
 	<script src="root.js"></script>
 	<script src="main.js" type="module"></script>
