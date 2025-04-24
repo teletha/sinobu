@@ -9,8 +9,13 @@
  */
 package doc;
 
+import java.io.InputStream;
 import java.io.Writer;
 import java.lang.System.Logger.Level;
+import java.net.http.HttpClient;
+import java.net.http.HttpResponse;
+import java.net.http.WebSocket;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,6 +27,7 @@ import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.w3c.dom.Node;
@@ -38,6 +44,7 @@ import kiss.Model;
 import kiss.Observer;
 import kiss.Signal;
 import kiss.Singleton;
+import kiss.Storable;
 import kiss.Variable;
 import kiss.XML;
 import kiss.instantiation.ConstructorInjectionTest;
@@ -745,27 +752,21 @@ public class DocumentDoc {
          * Sinobu offers built-in support for JSON processing with an emphasis on performance,
          * usability, and integration with Java object models.
          *
-         * ✅ Simplicity<br/>
+         * #### ✅ Simplicity
          * Offering straightforward APIs for parsing JSON from various sources and serializing Java
          * objects into JSON.
          * {@link Concept#read() @}
          *
-         * 🧩 Model-Centric<br/>
+         * #### 🧩 Model-Centric
          * Seamlessly mapping JSON data to and from Java objects
          * (POJOs or Records) based on Sinobu's property model, reducing boilerplate.
          * {@link JSONWriteTest#writeRecord() @}
          *
-         * 👉 Direct Manipulation<br/>
+         * #### 👉 Direct Manipulation
          * Parsed JSON can be navigated and mutated via a DOM-like tree model using the {@link JSON}
          * class. Access elements by key or index, modify values, or restructure nodes with
          * intuitive syntax.
          * {@link ManipulateTest#readValue() @}
-         * 
-         * ⚡ High Performance<br/>
-         * Engineered for speed, Sinobu's JSON parser and model mapper often outperform
-         * other popular libraries, minimizing overhead in data-intensive applications.
-         * 
-         * ![Benchmark](https://raw.githubusercontent.com/teletha/sinobu/refs/heads/master/benchmark/JSONParseShortBenchmark.svg)
          */
         public class Concept {
             void read() {
@@ -824,30 +825,24 @@ public class DocumentDoc {
          * The core class for this is {@link XML}, which offers a jQuery-like
          * API for traversing and manipulating the document structure.
          *
-         * 🍜 Tag Soup Friendly<br/>
+         * #### 🍜 Tag Soup Friendly
          * Handles malformed HTML gracefully, tolerating missing or mismatched tags
          * commonly found in real-world web content.
          * {@link HTMLSoupTest#caseInconsistencyLowerUpper() @}
          *
-         * 🎯 CSS Selector Power<br/>
+         * #### 🎯 CSS Selector Power
          * Leverages CSS selectors for efficient and flexible element selection,
          * similar to JavaScript libraries like jQuery.
          * {@link XMLFindTest#type() @}
          * 
-         * 🛠️ jQuery-Like API<br/>
+         * #### 🛠️ jQuery-Like API
          * Provides a fluent and chainable API for easy DOM manipulation,
          * inspired by the familiar jQuery syntax.
          * {@link XMLManipulationTest#append() @}
          *
-         * 🌐 XML Ready<br/>
+         * #### 🌐 XML Ready
          * Supports not only HTML but also XML documents, providing a unified interface
          * for structured data processing.
-         * 
-         * ⚡ High Performance<br/>
-         * Optimized for speed, the parser handles both HTML soup and standard XML
-         * quickly, making it suitable for performance-sensitive tasks like web scraping.
-         * 
-         * ![Benchmark](https://raw.githubusercontent.com/teletha/sinobu/refs/heads/master/benchmark/XMLParseBenchmark.svg)
          */
         public class Concept {
         }
@@ -878,39 +873,31 @@ public class DocumentDoc {
          * You can serialize the XML structure back into a string representation or write it to an
          * {@link Appendable} (like {@link Writer} or {@link StringBuilder}).
          * Sinobu offers both compact and formatted output options.
+         * 
+         * The {@link XML#toString()} method provides a compact string representation without
+         * extra formatting.
+         * {@link XMLWriterTest#format() @}
+         * 
+         * The {@link XML#to(Appendable, String, String...)} method allows for pretty-printing
+         * the XML structure with configurable indentation for improved readability.
+         * You can specify the indentation string (e.g., a tab character `\t` or spaces).
+         * {@link XMLWriterTest#specialIndent() @}
+         * 
+         * You can also specify tag names that should be treated as inline elements (no line
+         * breaks around them), preserving the original formatting for elements like `<span>` or
+         * `<a>`.
+         * {@link XMLWriterTest#inlineElement() @}
+         *
+         * By using the special prefix `&` before a tag name, you can also specify tags that
+         * should always be treated as non-empty elements (always have a closing tag like
+         * `<script></script>`, even if empty).
+         * {@link XMLWriterTest#nonEmptyElement() @}
+         * 
+         * By passing `null` as the indent character, formatting (indentation and line breaks)
+         * is disabled, similar to {@code toString()} but writing to an {@link Appendable}.
+         * {@link XMLWriterTest#withoutFormat() @}
          */
         public class Writing {
-
-            /**
-             * The {@link XML#toString()} method provides a compact string representation without
-             * extra formatting.
-             * {@link XMLWriterTest#format() @}
-             */
-            public class By_toString {
-            }
-
-            /**
-             * The {@link XML#to(Appendable, String, String...)} method allows for pretty-printing
-             * the XML structure with configurable indentation for improved readability.
-             * You can specify the indentation string (e.g., a tab character `\t` or spaces).
-             * {@link XMLWriterTest#specialIndent() @}
-             * 
-             * You can also specify tag names that should be treated as inline elements (no line
-             * breaks around them), preserving the original formatting for elements like `<span>` or
-             * `<a>`.
-             * {@link XMLWriterTest#inlineElement() @}
-             *
-             * By using the special prefix `&` before a tag name, you can also specify tags that
-             * should always be treated as non-empty elements (always have a closing tag like
-             * `<script></script>`, even if empty).
-             * {@link XMLWriterTest#nonEmptyElement() @}
-             * 
-             * By passing `null` as the indent character, formatting (indentation and line breaks)
-             * is disabled, similar to {@code toString()} but writing to an {@link Appendable}.
-             * {@link XMLWriterTest#withoutFormat() @}
-             */
-            public class By_formatter {
-            }
         }
 
         /**
@@ -1257,16 +1244,181 @@ public class DocumentDoc {
     }
 
     public class HTTP {
+
+        /**
+         * Sinobu provides a concise and powerful API for making HTTP(S) requests and handling
+         * WebSocket connections, built on top of Java's standard {@link HttpClient}.
+         * It simplifies common tasks like handling responses, content negotiation,
+         * and asynchronous processing using {@link Signal}.
+         *
+         * #### 💡 Fluent API
+         * Simple static methods in {@link I} enable common HTTP GET requests and WebSocket
+         * connections without boilerplate.
+         *
+         * #### 🔧 Standard Integration
+         * Built on {@link java.net.http.HttpRequest.Builder}, allowing fine-grained control over
+         * headers, methods, and request bodies.
+         *
+         * #### 🔄 Automatic Content Handling
+         * Response bodies are automatically converted to suitable types (String, JSON, XML, beans,
+         * etc.), with gzip/deflate decompression handled transparently.
+         *
+         * #### ⚙️ Reactive Streams
+         * Both HTTP and WebSocket messages are streamed asynchronously via {@link Signal},
+         * promoting non-blocking and reactive design.
+         *
+         * #### 🔌 WebSocket Support
+         * Provides a simple API for establishing WebSocket connections and handling
+         * incoming/outgoing messages with ease.
+         */
+        public class Concept {
+        }
+
+        /**
+         * Making HTTP requests and processing responses is streamlined using {@link I#http}
+         * methods.
+         * You can make simple GET requests with just a URL or use Java's
+         * {@link java.net.http.HttpRequest.Builder}
+         * for full control over the request details (method, headers, body, etc.).
+         * Responses are delivered asynchronously as a {@link Signal}.
+         *
+         * {@snippet lang = java :
+         * // Simple GET request, response as String
+         * I.http("https://example.com/data", String.class).to(html -> {
+         *     System.out.println("Fetched HTML: " + html.substring(0, 100) + "...");
+         * });
+         *
+         * // POST request with custom headers, response mapped to a User object
+         * HttpRequest.Builder request = HttpRequest.newBuilder(URI.create("https://api.example.com/users"))
+         *         .POST(HttpRequest.BodyPublishers.ofString("{\"name\":\"John\"}"))
+         *         .header("Content-Type", "application/json")
+         *         .header("Authorization", "Bearer your_token");
+         *
+         * I.http(request, User.class).to(user -> {
+         *     System.out.println("Created user: " + user.getName());
+         * });
+         *
+         * // Synchronous execution (blocks until response or error)
+         * try {
+         *     String result = I.http("https://example.com", String.class).waitForTerminate().to().exact();
+         *     System.out.println("Synchronous result: " + result);
+         * } catch (Exception e) {
+         *     System.err.println("Request failed: " + e);
+         * }
+         * }
+         *
+         * Errors during the request (network issues, HTTP status codes >= 400) are propagated
+         * through the {@link I#signalError(Throwable)} channel.
+         */
         public class Request_and_Response {
         }
 
+        /**
+         * The {@link I#http} methods automatically convert the response body to the specified Java
+         * type.
+         * This simplifies handling different content types.
+         *
+         * Supported types include:
+         * <ul>
+         * <li>{@link String}: The response body is read as a UTF-8 string.</li>
+         * <li>{@link InputStream}: Provides direct access to the (potentially decompressed)
+         * response body stream. You are responsible for closing this stream.</li>
+         * <li>{@link HttpResponse}: Provides the full `HttpResponse<InputStream>` object, giving
+         * access to status code, headers, and the body stream.</li>
+         * <li>{@link XML}: Parses the response body as XML/HTML into an {@link XML} object.</li>
+         * <li>{@link JSON}: Parses the response body as JSON into a {@link JSON} object.</li>
+         * <li><b>Any JSON-mappable Bean/Record</b>: Parses the JSON response body and maps it to an
+         * instance of the specified class using Sinobu's object mapping capabilities.</li>
+         * </ul>
+         *
+         * <b>Automatic Decompression:</b>
+         * Sinobu automatically inspects the `Content-Encoding` response header. If the content is
+         * compressed using `gzip` or `deflate`, it will be decompressed transparently before
+         * being passed to the type converter or returned as an `InputStream`.
+         */
         public class Supported_Type {
         }
 
-        public class Cookie {
+        /**
+         * Sinobu provides a simple way to establish WebSocket connections using
+         * {@link I#http(String, Consumer, HttpClient...)}.
+         * Communication is handled reactively using {@link Signal} for incoming messages and a
+         * {@link WebSocket}
+         * object for sending messages.
+         *
+         * {@snippet lang = java :
+         * Disposable connection = I.http("wss://echo.websocket.org", ws -> {
+         *     // Connection opened callback - send a message
+         *     System.out.println("WebSocket Opened!");
+         *     ws.sendText("Hello WebSocket!", true);
+         *
+         *     // You can send more messages later using the 'ws' object
+         *     // ws.sendText("Another message", true);
+         *
+         *     // Request more messages from the server (default is 1)
+         *     // ws.request(5); // Request up to 5 more messages
+         *
+         * }).to(message -> { // onNext - received message
+         *     System.out.println("Received: " + message);
+         *     // ws.sendText("Got it: " + message, true); // Example: Echo back
+         * }, error -> { // onError - connection error
+         *     System.err.println("WebSocket Error: " + error);
+         * }, () -> { // onComplete - connection closed
+         *     System.out.println("WebSocket Closed");
+         * });
+         *
+         * // To close the connection later:
+         * // connection.dispose();
+         * }
+         *
+         * The `Consumer<WebSocket> open` lambda is executed once the connection is successfully
+         * established.
+         * The {@link WebSocket} instance provided allows you to send messages (`sendText`,
+         * `sendBinary`, `sendPing`, etc.)
+         * and manage the connection state (`request`, `sendClose`).
+         *
+         * Incoming messages are received through the {@link Signal} returned by `I.http`.
+         *
+         * <b>Automatic Decompression:</b>
+         * Similar to HTTP responses, Sinobu automatically handles WebSocket messages compressed
+         * with the
+         * standard `permessage-deflate` extension (commonly used for gzip/deflate over WebSockets),
+         * ensuring you receive decompressed text messages in the {@link Signal}.
+         */
+        public class WebSocket_Support {
         }
 
-        public class Authentication {
+        /**
+         * While {@link I#http} methods use a default, shared {@link HttpClient} instance
+         * internally,
+         * you can provide your own configured `HttpClient` instance(s) as optional trailing
+         * arguments
+         * to any of the `I.http` methods. This allows customization of timeouts, proxies, SSL
+         * contexts,
+         * authenticators, cookie handlers, etc., using the standard Java `HttpClient.Builder` API.
+         *
+         * {@snippet lang = java :
+         * HttpClient customClient = HttpClient.newBuilder()
+         *      .connectTimeout(Duration.ofSeconds(10))
+         *      .followRedirects(HttpClient.Redirect.NORMAL)
+         *      // .proxy(...)
+         *      // .sslContext(...)
+         *      // .authenticator(...)
+         *      // .cookieHandler(...)
+         *      .build();
+         *
+         * // Use the custom client for the request
+         * I.http("https://example.com", String.class, customClient).to(response -> { ... });
+         *
+         * // Use it for WebSocket too
+         * I.http("wss://example.com/ws", ws -> { ... }, customClient).to(message -> { ... });
+         * }
+         *
+         * If multiple clients are passed, the first non-null one is used. If none are provided or
+         * all are null,
+         * the default client (`I.client`) is used.
+         */
+        public class Custom_HttpClient {
         }
     }
 
@@ -1332,17 +1484,17 @@ public class DocumentDoc {
          * Sinobu provides a simple yet powerful mechanism for this, based on the well-known
          * Cron expression format. It integrates seamlessly with Sinobu's reactive streams.
          *
-         * ✨ Simple API<br/>
+         * #### ✨ Simple API
          * Schedule tasks with a single static method call: {@link I#schedule(String)}.
          * No complex setup or scheduler instances needed.
          * {@link Concept#scheduling() @}
          * 
-         * 🗓️ Cron Expression Syntax<br/>
+         * #### 🗓️ Cron Expression Syntax
          * Define complex schedules using the standard Cron format, specifying minutes,
          * hours, days, months, and weekdays. Sinobu supports standard fields and special
          * characters like `*`, `/`, `-`, `,`, `L`, `W`, `#`, `?`, and the randomizer `R`.
          *
-         * 🔄 Reactive Integration<br/>
+         * #### 🔄 Reactive Integration
          * Scheduled events are delivered as a {@link Signal}, allowing you to use
          * reactive operators for flow control (e.g., {@link Signal#take(long) take}),
          * transformation, and lifecycle management ({@link Disposable}).
@@ -1393,8 +1545,6 @@ public class DocumentDoc {
             }
         }
 
-        ///  ## Format
-        /// 
         /// A Cron expression consists of five or six fields, separated by spaces.
         /// From left to right, they represent seconds, minutes, hours, days, months, and days of the week, with seconds being optional.
         /// The possible values for each field are as follows, and some special function characters can also be used.
@@ -1409,20 +1559,20 @@ public class DocumentDoc {
         /// 0 9 * * *
         /// ```
         ///
-        /// | Field           | Required | Acceptable Values                                                     | Special Characters        |
-        /// |------------|--------|------------------------------------------------------|-------------------------|
-        /// | Seconds     | No       | 0 ~ 59                                                                              | `,` `-` `*` `/` `R`                  |
-        /// | Minutes     | Yes       | 0 ~ 59                                                                              | `,` `-` `*` `/` `R`                  |
-        /// | Hours         | Yes      | 0 ~ 23                                                                               | `,` `-` `*` `/` `R`                  |
-        /// | Days           | Yes       | 1 ~ 31                                                                              | `,` `-` `*` `/` `?` `L` `W` `R`  |
-        /// | Months      | Yes      | 1 ~ 12 or JAN ~ DEC                                                      | `,` `-` `*` `/` `R`                   |
+        /// | Field           | Required | Acceptable Values                              | Special Characters        |
+        /// | :-----------:|:--------:|:------------------------------------:|-------------------------|
+        /// | Seconds     | No       | 0 ~ 59                                                  | `,` `-` `*` `/` `R`                  |
+        /// | Minutes     | Yes       | 0 ~ 59                                                 | `,` `-` `*` `/` `R`                  |
+        /// | Hours         | Yes      | 0 ~ 23                                                 | `,` `-` `*` `/` `R`                  |
+        /// | Days           | Yes       | 1 ~ 31                                               | `,` `-` `*` `/` `?` `L` `W` `R`  |
+        /// | Months      | Yes      | 1 ~ 12 or JAN ~ DEC                               | `,` `-` `*` `/` `R`                   |
         /// | Weekdays  | Yes      | 0 ~ 7 or SUN ~ SAT<br/>0 and 7 represent Sunday | `,` `-` `*` `/` `?` `L` `#` `R`    |
         public class Format {
 
             /// The seconds field can be a number from 0 to 59. It is optional and does not have to be specified.
             ///
             /// | Expression | Description    | Example        | Execution Timing            |
-            /// |------------|----------------|----------------|-----------------------------|
+            /// |:----------:|:------------:|:--------------:|-----------------------------|
             /// | `*`        | Every minute    | `* * * * *`    |  every minute        |
             /// | `*/5`      | Every 5 minutes | `*/5 * * * *`  |  every 5 minutes     |
             /// | `5`        | Specific minute | `5 * * * *`    |  at the 5th minute   |
@@ -1434,7 +1584,7 @@ public class DocumentDoc {
             /// The time field can be a number from 0 to 23.
             ///
             /// | Expression   | Description           | Example        | Execution Timing                   |
-            /// |--------------|-----------------------|----------------|------------------------------------|
+            /// |:-----------:|:-----------------:|:-------------:|------------------------------------|
             /// | `*`          | Every hour            | `0 * * * *`    |  at the 0th minute of every hour |
             /// | `*/3`        | Every 3 hours         | `0 */3 * * *`  |  every 3 hours at the 0th minute |
             /// | `0`          | Midnight              | `0 0 * * *`    |  at 12:00 AM every day         |
@@ -1446,7 +1596,7 @@ public class DocumentDoc {
             /// The date field can be a number between 1 and 31.
             ///
             /// | Expression | Description        | Example         | Execution Timing                       |
-            /// |------------|--------------------|-----------------|----------------------------------------|
+            /// |:----------:|:---------------:|:-------------:|----------------------------------------|
             /// | `*`        | Every day           | `0 0 * * *`     |  at 12:00 AM every day         |
             /// | `1`        | First day of month  | `0 0 1 * *`     |  at 12:00 AM on the 1st of every month |
             /// | `L`        | Last day of month   | `0 0 L * *`     |  at 12:00 AM on the last day of every month |
@@ -1460,7 +1610,7 @@ public class DocumentDoc {
             /// It can also be specified in English abbreviations such as `JUN`, `FEB`, `MAR`, etc.
             ///
             /// | Expression         | Description          | Example           | Execution Timing                           |
-            /// |--------------------|----------------------|-------------------|--------------------------------------------|
+            /// |:---------------:|:-----------------:|:--------------:|--------------------------------------------|
             /// | `*`                | Every month          | `0 0 1 * *`       |  at 12:00 AM on the 1st of every month |
             /// | `1` or `JAN`       | January              | `0 0 1 1 *`       |  at 12:00 AM on January 1st        |
             /// | `*/3`              | Quarterly            | `0 0 1 */3 *`     |  at 12:00 AM on the 1st every 3 months |
@@ -1473,7 +1623,7 @@ public class DocumentDoc {
             /// You can also specify the English abbreviation of `SUN`, `MON`, `TUE`, etc.
             ///
             /// | Expression | Description | Example | Execution Timing |
-            /// |----------|-------------|---------|------------------|
+            /// |:---------:|:-----------:|:-------:|------------------|
             /// | `*`      | Every day   | `0 0 * * *` |  every day at 00:00 |
             /// | `1-5`    | Weekdays only | `0 0 * * 1-5` |  at 00:00 on weekdays |
             /// | `0,6`    | Weekends only | `0 0 * * 0,6` |  at 00:00 on Saturday and Sunday |
@@ -1486,7 +1636,7 @@ public class DocumentDoc {
         /// In addition to numbers, each field can contain characters with special meanings and functions.
         ///
         /// | Character | Description | Example | Execution Timing |
-        /// |-----------|-------------|---------|------------------|
+        /// |:---------:|:----------:|:--------:|----------------|
         /// | `*`       | All values  | `* * * * *` |  every minute |
         /// | `,`       | List of values | `1,15,30 * * * *` |  at 1 minute, 15 minutes, and 30 minutes past every hour |
         /// | `-`       | Range       | `9-17 * * * *` |  every minute from 9 AM to 5 PM |
@@ -1501,7 +1651,7 @@ public class DocumentDoc {
         /// Complex time specifications can be made by combining several special characters as follows
         ///
         /// | Example                       | Execution Timing                                          |
-        /// |-------------------------------|---------------------------------------------------------|
+        /// |:----------------------:|--------------------------------------------|
         /// | `30 17 * * 5L`               |  at 17:30 on the last Friday of each month     |
         /// | `*/30 9-17 * * 1-5`          |  every 30 minutes from 9 AM to 5 PM on weekdays |
         /// | `0 0 1,15,L * *`              |  at 00:00 on the 1st, 15th, and last day of each month |
@@ -1533,24 +1683,22 @@ public class DocumentDoc {
          * on garbage-less operation and zero-boilerplate code. It is especially well-suited for
          * high-throughput applications where every microsecond and memory allocation matters.
          * 
-         * 🚀 No Boilerplate<br/>
+         * #### 🚀 No Boilerplate
          * Logging is as simple as calling a static method like {@link I#info(Object)}. Therefore,
          * there’s no need to create logger instances per class. This approach dramatically reduces
          * code clutter and eliminates repetitive logger setup.
          * {@link Concept#log() @}
          * 
-         * ♻️ Garbage Less<br/>
+         * #### ♻️ Garbage Less
          * Many logging libraries create temporary objects (log events, strings, byte arrays, etc.)
          * each time they output logs, causing GC latency; Sinobu tackles this problem head on and
          * does not create new objects unless you explicitly request stack trace.
          * 
-         * ⚡ High Performance<br/>
+         * #### ⚡ High Performance
          * Sinobu is engineered for speed. Its optimized encoding, buffer reuse, and minimal
          * synchronization mean it can outperform many mainstream logging libraries. Even under
          * heavy logging loads, it maintains consistent performance with minimal CPU and memory
-         * impact.
-         * 
-         * ![Benchmark](https://raw.githubusercontent.com/teletha/sinobu/refs/heads/master/benchmark/LogBenchmark.svg)
+         * impact. Check {@link doc.DocumentDoc.Benchmark.Logging benchmark}.
          */
         public class Concept {
 
@@ -1612,7 +1760,7 @@ public class DocumentDoc {
          * Configuration keys follow a specific pattern to allow both fine-grained and global
          * control.
          * 
-         * Resolution Order<br/>
+         * #### Resolution Order
          * When any environment variable is required, configuration values are resolved in the
          * following order:
          * 
@@ -1629,13 +1777,14 @@ public class DocumentDoc {
              * **multiple destinations** for the same logger category.
              * 
              * | Property Key | Value Type | Description |
-             * |----------------------|--------------|-----------------------------------------------------------------------------|
+             * | :----------: | :-------------: | :------------------------ |
              * | `category.console` | {@link Level} | Enables **console logging** for the specified
              * category. |
              * | `category.file` | {@link Level} | Enables **file logging** for the specified
              * category. |
              * | `category.extra` | {@link Level} | Enables **extra logging** for the specified
-             * category.<br/> You must define {@link I#Logger} as extra logger. |
+             * category.<br/>
+             * You must define {@link I#Logger} as extra logger. |
              */
             public class Log_Appender {
             }
@@ -1645,7 +1794,7 @@ public class DocumentDoc {
              * Log files are typically named `category<Date>.log` (e.g. `database2024-10-27.log`).
              *
              * | Property Key | Value Type | Description |
-             * | :------------------ | :------------- | :-------------------------- |
+             * | :-----------: | :-------------: | :-------------------------- |
              * | `category.dir` | {@link String} | Specifies the directory where log files
              * for this category should be created. Default is `.log` |
              * | `category.append` | `boolean` | If `true`, appends to existing log files
@@ -1660,7 +1809,7 @@ public class DocumentDoc {
              * Options related to the formatting of log messages for a specific category.
              *
              * | Property Key | Value Type | Description |
-             * | :------------------ | :------------- | :--------------------------------- |
+             * | :----------: | :----------: | :--------------------------------- |
              * | `category.caller` | {@link Level} | Includes caller info for messages in this
              * category at or above the given level. Can impact performance. |
              */
@@ -1670,13 +1819,329 @@ public class DocumentDoc {
     }
 
     public class Persistence {
-        public class Saving_Objects {
+        /**
+         * Sinobu provides a simple mechanism for persisting the state of objects
+         * using the {@link Storable} interface. This allows objects to save their properties
+         * to JSON file and restore them later, making it easy to maintain application
+         * state across restarts.
+         *
+         * #### 🦤 Interface Based
+         * Implement the {@link Storable} interface on your class to enable persistence.
+         * {@link Data @}
+         * 
+         * #### ⚒️ Saving Data
+         * The {@link Storable#store()} method saves the current state of the object's properties
+         * to file. (check {@link doc.DocumentDoc.Object_Modeling.Property property})
+         * {@link Usage#save() @}
+         * 
+         * #### ⚒️ Restoring Data
+         * The {@link Storable#restore()} method restores the object's properties from file (check
+         * {@link doc.DocumentDoc.Object_Modeling.Property property}). If the file doesn't exist or
+         * an error occurs during reading/parsing, the operation typically fails silently, leaving
+         * the object in its current state (often default values).
+         * {@link Usage#restore() @}
+         */
+        public class Usage {
+            class Data implements Storable<Data> {
+
+                public int property;
+            }
+
+            void save() {
+                Data data = new Data();
+                data.property = 10;
+
+                data.store(); // save data to file
+            }
+
+            void restore() {
+                Data other = new Data();
+                other.restore(); // load data from file
+
+                assert other.property == 10;
+            }
         }
 
+        /**
+         * Normally all properties are eligible for preservation, but there are several ways to make
+         * explicit which properties you do not want to preserve.
+         * 
+         * If the property is defined by field, add the transient modifier to the field
+         * declaration.
+         * {@link TransientField @}
+         * 
+         * If the property is defined by method, add {@link java.beans.Transient} annotation. (You
+         * only need to add it to either the setter or the getter)
+         * {@link TransientMethod @}
+         */
+        public class Transient {
+            class TransientField implements Storable<TransientField> {
+
+                public transient int unstorableProperty;
+            }
+
+            class TransientMethod implements Storable<TransientMethod> {
+
+                private int value;
+
+                @java.beans.Transient
+                public int getUnstorableProperty() {
+                    return value;
+                }
+
+                public void setUnstorableProperty(int value) {
+                    this.value = value;
+                }
+            }
+        }
+
+        /**
+         * Instead of manually calling {@link Storable#store()} every time a change occurs,
+         * you can be configured to save their state automatically when their properties change.
+         * This is achieved using the {@link Storable#auto()} method.
+         * 
+         * [!IMPORTANT]
+         * Only properties defined in Variable can be detected, as trying to detect value changes of
+         * arbitrary properties would be prohibitively expensive.
+         *
+         * #### Enabling Auto-Save
+         * Calling {@link Storable#auto()} instance monitors its properties (and nested `Storable`
+         * properties). When a change is detected, it schedules a `store()` operation. By default,
+         * this operation is debounced (typically waiting 1 second after the last change) to avoid
+         * excessive writes during rapid changes.
+         *
+         * {@snippet lang = java :
+         * AppSettings settings = I.make(AppSettings.class);
+         * Disposable autoSaveStopper = settings.auto(); // Start auto-saving
+         *
+         * // ... later in the application ...
+         * settings.userName = "New User"; // Change triggers auto-save after debounce period
+         *
+         * // To stop auto-saving if needed (e.g., on application shutdown)
+         * // autoSaveStopper.dispose();
+         * }
+         *
+         * <p>
+         * <b>Customizing Auto-Save Timing:</b>
+         * </p>
+         * An overloaded version, {@link Storable#auto(Function)}, allows customizing the timing
+         * behavior using {@link Signal} operators. For example, you could change the debounce
+         * duration
+         * or use a different strategy like throttling.
+         *
+         * {@snippet lang = java :
+         * import static java.util.concurrent.TimeUnit.*;
+         *
+         * // Auto-save with a 5-second debounce
+         * settings.auto(timing -> timing.debounce(5, SECONDS));
+         *
+         * // Auto-save immediately on change (throttled to once per 500ms)
+         * // settings.auto(timing -> timing.throttle(500, MILLISECONDS));
+         * }
+         *
+         * The `auto()` method returns a {@link Disposable}. Calling `dispose()` on this object
+         * will stop the automatic saving process for that instance.
+         */
         public class Automatic_Saving {
         }
 
+        /**
+         * By default, persistence files are stored in a directory named `.preferences` within
+         * the application's working directory. The filename is derived from the fully qualified
+         * class name of the `Storable` object, ending with `.json`.
+         * (e.g., `.preferences/com.example.MyAppSettings.json`).
+         *
+         * This location can be customized in two main ways:
+         *
+         * <p>
+         * <b>1. Overriding `locate()`:</b>
+         * </p>
+         * You can override the {@link Storable#locate()} method within your implementing class
+         * to return a custom {@link Path} for the persistence file.
+         *
+         * {@snippet lang = java :
+         * class CustomLocationSettings implements Storable<CustomLocationSettings> {
+         *     public String data;
+         *
+         *     &#64;Override
+         *     public Path locate() {
+         *         // Store in user home directory, for example
+         *         return Path.of(System.getProperty("user.home"), ".myApp", "settings.json");
+         *     }
+         *
+         *     private CustomLocationSettings() {
+         *         restore();
+         *     }
+         * }
+         * }
+         *
+         * <p>
+         * <b>2. Using Environment Variable:</b>
+         * </p>
+         * You can set a global preference directory by defining the environment variable
+         * `PreferenceDirectory` using {@link I#env(String, Object)}. If this variable is set,
+         * the default `locate()` implementation will use this directory instead of `.preferences`.
+         *
+         * {@snippet lang = java :
+         * // Set the preference directory globally (e.g., at application startup)
+         * I.env("PreferenceDirectory", "/etc/myApp/config");
+         *
+         * // Now, AppSettings (if using default locate()) will save to
+         * // /etc/myApp/config/com.example.AppSettings.json
+         * AppSettings settings = I.make(AppSettings.class);
+         * settings.store();
+         * }
+         *
+         * The environment variable method takes precedence over the default `.preferences`
+         * directory
+         * but is overridden if the `locate()` method is explicitly implemented in the class.
+         */
         public class Storage_Location {
+        }
+    }
+
+    public class Benchmark {
+
+        /**
+         * This section presents benchmark results comparing the performance of Sinobu
+         * with other popular libraries for various common tasks. The goal is to provide
+         * objective data on Sinobu's efficiency in terms of execution speed,
+         * memory allocation, and garbage collection impact.
+         *
+         * #### 🔬 Methodology
+         * Benchmarks were conducted using a custom benchmarking framework inspired by principles
+         * similar to JMH (Java Microbenchmark Harness). This includes dedicated warm-up phases
+         * to allow for JIT compilation and stabilization, and techniques like blackholes to prevent
+         * dead code elimination and ensure accurate measurement of the intended operations.
+         * Each major benchmark suite (e.g., JSON, Logging) is typically run in a separate JVM
+         * process
+         * to ensure isolation and prevent interference between tests.
+         * Benchmarks were run under specific hardware and software configurations. The results
+         * shown in the graphs typically represent throughput (operations per second), execution
+         * time, or memory allocation. Interpretation depends on the specific metric shown in each
+         * graph (e.g. higher throughput is better, lower time/allocation is better).
+         *
+         * #### 📈 Comparisons and Metrics
+         * Comparisons are often made against well-known libraries relevant to each domain
+         * (e.g., Jackson/Gson for JSON, Logback/Log4j2 for Logging).
+         * The latest stable versions of competitor libraries available at the time of measurement
+         * were typically used.
+         *
+         * Operations specific to each domain (e.g., JSON parsing, logging throughput, template
+         * rendering) are performed to measure key performance indicators such as:
+         *
+         * * Execution speed (throughput or time per operation)
+         * * Garbage collection load (allocation rate)
+         * * Memory consumption (footprint, retained size - though less frequently shown in graphs)
+         *
+         * Lower values for time and allocation generally indicate better performance, while higher
+         * values for throughput are better.
+         *
+         * #### ⚠️ Disclaimer
+         * Benchmark results can vary depending on the execution environment (JVM version, OS,
+         * hardware). These results should be considered indicative rather than absolute measures of
+         * performance in all scenarios.
+         */
+        public class Overview {
+        }
+
+        /**
+         * Compares the performance of Sinobu's logging framework against other logging libraries.
+         * Focuses on throughput (operations per second) and garbage generation under different
+         * scenarios, highlighting Sinobu's garbage-less design advantage.
+         * 
+         * <img src=
+         * "https://raw.githubusercontent.com/teletha/sinobu/refs/heads/master/benchmark/LogBenchmark.svg"
+         * width="700" />
+         */
+        public class Logging {
+        }
+
+        /**
+         * Compares Sinobu's JSON processing capabilities (parsing, traversing, mapping)
+         * against other well-known Java JSON libraries like FastJSON, Jackson, and Gson.
+         * Results highlight performance across various operations and document sizes.
+         *
+         * - [Sinobu](https://github.com/teletha/sinobu)
+         * - [FastJSON](https://github.com/alibaba/fastjson2)
+         * - [Jackson](https://github.com/FasterXML/jackson)
+         * - [GSON](https://github.com/google/gson)
+         */
+        public class JSON {
+            /**
+             * Measures the time and resources required to parse small JSON documents.
+             * 
+             * <img src=
+             * "https://raw.githubusercontent.com/teletha/sinobu/refs/heads/master/benchmark/JSONParseShortBenchmark.svg"
+             * width="700" />
+             */
+            public class Parse_Small {
+            }
+
+            /**
+             * Measures the performance of parsing larger JSON documents, testing scalability.
+             * 
+             * <img src=
+             * "https://raw.githubusercontent.com/teletha/sinobu/refs/heads/master/benchmark/JSONParseLongBenchmark.svg"
+             * width="700" />
+             */
+            public class Parse_Large {
+            }
+
+            /**
+             * Measures the performance of parsing very large (huge) JSON documents, stressing
+             * memory and CPU usage.
+             * 
+             * <img src=
+             * "https://raw.githubusercontent.com/teletha/sinobu/refs/heads/master/benchmark/JSONParseHugeBenchmark.svg"
+             * width="700" />
+             */
+            public class Parse_Huge {
+            }
+
+            /**
+             * Evaluates the efficiency of navigating and accessing data within a parsed JSON
+             * structure (DOM-like access).
+             * 
+             * <img src=
+             * "https://raw.githubusercontent.com/teletha/sinobu/refs/heads/master/benchmark/JSONTraverseBenchmark.svg"
+             * width="700" />
+             */
+            public class Traversing {
+            }
+
+            /**
+             * Benchmarks the process of mapping JSON data directly to Java objects (POJOs/Records).
+             * 
+             * <img src=
+             * "https://raw.githubusercontent.com/teletha/sinobu/refs/heads/master/benchmark/JSONMappingBenchmark.svg"
+             * width="700" />
+             */
+            public class Mapping {
+            }
+        }
+
+        /**
+         * Compares the performance of Sinobu's HTML/XML parser (including tag soup handling)
+         * against other Java parsers. Focuses on parsing speed and memory usage for typical
+         * web documents.
+         * 
+         * <img src=
+         * "https://raw.githubusercontent.com/teletha/sinobu/refs/heads/master/benchmark/XMLParseBenchmark.svg"
+         * width="700" />
+         */
+        public class HTML {
+        }
+
+        /**
+         * Compares the performance of Sinobu's Mustache template engine implementation.
+         * Measures rendering speed and overhead for template processing with context data.
+         * 
+         * <img src=
+         * "https://raw.githubusercontent.com/teletha/sinobu/refs/heads/master/benchmark/ExpressionBenchmark.svg"
+         * width="700" />
+         */
+        public class Template_Engine {
         }
     }
 }
