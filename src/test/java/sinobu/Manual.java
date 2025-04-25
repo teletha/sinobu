@@ -7,7 +7,7 @@
  *
  *          https://opensource.org/licenses/MIT
  */
-package doc;
+package sinobu;
 
 import java.io.InputStream;
 import java.io.Writer;
@@ -31,9 +31,6 @@ import java.util.function.Supplier;
 
 import org.w3c.dom.Node;
 
-import doc.ExtensionTest.Codec;
-import doc.ExtensionTest.LocalDateCodec;
-import doc.MustacheTest.Person;
 import kiss.Disposable;
 import kiss.Extensible;
 import kiss.I;
@@ -60,11 +57,14 @@ import kiss.xml.XMLFindTest;
 import kiss.xml.XMLManipulationTest;
 import kiss.xml.XMLTraversingTest;
 import kiss.xml.XMLWriterTest;
+import sinobu.ExtensionTest.Codec;
+import sinobu.ExtensionTest.LocalDateCodec;
+import sinobu.MustacheTest.Person;
 
-public class DocumentDoc {
+public class Manual {
 
     static {
-        I.load(DocumentDoc.class);
+        I.load(Manual.class);
     }
 
     public class Introduction {
@@ -77,7 +77,7 @@ public class DocumentDoc {
          * Sinobu prioritizes lightweight deployment and avoids dependency conflicts.
          * Despite its small size, its various operations are engineered for high performance,
          * often rivaling or exceeding competing specialized libraries (see
-         * {@link doc.DocumentDoc.Benchmark benchmark}).
+         * {@link Benchmark benchmark}).
          * 
          * This library aims to simplify and consolidate functionalities frequently
          * encountered in real-world projects, making them easier and safer to use.
@@ -116,7 +116,7 @@ public class DocumentDoc {
          * #### ⚡ High Performance
          * Speed is a key design goal. Operations like JSON parsing, logging, and template
          * rendering are optimized for minimal overhead and garbage generation.
-         * Refer to the {@link doc.DocumentDoc.Benchmark benchmark} section for
+         * Refer to the {@link sinobu.Manual.Benchmark benchmark} section for
          * comparative results.
          *
          * #### ✨ Simplicity (Keep it simple stupid &amp; Less is more)
@@ -1741,7 +1741,7 @@ public class DocumentDoc {
          * Sinobu is engineered for speed. Its optimized encoding, buffer reuse, and minimal
          * synchronization mean it can outperform many mainstream logging libraries. Even under
          * heavy logging loads, it maintains consistent performance with minimal CPU and memory
-         * impact. Check {@link doc.DocumentDoc.Benchmark.Logging benchmark}.
+         * impact. Check {@link sinobu.Manual.Benchmark.Logging benchmark}.
          */
         public class Concept {
 
@@ -1874,12 +1874,12 @@ public class DocumentDoc {
          * 
          * #### ⚒️ Saving Data
          * The {@link Storable#store()} method saves the current state of the object's properties
-         * to file. (check {@link doc.DocumentDoc.Object_Modeling.Property property})
+         * to file. (check {@link sinobu.Manual.Object_Modeling.Property property})
          * {@link Usage#save() @}
          * 
          * #### ⚒️ Restoring Data
          * The {@link Storable#restore()} method restores the object's properties from file (check
-         * {@link doc.DocumentDoc.Object_Modeling.Property property}). If the file doesn't exist or
+         * {@link sinobu.Manual.Object_Modeling.Property property}). If the file doesn't exist or
          * an error occurs during reading/parsing, the operation typically fails silently, leaving
          * the object in its current state (often default values).
          * {@link Usage#restore() @}

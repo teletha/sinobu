@@ -7,7 +7,7 @@
  *
  *          https://opensource.org/licenses/MIT
  */
-package doc;
+package sinobu;
 
 import org.junit.jupiter.api.Test;
 

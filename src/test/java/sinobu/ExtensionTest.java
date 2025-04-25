@@ -7,7 +7,7 @@
  *
  *          https://opensource.org/licenses/MIT
  */
-package doc;
+package sinobu;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
