@@ -368,7 +368,7 @@ public class Signal<V> {
      * by the source {@link Signal} satisfy a condition.
      * 
      * @param condition A condition that evaluates an item and returns a Boolean.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public Signal<Boolean> all(Predicate<? super V> condition) {
         return signal(condition.negate(), FALSE, false, FALSE, true, TRUE);
@@ -391,7 +391,7 @@ public class Signal<V> {
      * Filters the values of an {@link Signal} sequence based on the specified type.
      *
      * @param type The type of result. {@code null} throws {@link NullPointerException}.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      * @throws NullPointerException If the type is {@code null}.
      */
     public <R> Signal<R> as(Class<? extends R>... type) {
@@ -427,7 +427,7 @@ public class Signal<V> {
      * ────────────[①②③]╂
      * </pre>
      *
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      * @see <a href="https://reactivex.io/documentation/operators/buffer.html">ReactiveX buffer</a>
      */
     public Signal<List<V>> buffer() {
@@ -451,7 +451,7 @@ public class Signal<V> {
      * </pre>
      *
      * @param size A length of each buffer.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      * @see <a href="https://reactivex.io/documentation/operators/buffer.html">ReactiveX buffer</a>
      */
     public Signal<List<V>> buffer(int size) {
@@ -478,7 +478,7 @@ public class Signal<V> {
      *            as 1.
      * @param interval A number of values to skip between creation of consecutive buffers. Zero or
      *            negative number are treated exactly the same way as 1.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      * @see <a href="https://reactivex.io/documentation/operators/buffer.html">ReactiveX buffer</a>
      */
     public Signal<List<V>> buffer(int size, int interval) {
@@ -539,7 +539,7 @@ public class Signal<V> {
      * </pre>
      * 
      * @param timing A timing {@link Signal}.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      * @see <a href="https://reactivex.io/documentation/operators/buffer.html">ReactiveX buffer</a>
      */
     public Signal<List<V>> buffer(Signal timing) {
@@ -555,7 +555,7 @@ public class Signal<V> {
      *            used and returned as the buffer.
      * @param assigner An operation function that assigns a value to the buffer.
      * @param ignoreRemaining A flag whether completion event emits the remaining values or not.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     private <B> Signal<B> buffer(Signal<?> timing, Supplier<B> supplier, BiConsumer<B, V> assigner, boolean ignoreRemaining) {
         return new Signal<>((observer, disposer) -> {
@@ -874,7 +874,7 @@ public class Signal<V> {
      * </pre>
      * 
      * @param others A sequence of {@link Signal}s to concat.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      * @see <a href="https://reactivex.io/documentation/operators/concat.html">ReeactiveX concat</a>
      */
     public Signal<V> concat(Signal<? extends V>... others) {
@@ -902,7 +902,7 @@ public class Signal<V> {
      * </pre>
      * 
      * @param others A sequence of {@link Signal}s to concat.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      * @see <a href="https://reactivex.io/documentation/operators/concat.html">ReeactiveX concat</a>
      */
     public Signal<V> concat(Iterable<Signal<? extends V>> others) {
@@ -935,7 +935,7 @@ public class Signal<V> {
      * @param <R>
      * @param function A function that, when applied to an item emitted by the current
      *            {@link Signal}, returns an {@link Signal}
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public <R> Signal<R> concatMap(WiseFunction<V, Signal<R>> function) {
         Objects.requireNonNull(function);
@@ -986,7 +986,7 @@ public class Signal<V> {
      * @param time A time value. Zero or negative number will ignore this instruction.
      * @param unit A time unit. {@code null} will ignore this instruction.
      * @param scheduler
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public Signal<V> debounce(long time, TimeUnit unit, ScheduledExecutorService... scheduler) {
         return debounce(time, unit, false, scheduler);
@@ -1001,7 +1001,7 @@ public class Signal<V> {
      * @param acceptFirst Determines whether to pass the first element or not. It is useful to get
      *            the beginning and end of a sequence of events.
      * @param scheduler
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public Signal<V> debounce(long time, TimeUnit unit, boolean acceptFirst, ScheduledExecutorService... scheduler) {
         return debounce(Variable.of(time), unit, acceptFirst, scheduler);
@@ -1016,7 +1016,7 @@ public class Signal<V> {
      * @param acceptFirst Determines whether to pass the first element or not. It is useful to get
      *            the beginning and end of a sequence of events.
      * @param scheduler
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public Signal<V> debounce(Variable<Long> time, TimeUnit unit, boolean acceptFirst, ScheduledExecutorService... scheduler) {
         return debounceX(time, unit, acceptFirst, scheduler).flatMap(v -> I.signal(v).last());
@@ -1029,7 +1029,7 @@ public class Signal<V> {
      * @param time A time value. Zero or negative number will ignore this instruction.
      * @param unit A time unit. {@code null} will ignore this instruction.
      * @param scheduler
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public Signal<List<V>> debounceAll(long time, TimeUnit unit, ScheduledExecutorService... scheduler) {
         return debounceAll(Variable.of(time), unit, scheduler);
@@ -1042,7 +1042,7 @@ public class Signal<V> {
      * @param time A time value. Zero or negative number will ignore this instruction.
      * @param unit A time unit. {@code null} will ignore this instruction.
      * @param scheduler
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public Signal<List<V>> debounceAll(Variable<Long> time, TimeUnit unit, ScheduledExecutorService... scheduler) {
         return debounceX(time, unit, false, scheduler);
@@ -1055,7 +1055,7 @@ public class Signal<V> {
      * @param time A time value. Zero or negative number will ignore this instruction.
      * @param unit A time unit. {@code null} will ignore this instruction.
      * @param scheduler
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     private Signal<List<V>> debounceX(Variable<Long> time, TimeUnit unit, boolean acceptFirst, ScheduledExecutorService... scheduler) {
         // ignore invalid parameters
@@ -1209,7 +1209,7 @@ public class Signal<V> {
      * Returns an {@link Signal} consisting of the distinct values (according to
      * {@link Object#equals(Object)}) of this stream.
      *
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      * @see #distinct(WiseFunction)
      */
     public Signal<V> distinct() {
@@ -1220,7 +1220,7 @@ public class Signal<V> {
      * Returns an {@link Signal} consisting of the distinct values (according to
      * {@link Object#equals(Object)}) of this stream.
      *
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      * @see #distinct()
      */
     public Signal<V> distinct(WiseFunction<V, ?> keySelector) {
@@ -1585,7 +1585,7 @@ public class Signal<V> {
      * Returns {@link Signal} that emits only the very first item emitted by the source
      * {@link Signal}, or completes if the source {@link Signal} is empty.
      * 
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public Signal<V> first() {
         return signal(I::accept, null, false, null, true, null);
@@ -1696,7 +1696,7 @@ public class Signal<V> {
      * Append index (starting from the specified value).
      * 
      * @param start A starting index number.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public Signal<Ⅱ<V, Long>> index(long start) {
         return map(((WiseFunction<Long, AtomicLong>) AtomicLong::new)
@@ -1709,7 +1709,7 @@ public class Signal<V> {
      * @param interval Time to emit values. Zero or negative number will ignore this instruction.
      * @param unit A unit of time for the specified interval. {@code null} will ignore this
      *            instruction.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public Signal<V> interval(long interval, TimeUnit unit, ScheduledExecutorService... scheduler) {
         // ignore invalid parameters
@@ -1731,7 +1731,7 @@ public class Signal<V> {
      *
      * @param condition A conditional function to apply to each value emitted by this
      *            {@link Signal}.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public Signal<Boolean> is(Predicate<? super V> condition) {
         return map(condition::test);
@@ -1745,7 +1745,7 @@ public class Signal<V> {
      *
      * @param condition A conditional function to apply to each value emitted by this
      *            {@link Signal}.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public Signal<Boolean> isNot(Predicate<? super V> condition) {
         return is(condition.negate());
@@ -1822,7 +1822,7 @@ public class Signal<V> {
      * of them until all actions are completed.
      *
      * @param function A mapper function.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public <R> Signal<R> joinAll(WiseFunction<V, R> function, ExecutorService... executor) {
         return map(function::bind).buffer().flatIterable(v -> I.signal(I.vouch(I.Jobs, executor).invokeAll(v)).map(Future::get).toList());
@@ -1833,7 +1833,7 @@ public class Signal<V> {
      * If any task fails, all remaining tasks are cancelled and the exception is propagated.
      *
      * @param function The task mapper function.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public <R> Signal<R> joinAllOrNone(WiseFunction<V, R> function, ExecutorService... executor) {
         return map(function::bind).buffer().flatIterable(v -> {
@@ -1864,7 +1864,7 @@ public class Signal<V> {
      * until any single action is completed. All other actions will be cancelled.
      * 
      * @param function A mapper function.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     @SuppressWarnings("resource")
     public <R> Signal<R> joinAny(WiseFunction<V, R> function, ExecutorService... executor) {
@@ -1897,7 +1897,7 @@ public class Signal<V> {
      * Returns a {@link Signal} that emits the last item emitted by this {@link Signal} or completes
      * if this {@link Signal} is empty.
      * 
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public Signal<V> last() {
         return buffer(never(), AtomicReference<V>::new, AtomicReference::set, false).map(AtomicReference::get).skipNull();
@@ -1920,7 +1920,7 @@ public class Signal<V> {
      *
      * @param function A converter function to apply to each value emitted by this {@link Signal} .
      *            {@code null} will ignore this instruction.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public <R> Signal<R> map(WiseFunction<? super V, R> function) {
         return map(Variable.of(Objects.requireNonNull(function)), WiseFunction::apply);
@@ -1943,7 +1943,7 @@ public class Signal<V> {
      * @param context A {@link Supplier} of {@link Signal} specific context.
      * @param function A converter function to apply to each value emitted by this {@link Signal} .
      *            {@code null} will ignore this instruction.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public <C, R> Signal<R> map(Supplier<C> context, WiseBiFunction<C, ? super V, R> function) {
         Objects.requireNonNull(function);
@@ -1974,7 +1974,7 @@ public class Signal<V> {
      * {@link Signal} and emits the result.
      *
      * @param constant A constant to apply to each value emitted by this {@link Signal}.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public <R> Signal<R> mapTo(R constant) {
         return map(I.wiseF(constant));
@@ -1998,7 +1998,7 @@ public class Signal<V> {
      * </pre>
      *
      * @param others A target {@link Signal} to merge. {@code null} will be ignored.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public Signal<V> merge(Signal<? extends V>... others) {
         return merge(Arrays.asList(others));
@@ -2011,7 +2011,7 @@ public class Signal<V> {
      * </p>
      *
      * @param others A target {@link Signal} set to merge. {@code null} will be ignored.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public Signal<V> merge(Iterable<Signal<? extends V>> others) {
         // ignore invalid parameters
@@ -2049,7 +2049,7 @@ public class Signal<V> {
      * </pre>
      * 
      * @param scheduler A new context
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public Signal<V> on(Consumer<Runnable> scheduler) {
         // ignore invalid parameters
@@ -2082,7 +2082,7 @@ public class Signal<V> {
      * Generates an {@link Signal} sequence that guarantee one item at least.
      * </p>
      *
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public Signal<V> or(V value) {
         return or(I.signal(value));
@@ -2093,7 +2093,7 @@ public class Signal<V> {
      * Generates an {@link Signal} sequence that guarantee one item at least.
      * </p>
      *
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public Signal<V> or(Supplier<V> value) {
         return or(I.signal(value));
@@ -2104,7 +2104,7 @@ public class Signal<V> {
      * Generates an {@link Signal} sequence that guarantee one item at least.
      * </p>
      *
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public Signal<V> or(Signal<V> values) {
         return new Signal<>((observer, disposer) -> {
@@ -2136,7 +2136,7 @@ public class Signal<V> {
      * 
      * @param recurse A mapper function to enumerate values recursively.
      * @param executor An execution context.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public Signal<V> recurse(WiseFunction<V, V> recurse, Executor... executor) {
         return recurseMap(e -> e.map(recurse), executor);
@@ -2151,7 +2151,7 @@ public class Signal<V> {
      * 
      * @param recurse A mapper function to enumerate values recursively.
      * @param executor An execution context.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public Signal<V> recurseMap(WiseFunction<Signal<V>, Signal<V>> recurse, Executor... executor) {
         // DON'T use the recursive call, it will throw StackOverflowError.
@@ -2252,7 +2252,7 @@ public class Signal<V> {
     /**
      * Generates an {@link Signal} sequence that repeats the given value infinitely.
      *
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public Signal<V> repeat() {
         return repeat(I.wiseF(Function.identity()));
@@ -2323,7 +2323,7 @@ public class Signal<V> {
     /**
      * Retry the source {@link Signal} infinitely whenever any error is occurred.
      *
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public Signal<V> retry() {
         return retry(Signal::skipNull);
@@ -2407,7 +2407,7 @@ public class Signal<V> {
      * Buffer all values until complete, then all buffered values are emitted in descending order.
      * </p>
      * 
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public Signal<V> reverse() {
         return buffer(never(), LinkedList<V>::new, Deque::addFirst, false).flatIterable(I.wiseF(Function.identity()));
@@ -2421,7 +2421,7 @@ public class Signal<V> {
      * </p>
      *
      * @param sampler An {@link Signal} to use for sampling the source {@link Signal}.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public Signal<V> sample(Signal<?> sampler) {
         return buffer(sampler, AtomicReference::new, AtomicReference<V>::set, true).map(AtomicReference::get);
@@ -2503,7 +2503,7 @@ public class Signal<V> {
      * 
      * @param function A function that maps a sequence of values into a sequence of {@link Signal}
      *            that will be eagerly concatenated.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public <R> Signal<R> sequenceMap(WiseFunction<V, Signal<R>> function) {
         Objects.requireNonNull(function);
@@ -2560,7 +2560,7 @@ public class Signal<V> {
      * data. When all observers have disposed it will disposes from the source {@link Signal}.
      * </p>
      * 
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public Signal<V> share() {
         Signaling<V> share = new Signaling();
@@ -2592,7 +2592,7 @@ public class Signal<V> {
      *
      * @param count A number of values to skip. Zero or negative number will ignore this
      *            instruction.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public Signal<V> skip(long count) {
         // ignore invalid parameter
@@ -2608,7 +2608,7 @@ public class Signal<V> {
      * </p>
      *
      * @param excludes A collection of skip items.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public Signal<V> skip(V... excludes) {
         return skip(I.set(excludes)::contains);
@@ -2620,7 +2620,7 @@ public class Signal<V> {
      * </p>
      *
      * @param condition A skip condition.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public Signal<V> skip(Predicate<? super V> condition) {
         // ignore invalid parameter
@@ -2636,7 +2636,7 @@ public class Signal<V> {
      * </p>
      *
      * @param condition A skip condition.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public Signal<V> skip(V init, BiPredicate<? super V, ? super V> condition) {
         // ignore invalid parameter
@@ -2652,7 +2652,7 @@ public class Signal<V> {
      * @param contextSupplier A {@link Supplier} of {@link Signal} specific context.
      * @param condition A condition function to apply to each value emitted by this {@link Signal} .
      *            {@code null} will ignore this instruction.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public <C> Signal<V> skip(Supplier<C> contextSupplier, BiPredicate<C, ? super V> condition) {
         // ignore invalid parameters
@@ -2670,7 +2670,7 @@ public class Signal<V> {
      *
      * @param condition An external boolean {@link Signal}. {@code null} will ignore this
      *            instruction.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public Signal<V> skip(Signal<Boolean> condition) {
         return take(condition, false, false);
@@ -2682,7 +2682,7 @@ public class Signal<V> {
      * </p>
      * 
      * @param condition An index condition of values to emit.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public Signal<V> skipAt(LongPredicate condition) {
         return takeAt(condition.negate());
@@ -2732,7 +2732,7 @@ public class Signal<V> {
     /**
      * Alias for skip(Objects::isNull).
      *
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public Signal<V> skipNull() {
         return skip(Objects::isNull);
@@ -2802,7 +2802,7 @@ public class Signal<V> {
      * Buffer all items until complete event and then sorted items will be emitted sequentially.
      * 
      * @param comparator
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public Signal<V> sort(Comparator<? super V> comparator) {
         return buffer().flatIterable(e -> {
@@ -2826,7 +2826,7 @@ public class Signal<V> {
      * </p>
      *
      * @param values The values that contains the items you want to emit first.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public Signal<V> startWith(V... values) {
         return values == null || values.length == 0 ? this : startWith(Arrays.asList(values));
@@ -2847,7 +2847,7 @@ public class Signal<V> {
      * </p>
      *
      * @param value The values that contains the items you want to emit first.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public Signal<V> startWith(Supplier<V> value) {
         if (value == null) {
@@ -2877,7 +2877,7 @@ public class Signal<V> {
      * </p>
      *
      * @param values The values that contains the items you want to emit first.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public Signal<V> startWith(Iterable<V> values) {
         // ignore invalid parameter
@@ -2900,7 +2900,7 @@ public class Signal<V> {
      * {@link Signal}.
      *
      * @param values The initial values.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public Signal<V> startWith(Signal<V> values) {
         return values == null ? this : values.concat(this);
@@ -2909,7 +2909,7 @@ public class Signal<V> {
     /**
      * Emit {@code null} item before beginning to emit the items from the source {@link Signal}.
      * 
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public Signal<V> startWithNull() {
         return startWith((V) null);
@@ -2930,7 +2930,7 @@ public class Signal<V> {
      * Asynchronously subscribes {@link Observer} to this {@link Signal} on the specified scheduler.
      * 
      * @param scheduler You specify which scheduler this operator will use.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public Signal<V> subscribeOn(Consumer<Runnable> scheduler) {
         // ignore invalid parameters
@@ -3007,7 +3007,7 @@ public class Signal<V> {
      * {@link Signal} is immediately disposed.
      *
      * @param timing A timing whether the {@link Signal} is observed or not.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      * @throws NullPointerException Timing is null.
      */
     public Signal<V> switchOff(Signal<Boolean> timing) {
@@ -3020,7 +3020,7 @@ public class Signal<V> {
      * {@link Signal} is immediately disposed.
      *
      * @param timing A timing whether the {@link Signal} is observed or not.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      * @throws NullPointerException Timing is null.
      */
     public Signal<V> switchOn(Signal<Boolean> timing) {
@@ -3044,7 +3044,7 @@ public class Signal<V> {
      *
      * @param count A number of values to emit. Zero or negative number will ignore this
      *            instruction.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public Signal<V> take(long count) {
         return take(AtomicLong::new, (context, value) -> context.incrementAndGet() < count, true, true, 0 < count);
@@ -3056,7 +3056,7 @@ public class Signal<V> {
      * </p>
      *
      * @param includes A collection of take items.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public Signal<V> take(V... includes) {
         return take(I.set(includes)::contains);
@@ -3071,7 +3071,7 @@ public class Signal<V> {
      * @param condition A function that evaluates the values emitted by the source {@link Signal},
      *            returning {@code true} if they pass the filter. {@code null} will ignore this
      *            instruction.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public Signal<V> take(Predicate<? super V> condition) {
         // ignore invalid parameters
@@ -3090,7 +3090,7 @@ public class Signal<V> {
      * @param condition A function that evaluates the values emitted by the source {@link Signal},
      *            returning {@code true} if they pass the filter. {@code null} will ignore this
      *            instruction.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public Signal<V> take(V init, BiPredicate<? super V, ? super V> condition) {
         // ignore invalid parameters
@@ -3108,7 +3108,7 @@ public class Signal<V> {
      * @param contextSupplier A {@link Supplier} of {@link Signal} specific context.
      * @param condition A condition function to apply to each value emitted by this {@link Signal} .
      *            {@code null} will ignore this instruction.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public <C> Signal<V> take(Supplier<C> contextSupplier, BiPredicate<C, ? super V> condition) {
         return take(contextSupplier, condition, true, false, false);
@@ -3122,7 +3122,7 @@ public class Signal<V> {
      *
      * @param condition An external boolean {@link Signal}. {@code null} will ignore this
      *            instruction.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public Signal<V> take(Signal<Boolean> condition) {
         return take(condition, false, true);
@@ -3136,7 +3136,7 @@ public class Signal<V> {
      *
      * @param condition An external boolean {@link Signal}. {@code null} will ignore this
      *            instruction.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     private Signal<V> take(Signal<Boolean> condition, boolean init, boolean expect) {
         // ignore invalid parameter
@@ -3161,7 +3161,7 @@ public class Signal<V> {
      * </p>
      * 
      * @param condition An index condition of values to emit.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public Signal<V> takeAt(LongPredicate condition) {
         // ignore invalid parameter
@@ -3305,7 +3305,7 @@ public class Signal<V> {
      * @param unit A unit of time for the specified timeout. {@code null} will ignore this
      *            instruction.
      * @param scheduler An event scheduler.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public Signal<V> timeout(long time, TimeUnit unit, ScheduledExecutorService... scheduler) {
         // ignore invalid parameters
@@ -3342,7 +3342,7 @@ public class Signal<V> {
      *            negative number will ignore this instruction.
      * @param unit A unit of time for the specified timeout. {@code null} will ignore this
      *            instruction.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public Signal<V> throttle(long time, TimeUnit unit) {
         return throttle(Variable.of(time), unit);
@@ -3362,7 +3362,7 @@ public class Signal<V> {
      *            negative number will ignore this instruction.
      * @param unit A unit of time for the specified timeout. {@code null} will ignore this
      *            instruction.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public Signal<V> throttle(Variable<Long> time, TimeUnit unit) {
         // ignore invalid parameters
@@ -3386,7 +3386,7 @@ public class Signal<V> {
      * emitted by an {@link Signal} and emits the result.
      *
      * @param values A list of constants to apply to each value emitted by this {@link Signal}.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     public <E> Signal<E> toggle(E... values) {
         if (values.length == 0) {
@@ -3442,7 +3442,7 @@ public class Signal<V> {
      * 
      * @param delegator A complete action.
      * @param count A complete count.
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     private Subscriber countable(Observer delegator, int count) {
         Subscriber<?> completer = new Subscriber();
@@ -3469,7 +3469,7 @@ public class Signal<V> {
      * @param errorOutput
      * @param acceptComplete
      * @param completeOutput
-     * @return {ChainableAPI}
+     * @return {@var ChainableAPI}
      */
     private <T> Signal<T> signal(Predicate<? super V> emitCondition, T emitOutput, boolean acceptError, T errorOutput, boolean acceptComplete, T completeOutput) {
         return new Signal<>((observer, disposer) -> {

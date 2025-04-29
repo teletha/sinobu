@@ -144,9 +144,9 @@ public class Manual {
          * 
          * {@snippet lang = xml :
          * <dependency>
-         *     <groupId>{@var project}</groupId>
-         *     <artifactId>{@var product}</artifactId>
-         *     <version>{@var version}<version>
+         *     <groupId>com.github.teletha</groupId>
+         *     <artifactId>sinobu</artifactId>
+         *     <version>VERSION<version>
          * </dependency>
          * }
          */
