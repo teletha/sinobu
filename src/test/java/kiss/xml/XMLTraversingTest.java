@@ -9,6 +9,9 @@
  */
 package kiss.xml;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
@@ -16,40 +19,107 @@ import kiss.XML;
 
 public class XMLTraversingTest {
 
+    /**
+     * @see XML#first()
+     */
     @Test
     public void first() {
-        String text = "<m><Q class='first'/><Q/><Q class='last'/></m>";
+        String text = """
+                <root>
+                    <child1 class='a'/>
+                    <child2 class='a'/>
+                    <child3 class='a'/>
+                </root>
+                """;
+        XML found = I.xml(text).find(".a");
+        assert found.size() == 3;
 
-        assert I.xml(text).find("Q").first().attr("class").equals("first");
+        // traverse to first matched element
+        XML first = found.first();
+        assert first.size() == 1;
+        assert first.name().equals("child1");
+    }
+
+    @Test
+    public void firstWhenAlreadySingle() {
+        String text = """
+                <root>
+                    <child1 class='a'/>
+                </root>
+                """;
+        XML found = I.xml(text).find(".a");
+        assert found.size() == 1;
+
+        XML first = found.first();
+        assert first.size() == 1;
+        assert first.name().equals("child1");
     }
 
     @Test
     public void firstAtEmpty() {
-        XML root = I.xml("<m/>");
+        XML root = I.xml("<root/>");
 
-        assert root.find("Q").size() == 0;
-        assert root.find("Q").first().size() == 0;
+        assert root.find("notFound").size() == 0;
+        assert root.find("notFound").first().size() == 0;
+    }
+
+    /**
+     * @see XML#last()
+     */
+    @Test
+    public void last() {
+        String text = """
+                <root>
+                    <child1 class='a'/>
+                    <child2 class='a'/>
+                    <child3 class='a'/>
+                </root>
+                """;
+        XML found = I.xml(text).find(".a");
+        assert found.size() == 3;
+
+        // traverse to last matched element
+        XML last = found.last();
+        assert last.size() == 1;
+        assert last.name().equals("child3");
     }
 
     @Test
-    public void last() {
-        String text = "<m><Q class='first'/><Q/><Q class='last'/></m>";
+    public void lastWhenAlreadySingle() {
+        String text = """
+                <root>
+                    <child1 class='a'/>
+                </root>
+                """;
+        XML found = I.xml(text).find(".a");
+        assert found.size() == 1;
 
-        assert I.xml(text).find("Q").last().attr("class").equals("last");
+        XML last = found.last();
+        assert last.size() == 1;
+        assert last.name().equals("child1");
     }
 
     @Test
     public void lastAtEmpty() {
-        XML root = I.xml("<m/>");
+        XML root = I.xml("<root/>");
 
-        assert root.find("Q").size() == 0;
-        assert root.find("Q").last().size() == 0;
+        assert root.find("notFound").size() == 0;
+        assert root.find("notFound").last().size() == 0;
     }
 
+    /**
+     * @see XML#parent()
+     */
     @Test
     public void parent() {
         // traverse to parent element
-        XML root = I.xml("<root><first/><center/><last/></root>");
+        XML root = I.xml("""
+                <root>
+                    <first/>
+                    <center/>
+                    <last/>
+                </root>
+                """);
         assert root.find("first").parent().name() == "root";
         assert root.find("center").parent().name() == "root";
         assert root.find("last").parent().name() == "root";
@@ -59,14 +129,114 @@ public class XMLTraversingTest {
         assert root.find("grand").parent().name() == "child";
     }
 
+    /**
+     * @see XML#parent()
+     */
+    @Test
+    public void parentFromMultipleChildrenWithSameParent() {
+        String text = """
+                <root>
+                    <parent1>
+                        <child1 class='target'/>
+                        <child2 class='target'/>
+                    </parent1>
+                </root>
+                """;
+        XML children = I.xml(text).find(".target");
+        assert children.size() == 2;
+
+        XML parent = children.parent();
+        assert parent.size() == 1;
+        assert parent.name().equals("parent1");
+    }
+
+    /**
+     * @see XML#parent()
+     */
+    @Test
+    public void parentFromMultipleChildrenWithDifferentParents() {
+        String text = """
+                <root>
+                    <parent1>
+                        <child1 class='target'/>
+                    </parent1>
+                    <parent2>
+                        <child2 class='target'/>
+                    </parent2>
+                </root>
+                """;
+        XML children = I.xml(text).find(".target");
+        assert children.size() == 2;
+
+        XML parents = children.parent();
+        assert parents.size() == 2;
+        assert parents.first().name() == "parent1";
+        assert parents.last().name() == "parent2";
+    }
+
+    @Test
+    public void parentOfRootElement() {
+        XML root = I.xml("<root/>");
+        assert root.size() == 1;
+
+        XML parent = root.parent();
+        assert parent.size() == 0;
+    }
+
+    @Test
+    public void parentAtEmptySet() {
+        String text = "<root/>";
+        XML emptySet = I.xml(text).find(".nonexistent");
+        assert emptySet.size() == 0;
+
+        XML parent = emptySet.parent();
+        assert parent.size() == 0;
+    }
+
+    @Test
+    public void parentMixedWithNonElementNodes() {
+        String text = """
+                <root>
+                    <!-- comment -->
+                    <child1>
+                        text
+                        <grandchild class='target'/>
+                    </child1>
+                </root>
+                """;
+        XML grandchild = I.xml(text).find(".target");
+        assert grandchild.size() == 1;
+
+        XML parent = grandchild.parent();
+        assert parent.size() == 1;
+        assert parent.name().equals("child1");
+    }
+
+    /**
+     * @see XML#children()
+     */
     @Test
     public void children() {
         // traverse to child elements
-        XML root = I.xml("<root><first/><center/><last/></root>");
+        XML root = I.xml("""
+                <root>
+                    <first/>
+                    <center/>
+                    <last/>
+                </root>
+                """);
         assert root.children().size() == 3;
 
         // skip text node
-        root = I.xml("<root>text<first/>is<child><center/></child>ignored<last/>!!</root>");
+        root = I.xml("""
+                <root>
+                    text<first/>is
+                    <child>
+                        <center/>
+                    </child>
+                    ignored<last/>!!
+                </root>
+                """);
         assert root.children().size() == 3;
 
         // can't traverse
@@ -75,14 +245,173 @@ public class XMLTraversingTest {
     }
 
     @Test
+    public void childrenFromSingleParent() {
+        String text = """
+                <root>
+                    <child1/>
+                    <child2/>
+                    <child3/>
+                </root>
+                """;
+        XML root = I.xml(text);
+
+        XML children = root.children();
+        assert children.size() == 3;
+
+        List<XML> childList = I.signal(children).toList();
+        assert childList.get(0).name().equals("child1");
+        assert childList.get(1).name().equals("child2");
+        assert childList.get(2).name().equals("child3");
+    }
+
+    @Test
+    public void childrenIgnoringTextAndCommentNodes() {
+        String text = """
+                <root>
+                    text node
+                    <child1/>
+                    <!-- comment node -->
+                    <child2/>
+                    more text
+                    <child3/>
+                </root>
+                """;
+        XML root = I.xml(text);
+
+        XML children = root.children();
+        assert children.size() == 3;
+
+        List<XML> childList = I.signal(children).toList();
+        assert childList.get(0).name().equals("child1");
+        assert childList.get(1).name().equals("child2");
+        assert childList.get(2).name().equals("child3");
+    }
+
+    @Test
+    public void childrenIgnoringGrandchildren() {
+        String text = """
+                <root>
+                    <child1>
+                        <grandchild1/>
+                    </child1>
+                    <child2/>
+                </root>
+                """;
+        XML root = I.xml(text);
+
+        XML children = root.children();
+        assert children.size() == 2;
+
+        List<XML> childList = I.signal(children).toList();
+        assert childList.get(0).name().equals("child1");
+        assert childList.get(1).name().equals("child2");
+    }
+
+    @Test
+    public void childrenFromParentWithNoElementChildren() {
+        String text = "<root>only text <!-- and comment --></root>";
+        XML root = I.xml(text);
+
+        XML children = root.children();
+        assert children.size() == 0;
+    }
+
+    @Test
+    public void childrenFromParentWithNoChildrenAtAll() {
+        String text = "<root/>";
+        XML root = I.xml(text);
+
+        XML children = root.children();
+        assert children.size() == 0;
+    }
+
+    @Test
+    public void childrenFromMultipleParents() {
+        String text = """
+                <doc>
+                    <parent1>
+                        <c1a/>
+                        <c1b/>
+                    </parent1>
+                    <parent2>
+                        <c2a/>
+                        <c2b/>
+                    </parent2>
+                </doc>
+                """;
+        XML parents = I.xml(text).find("parent1, parent2");
+        assert parents.size() == 2;
+
+        XML children = parents.children();
+        assert children.size() == 4;
+
+        List<String> names = I.signal(children).map(XML::name).toList();
+        assert names.contains("c1a");
+        assert names.contains("c1b");
+        assert names.contains("c2a");
+        assert names.contains("c2b");
+    }
+
+    @Test
+    public void childrenFromMultipleParentsSomeWithNoChildren() {
+        String text = """
+                <doc>
+                    <parent1>
+                        <c1a/>
+                    </parent1>
+                    <parent2/>
+                    <parent3>
+                        <c3a/>
+                    </parent3>
+                </doc>
+                """;
+        XML parents = I.xml(text).find("parent1, parent2, parent3");
+        assert parents.size() == 3;
+
+        XML children = parents.children();
+        assert children.size() == 2;
+
+        List<String> names = I.signal(children).map(XML::name).toList();
+        assert names.contains("c1a");
+        assert names.contains("c3a");
+        assert names.size() == 2;
+    }
+
+    @Test
+    public void childrenAtEmptySet() {
+        String text = "<root/>";
+        XML emptySet = I.xml(text).find(".nonexistent");
+        assert emptySet.size() == 0;
+
+        XML children = emptySet.children();
+        assert children.size() == 0;
+    }
+
+    /**
+     * @see XML#firstChild()
+     */
+    @Test
     public void firstChild() {
         // traverse to first child element
-        XML root = I.xml("<root><first/><center/><last/></root>");
-        assert root.firstChild().name() == "first";
+        XML root = I.xml("""
+                <root>
+                    <first/>
+                    <center/>
+                    <last/>
+                </root>
+                """);
+        assert root.firstChild().name().equals("first");
 
         // skip text node
-        root = I.xml("<root>text is ignored<first/><center/><last/></root>");
-        assert root.firstChild().name() == "first";
+        root = I.xml("""
+                <root>
+                    text is ignored
+                    <first/>
+                    <center/>
+                    <last/>
+                </root>
+                """);
+        assert root.firstChild().name().equals("first");
 
         // can't traverse
         root = I.xml("<root/>");
@@ -90,14 +419,153 @@ public class XMLTraversingTest {
     }
 
     @Test
+    public void firstChildFromSingleParent() {
+        String text = """
+                <root>
+                    <child1/>
+                    <child2/>
+                    <child3/>
+                </root>
+                """;
+        XML root = I.xml(text);
+
+        XML first = root.firstChild();
+        assert first.size() == 1;
+        assert first.name().equals("child1");
+    }
+
+    @Test
+    public void firstChildIgnoringLeadingTextAndCommentNodes() {
+        String text = """
+                <root>
+                    text node
+                    <!-- comment node -->
+                    <child1/>
+                    <child2/>
+                </root>
+                """;
+        XML root = I.xml(text);
+
+        XML first = root.firstChild();
+        assert first.size() == 1;
+        assert first.name().equals("child1");
+    }
+
+    @Test
+    public void firstChildWhenFirstIsElement() {
+        String text = """
+                <root>
+                    <child1/>
+                    text node
+                    <child2/>
+                </root>
+                """;
+        XML root = I.xml(text);
+
+        XML first = root.firstChild();
+        assert first.size() == 1;
+        assert first.name().equals("child1");
+    }
+
+    @Test
+    public void firstChildFromParentWithNoElementChildren() {
+        String text = """
+                <root>
+                    only text
+                    <!-- and comment -->
+                </root>
+                """;
+        XML root = I.xml(text);
+
+        XML first = root.firstChild();
+        assert first.size() == 0;
+    }
+
+    @Test
+    public void firstChildFromParentWithNoChildrenAtAll() {
+        String text = "<root/>";
+        XML root = I.xml(text);
+
+        XML first = root.firstChild();
+        assert first.size() == 0;
+    }
+
+    @Test
+    public void firstChildFromMultipleParents() {
+        String text = """
+                <doc>
+                    <parent1>text<c1a/><c1b/></parent1>
+                    <parent2><!-- comment --><c2a/><c2b/></parent2>
+                </doc>
+                """;
+        XML parents = I.xml(text).find("parent1, parent2");
+        assert parents.size() == 2;
+
+        XML firstChildren = parents.firstChild();
+        assert firstChildren.size() == 2;
+
+        List<String> firstChildNames = I.signal(firstChildren).map(XML::name).toList();
+        assert firstChildNames.contains("c1a");
+        assert firstChildNames.contains("c2a");
+    }
+
+    @Test
+    public void firstChildFromMultipleParentsSomeWithNoElementChildren() {
+        String text = """
+                <doc>
+                    <parent1><c1a/></parent1>
+                    <parent2>text only</parent2>
+                    <parent3><!-- comment --><c3a/></parent3>
+                    <parent4/>
+                </doc>
+                """;
+        XML parents = I.xml(text).find("parent1, parent2, parent3, parent4");
+        assert parents.size() == 4;
+
+        XML firstChildren = parents.firstChild();
+        assert firstChildren.size() == 2;
+
+        List<String> firstChildNames = I.signal(firstChildren).map(XML::name).toList();
+        assert firstChildNames.contains("c1a");
+        assert firstChildNames.contains("c3a");
+        assert firstChildNames.size() == 2;
+    }
+
+    @Test
+    public void firstChildAtEmptySet() {
+        String text = "<root/>";
+        XML emptySet = I.xml(text).find(".nonexistent");
+        assert emptySet.size() == 0;
+
+        XML first = emptySet.firstChild();
+        assert first.size() == 0;
+    }
+
+    /**
+     * @see XML#lastChild()
+     */
+    @Test
     public void lastChild() {
         // traverse to last child element
-        XML root = I.xml("<root><first/><center/><last/></root>");
-        assert root.lastChild().name() == "last";
+        XML root = I.xml("""
+                <root>
+                    <first/>
+                    <center/>
+                    <last/>
+                </root>
+                """);
+        assert root.lastChild().name().equals("last");
 
         // skip text node
-        root = I.xml("<root><first/><center/><last/>text is ignored</root>");
-        assert root.lastChild().name() == "last";
+        root = I.xml("""
+                <root>
+                    <first/>
+                    <center/>
+                    <last/>
+                    text is ignored
+                </root>
+                """);
+        assert root.lastChild().name().equals("last");
 
         // can't traverse
         root = I.xml("<root/>");
@@ -105,8 +573,152 @@ public class XMLTraversingTest {
     }
 
     @Test
+    public void lastChildFromSingleParent() {
+        String text = """
+                <root>
+                    <child1/>
+                    <child2/>
+                    <child3/>
+                </root>
+                """;
+        XML root = I.xml(text);
+
+        XML last = root.lastChild();
+        assert last.size() == 1;
+        assert last.name().equals("child3");
+    }
+
+    @Test
+    public void lastChildIgnoringTrailingTextAndCommentNodes() {
+        String text = """
+                <root>
+                    <child1/>
+                    <child2/>
+                    text node
+                    <!-- comment node -->
+                </root>
+                """;
+        XML root = I.xml(text);
+
+        XML last = root.lastChild();
+        assert last.size() == 1;
+        assert last.name().equals("child2");
+    }
+
+    @Test
+    public void lastChildWhenLastIsElement() {
+        String text = """
+                <root>
+                    <child1/>
+                    text node
+                    <child2/>
+                </root>
+                """;
+        XML root = I.xml(text);
+
+        XML last = root.lastChild();
+        assert last.size() == 1;
+        assert last.name().equals("child2");
+    }
+
+    @Test
+    public void lastChildFromParentWithNoElementChildren() {
+        String text = """
+                <root>
+                    only text
+                    <!-- and comment -->
+                </root>
+                """;
+        XML root = I.xml(text);
+
+        XML last = root.lastChild();
+        assert last.size() == 0;
+    }
+
+    @Test
+    public void lastChildFromParentWithNoChildrenAtAll() {
+        String text = "<root/>";
+        XML root = I.xml(text);
+
+        XML last = root.lastChild();
+        assert last.size() == 0;
+    }
+
+    @Test
+    public void lastChildFromMultipleParents() {
+        String text = """
+                <doc>
+                    <parent1>
+                        <c1a/>
+                        <c1b/>
+                        text
+                    </parent1>
+                    <parent2>
+                        <c2a/>
+                        <c2b/>
+                        <!-- comment -->
+                    </parent2>
+                </doc>
+                """;
+        XML parents = I.xml(text).find("parent1, parent2");
+        assert parents.size() == 2;
+
+        XML lastChildren = parents.lastChild();
+        assert lastChildren.size() == 2;
+
+        List<String> lastChildNames = I.signal(lastChildren).map(XML::name).toList();
+        assert lastChildNames.contains("c1b");
+        assert lastChildNames.contains("c2b");
+    }
+
+    @Test
+    public void lastChildFromMultipleParentsSomeWithNoElementChildren() {
+        String text = """
+                <doc>
+                    <parent1><c1a/></parent1>
+                    <parent2>text only</parent2>
+                    <parent3>
+                        <c3a/>
+                        <!-- comment -->
+                    </parent3>
+                    <parent4/>
+                </doc>
+                """;
+        XML parents = I.xml(text).find("parent1, parent2, parent3, parent4");
+        assert parents.size() == 4;
+
+        XML lastChildren = parents.lastChild();
+        assert lastChildren.size() == 2;
+
+        List<String> lastChildNames = I.signal(lastChildren).map(XML::name).toList();
+        assert lastChildNames.contains("c1a");
+        assert lastChildNames.contains("c3a");
+        assert lastChildNames.size() == 2;
+    }
+
+    @Test
+    public void lastChildAtEmptySet() {
+        String text = "<root/>";
+        XML emptySet = I.xml(text).find(".nonexistent");
+        assert emptySet.size() == 0;
+
+        XML last = emptySet.lastChild();
+        assert last.size() == 0;
+    }
+
+    /**
+     * @see XML#prev()
+     */
+    @Test
     public void prev() {
-        XML root = I.xml("<root><first/>text is ignored<center/><last/></root>");
+        XML root = I.xml("""
+                <root>
+                    <first/>
+                    text is ignored
+                    <center/>
+                    <last/>
+                </root>
+                """);
 
         // traverse to previous element
         XML next = root.find("last").prev();
@@ -122,8 +734,242 @@ public class XMLTraversingTest {
     }
 
     @Test
+    public void prevFromSingleElement() {
+        String text = """
+                <root>
+                    <sibling1/>
+                    <target/>
+                    <sibling2/>
+                </root>
+                """;
+        XML target = I.xml(text).find("target");
+
+        XML prev = target.prev();
+        assert prev.size() == 1;
+        assert prev.name().equals("sibling1");
+    }
+
+    @Test
+    public void prevIgnoringIntermediateTextNodes() {
+        String text = """
+                <root>
+                    <sibling1/>
+                    text node
+                    <target/>
+                </root>
+                """;
+        XML target = I.xml(text).find("target");
+
+        XML prev = target.prev();
+        assert prev.size() == 1;
+        assert prev.name().equals("sibling1");
+    }
+
+    @Test
+    public void prevIgnoringIntermediateCommentNodes() {
+        String text = """
+                <root>
+                    <sibling1/>
+                    <!-- comment node -->
+                    <target/>
+                </root>
+                """;
+        XML target = I.xml(text).find("target");
+
+        XML prev = target.prev();
+        assert prev.size() == 1;
+        assert prev.name().equals("sibling1");
+    }
+
+    @Test
+    public void prevIgnoringMultipleIntermediateNonElementNodes() {
+        String text = """
+                <root>
+                    <sibling1/>
+                    text1
+                    <!-- comment1 -->
+                    text2
+                    <!-- comment2 -->
+                    <target/>
+                </root>
+                """;
+        XML target = I.xml(text).find("target");
+
+        XML prev = target.prev();
+        assert prev.size() == 1;
+        assert prev.name().equals("sibling1");
+    }
+
+    @Test
+    public void prevWhenImmediatePrevIsElement() {
+        String text = """
+                <root>
+                    <sibling1/>
+                    <target/>
+                    text node
+                </root>
+                """;
+        XML target = I.xml(text).find("target");
+
+        XML prev = target.prev();
+        assert prev.size() == 1;
+        assert prev.name().equals("sibling1");
+    }
+
+    @Test
+    public void prevWhenNoPrevSiblingElementOnlyNonElement() {
+        String text = """
+                <root>
+                    text node
+                    <!-- comment node -->
+                    <target/>
+                </root>
+                """;
+        XML target = I.xml(text).find("target");
+
+        XML prev = target.prev();
+        assert prev.size() == 0;
+    }
+
+    @Test
+    public void prevWhenNoPrevSiblingAtAllAsFirstChild() {
+        String text = """
+                <root>
+                    <target/>
+                    <sibling2/>
+                </root>
+                """;
+        XML target = I.xml(text).find("target");
+
+        XML prev = target.prev();
+        assert prev.size() == 0;
+    }
+
+    @Test
+    public void prevWhenOnlyChild() {
+        String text = """
+                <root>
+                    <target/>
+                </root>
+                """;
+        XML target = I.xml(text).find("target");
+
+        XML prev = target.prev();
+        assert prev.size() == 0;
+    }
+
+    @Test
+    public void prevFromMultipleElementsEachHavingPrev() {
+        String text = """
+                <doc>
+                    <section>
+                        <s1a class='prev-marker'/>
+                        <t1 class='target'/>
+                    </section>
+                    <section>
+                        <s2a class='prev-marker'/>
+                        <t2 class='target'/>
+                    </section>
+                </doc>
+                """;
+        XML targets = I.xml(text).find(".target");
+        assert targets.size() == 2;
+
+        XML prevs = targets.prev();
+        assert prevs.size() == 2;
+
+        List<XML> prevList = I.signal(prevs).toList();
+        assert prevList.get(0).hasClass("prev-marker");
+        assert prevList.get(1).hasClass("prev-marker");
+        assert (prevList.get(0).name().equals("s1a") && prevList.get(1).name().equals("s2a")) || (prevList.get(0)
+                .name()
+                .equals("s2a") && prevList.get(1).name().equals("s1a"));
+
+    }
+
+    @Test
+    public void prevFromMultipleElementsSomeWithNoPrev() {
+        String text = """
+                <doc>
+                    <section>
+                        <t1 class='target'/>
+                    </section>
+                    <section>
+                        <s2a class='prev-marker'/>
+                        <t2 class='target'/>
+                    </section>
+                    <section>
+                        text node
+                        <s3a class='prev-marker'/>
+                        <!-- comment -->
+                        <t3 class='target'/>
+                    </section>
+                    <section>
+                        <!-- only comment -->
+                        <t4 class='target'/>
+                    </section>
+                </doc>
+                """;
+        XML targets = I.xml(text).find(".target");
+        assert targets.size() == 4;
+
+        XML prevs = targets.prev();
+        assert prevs.size() == 2;
+
+        List<XML> prevList = I.signal(prevs).toList();
+        assert prevList.stream().allMatch(xml -> xml.hasClass("prev-marker"));
+        assert prevList.size() == 2;
+
+        List<String> prevNames = prevList.stream().map(XML::name).collect(Collectors.toList());
+        assert prevNames.contains("s2a");
+        assert prevNames.contains("s3a");
+    }
+
+    @Test
+    public void prevAtEmptySet() {
+        String text = "<root/>";
+        XML emptySet = I.xml(text).find(".nonexistent");
+        assert emptySet.size() == 0;
+
+        XML prev = emptySet.prev();
+        assert prev.size() == 0;
+    }
+
+    @Test
+    public void prevWithinDifferentParentsNotInterfering() {
+        String text = """
+                <doc>
+                    <outer_sibling class='prev-marker-outer'/>
+                    <parent1>
+                        <s1a class='prev-marker-inner'/>
+                        <t1 class='target'/>
+                    </parent1>
+                    <parent2>
+                        <t2 class='target'/>
+                    </parent2>
+                </doc>
+                """;
+        XML targets = I.xml(text).find(".target");
+        XML prevs = targets.prev();
+
+        assert prevs.size() == 1;
+        assert prevs.hasClass("prev-marker-inner");
+        assert prevs.name().equals("s1a");
+    }
+
+    /**
+     * @see XML#next()
+     */
+    @Test
     public void next() {
-        XML root = I.xml("<root><first/><center/>text is ignored<last/></root>");
+        XML root = I.xml("""
+                <root>
+                    <first/>
+                    <center/>
+                    text is ignored
+                    <last/>
+                </root>
+                """);
 
         // traverse to next element
         XML next = root.find("first").next();
@@ -136,5 +982,364 @@ public class XMLTraversingTest {
         // can't traverse
         next = root.find("last").next();
         assert next.size() == 0;
+    }
+
+    @Test
+    public void nextFromSingleElement() {
+        String text = """
+                <root>
+                    <sibling1/>
+                    <target/>
+                    <sibling2 class="next-marker"/>
+                </root>
+                """;
+        XML target = I.xml(text).find("target");
+
+        XML next = target.next();
+        assert next.size() == 1;
+        assert next.hasClass("next-marker");
+        assert next.name().equals("sibling2");
+    }
+
+    @Test
+    public void nextIgnoringIntermediateTextNodes() {
+        String text = """
+                <root>
+                    <target/>
+                    text node
+                    <sibling1 class="next-marker"/>
+                </root>
+                """;
+        XML target = I.xml(text).find("target");
+
+        XML next = target.next();
+        assert next.size() == 1;
+        assert next.hasClass("next-marker");
+        assert next.name().equals("sibling1");
+    }
+
+    @Test
+    public void nextIgnoringIntermediateCommentNodes() {
+        String text = """
+                <root>
+                    <target/>
+                    <!-- comment node -->
+                    <sibling1 class="next-marker"/>
+                </root>
+                """;
+        XML target = I.xml(text).find("target");
+
+        XML next = target.next();
+        assert next.size() == 1;
+        assert next.hasClass("next-marker");
+        assert next.name().equals("sibling1");
+    }
+
+    @Test
+    public void nextIgnoringMultipleIntermediateNonElementNodes() {
+        String text = """
+                <root>
+                    <target/>
+                    text1
+                    <!-- comment1 -->
+                    text2
+                    <!-- comment2 -->
+                    <sibling1 class="next-marker"/>
+                </root>
+                """;
+        XML target = I.xml(text).find("target");
+
+        XML next = target.next();
+        assert next.size() == 1;
+        assert next.hasClass("next-marker");
+        assert next.name().equals("sibling1");
+    }
+
+    @Test
+    public void nextWhenImmediateNextIsElement() {
+        String text = """
+                <root>
+                    text node
+                    <target/>
+                    <sibling1 class="next-marker"/>
+                </root>
+                """;
+        XML target = I.xml(text).find("target");
+
+        XML next = target.next();
+        assert next.size() == 1;
+        assert next.hasClass("next-marker");
+        assert next.name().equals("sibling1");
+    }
+
+    @Test
+    public void nextWhenNoNextSiblingElementOnlyNonElement() {
+        String text = """
+                <root>
+                    <target/>
+                    text node
+                    <!-- comment node -->
+                </root>
+                """;
+        XML target = I.xml(text).find("target");
+
+        XML next = target.next();
+        assert next.size() == 0;
+    }
+
+    @Test
+    public void nextWhenNoNextSiblingAtAllAsLastChild() {
+        String text = """
+                <root>
+                    <sibling1/>
+                    <target/>
+                </root>
+                """;
+        XML target = I.xml(text).find("target");
+
+        XML next = target.next();
+        assert next.size() == 0;
+    }
+
+    @Test
+    public void nextWhenOnlyChild() {
+        String text = """
+                <root>
+                    <target/>
+                </root>
+                """;
+        XML target = I.xml(text).find("target");
+
+        XML next = target.next();
+        assert next.size() == 0;
+    }
+
+    @Test
+    public void nextFromMultipleElementsEachHavingNext() {
+        String text = """
+                <doc>
+                    <section>
+                        <t1 class='target'/>
+                        <s1a class='next-marker'/>
+                    </section>
+                    <section>
+                        <t2 class='target'/>
+                        <s2a class='next-marker'/>
+                    </section>
+                </doc>
+                """;
+        XML targets = I.xml(text).find(".target");
+        assert targets.size() == 2;
+
+        XML nexts = targets.next();
+        assert nexts.size() == 2;
+
+        List<XML> nextList = I.signal(nexts).toList();
+        assert nextList.stream().allMatch(xml -> xml.hasClass("next-marker"));
+        // 名前でも確認 (s1a, s2a)
+        assert (nextList.get(0).name().equals("s1a") && nextList.get(1).name().equals("s2a")) || (nextList.get(0)
+                .name()
+                .equals("s2a") && nextList.get(1).name().equals("s1a"));
+    }
+
+    @Test
+    public void nextFromMultipleElementsSomeWithNoNext() {
+        String text = """
+                <doc>
+                    <section>
+                        <t1 class='target'/>
+                        <s1a class='next-marker'/>
+                    </section>
+                    <section>
+                        <t2 class='target'/>
+                    </section>
+                    <section>
+                        <t3 class='target'/>
+                        <!-- comment -->
+                        text node
+                        <s3a class='next-marker'/>
+                    </section>
+                    <section>
+                        <t4 class='target'/>
+                        <!-- only comment -->
+                    </section>
+                </doc>
+                """;
+        XML targets = I.xml(text).find(".target");
+        assert targets.size() == 4;
+
+        XML nexts = targets.next();
+        assert nexts.size() == 2;
+
+        List<XML> nextList = I.signal(nexts).toList();
+        assert nextList.stream().allMatch(xml -> xml.hasClass("next-marker"));
+        assert nextList.size() == 2;
+        // 名前で存在確認
+        List<String> nextNames = nextList.stream().map(XML::name).collect(Collectors.toList());
+        assert nextNames.contains("s1a");
+        assert nextNames.contains("s3a");
+    }
+
+    @Test
+    public void nextAtEmptySet() {
+        String text = "<root/>";
+        XML emptySet = I.xml(text).find(".nonexistent");
+        assert emptySet.size() == 0;
+
+        XML next = emptySet.next();
+        assert next.size() == 0;
+    }
+
+    @Test
+    public void nextWithinDifferentParentsNotInterfering() {
+        String text = """
+                <doc>
+                    <parent1>
+                        <t1 class='target'/>
+                        <s1a class='next-marker-inner'/>
+                    </parent1>
+                    <parent2>
+                        <t2 class='target'/>
+                    </parent2>
+                    <outer_sibling class='next-marker-outer'/>
+                </doc>
+                """;
+        XML targets = I.xml(text).find(".target");
+        XML nexts = targets.next();
+
+        assert nexts.size() == 1;
+        assert nexts.hasClass("next-marker-inner");
+        assert nexts.name().equals("s1a");
+    }
+
+    @Test
+    public void nextUntilBasic() {
+        XML root = I.xml("<root><n1/><n2 class='stop'/><n3/><n4 class='stop'/></root>");
+        XML result = root.find("n1").nextUntil(".stop");
+        assert result.size() == 0;
+
+        root = I.xml("<root><n1/><m1/><m2/><n2 class='stop'/><n3/><n4 class='stop'/></root>");
+        result = root.find("n1").nextUntil(".stop");
+        assert result.size() == 2;
+        assert result.first().name().equals("m1");
+        assert result.last().name().equals("m2");
+    }
+
+    @Test
+    public void nextUntilWithTextNodes() {
+        XML root = I.xml("<root><n1/>text<m1/>more text<m2/>final text<n2 class='stop'/></root>");
+        XML result = root.find("n1").nextUntil(".stop");
+        assert result.size() == 2;
+        assert result.first().name().equals("m1");
+        assert result.last().name().equals("m2");
+    }
+
+    @Test
+    public void nextUntilNoStopper() {
+        XML root = I.xml("<root><n1/><m1/><m2/></root>");
+        XML result = root.find("n1").nextUntil(".nonexistent");
+        assert result.size() == 2;
+        assert result.first().name().equals("m1");
+        assert result.last().name().equals("m2");
+    }
+
+    @Test
+    public void nextUntilOnEmptySet() {
+        XML root = I.xml("<root/>");
+        XML result = root.find("nonexistent").nextUntil(".stop");
+        assert result.size() == 0;
+    }
+
+    @Test
+    public void nextUntilMultipleStartNodes() {
+        XML root = I.xml("<root><div><s1/><s2/><s3 class='stop'/></div><div><s1/><s2/><s3/><s4 class='stop'/></div></root>");
+        XML result = root.find("s1").nextUntil(".stop");
+        assert result.size() == 3;
+
+        List<XML> list = I.signal(result).toList();
+        assert list.get(0).name().equals("s2");
+        assert list.get(1).name().equals("s2");
+        assert list.get(2).name().equals("s3");
+    }
+
+    @Test
+    public void prevUntilBasic() {
+        XML root = I.xml("<root><n1 class='stop'/><n2/><n3/><n4/></root>");
+        XML result = root.find("n4").prevUntil(".stop");
+        assert result.size() == 2;
+        assert result.first().name().equals("n3");
+        assert result.last().name().equals("n2");
+
+        root = I.xml("<root><n1 class='stop'/><n2/><n3/></root>");
+        result = root.find("n2").prevUntil(".stop");
+        assert result.size() == 0;
+    }
+
+    @Test
+    public void prevUntilWithTextNodes() {
+        XML root = I.xml("<root><n1 class='stop'/>text<m1/>more text<m2/>final text<n3/></root>");
+        XML result = root.find("n3").prevUntil(".stop");
+        assert result.size() == 2;
+        assert result.first().name().equals("m2");
+        assert result.last().name().equals("m1");
+    }
+
+    @Test
+    public void prevUntilNoStopper() {
+        XML root = I.xml("<root><m1/><m2/><n3/></root>");
+        XML result = root.find("n3").prevUntil(".nonexistent");
+        assert result.size() == 2;
+        assert result.first().name().equals("m2");
+        assert result.last().name().equals("m1");
+    }
+
+    @Test
+    public void prevUntilOnEmptySet() {
+        XML root = I.xml("<root/>");
+        XML result = root.find("nonexistent").prevUntil(".stop");
+        assert result.size() == 0;
+    }
+
+    @Test
+    public void parentUntilBasic() {
+        XML root = I.xml("<div class='ancestor'><p><span id='start'>text</span></p></div>");
+        XML result = root.find("#start").parentUntil(".ancestor");
+        assert result.size() == 1;
+        assert result.first().name().equals("p");
+
+        root = I.xml("<div class='ancestor'><p id='start'><span>text</span></p></div>");
+        result = root.find("#start").parentUntil(".ancestor");
+        assert result.size() == 0;
+    }
+
+    @Test
+    public void parentUntilThroughMultipleLevels() {
+        XML root = I.xml("<div class='grandparent'><div class='parent'><p class='child'><span id='start'/></p></div></div>");
+        XML result = root.find("#start").parentUntil(".grandparent");
+        assert result.size() == 2;
+
+        List<XML> list = I.signal(result).toList();
+        assert list.get(0).name().equals("p");
+        assert list.get(1).name().equals("div");
+        assert list.get(1).attr("class").equals("parent");
+    }
+
+    @Test
+    public void parentUntilNoStopper() {
+        XML root = I.xml("<div><p><span><b id='start'/></span></p></div>");
+        XML result = root.find("#start").parentUntil(".nonexistent");
+        assert result.size() == 3;
+
+        List<XML> list = I.signal(result).toList();
+        assert list.get(0).name().equals("span");
+        assert list.get(1).name().equals("p");
+        assert list.get(2).name().equals("div");
+    }
+
+    @Test
+    public void parentUntilOnEmptySet() {
+        XML root = I.xml("<root/>");
+        XML result = root.find("nonexistent").parentUntil(".stop");
+        assert result.size() == 0;
     }
 }

@@ -122,14 +122,14 @@ public class Manual {
          * #### ✨ Simplicity (Keep it simple stupid &amp; Less is more)
          * APIs are designed to be concise, intuitive, and require minimal boilerplate.
          * Often, static methods on the {@link I} class provide direct access to functionality.
-         * {@link Core_Principles#access() @}
+         * {@link Futures#access() @}
          *
          * #### 🛡️ Safety (Type safety &amp; Refactoring safety)
          * Leverages Java's static typing to catch errors at compile time. APIs are designed
          * to be refactoring-friendly, reducing the risk of runtime errors during code changes.
          * Constructor injection is preferred over less safe alternatives.
          */
-        public class Core_Principles {
+        public class Futures {
             void access() {
                 I.http("http://xxx.com/", XML.class).to(html -> {
                     String name = html.find("#user").text();

@@ -2198,7 +2198,6 @@ public class I implements ParameterizedType {
     public static void trace(String name, Object msg) {
         log(name, msg, 1, 2);
     }
-    
 
     /**
      * Write {@link java.lang.System.Logger.Level#TRACE} log.
@@ -2622,7 +2621,7 @@ public class I implements ParameterizedType {
 
             String value = new String(bytes, StandardCharsets.UTF_8);
             if (xmlLiteral.matcher(value).matches()) {
-                doc = dom.parse(new InputSource(new StringReader("<m>".concat(value.replaceAll("<\\?.+\\?>", "")).concat("</m>"))));
+                doc = dom.parse(new InputSource(new StringReader("<ǃ>".concat(value.replaceAll("<\\?.+\\?>", "")).concat("</ǃ>"))));
                 return new XML(doc, XML.convert(doc.getFirstChild().getChildNodes()));
             } else {
                 return xml(doc != null ? doc.createTextNode(value) : dom.newDocument().createElementNS(null, value));

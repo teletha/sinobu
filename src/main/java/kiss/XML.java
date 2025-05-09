@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,6 +38,22 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/**
+ * A class for parsing, traversing, and manipulating XML and HTML documents
+ * with a jQuery-like fluent API.
+ * <p>
+ * This class wraps the standard {@code org.w3c.dom} API to provide a more
+ * convenient way to work with XML structures. It includes a CSS selector engine
+ * (which converts CSS selectors to XPath) for finding elements and a lenient
+ * HTML parser.
+ * </p>
+ * This class is not thread-safe for concurrent modifications of the underlying DOM
+ * if the same {@code XML} instance (or instances sharing the same {@code Document})
+ * is accessed by multiple threads without external synchronization.
+ * Traversal and read operations are generally safe if the DOM is not being modified.
+ *
+ * @see I#xml(String)
+ */
 public class XML implements Iterable<XML>, Consumer<XML> {
 
     /** The escapable character pattern. */
@@ -60,7 +77,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      * </pre>
      */
     private static final Pattern SELECTOR = Pattern
-            .compile("([>~+<, ]*)?((?:(?:\\w+|\\*)\\|)?(?:[\\w\\-]+(?:\\\\.[\\w\\-]*)*|\\*))?(?:#([\\w\\-\\\\]+))?((?:\\.[\\w\\-\\\\]+)*)(?:\\[\\s?([\\w:]+)(?:\\s*([=~^$*|])?=\\s*\"([^\"]*)\")?\\s?])?(?::([\\w-]+)(?:\\((odd|even|(\\d*)(n)?(?:\\+(\\d+))?|.*)\\))?)?");
+            .compile("([>~+<ǃ, ]*)?((?:(?:\\w+|\\*)\\|)?(?:[\\w\\-]+(?:\\\\.[\\w\\-]*)*|\\*))?(?:#([\\w\\-\\\\]+))?((?:\\.[\\w\\-\\\\]+)*)(?:\\[\\s?([\\w:]+)(?:\\s*([=~^$*|])?=\\s*\"([^\"]*)\")?\\s?])?(?::([\\w-]+)(?:\\((odd|even|(\\d*)(n)?(?:\\+(\\d+))?|.*)\\))?)?");
 
     /** The cache for compiled selectors. */
     private static final Map<String, XPathExpression> selectors = new ConcurrentHashMap();
@@ -72,12 +89,18 @@ public class XML implements Iterable<XML>, Consumer<XML> {
     private List<Node> nodes;
 
     /**
+     * Constructs an XML object from a given document and a list of nodes.
      * <p>
-     * From node set.
+     * This constructor is typically used internally or by the {@link I} factory methods.
+     * If the document is null, a new empty document is created.
+     * If the list of nodes is null, it defaults to a list containing the document itself,
+     * which is useful for starting operations on the root of a new or existing document.
      * </p>
      *
-     * @param doc A parent document.
-     * @param nodes A current node set.
+     * @param doc A parent W3C DOM Document. This document will be used for creating new nodes.
+     * @param nodes A list of W3C DOM Nodes representing the current selection.
+     *            Modifications to this list externally after an {@code XML} object
+     *            is created may lead to unpredictable behavior.
      */
     XML(Document doc, List nodes) {
         this.doc = doc == null ? I.dom.newDocument() : doc;
@@ -86,8 +109,12 @@ public class XML implements Iterable<XML>, Consumer<XML> {
 
     /**
      * Inserts this XML as a child element for the specified parent element.
-     * 
-     * @param parent A parent element.
+     * This method implements the {@link Consumer} interface, allowing an {@code XML}
+     * object to be used in functional contexts, for example, with streams or
+     * methods that accept a {@code Consumer}.
+     *
+     * @param parent A parent {@code XML} element to which this {@code XML} object's
+     *            content will be appended.
      */
     @Override
     public void accept(XML parent) {
@@ -99,9 +126,15 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      * Insert content, specified by the parameter, to the end of each element in the set of matched
      * elements.
      * </p>
+     * <p>
+     * The content can be an XML string, another {@code XML} object, a {@code Node},
+     * or a {@code NodeList}. If multiple elements are in the current set, the content
+     * is cloned for each append operation except for the last one to ensure that
+     * the same node instance is not inserted multiple times if it's part of the same document.
+     * </p>
      *
-     * @param xml An element set to append.
-     * @return Chainable API.
+     * @param xml An element set, XML string, {@code Node}, or {@code NodeList} to append.
+     * @return This {@code XML} object, allowing for chained API calls.
      */
     public XML append(Object xml) {
         Node n = convert(I.xml(doc, xml));
@@ -119,9 +152,14 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      * Insert content, specified by the parameter, to the beginning of each element in the set of
      * matched elements.
      * </p>
+     * <p>
+     * The content can be an XML string, another {@code XML} object, a {@code Node},
+     * or a {@code NodeList}. If multiple elements are in the current set, the content
+     * is cloned for each prepend operation except for the last one.
+     * </p>
      *
-     * @param xml An element set to prepend.
-     * @return Chainable API.
+     * @param xml An element set, XML string, {@code Node}, or {@code NodeList} to prepend.
+     * @return This {@code XML} object, allowing for chained API calls.
      */
     public XML prepend(Object xml) {
         Node n = convert(I.xml(doc, xml));
@@ -139,9 +177,15 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      * Insert content, specified by the parameter, before each element in the set of matched
      * elements.
      * </p>
+     * <p>
+     * The content can be an XML string, another {@code XML} object, a {@code Node},
+     * or a {@code NodeList}. If multiple elements are in the current set, the content
+     * is cloned for each insertion operation except for the last one.
+     * The parent node of the current elements must exist.
+     * </p>
      *
-     * @param xml An element set to add.
-     * @return Chainable API.
+     * @param xml An element set, XML string, {@code Node}, or {@code NodeList} to insert.
+     * @return This {@code XML} object, allowing for chained API calls.
      */
     public XML before(Object xml) {
         Node n = convert(I.xml(doc, xml));
@@ -159,9 +203,15 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      * Insert content, specified by the parameter, after each element in the set of matched
      * elements.
      * </p>
+     * <p>
+     * The content can be an XML string, another {@code XML} object, a {@code Node},
+     * or a {@code NodeList}. If multiple elements are in the current set, the content
+     * is cloned for each insertion operation except for the last one.
+     * The parent node of the current elements must exist.
+     * </p>
      *
-     * @param xml An element set to add
-     * @return Chainable API.
+     * @param xml An element set, XML string, {@code Node}, or {@code NodeList} to insert.
+     * @return This {@code XML} object, allowing for chained API calls.
      */
     public XML after(Object xml) {
         Node n = convert(I.xml(doc, xml));
@@ -178,8 +228,9 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      * <p>
      * Remove all child nodes of the set of matched elements from the DOM.
      * </p>
+     * <p>This method does not remove the matched elements themselves, only their children.</p>
      *
-     * @return Chainable API.
+     * @return This {@code XML} object, allowing for chained API calls.
      */
     public XML empty() {
         for (Node node : nodes) {
@@ -199,10 +250,12 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      * <p>
      * Similar to {@link #empty()}, the {@link #remove()} method takes elements out of the DOM. Use
      * {@link #remove()} when you want to remove the element itself, as well as everything inside
-     * it.
+     * it. The parent node of the current elements must exist.
      * </p>
      *
-     * @return Chainable API.
+     * @return This {@code XML} object, representing the removed elements (though they are no longer
+     *         in the DOM). Further operations on this object might have limited effect if they
+     *         depend on DOM structure.
      */
     public XML remove() {
         for (Node node : nodes) {
@@ -215,11 +268,19 @@ public class XML implements Iterable<XML>, Consumer<XML> {
 
     /**
      * <p>
-     * Wrap an HTML structure around each element in the set of matched elements.
+     * Wrap an XML or HTML structure around each element in the set of matched elements.
+     * </p>
+     * <p>
+     * The {@code xml} parameter, which specifies the wrapping structure, is cloned for
+     * each element in the current set. The current element is then moved inside this
+     * cloned structure.
      * </p>
      *
-     * @param xml An element set to wrap.
-     * @return Chainable API.
+     * @param xml An XML string, {@code XML} object, {@code Node}, or {@code NodeList}
+     *            representing the structure to wrap around the elements.
+     *            If the structure has multiple root elements, typically the first one is used.
+     * @return This {@code XML} object, allowing for chained API calls. The selection still
+     *         refers to the original elements, now wrapped.
      */
     public XML wrap(Object xml) {
         XML element = I.xml(doc, xml);
@@ -234,11 +295,19 @@ public class XML implements Iterable<XML>, Consumer<XML> {
 
     /**
      * <p>
-     * Wrap an HTML structure around all elements in the set of matched elements.
+     * Wrap an XML or HTML structure around all elements in the set of matched elements.
+     * </p>
+     * <p>
+     * This method takes the first element in the current set, inserts the wrapping
+     * structure after it, and then moves all elements from the original set (including
+     * the first one) inside the newly inserted wrapping structure.
      * </p>
      *
-     * @param xml An element set to wrap.
-     * @return Chainable API.
+     * @param xml An XML string, {@code XML} object, {@code Node}, or {@code NodeList}
+     *            representing the structure to wrap around all elements.
+     *            If the structure has multiple root elements, typically the first one is used.
+     * @return This {@code XML} object, allowing for chained API calls. The selection still
+     *         refers to the original elements, now wrapped together.
      */
     public XML wrapAll(Object xml) {
         first().after(xml).find("+*").append(this);
@@ -252,12 +321,16 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      * Create a deep copy of the set of matched elements.
      * </p>
      * <p>
-     * The .clone() method performs a deep copy of the set of matched elements, meaning that it
-     * copies the matched elements as well as all of their descendant elements and text nodes. When
-     * used in conjunction with one of the insertion methods, .clone() is a convenient way to
-     * duplicate elements on a page.
+     * The {@code .clone()} method performs a deep copy of the set of matched elements, meaning that
+     * it copies the matched elements as well as all of their descendant elements and text nodes.
+     * When used in conjunction with one of the insertion methods, {@code .clone()} is a convenient
+     * way to duplicate elements on a page. The cloned nodes are not part of any document until
+     * inserted.
      * </p>
-     * {@inheritDoc}
+     *
+     * @return A new {@code XML} object containing the cloned elements. The cloned elements
+     *         share the same {@code Document} object as the originals but are not initially
+     *         attached to the DOM.
      */
     @Override
     public XML clone() {
@@ -275,8 +348,13 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      * Get the combined text contents of each element in the set of matched elements, including
      * their descendants.
      * </p>
+     * <p>
+     * For multiple matched elements, their text contents are concatenated together in the order
+     * they appear in the {@code nodes} list.
+     * </p>
      *
-     * @return Chainable API.
+     * @return A {@code String} containing the combined text content. Returns an empty string
+     *         if the set of matched elements is empty.
      */
     public String text() {
         StringBuilder text = new StringBuilder();
@@ -291,9 +369,16 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      * <p>
      * Set the content of each element in the set of matched elements to the specified text.
      * </p>
+     * <p>
+     * Any existing child nodes of the matched elements will be removed and replaced
+     * by a single text node containing the specified text.
+     * </p>
      *
-     * @param text A text to set.
-     * @return Chainable API.
+     * @param text A text to set. If {@code null}, it might be treated as an empty string
+     *            depending on the underlying {@code setTextContent} behavior, or could
+     *            potentially cause a {@code NullPointerException} if not handled.
+     *            It's safer to pass an empty string if no text is desired.
+     * @return This {@code XML} object, allowing for chained API calls.
      */
     public XML text(String text) {
         for (Node node : nodes) {
@@ -306,10 +391,11 @@ public class XML implements Iterable<XML>, Consumer<XML> {
 
     /**
      * <p>
-     * Get the element name for the first element in the set of matched elements.
+     * Get the element name (tag name) for the first element in the set of matched elements.
      * </p>
      *
-     * @return An element name.
+     * @return An element name as a {@code String}. Returns an empty string if the
+     *         set of matched elements is empty or the first node is not an {@code Element}.
      */
     public String name() {
         return nodes.isEmpty() ? "" : ((Element) nodes.get(0)).getTagName();
@@ -321,7 +407,9 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      * </p>
      *
      * @param name An attribute name.
-     * @return Chainable API.
+     * @return The attribute value as a {@code String}. Returns an empty string if the
+     *         set of matched elements is empty, the first node is not an {@code Element},
+     *         or the attribute does not exist.
      */
     public String attr(String name) {
         return nodes.isEmpty() ? "" : ((Element) nodes.get(0)).getAttribute(name);
@@ -331,10 +419,16 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      * <p>
      * Set one or more attributes for the set of matched elements.
      * </p>
+     * <p>
+     * If {@code value} is {@code null}, the attribute is removed.
+     * Handles namespace attributes (e.g., attributes starting with "xmlns:") correctly
+     * by using {@code setAttributeNS} or {@code removeAttributeNS}.
+     * </p>
      *
-     * @param name An attribute name.
-     * @param value An attribute value.
-     * @return Chainable API.
+     * @param name An attribute name. If {@code null} or empty, no action is taken.
+     * @param value An attribute value. If {@code null}, the attribute is removed.
+     *            The value will be converted to a string using {@code toString()}.
+     * @return This {@code XML} object, allowing for chained API calls.
      */
     public XML attr(String name, Object value) {
         if (name != null && name.length() != 0) {
@@ -377,10 +471,11 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      * It's important to note that this method does not replace a class. It simply adds the class,
      * appending it to any which may already be assigned to the elements. More than one class may be
      * added at a time, separated by a space, to the set of matched elements.
+     * If a class to be added already exists, it is not added again.
      * </p>
      *
-     * @param names Space separated class name list.
-     * @return Chainable API.
+     * @param names One or more space-separated class names to add.
+     * @return This {@code XML} object, allowing for chained API calls.
      */
     public XML addClass(String... names) {
         for (XML e : this) {
@@ -405,13 +500,15 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      * </p>
      * <p>
      * If a class name is included as a parameter, then only that class will be removed from the set
-     * of matched elements. If no class names are specified in the parameter, all classes will be
-     * removed. More than one class may be removed at a time, separated by a space, from the set of
-     * matched elements.
+     * of matched elements. If no class names are specified in the parameter (i.e., an empty array
+     * or no arguments), all classes will be removed (by setting the class attribute to an empty
+     * string).
+     * More than one class may be removed at a time, specified as separate strings or
+     * space-separated within a single string.
      * </p>
      *
-     * @param names Space separated class name list.
-     * @return Chainable API.
+     * @param names Space-separated class name list(s) to remove. If empty, all classes are removed.
+     * @return This {@code XML} object, allowing for chained API calls.
      */
     public XML removeClass(String... names) {
         for (XML e : this) {
@@ -429,12 +526,13 @@ public class XML implements Iterable<XML>, Consumer<XML> {
 
     /**
      * <p>
-     * Add or remove one class from each element in the set of matched elements, depending on either
-     * the class's presence or the value of the switch argument.
+     * Add or remove one or more classes from each element in the set of matched elements,
+     * depending on either the class's presence or the value of the switch argument (if provided).
+     * This implementation currently only supports toggling a single class name.
      * </p>
      *
-     * @param name A class name.
-     * @return Chainable API.
+     * @param name A single class name to toggle.
+     * @return This {@code XML} object, allowing for chained API calls.
      */
     public XML toggleClass(String name) {
         for (XML e : this) {
@@ -454,8 +552,9 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      * Determine whether any of the matched elements are assigned the given class.
      * </p>
      *
-     * @param name A class name.
-     * @return Chainable API.
+     * @param name A class name to search for.
+     * @return {@code true} if at least one element in the set has the specified class,
+     *         {@code false} otherwise.
      */
     public boolean hasClass(String name) {
         for (XML e : this) {
@@ -474,8 +573,11 @@ public class XML implements Iterable<XML>, Consumer<XML> {
 
     /**
      * Reduce the set of matched elements to the first in the set.
+     * If the current set is empty, an {@code XML} object representing an
+     * empty set is returned.
      *
-     * @return Chainable API.
+     * @return A new {@code XML} object containing only the first element,
+     *         or an empty set if the original set was empty.
      */
     public final XML first() {
         return nodes.isEmpty() ? this : new XML(doc, nodes.subList(0, 1));
@@ -483,28 +585,39 @@ public class XML implements Iterable<XML>, Consumer<XML> {
 
     /**
      * Reduce the set of matched elements to the final one in the set.
+     * If the current set is empty, an {@code XML} object representing an
+     * empty set is returned.
      *
-     * @return Chainable API.
+     * @return A new {@code XML} object containing only the last element,
+     *         or an empty set if the original set was empty.
      */
     public final XML last() {
         return nodes.isEmpty() ? this : new XML(doc, nodes.subList(nodes.size() - 1, nodes.size()));
     }
 
     /**
-     * Append new child element with the specified name and traverse into them.
+     * Append a new child element with the specified name to each element in the current set,
+     * and then return a new {@code XML} object representing these newly created child elements.
      *
      * @param name A child element name.
-     * @return A created child elements.
+     * @return A new {@code XML} object representing the created child elements.
      */
     public final XML child(String name) {
         return child(name, null);
     }
 
     /**
-     * Append new child element with the specified name and traverse into them.
+     * Append a new child element with the specified name to each element in the current set,
+     * apply a {@link Consumer} function to the new {@code XML} object representing these children,
+     * and then return this new {@code XML} object.
+     * <p>
+     * This is useful for creating and immediately configuring child elements in a fluent manner.
+     * </p>
      *
      * @param name A child element name.
-     * @return A created child elements.
+     * @param child A {@link Consumer} that accepts the newly created {@code XML}
+     *            (representing the children) for further configuration. Can be {@code null}.
+     * @return A new {@code XML} object representing the created child elements.
      */
     public final XML child(String name, Consumer<XML> child) {
         // don't use the following codes because of building xml performance
@@ -521,8 +634,9 @@ public class XML implements Iterable<XML>, Consumer<XML> {
 
     /**
      * Get the children of each element in the current set of matched elements.
+     * This is equivalent to {@code find(">*")}. Only element nodes are returned.
      *
-     * @return A set of children elements.
+     * @return A new {@code XML} object containing all direct child elements.
      */
     public final XML children() {
         return find(">*");
@@ -530,8 +644,10 @@ public class XML implements Iterable<XML>, Consumer<XML> {
 
     /**
      * Get the first child element of each element in the current set of matched elements.
+     * This is equivalent to {@code find(">*:first-child")}.
+     * If an element in the set has no child elements, it contributes nothing to the result.
      * 
-     * @return A set of first elements.
+     * @return A new {@code XML} object containing the first child element of each matched element.
      */
     public final XML firstChild() {
         return find(">*:first-child");
@@ -539,8 +655,10 @@ public class XML implements Iterable<XML>, Consumer<XML> {
 
     /**
      * Get the last child element of each element in the current set of matched elements.
+     * This is equivalent to {@code find(">*:last-child")}.
+     * If an element in the set has no child elements, it contributes nothing to the result.
      * 
-     * @return A set of last elements.
+     * @return A new {@code XML} object containing the last child element of each matched element.
      */
     public final XML lastChild() {
         return find(">*:last-child");
@@ -548,8 +666,11 @@ public class XML implements Iterable<XML>, Consumer<XML> {
 
     /**
      * Get the parent of each element in the current set of matched elements.
+     * If an element has no parent (e.g., it's a document node or a detached element),
+     * or its parent is not an {@code Element} node, it does not contribute to the result set.
+     * The resulting set contains unique parent elements.
      *
-     * @return A set of parent elements.
+     * @return A new {@code XML} object containing the unique parent elements.
      */
     public final XML parent() {
         CopyOnWriteArrayList<Node> list = new CopyOnWriteArrayList();
@@ -557,7 +678,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
         for (Node node : nodes) {
             Node p = node.getParentNode();
 
-            if (p != null) {
+            if (p != null && !p.getNodeName().equals("ǃ")) {
                 list.addIfAbsent(p instanceof Element ? p : node);
             }
         }
@@ -565,29 +686,112 @@ public class XML implements Iterable<XML>, Consumer<XML> {
     }
 
     /**
-     * Get the previous sibling element of each element in the current set of matched elements.
+     * Get the ancestors of each element in the current set of matched elements,
+     * up to but not including the element matched by the selector.
+     * The elements are returned in order from the closest parent to the furthest.
      *
-     * @return A set of previous elements.
+     * @param selector A CSS selector expression to indicate where to stop matching ancestor
+     *            elements. If the selector is empty or null, it might retrieve all ancestors up to
+     *            the root.
+     * @return A new {@code XML} object containing the matching ancestor elements.
+     */
+    public final XML parentUntil(String selector) {
+        return until(selector, Node::getParentNode);
+    }
+
+    /**
+     * Get the previous sibling element of each element in the current set of matched elements.
+     * This is equivalent to {@code find("<*")}. Only element nodes are returned.
+     *
+     * @return A new {@code XML} object containing the previous sibling element of each matched
+     *         element.
      */
     public final XML prev() {
         return find("<*");
     }
 
     /**
-     * Get the next sibling element of each element in the current set of matched elements.
+     * Get all preceding sibling elements of each element in the current set of matched elements,
+     * up to but not including the element matched by the selector.
+     * The elements are returned in document order (the one closest to the starting element first).
      *
-     * @return A set of next elements.
+     * @param selector A CSS selector expression to indicate where to stop matching preceding
+     *            sibling elements.
+     * @return A new {@code XML} object containing the matching preceding sibling elements.
+     */
+    public final XML prevUntil(String selector) {
+        return until(selector, Node::getPreviousSibling);
+    }
+
+    /**
+     * Get the next sibling element of each element in the current set of matched elements.
+     * This is equivalent to {@code find("+*")}. Only element nodes are returned.
+     *
+     * @return A new {@code XML} object containing the next sibling element of each matched element.
      */
     public final XML next() {
         return find("+*");
     }
 
     /**
-     * Get the descendants of each element in the current set of matched elements, filtered by a css
-     * selector.
+     * Get all following sibling elements of each element in the current set of matched elements,
+     * up to but not including the element matched by the selector.
+     * The elements are returned in document order.
      *
-     * @param selector A string containing a css selector expression to match elements against.
-     * @return Chainable API.
+     * @param selector A CSS selector expression to indicate where to stop matching following
+     *            sibling elements.
+     * @return A new {@code XML} object containing the matching following sibling elements.
+     */
+    public final XML nextUntil(String selector) {
+        return until(selector, Node::getNextSibling);
+    }
+
+    /**
+     * Internal helper method to traverse the DOM in a specified direction from each current node,
+     * collecting elements until a node matches the given selector or the traversal ends.
+     *
+     * @param selector A CSS selector. The traversal stops when an element matching this selector is
+     *            encountered (exclusive).
+     * @param traverse A {@link UnaryOperator} that defines the traversal direction (e.g.,
+     *            {@code Node::getNextSibling}).
+     * @return A new {@code XML} object containing the collected elements.
+     */
+    private XML until(String selector, UnaryOperator<Node> traverse) {
+        CopyOnWriteArrayList result = new CopyOnWriteArrayList();
+        XPathExpression x = compile("ǃ".concat(selector));
+
+        for (Node node : nodes) {
+            while (true) {
+                node = traverse.apply(node);
+                if (node == null || node.getNodeName().equals("ǃ")) break;
+                if (node.getNodeType() == Node.ELEMENT_NODE) {
+                    try {
+                        if ((Boolean) x.evaluate(node, XPathConstants.BOOLEAN)) {
+                            break;
+                        }
+                    } catch (XPathExpressionException e) {
+                        // continue
+                    }
+                    result.addIfAbsent(node);
+                }
+            }
+        }
+        return new XML(doc, result);
+    }
+
+    /**
+     * Get the descendants of each element in the current set of matched elements, filtered by a CSS
+     * selector.
+     * <p>
+     * The selector is converted to an XPath expression, which is then evaluated against each
+     * element in the current set. The results are aggregated into a new {@code XML} object.
+     * </p>
+     *
+     * @param selector A string containing a CSS selector expression to match elements against.
+     *            Can also be an XPath expression if prefixed with "xpath:".
+     * @return A new {@code XML} object containing the matched descendant elements.
+     * @throws RuntimeException if the selector is invalid and causes an
+     *             {@link XPathExpressionException}.
      */
     public XML find(String selector) {
         XPathExpression xpath = compile(selector);
@@ -604,9 +808,8 @@ public class XML implements Iterable<XML>, Consumer<XML> {
     }
 
     /**
-     * <p>
-     * Return size of the current node set.
-     * </p>
+     * Return size of the current node set. This indicates how many DOM elements
+     * are currently matched by this {@code XML} object.
      *
      * @return A size of current node set.
      */
@@ -615,18 +818,29 @@ public class XML implements Iterable<XML>, Consumer<XML> {
     }
 
     /**
-     * Apply the specified process to this {@link XML}. This is helpful for fluent method chain to
-     * intercept your own operation.
-     * 
-     * @param process
-     * @return
+     * Apply the specified process to this {@link XML} object itself and return the result
+     * of the process. This is helpful for inserting custom operations into a fluent
+     * method chain without breaking the chain if the process returns {@code this},
+     * or for extracting a different type of result.
+     *
+     * @param process A {@link WiseFunction} that takes this {@code XML} object as input
+     *            and produces a result of type {@code R}.
+     * @param <R> The type of the result returned by the process function.
+     * @return The result of applying the process function to this {@code XML} object.
      */
     public <R> R effect(WiseFunction<XML, R> process) {
         return process.apply(this);
     }
 
     /**
-     * {@inheritDoc}
+     * Returns an iterator over the set of matched elements. Each element
+     * in the iteration is an {@code XML} object representing a single DOM node
+     * from the current set.
+     * <p>
+     * This allows the {@code XML} object to be used in enhanced for-loops:
+     * </p>
+     *
+     * @return An {@link Iterator} of {@code XML} objects.
      */
     @Override
     public Iterator<XML> iterator() {
@@ -639,11 +853,9 @@ public class XML implements Iterable<XML>, Consumer<XML> {
     }
 
     /**
-     * <p>
-     * Convert the first element to {@link Node}.
-     * </p>
+     * Convert the first element in the current set to its underlying {@link Node} representation.
      *
-     * @return A first {@link Node} or <code>null</code>.
+     * @return The first {@link Node} in the set, or {@code null} if the set is empty.
      */
     public Node to() {
         return nodes.size() == 0 ? null : nodes.get(0);
@@ -651,10 +863,12 @@ public class XML implements Iterable<XML>, Consumer<XML> {
 
     /**
      * <p>
-     * Write this element to the specified output with the simple format option.
+     * Write the XML representation of the matched elements to the specified {@link Appendable}
+     * (e.g., {@code StringBuilder}, {@code Writer}) with default formatting (tab indentation).
      * </p>
-     * 
-     * @param output An output channel.
+     * <p>If multiple elements are matched, they are serialized sequentially.</p>
+     *
+     * @param output An {@link Appendable} to write the XML to.
      */
     public void to(Appendable output) {
         to(output, "\t");
@@ -822,12 +1036,14 @@ public class XML implements Iterable<XML>, Consumer<XML> {
     }
 
     /**
-     * <p>
-     * Helper method to convert {@link XML} to single {@link Node}.
-     * </p>
+     * Helper method to convert an {@code XML} object (potentially from another document)
+     * into a {@link DocumentFragment} owned by the current {@code XML} instance's document.
+     * Nodes are imported if they belong to a different document.
+     * The original {@code XML} object's document reference is updated to the current document.
      *
-     * @param xml
-     * @return
+     * @param xml The {@code XML} object to convert. Its nodes will be moved or imported.
+     * @return A {@link DocumentFragment} containing the nodes from the input {@code xml},
+     *         now associated with the current instance's document.
      */
     private Node convert(XML xml) {
         DocumentFragment fragment = doc.createDocumentFragment();
@@ -850,12 +1066,13 @@ public class XML implements Iterable<XML>, Consumer<XML> {
     }
 
     /**
-     * <p>
-     * Helper method to convert {@link NodeList} to single {@link List}.
-     * </p>
+     * Helper method to convert a {@link NodeList} into a {@code List<Node>},
+     * filtering for {@code ELEMENT_NODE}s and ensuring uniqueness if added to
+     * a list that checks for absence (like {@code CopyOnWriteArrayList.addIfAbsent}).
      *
      * @param list A {@link NodeList} to convert.
-     * @return
+     * @return A {@code List<Node>} containing only unique element nodes from the input list.
+     *         The list returned is a {@code CopyOnWriteArrayList}.
      */
     static List<Node> convert(NodeList list) {
         CopyOnWriteArrayList<Node> nodes = new CopyOnWriteArrayList();
@@ -899,12 +1116,15 @@ public class XML implements Iterable<XML>, Consumer<XML> {
     }
 
     /**
+     * Helper method to convert a CSS selector string to its equivalent XPath expression string.
+     * If the selector starts with "xpath:", it is returned as is (after removing the prefix).
      * <p>
-     * Helper method to convert css selector to xpath.
+     * This method parses the CSS selector using {@link #SELECTOR} and builds an XPath query
+     * based on combinators, type selectors, ID, class, attributes, and pseudo-classes.
      * </p>
      *
-     * @param selector A css selector.
-     * @return A xpath.
+     * @param selector A CSS selector string.
+     * @return An XPath expression string.
      */
     private static String convert(String selector) {
         if (selector.startsWith("xpath:")) return selector.substring(6);
@@ -956,6 +1176,10 @@ public class XML implements Iterable<XML>, Consumer<XML> {
 
                     case ',': // selector separator
                         xpath.append("|descendant::");
+                        break;
+
+                    case 'ǃ': // self (EXTENSION - this is NOT exclamation mark ǃ unicode '01c3')
+                        xpath.append("/self::");
                         break;
                     }
 
@@ -1215,12 +1439,18 @@ public class XML implements Iterable<XML>, Consumer<XML> {
     private String html;
 
     /**
+     * Parses the given raw HTML byte data using the specified character encoding
+     * and builds the DOM structure represented by this {@code XML} object.
      * <p>
-     * Parse HTML and build {@link XML}.
+     * This method contains a lenient HTML parser that attempts to handle common
+     * HTML structures, including character encoding detection via {@code <meta>} tags.
+     * If a different encoding is detected, parsing may be restarted with the new encoding.
      * </p>
-     * 
-     * @param raw The raw date of HTML.
-     * @param encoding The charset to parse.
+     *
+     * @param raw The raw byte array of the HTML data.
+     * @param encoding The initial character encoding to use for parsing.
+     * @return This {@code XML} object, now representing the parsed HTML structure.
+     *         If re-parsing occurs due to encoding detection, a new parse cycle is initiated.
      */
     XML parse(byte[] raw, Charset encoding) {
         // ====================
@@ -1391,13 +1621,13 @@ public class XML implements Iterable<XML>, Consumer<XML> {
     }
 
     /**
-     * <p>
-     * Check whether the current sequence is started with the specified characters or not. If it is
-     * matched, cursor positioning step into it.
-     * </p>
-     * 
-     * @param until A condition.
-     * @return A result.
+     * Helper method for the HTML parser. Checks if the HTML string at the current
+     * parsing position ({@link #pos}) starts with the given {@code sequence}.
+     * If it matches, {@link #pos} is advanced by the length of the sequence.
+     *
+     * @param sequence The string sequence to test for.
+     * @return {@code true} if a match is found and {@link #pos} is advanced,
+     *         {@code false} otherwise.
      */
     private boolean test(String until) {
         if (html.startsWith(until, pos)) {
@@ -1409,12 +1639,14 @@ public class XML implements Iterable<XML>, Consumer<XML> {
     }
 
     /**
-     * <p>
-     * Consume the next run of characters until the specified sequence will be appeared.
-     * </p>
-     * 
-     * @param until A target character sequence. (include this sequence)
-     * @return A consumed character sequence. (exclude the specified sequence)
+     * Helper method for the HTML parser. Consumes characters from the HTML string
+     * starting at the current parsing position ({@link #pos}) until the specified
+     * {@code terminator} sequence is encountered.
+     * {@link #pos} is advanced past the {@code terminator}.
+     *
+     * @param terminator The string sequence that marks the end of consumption.
+     * @return The consumed string, excluding the {@code terminator}.
+     *         If the terminator is not found, returns the rest of the HTML string.
      */
     private String next(String until) {
         int start = pos;
@@ -1431,11 +1663,13 @@ public class XML implements Iterable<XML>, Consumer<XML> {
     }
 
     /**
-     * <p>
-     * Consume an identical name. (word or :, _, -)
-     * </p>
-     * 
-     * @return An identical name for XML.
+     * Helper method for the HTML parser. Consumes an XML/HTML name (tag name or attribute name)
+     * from the HTML string starting at the current parsing position ({@link #pos}).
+     * A name consists of letters, digits, '_', ':', or '-'.
+     * {@link #pos} is advanced past the consumed name.
+     * Names are converted to lowercase.
+     *
+     * @return The consumed name, converted to lowercase.
      */
     private String nextName() {
         int start = pos;
@@ -1448,9 +1682,9 @@ public class XML implements Iterable<XML>, Consumer<XML> {
     }
 
     /**
-     * <p>
-     * Consume the next run of whitespace characters.
-     * </p>
+     * Helper method for the HTML parser. Consumes whitespace characters from the HTML string
+     * starting at the current parsing position ({@link #pos}).
+     * {@link #pos} is advanced past the consumed whitespace.
      */
     private void nextSpace() {
         while (pos < html.length() && Character.isWhitespace(html.charAt(pos))) {
