@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.10.0](https://github.com/teletha/sinobu/compare/4.9.0...4.10.0) (2025-05-09)
+
+
+### Features
+
+* add XML#nextUntil, #prevUntil and #parentUntil ([e2165f0](https://github.com/teletha/sinobu/commit/e2165f06443123e0d50c45d624c3f292d517429c))
+
 ## [4.9.0](https://github.com/teletha/sinobu/compare/4.8.0...4.9.0) (2025-04-24)
 
 
