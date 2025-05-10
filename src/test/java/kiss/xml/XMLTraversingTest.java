@@ -1095,6 +1095,7 @@ public class XMLTraversingTest {
                     <target/>
                 </root>
                 """;
+
         XML target = I.xml(text).find("target");
 
         XML next = target.next();
@@ -1108,6 +1109,7 @@ public class XMLTraversingTest {
                     <target/>
                 </root>
                 """;
+
         XML target = I.xml(text).find("target");
 
         XML next = target.next();
@@ -1128,6 +1130,7 @@ public class XMLTraversingTest {
                     </section>
                 </doc>
                 """;
+
         XML targets = I.xml(text).find(".target");
         assert targets.size() == 2;
 
@@ -1136,7 +1139,6 @@ public class XMLTraversingTest {
 
         List<XML> nextList = I.signal(nexts).toList();
         assert nextList.stream().allMatch(xml -> xml.hasClass("next-marker"));
-        // 名前でも確認 (s1a, s2a)
         assert (nextList.get(0).name().equals("s1a") && nextList.get(1).name().equals("s2a")) || (nextList.get(0)
                 .name()
                 .equals("s2a") && nextList.get(1).name().equals("s1a"));
@@ -1165,6 +1167,7 @@ public class XMLTraversingTest {
                     </section>
                 </doc>
                 """;
+
         XML targets = I.xml(text).find(".target");
         assert targets.size() == 4;
 
@@ -1174,7 +1177,7 @@ public class XMLTraversingTest {
         List<XML> nextList = I.signal(nexts).toList();
         assert nextList.stream().allMatch(xml -> xml.hasClass("next-marker"));
         assert nextList.size() == 2;
-        // 名前で存在確認
+
         List<String> nextNames = nextList.stream().map(XML::name).collect(Collectors.toList());
         assert nextNames.contains("s1a");
         assert nextNames.contains("s3a");
@@ -1204,6 +1207,7 @@ public class XMLTraversingTest {
                     <outer_sibling class='next-marker-outer'/>
                 </doc>
                 """;
+
         XML targets = I.xml(text).find(".target");
         XML nexts = targets.next();
 
@@ -1214,11 +1218,29 @@ public class XMLTraversingTest {
 
     @Test
     public void nextUntilBasic() {
-        XML root = I.xml("<root><n1/><n2 class='stop'/><n3/><n4 class='stop'/></root>");
+        XML root = I.xml("""
+                <root>
+                    <n1/>
+                    <n2 class='stop'/>
+                    <n3/>
+                    <n4 class='stop'/>
+                </root>
+                """);
+
         XML result = root.find("n1").nextUntil(".stop");
         assert result.size() == 0;
 
-        root = I.xml("<root><n1/><m1/><m2/><n2 class='stop'/><n3/><n4 class='stop'/></root>");
+        root = I.xml("""
+                <root>
+                    <n1/>
+                    <m1/>
+                    <m2/>
+                    <n2 class='stop'/>
+                    <n3/>
+                    <n4 class='stop'/>
+                </root>
+                """);
+
         result = root.find("n1").nextUntil(".stop");
         assert result.size() == 2;
         assert result.first().name().equals("m1");
@@ -1226,8 +1248,79 @@ public class XMLTraversingTest {
     }
 
     @Test
+    public void nextUntilStopperIsTag() {
+        XML root = I.xml("""
+                <root>
+                    <start/>
+                    <item1/>
+                    <item2/>
+                    <stopper/>
+                    <other/>
+                </root>
+                """);
+
+        XML result = root.find("start").nextUntil("stopper");
+        assert result.size() == 2;
+        assert result.first().name().equals("item1");
+        assert result.last().name().equals("item2");
+    }
+
+    @Test
+    public void nextUntilStopperIsId() {
+        XML root = I.xml("""
+                <root>
+                    <start/>
+                    <item1/>
+                    <item2 id='stopHere'/>
+                    <item3/>
+                </root>
+                """);
+        XML result = root.find("start").nextUntil("#stopHere");
+        assert result.size() == 1;
+        assert result.first().name().equals("item1");
+    }
+
+    @Test
+    public void nextUntilStopperIsAttribute() {
+        XML root = I.xml("""
+                <root>
+                    <start/>
+                    <item1/>
+                    <item2 data-stop='yes'/>
+                    <item3/>
+                </root>
+                """);
+
+        XML result = root.find("start").nextUntil("[data-stop=\"yes\"]");
+        assert result.size() == 1;
+        assert result.first().name().equals("item1");
+    }
+
+    @Test
+    public void nextUntilStopperIsCombinedSelector() {
+        XML root = I.xml("""
+                <root>
+                    <start/>
+                    <item1/>
+                    <item2 class='end'/>
+                    <stopper class='end' id='final' data-marker='stop'/>
+                    <item3/>
+                </root>
+                """);
+        XML result = root.find("start").nextUntil(".end[data-marker=stop]");
+        assert result.size() == 2;
+        assert result.first().name().equals("item1");
+        assert result.last().name().equals("item2");
+    }
+
+    @Test
     public void nextUntilWithTextNodes() {
-        XML root = I.xml("<root><n1/>text<m1/>more text<m2/>final text<n2 class='stop'/></root>");
+        XML root = I.xml("""
+                <root>
+                    <n1/>text<m1/>more text<m2/>final text<n2 class='stop'/>
+                </root>
+                """);
+
         XML result = root.find("n1").nextUntil(".stop");
         assert result.size() == 2;
         assert result.first().name().equals("m1");
@@ -1236,11 +1329,61 @@ public class XMLTraversingTest {
 
     @Test
     public void nextUntilNoStopper() {
-        XML root = I.xml("<root><n1/><m1/><m2/></root>");
+        XML root = I.xml("""
+                <root>
+                    <n1/>
+                    <m1/>
+                    <m2/>
+                </root>
+                """);
+
         XML result = root.find("n1").nextUntil(".nonexistent");
         assert result.size() == 2;
         assert result.first().name().equals("m1");
         assert result.last().name().equals("m2");
+    }
+
+    @Test
+    public void nextUntilStopperIsOneOfMultipleCssSelectors() {
+        XML root = I.xml("""
+                <root>
+                    <n1/>
+                    <n2/>
+                    <n3 class='stop'/>
+                </root>
+                """);
+
+        XML result = root.find("n1").nextUntil(".end, .stop, #finish");
+        assert result.size() == 1;
+        assert result.first().name().equals("n2");
+
+        root = I.xml("""
+                <root>
+                    <start/>
+                    <item1/>
+                    <item2 id='finish'/>
+                    <item3 class='stop'/>
+                </root>
+                """);
+
+        result = root.find("start").nextUntil(".stop, #finish");
+        assert result.size() == 1;
+        assert result.first().name().equals("item1");
+    }
+
+    @Test
+    public void nextUntilWithMultiSelector() {
+        XML root = I.xml("""
+                <root>
+                    <n1/>
+                    <n2/>
+                    <n3 class='stop'/>
+                </root>
+                """);
+
+        XML result = root.find("n1").nextUntil(".end, .stop");
+        assert result.size() == 1;
+        assert result.first().name().equals("n2");
     }
 
     @Test
@@ -1252,7 +1395,13 @@ public class XMLTraversingTest {
 
     @Test
     public void nextUntilMultipleStartNodes() {
-        XML root = I.xml("<root><div><s1/><s2/><s3 class='stop'/></div><div><s1/><s2/><s3/><s4 class='stop'/></div></root>");
+        XML root = I.xml("""
+                <root>
+                    <div><s1/><s2/><s3 class='stop'/></div>
+                    <div><s1/><s2/><s3/><s4 class='stop'/></div>
+                </root>
+                """);
+
         XML result = root.find("s1").nextUntil(".stop");
         assert result.size() == 3;
 
@@ -1264,20 +1413,53 @@ public class XMLTraversingTest {
 
     @Test
     public void prevUntilBasic() {
-        XML root = I.xml("<root><n1 class='stop'/><n2/><n3/><n4/></root>");
+        XML root = I.xml("""
+                <root>
+                    <n1 class='stop'/><n2/><n3/><n4/>
+                </root>
+                """);
+
         XML result = root.find("n4").prevUntil(".stop");
         assert result.size() == 2;
         assert result.first().name().equals("n3");
         assert result.last().name().equals("n2");
 
-        root = I.xml("<root><n1 class='stop'/><n2/><n3/></root>");
+        root = I.xml("""
+                <root>
+                    <n1 class='stop'/><n2/><n3/>
+                </root>
+                """);
+
         result = root.find("n2").prevUntil(".stop");
         assert result.size() == 0;
     }
 
     @Test
+    public void prevUntilStopperIsTag() {
+        XML root = I.xml("""
+                <root>
+                    <other/>
+                    <stopper/>
+                    <item2/>
+                    <item1/>
+                    <start/>
+                </root>
+                """);
+
+        XML result = root.find("start").prevUntil("stopper");
+        assert result.size() == 2;
+        assert result.first().name().equals("item1");
+        assert result.last().name().equals("item2");
+    }
+
+    @Test
     public void prevUntilWithTextNodes() {
-        XML root = I.xml("<root><n1 class='stop'/>text<m1/>more text<m2/>final text<n3/></root>");
+        XML root = I.xml("""
+                <root>
+                    <n1 class='stop'/>text<m1/>more text<m2/>final text<n3/>
+                </root>
+                """);
+
         XML result = root.find("n3").prevUntil(".stop");
         assert result.size() == 2;
         assert result.first().name().equals("m2");
@@ -1285,8 +1467,63 @@ public class XMLTraversingTest {
     }
 
     @Test
+    public void prevUntilStopperIsId() {
+        XML root = I.xml("""
+                <root>
+                    <item3/>
+                    <item2 id='stopHere'/>
+                    <item1/>
+                    <start/>
+                </root>
+                """);
+
+        XML result = root.find("start").prevUntil("#stopHere");
+        assert result.size() == 1;
+        assert result.first().name().equals("item1");
+    }
+
+    @Test
+    public void prevUntilStopperIsAttribute() {
+        XML root = I.xml("""
+                <root>
+                    <item3/>
+                    <item2 data-stop='yes'/>
+                    <item1/>
+                    <start/>
+                </root>
+                """);
+
+        XML result = root.find("start").prevUntil("[data-stop=yes]");
+        assert result.size() == 1;
+        assert result.first().name().equals("item1");
+    }
+
+    @Test
+    public void prevUntilStopperIsCombinedSelector() {
+        XML root = I.xml("""
+                <root>
+                    <item/>
+                    <stopper class='end' id='final' data-marker='stop'/>
+                    <item class='end'/>
+                    <item id='final'/>
+                    <item data-marker='stop'/>
+                    <start/>
+                </root>
+                """);
+
+        XML xml = root.find("start");
+        assert xml.prevUntil(".end[data-marker=stop]").size() == 3;
+        assert xml.prevUntil("[data-marker=stop].end").size() == 3;
+    }
+
+    @Test
     public void prevUntilNoStopper() {
-        XML root = I.xml("<root><m1/><m2/><n3/></root>");
+        XML root = I.xml("""
+                <root>
+                    <m1/><m2/><n3/>
+                </root>
+                """);
+
         XML result = root.find("n3").prevUntil(".nonexistent");
         assert result.size() == 2;
         assert result.first().name().equals("m2");
@@ -1301,20 +1538,158 @@ public class XMLTraversingTest {
     }
 
     @Test
+    public void prevUntilStopperIsOneOfMultipleCssSelectors() {
+        XML root = I.xml("""
+                <root>
+                    <n3 class='stop'/>
+                    <n2/>
+                    <n1/>
+                </root>
+                """);
+
+        XML result = root.find("n1").prevUntil(".end, .stop, #finish"); //
+        assert result.size() == 1;
+        assert result.first().name().equals("n2");
+
+        root = I.xml("""
+                <root>
+                    <item3 class='stop'/>
+                    <item2 id='finish'/>
+                    <item1/>
+                    <start/>
+                </root>
+                """);
+        result = root.find("start").prevUntil(".stop, #finish");
+        assert result.size() == 1;
+        assert result.first().name().equals("item1");
+    }
+
+    @Test
+    public void prevUntilMultipleStartNodes() {
+        XML root = I.xml("""
+                <root>
+                    <div><s3 class='stop'/><s2/><s1 class='start'/></div>
+                    <div><s4 class='stop'/><s3/><s2/><s1 class='start'/></div>
+                </root>
+                """);
+
+        XML result = root.find(".start").prevUntil(".stop");
+        assert result.size() == 3;
+
+        List<String> names = I.signal(result).map(XML::name).toList();
+        long s2Count = names.stream().filter(name -> name.equals("s2")).count();
+        long s3Count = names.stream().filter(name -> name.equals("s3")).count();
+
+        assert names.contains("s2");
+        assert names.contains("s3");
+        assert s2Count == 2;
+        assert s3Count == 1;
+    }
+
+    @Test
     public void parentUntilBasic() {
-        XML root = I.xml("<div class='ancestor'><p><span id='start'>text</span></p></div>");
+        XML root = I.xml("""
+                <div class='ancestor'>
+                    <p><span id='start'>text</span></p>
+                </div>
+                """);
+
         XML result = root.find("#start").parentUntil(".ancestor");
         assert result.size() == 1;
         assert result.first().name().equals("p");
 
-        root = I.xml("<div class='ancestor'><p id='start'><span>text</span></p></div>");
+        root = I.xml("""
+                <div class='ancestor'>
+                    <p id='start'><span>text</span></p>
+                </div>
+                """);
+
         result = root.find("#start").parentUntil(".ancestor");
         assert result.size() == 0;
     }
 
     @Test
+    public void parentUntilStopperIsTag() {
+        XML root = I.xml("""
+                <stopperTag>
+                    <level1>
+                        <level2>
+                            <startNode/>
+                        </level2>
+                    </level1>
+                </stopperTag>
+                """);
+        XML result = root.find("startNode").parentUntil("stopperTag");
+        assert result.size() == 2;
+        List<XML> list = I.signal(result).toList();
+        assert list.get(0).name().equals("level2");
+        assert list.get(1).name().equals("level1");
+    }
+
+    @Test
+    public void parentUntilStopperIsId() {
+        XML root = I.xml("""
+                <div id='stopHere'>
+                    <level1>
+                        <level2>
+                            <startNode/>
+                        </level2>
+                    </level1>
+                </div>
+                """);
+        XML result = root.find("startNode").parentUntil("#stopHere");
+        assert result.size() == 2;
+        List<XML> list = I.signal(result).toList();
+        assert list.get(0).name().equals("level2");
+        assert list.get(1).name().equals("level1");
+    }
+
+    @Test
+    public void parentUntilStopperIsAttribute() {
+        XML root = I.xml("""
+                <div data-stop='true'>
+                    <level1>
+                        <level2>
+                            <startNode/>
+                        </level2>
+                    </level1>
+                </div>
+                """);
+        XML result = root.find("startNode").parentUntil("[data-stop=true]");
+        assert result.size() == 2;
+        List<XML> list = I.signal(result).toList();
+        assert list.get(0).name().equals("level2");
+        assert list.get(1).name().equals("level1");
+    }
+
+    @Test
+    public void parentUntilStopperIsCombinedSelector() {
+        XML root = I.xml("""
+                <div class='ancestor final' id='top' data-role='stopper'>
+                    <level1>
+                        <level2>
+                            <startNode/>
+                        </level2>
+                    </level1>
+                </div>
+                """);
+        XML result = root.find("startNode").parentUntil("div.ancestor#top[data-role=stopper]");
+        assert result.size() == 2;
+        List<XML> list = I.signal(result).toList();
+        assert list.get(0).name().equals("level2");
+        assert list.get(1).name().equals("level1");
+    }
+
+    @Test
     public void parentUntilThroughMultipleLevels() {
-        XML root = I.xml("<div class='grandparent'><div class='parent'><p class='child'><span id='start'/></p></div></div>");
+        XML root = I.xml("""
+                <div class='grandparent'>
+                    <div class='parent'>
+                        <p class='child'><span id='start'/></p>
+                    </div>
+                </div>
+                """);
+
         XML result = root.find("#start").parentUntil(".grandparent");
         assert result.size() == 2;
 
@@ -1326,7 +1701,16 @@ public class XMLTraversingTest {
 
     @Test
     public void parentUntilNoStopper() {
-        XML root = I.xml("<div><p><span><b id='start'/></span></p></div>");
+        XML root = I.xml("""
+                <div>
+                    <p>
+                        <span>
+                            <b id='start'/>
+                        </span>
+                    </p>
+                </div>
+                """);
+
         XML result = root.find("#start").parentUntil(".nonexistent");
         assert result.size() == 3;
 
@@ -1334,6 +1718,66 @@ public class XMLTraversingTest {
         assert list.get(0).name().equals("span");
         assert list.get(1).name().equals("p");
         assert list.get(2).name().equals("div");
+    }
+
+    @Test
+    public void parentUntilStopperIsOneOfMultipleCssSelectors() {
+        XML root = I.xml("""
+                <div id='anc1'>
+                  <section class='anc2'>
+                    <article data-anc='3'>
+                      <p>
+                        <span id='start'/>
+                      </p>
+                    </article>
+                  </section>
+                </div>
+                """);
+
+        // Stop at article[data-anc='3']
+        XML result1 = root.find("#start").parentUntil("article[data-anc='3'], .anc2, #anc1");
+        assert result1.size() == 1;
+        assert result1.first().name().equals("p");
+
+        // Stop at section.anc2
+        XML result2 = root.find("#start").parentUntil(".anc2, #anc1");
+        assert result2.size() == 2;
+        List<XML> list2 = I.signal(result2).toList();
+        assert list2.get(0).name().equals("p");
+        assert list2.get(1).name().equals("article");
+
+        // Stop at div#anc1
+        XML result3 = root.find("#start").parentUntil("#anc1");
+        assert result3.size() == 3;
+        List<XML> list3 = I.signal(result3).toList();
+        assert list3.get(0).name().equals("p");
+        assert list3.get(1).name().equals("article");
+        assert list3.get(2).name().equals("section");
+    }
+
+    @Test
+    public void parentUntilMultipleStartNodes() {
+        XML root = I.xml("""
+                <div class="stopper">
+                    <section>
+                        <p><span id="s1" class="start"/></p>
+                    </section>
+                    <section>
+                        <figure><b id="s2" class="start"/> </figure>
+                    </section>
+                </div>
+                """);
+        XML result = root.find(".start").parentUntil(".stopper");
+        assert result.size() == 4;
+
+        List<String> names = I.signal(result).map(XML::name).toList();
+        assert names.contains("p");
+        assert names.contains("section");
+        assert names.contains("figure");
+
+        assert names.stream().filter(name -> name.equals("p")).count() == 1;
+        assert names.stream().filter(name -> name.equals("section")).count() == 2;
+        assert names.stream().filter(name -> name.equals("figure")).count() == 1;
     }
 
     @Test

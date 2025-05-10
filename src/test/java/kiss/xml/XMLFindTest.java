@@ -157,6 +157,257 @@ public class XMLFindTest {
     }
 
     @Test
+    public void attributeSingleQuote() {
+        String text = "<m><e A='A'/><e A='B'/></m>";
+
+        // variants for white space
+        assert I.xml(text).find("[A='A']").size() == 1;
+        assert I.xml(text).find("[A = 'A']").size() == 1;
+        assert I.xml(text).find("[A       =    'A']").size() == 1;
+        assert I.xml(text).find("[ A = 'A' ]").size() == 1;
+    }
+
+    @Test
+    public void attributeWithoutQuote() {
+        String text = "<m><e A='A'/><e A='B'/></m>";
+
+        assert I.xml(text).find("[A=A]").size() == 1;
+    }
+
+    @Test
+    public void attributeExistence() {
+        String text = """
+                <root>
+                    <item name='one'/>
+                    <item id='two'/>
+                    <item/>
+                    <item name='four' class='test'/>
+                </root>
+                """;
+        XML xml = I.xml(text);
+        assert xml.find("[name]").size() == 2;
+        assert xml.find("[id]").size() == 1;
+        assert xml.find("[class]").size() == 1;
+        assert xml.find("[unknown]").size() == 0;
+    }
+
+    @Test
+    public void attributeEquals() {
+        String text = """
+                <root>
+                    <item name='one'/>
+                    <item name='two'/>
+                    <item name='one two'/>
+                    <item name='ONE'/>
+                </root>
+                """;
+        XML xml = I.xml(text);
+        assert xml.find("[name='one']").size() == 1;
+        assert xml.find("[name='two']").size() == 1;
+        assert xml.find("[name='one two']").size() == 1;
+        assert xml.find("[name='ONE']").size() == 1; // CSS attribute selectors are case-sensitive
+                                                     // by default for values unless specified
+        assert xml.find("[name='three']").size() == 0;
+    }
+
+    @Test
+    public void attributeContainsWord() { // [attr~=value]
+        String text = """
+                <root>
+                    <item class='foo bar baz'/>
+                    <item class='foo'/>
+                    <item class='bar foo'/>
+                    <item class='foobar'/>
+                    <item class='other foo-bar'/>
+                </root>
+                """;
+        XML xml = I.xml(text);
+        assert xml.find("[class~='foo']").size() == 3;
+        assert xml.find("[class~='bar']").size() == 2;
+        assert xml.find("[class~='baz']").size() == 1;
+        assert xml.find("[class~='foobar']").size() == 1; // This should match if foobar is a whole
+                                                          // word
+        assert xml.find("[class~='foo-bar']").size() == 1;
+        assert xml.find("[class~='other']").size() == 1;
+        assert xml.find("[class~='b']").size() == 0; // "b" is not a whole word
+    }
+
+    @Test
+    public void attributeStartsWithPrefixOrIsExactly() {
+        String text = """
+                <root>
+                    <item lang='en'/>
+                    <item lang='en-US'/>
+                    <item lang='en-GB'/>
+                    <item lang='fr-CA'/>
+                    <item lang='english'/>
+                </root>
+                """;
+        XML xml = I.xml(text);
+        assert xml.find("[lang|='en']").size() == 3;
+        assert xml.find("[lang|='fr']").size() == 1;
+        assert xml.find("[lang|='english']").size() == 1;
+        assert xml.find("[lang|='e']").size() == 0;
+    }
+
+    @Test
+    public void attributeStartsWith() { // [attr^=value]
+        String text = """
+                <root>
+                    <item href='http://example.com'/>
+                    <item href='https://example.org'/>
+                    <item href='http://another.com'/>
+                    <item href='test/http://example.com'/>
+                </root>
+                """;
+        XML xml = I.xml(text);
+        assert xml.find("[href^='http://']").size() == 2;
+        assert xml.find("[href^='https://']").size() == 1;
+        assert xml.find("[href^='example']").size() == 0;
+    }
+
+    @Test
+    public void attributeEndsWith() { // [attr$=value]
+        String text = """
+                <root>
+                    <item src='image.png'/>
+                    <item src='script.js'/>
+                    <item src='archive.png.zip'/>
+                    <item src='photo.jpeg'/>
+                </root>
+                """;
+        XML xml = I.xml(text);
+        assert xml.find("[src$='.png']").size() == 1;
+        assert xml.find("[src$='.js']").size() == 1;
+        assert xml.find("[src$='.zip']").size() == 1;
+        assert xml.find("[src$='jpeg']").size() == 1;
+        assert xml.find("[src$='photo']").size() == 0;
+    }
+
+    @Test
+    public void attributeContains() { // [attr*=value]
+        String text = """
+                <root>
+                    <item title='Chapter 1: Introduction'/>
+                    <item title='Chapter 2: Details'/>
+                    <item title='Summary of Chapters'/>
+                    <item title='chapter three'/>
+                </root>
+                """;
+        XML xml = I.xml(text);
+        assert xml.find("[title*='Chapter']").size() == 3; // Case sensitive match
+        assert xml.find("[title*='pter 2']").size() == 1;
+        assert xml.find("[title*='summary']").size() == 0; // Case sensitive
+        assert xml.find("[title*='chapter']").size() == 1; // Case sensitive match
+        assert xml.find("[title*='xyz']").size() == 0;
+    }
+
+    @Test
+    public void attributeNameWithHyphen() {
+        String text = "<m><e data-test='value'/><invalid/></m>";
+        assert I.xml(text).find("[data-test='value']").size() == 1;
+        assert I.xml(text).find("[data-test]").size() == 1;
+    }
+
+    @Test
+    public void attributeNameWithColon() { // XML namespaces are often represented with colons
+        String text = "<m xmlns:ns='test'><e ns:attr='value'/><invalid/></m>";
+        // Note: CSS selectors treat colons specially for namespace prefixes.
+        // For simple attribute name matching, this should work.
+        // However, for actual namespace handling, a different approach (or library support) might
+        // be needed.
+        // The current implementation likely treats "ns:attr" as a literal string.
+        assert I.xml(text).find("[ns:attr='value']").size() == 1;
+        assert I.xml(text).find("[ns:attr]").size() == 1;
+    }
+
+    @Test
+    public void attributeNameWithUnderscore() {
+        String text = "<m><e my_attr='value'/><invalid/></m>";
+        assert I.xml(text).find("[my_attr='value']").size() == 1;
+        assert I.xml(text).find("[my_attr]").size() == 1;
+    }
+
+    @Test
+    public void multipleAttributeSelectors() {
+        String text = """
+                <root>
+                    <item name='one' type='a'/>
+                    <item name='one' type='b'/>
+                    <item name='two' type='a'/>
+                    <item name='one'/>
+                </root>
+                """;
+
+        XML xml = I.xml(text);
+        assert xml.find("[name='one'][type='a']").size() == 1;
+        assert xml.find("[name='one'][type='b']").size() == 1;
+        assert xml.find("[name='one'][type='c']").size() == 0;
+        assert xml.find("[name][type]").size() == 3;
+    }
+
+    @Test
+    public void tagAndAttributeSelector() {
+        String text = """
+                <root>
+                    <item class='target'>Item 1</item>
+                    <div class='target'>Div 1</div>
+                    <item>Item 2</item>
+                    <item class='other'>Item 3</item>
+                </root>
+                """;
+        XML xml = I.xml(text);
+        assert xml.find("item[class='target']").size() == 1;
+        assert xml.find("div[class='target']").size() == 1;
+        assert xml.find("item[class='other']").size() == 1;
+        assert xml.find("span[class='target']").size() == 0;
+    }
+
+    @Test
+    public void caseSensitivityOfAttributeNamesAndValues() {
+        String text = """
+                <root>
+                    <item dataName='valueOne' data-value='ValueA'/>
+                    <item dataname='valueTwo' data-value='valuea'/>
+                </root>
+                """;
+        XML xml = I.xml(text);
+        // Attribute names in XML are case-sensitive.
+        // CSS attribute selectors are case-sensitive for names.
+        assert xml.find("[dataName]").size() == 1;
+        assert xml.find("[dataname]").size() == 1;
+        assert xml.find("[DATANAME]").size() == 0;
+
+        // Attribute values in CSS selectors are case-sensitive by default.
+        assert xml.find("[data-value='ValueA']").size() == 1;
+        assert xml.find("[data-value='valuea']").size() == 1;
+        assert xml.find("[data-value='VALUEA']").size() == 0;
+
+        // Test with different types of selectors
+        assert xml.find("[dataName^='value']").size() == 1;
+        assert xml.find("[dataName^='VALUE']").size() == 0;
+
+        assert xml.find("[data-value*='lueA']").size() == 1;
+        assert xml.find("[data-value*='luea']").size() == 1;
+        assert xml.find("[data-value*='LUEA']").size() == 0;
+    }
+
+    @Test
+    public void attributeValueWithSpaces() {
+        String text = """
+                <root>
+                    <item title='hello world'/>
+                    <item title='helloworld'/>
+                </root>
+                """;
+        XML xml = I.xml(text);
+        assert xml.find("[title='hello world']").size() == 1;
+        assert xml.find("[title*='hello w']").size() == 1;
+        assert xml.find("[title~='hello']").size() == 1;
+        assert xml.find("[title~='world']").size() == 1;
+    }
+
+    @Test
     public void attributeValueNS() {
         String text = "<m xmlns:p='p'><p:e p:A='A'/><e A='A'/><e p:A='B'/></m>";
 
@@ -206,6 +457,24 @@ public class XMLFindTest {
         assert I.xml(text).find("[A $=\"C\"]").size() == 2;
         assert I.xml(text).find("[A$= \"C\"]").size() == 2;
         assert I.xml(text).find("[A$=\"C\"]").size() == 2;
+    }
+
+    @Test
+    public void multiple() {
+        XML xml = I.xml("""
+                <root>
+                    <a/>
+                    <b/>
+                    <c/>
+                    <d class='value'/>
+                    <e class='value'/>
+                </root>
+                """);
+
+        assert xml.find("a, b").size() == 2;
+        assert xml.find("a, .value").size() == 3;
+        assert xml.find("a:first-child, .value").size() == 3;
+        assert xml.find("b:first-child, .value:last-child").size() == 1;
     }
 
     @Test

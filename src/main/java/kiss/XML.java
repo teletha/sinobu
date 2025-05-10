@@ -68,16 +68,13 @@ public class XML implements Iterable<XML>, Consumer<XML> {
                     + "|([&\"'<>])");
 
     /**
-     * <p>
      * Original pattern.
-     * </p>
-     * <pre>
-     * ([>~+\<,
-     * ]*)?((?:(?:\w+|\*)\|)?(?:[\w\-]+(?:\\.[\w\-]*)*|\*))?(?:#([\w\-\\]+))?((?:\.[\w\-\\]+)*)(?:\[\s?([\w:]+)(?:\s*([=~^$*|])?=\s*["]([^"]*)["])?\s?\])?(?::([\w-]+)(?:\((odd|even|(\d*)(n)?(?:\+(\d+))?|(?:.*))\))?)?
-     * </pre>
+     * 
+     * ([>~+<,
+     * ]*)?((?:(?:\w+|\*)\|)?(?:[\w\-]+(?:\.[\w\-]*)*|\*))?(?:#([\w\-\\]+))?((?:\.[\w\-\\]+)*)(?:\[\s?([\w:]+)(?:\s*([=~^$*|])?=\s*(?:(['\"])(.*?)\7|([^\]\s]+)))?\s?\])?(?::([\w-]+)(?:\((odd|even|(\d*)(n)?(?:\+(\d+))?|.*)\))?)?
      */
     private static final Pattern SELECTOR = Pattern
-            .compile("([>~+<ǃ, ]*)?((?:(?:\\w+|\\*)\\|)?(?:[\\w\\-]+(?:\\\\.[\\w\\-]*)*|\\*))?(?:#([\\w\\-\\\\]+))?((?:\\.[\\w\\-\\\\]+)*)(?:\\[\\s?([\\w:]+)(?:\\s*([=~^$*|])?=\\s*\"([^\"]*)\")?\\s?])?(?::([\\w-]+)(?:\\((odd|even|(\\d*)(n)?(?:\\+(\\d+))?|.*)\\))?)?");
+            .compile("([>~+<, ]*)?((?:(?:\\w+|\\*)\\|)?(?:[\\w\\-]+(?:\\\\.[\\w\\-]*)*|\\*))?(?:#([\\w\\-\\\\]+))?((?:\\.[\\w\\-\\\\]+)*)(?:\\[\\s?([\\w\\-_:]+)(?:\\s*([=~^$*|])?=\\s*(?:(['\"])(.*?)\\7|([^\\]\\s]+)))?\\s?\\])?(?::([\\w-]+)(?:\\((odd|even|(\\d*)(n)?(?:\\+(\\d+))?|.*)\\))?)?");
 
     /** The cache for compiled selectors. */
     private static final Map<String, XPathExpression> selectors = new ConcurrentHashMap();
@@ -228,7 +225,9 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      * <p>
      * Remove all child nodes of the set of matched elements from the DOM.
      * </p>
-     * <p>This method does not remove the matched elements themselves, only their children.</p>
+     * <p>
+     * This method does not remove the matched elements themselves, only their children.
+     * </p>
      *
      * @return This {@code XML} object, allowing for chained API calls.
      */
@@ -758,7 +757,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      */
     private XML until(String selector, UnaryOperator<Node> traverse) {
         CopyOnWriteArrayList result = new CopyOnWriteArrayList();
-        XPathExpression x = compile("ǃ".concat(selector));
+        XPathExpression x = compile(selector, "self::");
 
         for (Node node : nodes) {
             while (true) {
@@ -794,7 +793,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      *             {@link XPathExpressionException}.
      */
     public XML find(String selector) {
-        XPathExpression xpath = compile(selector);
+        XPathExpression xpath = compile(selector, "descendant::");
         CopyOnWriteArrayList<Node> result = new CopyOnWriteArrayList();
 
         try {
@@ -866,7 +865,9 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      * Write the XML representation of the matched elements to the specified {@link Appendable}
      * (e.g., {@code StringBuilder}, {@code Writer}) with default formatting (tab indentation).
      * </p>
-     * <p>If multiple elements are matched, they are serialized sequentially.</p>
+     * <p>
+     * If multiple elements are matched, they are serialized sequentially.
+     * </p>
      *
      * @param output An {@link Appendable} to write the XML to.
      */
@@ -1088,21 +1089,20 @@ public class XML implements Iterable<XML>, Consumer<XML> {
     }
 
     /**
-     * <p>
      * Compile and cache the specified selector.
-     * </p>
      *
      * @param selector A css selector.
      * @return A compiled xpath expression.
      */
-    private static XPathExpression compile(String selector) {
+    private static XPathExpression compile(String selector, String axis) {
         // check cache
         XPathExpression compiled = selectors.get(selector);
 
         if (compiled == null) {
             try {
                 // compile actually
-                compiled = I.xpath.compile(convert(selector));
+                System.out.println(convert(selector, axis) + "  @" + selector);
+                compiled = I.xpath.compile(convert(selector, axis));
 
                 // cache it
                 selectors.put(selector, compiled);
@@ -1126,7 +1126,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      * @param selector A CSS selector string.
      * @return An XPath expression string.
      */
-    private static String convert(String selector) {
+    private static String convert(String selector, String axis) {
         if (selector.startsWith("xpath:")) return selector.substring(6);
 
         StringBuilder xpath = new StringBuilder();
@@ -1144,7 +1144,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
                 // no combinator
                 if (contextual) {
                     // first selector
-                    xpath.append("descendant::");
+                    xpath.append(axis);
                 } else {
                     break; // finish parsing
                 }
@@ -1175,11 +1175,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
                         break;
 
                     case ',': // selector separator
-                        xpath.append("|descendant::");
-                        break;
-
-                    case 'ǃ': // self (EXTENSION - this is NOT exclamation mark ǃ unicode '01c3')
-                        xpath.append("/self::");
+                        xpath.append("|".concat(axis));
                         break;
                     }
 
@@ -1228,7 +1224,8 @@ public class XML implements Iterable<XML>, Consumer<XML> {
             match = matcher.group(5);
 
             if (match != null) {
-                String value = matcher.group(7);
+                String value = matcher.group(8);
+                if (value == null) value = matcher.group(9);
 
                 if (value == null) {
                     // [att]
@@ -1293,9 +1290,21 @@ public class XML implements Iterable<XML>, Consumer<XML> {
                                     .append("']");
                             break;
 
-                        case '|':// [att|=val]//// Represents an element with the att attribute, its
-                                 // value either// being exactly "val" or beginning with "val"
-                                 // immediately followed// by "-" (U+002D).
+                        case '|':
+                            // [att|=val]
+                            //
+                            // Represents an element with the att attribute, its value either
+                            // being exactly "val" or beginning with "val" immediately followed by
+                            // "-" (U+002D).
+                            xpath.append("[@")
+                                    .append(match)
+                                    .append("='")
+                                    .append(value)
+                                    .append("' or starts-with(@")
+                                    .append(match)
+                                    .append(", '")
+                                    .append(value)
+                                    .append("-')]");
                             break;
                         }
                     }
@@ -1305,7 +1314,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
             // =================================================
             // Structural Pseudo Classes Selector
             // =================================================
-            match = matcher.group(8);
+            match = matcher.group(10);
 
             if (match != null) {
                 switch (match.hashCode()) {
@@ -1330,7 +1339,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
                     }
                     xpath.append('(');
 
-                    String sub = convert(matcher.group(9));
+                    String sub = convert(matcher.group(11), axis);
 
                     if (sub.startsWith("descendant::")) {
                         sub = sub.replace("descendant::", "descendant-or-self::");
@@ -1347,7 +1356,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
                     break;
 
                 case -567445985: // contains
-                    xpath.append("[contains(text(),'").append(matcher.group(9)).append("')]");
+                    xpath.append("[contains(text(),'").append(matcher.group(11)).append("')]");
                     break;
 
                 case 835834661: // last-child
@@ -1361,15 +1370,15 @@ public class XML implements Iterable<XML>, Consumer<XML> {
                 case -1629748624: // nth-last-child
                 case -897532411: // nth-of-type
                 case -872629820: // nth-last-of-type
-                    String coefficient = matcher.group(10);
-                    String remainder = matcher.group(9);
+                    String coefficient = matcher.group(12);
+                    String remainder = matcher.group(11);
 
                     if (remainder == null) {
                         // coefficient = null; // coefficient is already null
                         remainder = "1";
-                    } else if (matcher.group(11) == null) {
+                    } else if (matcher.group(13) == null) {
                         coefficient = null;
-                        // remainder = matcher.group(9); // remainder is already assigned
+                        // remainder = matcher.group(11); // remainder is already assigned
 
                         if (remainder.equals("even")) {
                             coefficient = "2";
@@ -1379,8 +1388,8 @@ public class XML implements Iterable<XML>, Consumer<XML> {
                             remainder = "1";
                         }
                     } else {
-                        // coefficient = matcher.group(10); // coefficient is already assigned
-                        remainder = matcher.group(12);
+                        // coefficient = matcher.group(12); // coefficient is already assigned
+                        remainder = matcher.group(14);
 
                         if (remainder == null) {
                             remainder = "0";
