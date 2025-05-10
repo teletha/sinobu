@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.10.0](https://github.com/teletha/sinobu/compare/4.9.0...4.10.0) (2025-05-10)
+
+
+### Features
+
+* add XML#nextUntil, #prevUntil and #parentUntil ([e2165f0](https://github.com/teletha/sinobu/commit/e2165f06443123e0d50c45d624c3f292d517429c))
+* XML supports css selector [att$=val] ([72cf76f](https://github.com/teletha/sinobu/commit/72cf76f42b3a7f293e0627de8ad1f4f8373a358c))
+
 ## [4.9.0](https://github.com/teletha/sinobu/compare/4.8.0...4.9.0) (2025-04-24)
 
 
