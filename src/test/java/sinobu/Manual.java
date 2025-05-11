@@ -951,7 +951,7 @@ public class Manual {
          * {@link XMLFindTest#type() @}
          * {@link XMLFindTest#attribute() @}
          * {@link XMLFindTest#clazz() @}
-         * {@link XMLFindTest#child() @}
+         * {@link XMLFindTest#child1() @}
          */
         public class CSS_Selector {
 

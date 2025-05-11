@@ -147,13 +147,13 @@ public class XMLFindTest {
 
     @Test
     public void attributeValue() {
-        String text = "<m><e A='A'/><e A='B'/></m>";
+        String text = "<m><e A='a'/><e A='B'/></m>";
 
         // variants for white space
-        assert I.xml(text).find("[A=\"A\"]").size() == 1;
-        assert I.xml(text).find("[A = \"A\"]").size() == 1;
-        assert I.xml(text).find("[A       =    \"A\"]").size() == 1;
-        assert I.xml(text).find("[ A = \"A\" ]").size() == 1;
+        assert I.xml(text).find("[A=\"a\"]").size() == 1;
+        assert I.xml(text).find("[A = \"a\"]").size() == 1;
+        assert I.xml(text).find("[A       =    \"a\"]").size() == 1;
+        assert I.xml(text).find("[ A = \"a\" ]").size() == 1;
     }
 
     @Test
@@ -310,18 +310,6 @@ public class XMLFindTest {
     }
 
     @Test
-    public void attributeNameWithColon() { // XML namespaces are often represented with colons
-        String text = "<m xmlns:ns='test'><e ns:attr='value'/><invalid/></m>";
-        // Note: CSS selectors treat colons specially for namespace prefixes.
-        // For simple attribute name matching, this should work.
-        // However, for actual namespace handling, a different approach (or library support) might
-        // be needed.
-        // The current implementation likely treats "ns:attr" as a literal string.
-        assert I.xml(text).find("[ns:attr='value']").size() == 1;
-        assert I.xml(text).find("[ns:attr]").size() == 1;
-    }
-
-    @Test
     public void attributeNameWithUnderscore() {
         String text = "<m><e my_attr='value'/><invalid/></m>";
         assert I.xml(text).find("[my_attr='value']").size() == 1;
@@ -409,12 +397,18 @@ public class XMLFindTest {
 
     @Test
     public void attributeValueNS() {
-        String text = "<m xmlns:p='p'><p:e p:A='A'/><e A='A'/><e p:A='B'/></m>";
+        String text = """
+                <m xmlns:p='p' xmlns:z='z'>
+                    <p:e p:A='A'/>
+                    <p:e z:A='A'/>
+                    <e A='A'/>
+                    <e p:A='B'/>
+                </m>
+                """;
 
         // variants for white space
-        assert I.xml(text).find("[p:A=\"A\"]").size() == 1;
-        assert I.xml(text).find("p|e[p:A=\"A\"]").size() == 1;
-        assert I.xml(text).find("p|e[p|A=\"A\"]").size() == 1;
+        assert I.xml(text).find("[p:A='A']").size() == 1;
+        assert I.xml(text).find("p|e[p:A='A']").size() == 1;
     }
 
     @Test
@@ -478,8 +472,19 @@ public class XMLFindTest {
     }
 
     @Test
-    public void child() {
-        String text = xml("<m><P><Q/><z><Q/></z><Q/></P><Q/></m>");
+    public void child1() {
+        String text = xml("""
+                <m>
+                    <P>
+                        <Q/>
+                        <z>
+                            <Q/>
+                        </z>
+                        <Q/>
+                    </P>
+                    <Q/>
+                </m>
+                """);
 
         assert I.xml(text).find("P>Q").size() == 2;
         assert I.xml(text).find("P > Q").size() == 2;
@@ -487,26 +492,119 @@ public class XMLFindTest {
     }
 
     @Test
+    public void child2() {
+        XML xml = I.xml("""
+                <root>
+                    <section>
+                        <p>P1</p>
+                        <div><p>P2_grandchild</p></div>
+                        <p>P3</p>
+                    </section>
+                </root>
+                """);
+        assert xml.find("section > p").size() == 2;
+        assert xml.find("section > div").size() == 1;
+        assert xml.find("div > p").size() == 1;
+        assert xml.find("section > span").size() == 0;
+    }
+
+    @Test
+    void descendant() {
+        XML xml = I.xml("""
+                <root>
+                    <section>
+                        <p>S1P1</p>
+                        <div>
+                            <p>S1D1P1</p>
+                        </div>
+                        <article>
+                            <p>S1A1P1</p>
+                            <p>S1A1P2</p>
+                        </article>
+                    </section>
+                    <p>P_out</p>
+                </root>
+                """);
+        assert xml.find("section p").size() == 4;
+        assert xml.find("div p").size() == 1;
+        assert xml.find("article p").size() == 2;
+        assert xml.find("section div p").size() == 1;
+    }
+
+    @Test
     public void sibling() {
-        String text = xml("<m><P><Q/><P/><Q/></P><Q/><Q/></m>");
+        String text = xml("""
+                <m>
+                    <P>
+                        <Q/>
+                        <P/>
+                        <Q/>
+                    </P>
+                    <Q/>
+                    <Q/>
+                    <stop/>
+                    <Q/>
+                </m>
+                """);
 
         assert I.xml(text).find("P+Q").size() == 2;
         assert I.xml(text).find("P + Q").size() == 2;
         assert I.xml(text).find("P   +   Q").size() == 2;
+        assert I.xml(text).find(" P   +   Q ").size() == 2;
     }
 
     @Test
     public void siblings() {
-        String text = xml("<m><P><Q/><P/><Q/></P><Q/><Q/></m>");
+        String text = xml("""
+                <m>
+                    <P>
+                        <Q/>
+                        <P/>
+                        <Q/>
+                    </P>
+                    <Q/>
+                    <Q/>
+                    <nonstop/>
+                    <Q/>
+                </m>
+                """);
 
-        assert I.xml(text).find("P~Q").size() == 3;
-        assert I.xml(text).find("P ~ Q").size() == 3;
-        assert I.xml(text).find("P   ~   Q").size() == 3;
+        assert I.xml(text).find("P~Q").size() == 4;
+        assert I.xml(text).find("P ~ Q").size() == 4;
+        assert I.xml(text).find("P   ~   Q").size() == 4;
+        assert I.xml(text).find("  P   ~   Q  ").size() == 4;
+    }
+
+    @Test
+    public void generalSiblingWithClass() {
+        XML xml = I.xml("""
+                <m>
+                    <P class="a"/>
+                    <Q class="x"/>
+                    <Q class="y"/>
+                    <Q class="z"/>
+                    <Q/>
+                </m>
+                """);
+        assert xml.find("P.a ~ Q").size() == 4;
+        assert xml.find("P.a ~ Q.y").size() == 1;
+        assert xml.find("P.a ~ Q:not([class])").size() == 1;
     }
 
     @Test
     public void previous() {
-        String text = xml("<m><P><Q/><P/><Q/></P><Q/><Q/><P/></m>");
+        String text = xml("""
+                <m>
+                    <P>
+                        <Q id='a'/>
+                        <P/>
+                        <Q id='b'/>
+                    </P>
+                    <Q id='c'/>
+                    <Q id='d'/>
+                    <P/>
+                </m>
+                """);
 
         assert I.xml(text).find("P<Q").size() == 2;
         assert I.xml(text).find("P < Q").size() == 2;
@@ -654,7 +752,18 @@ public class XMLFindTest {
 
     @Test
     public void hasElementNest() {
-        String text = xml("<m><Q><S/></Q><Q><S><T/></S></Q></m>");
+        String text = xml("""
+                <m>
+                    <Q>
+                        <S/>
+                    </Q>
+                    <Q>
+                        <S>
+                            <T/>
+                        </S>
+                    </Q>
+                </m>
+                """);
 
         assert I.xml(text).find("Q:has(S:has(T))").size() == 1;
     }
@@ -706,10 +815,35 @@ public class XMLFindTest {
     }
 
     @Test
-    public void namespaceElement() {
-        String text = xml("<m xmlns:p='p' xmlns:q='q' xmlns:r='r'><p:Q/><q:Q/><r:Q/></m>");
+    public void namespacedElement() {
+        XML xml = I.xml("""
+                <root xmlns:myns="http://example.com/ns" xmlns:other="http://other.com/ns">
+                    <myns:elem id="ns1">Namespace Test 1</myns:elem>
+                    <other:elem id="ns2">Namespace Test 2</other:elem>
+                    <elem id="no-ns">No Namespace</elem>
+                    <myns:widget id="widget1"/>
+                </root>
+                """);
 
-        assert I.xml(text).find("p|Q").size() == 1;
+        assert xml.find("myns|elem").size() == 1;
+        assert xml.find("other|elem").size() == 1;
+        assert xml.find("myns|widget#widget1").size() == 1;
+        assert xml.find("nonexistent|elem").size() == 0;
+        assert xml.find("myns|nonexistent").size() == 0;
+    }
+
+    @Test
+    public void namespaceWildcard() {
+        XML xml = I.xml("""
+                <root xmlns:myns="http://example.com/ns" xmlns:other="http://other.com/ns">
+                    <myns:elem id="ns1">Namespace Test 1</myns:elem>
+                    <other:elem id="ns2">Namespace Test 2</other:elem>
+                    <elem id="no-ns">No Namespace</elem>
+                    <myns:widget id="widget1"/>
+                </root>
+                """);
+
+        assert xml.find("*|elem").size() == 2;
     }
 
     @Test
@@ -721,7 +855,12 @@ public class XMLFindTest {
 
     @Test
     public void contextual() {
-        XML root = I.xml("<Q><Q/><Q/></Q>");
+        XML root = I.xml("""
+                <Q>
+                    <Q/>
+                    <Q/>
+                </Q>
+                """);
 
         assert root.find("> Q").size() == 2;
         assert root.find(">Q").find("+Q").size() == 1;

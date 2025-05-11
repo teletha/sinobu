@@ -1101,8 +1101,8 @@ public class XML implements Iterable<XML>, Consumer<XML> {
         if (compiled == null) {
             try {
                 // compile actually
-                System.out.println(convert(selector, axis) + "  @" + selector);
-                compiled = I.xpath.compile(convert(selector, axis));
+                System.out.println(XPATH.convert(selector, axis) + "  @" + selector);
+                compiled = I.xpath.compile(XPATH.convert(selector, axis));
 
                 // cache it
                 selectors.put(selector, compiled);
