@@ -67,14 +67,22 @@ public class XML implements Iterable<XML>, Consumer<XML> {
                     // Group 2: Match raw characters that need escaping
                     + "|([&\"'<>])");
 
-    /**
-     * Original pattern.
-     * 
-     * ([>~+<,
-     * ]*)?((?:(?:\w+|\*)\|)?(?:[\w\-]+(?:\.[\w\-]*)*|\*))?(?:#([\w\-\\]+))?((?:\.[\w\-\\]+)*)(?:\[\s?([\w:]+)(?:\s*([=~^$*|])?=\s*(?:(['\"])(.*?)\7|([^\]\s]+)))?\s?\])?(?::([\w-]+)(?:\((odd|even|(\d*)(n)?(?:\+(\d+))?|.*)\))?)?
-     */
-    private static final Pattern SELECTOR = Pattern
-            .compile("([>~+<, ]*)?((?:(?:\\w+|\\*)\\|)?(?:[\\w\\-]+(?:\\\\.[\\w\\-]*)*|\\*))?(?:#([\\w\\-\\\\]+))?((?:\\.[\\w\\-\\\\]+)*)(?:\\[\\s?([\\w\\-_:]+)(?:\\s*([=~^$*|])?=\\s*(?:(['\"])(.*?)\\7|([^\\]\\s]+)))?\\s?\\])?(?::([\\w-]+)(?:\\((odd|even|(\\d*)(n)?(?:\\+(\\d+))?|.*)\\))?)?");
+    private static final Pattern SELECTOR = Pattern.compile(""
+            // Group 1: Combinator
+            + "\\s*([>+~<\\s,])\\s*"
+            // Group 2: Tag name (tag, or *, namespace is not supported)
+            + "|((?:[\\w\\-]+(?:\\\\.[\\w\\-]*)*|\\*))"
+            // Group 3: ID
+            + "|#((?:[\\w\\-]|\\\\.)+)"
+            // Group 4: Class
+            + "|\\.((?:[\\w\\-]|\\\\.)+)"
+            // Group 5: Attribute selector (namespace is not supported)
+            // G5:attrName, G6:op, G7:quote, G8:q_val, G9:unq_val. Backref \\7 is correct.
+            + "|\\[\\s?([\\w\\-_]+)(?:\\s*([=~^$*|])?=\\s*(?:(['\"])(.*?)\\7|([^\\]\\s]+)))?\\s*\\]"
+            // Group 10: Pseudo-class part
+            // G10: Pseudo-class name (e.g., "nth-child", "not")
+            // G11: Pseudo-class argument (e.g., "2n+1", "p.foo", null if no arg)
+            + "|:([\\w-]+)(?:\\(((?:[^()]+|\\((?:[^()]+)*\\))*?)\\))?");
 
     /** The cache for compiled selectors. */
     private static final Map<String, XPathExpression> selectors = new ConcurrentHashMap();
@@ -1101,8 +1109,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
         if (compiled == null) {
             try {
                 // compile actually
-                System.out.println(XPATH.convert(selector, axis) + "  @" + selector);
-                compiled = I.xpath.compile(XPATH.convert(selector, axis));
+                compiled = I.xpath.compile(convert(selector, axis));
 
                 // cache it
                 selectors.put(selector, compiled);
@@ -1129,53 +1136,50 @@ public class XML implements Iterable<XML>, Consumer<XML> {
     private static String convert(String selector, String axis) {
         if (selector.startsWith("xpath:")) return selector.substring(6);
 
+        String current = null;
         StringBuilder xpath = new StringBuilder();
         Matcher matcher = SELECTOR.matcher(selector.trim());
 
         while (matcher.find()) {
+            boolean contextual = matcher.start() == 0;
+
             // =================================================
             // Combinators
             // =================================================
-            String suffix = null;
             String match = matcher.group(1);
-            boolean contextual = matcher.start() == 0;
-
-            if (match.length() == 0) {
-                // no combinator
+            if (match == null) {
                 if (contextual) {
-                    // first selector
-                    xpath.append(axis);
-                } else {
-                    break; // finish parsing
+                    xpath.append(axis).append('*');
                 }
             } else {
                 match = match.trim();
 
                 if (match.length() == 0) {
                     // Descendant combinator
-                    xpath.append("//");
+                    xpath.append("//*");
                 } else {
                     switch (match.charAt(0)) {
                     case '>': // Child combinator
-                        xpath.append('/');
+                        xpath.append("/*");
                         break;
 
                     case '~': // General sibling combinator
-                        xpath.append("/following-sibling::");
+                        xpath.append("/following-sibling::*");
                         break;
 
                     case '+': // Adjacent sibling combinator
-                        xpath.append("/following-sibling::");
-                        suffix = "[1]";
+                        xpath.append("/following-sibling::*[1]");
                         break;
 
                     case '<': // Adjacent previous sibling combinator (EXTENSION)
-                        xpath.append("/preceding-sibling::");
-                        suffix = "[1]";
+                        xpath.append("/preceding-sibling::*[1]");
                         break;
 
                     case ',': // selector separator
-                        xpath.append("|".concat(axis));
+                        xpath.append('|').append(axis).append('*');
+
+                        // reset processing context
+                        current = null;
                         break;
                     }
 
@@ -1183,47 +1187,48 @@ public class XML implements Iterable<XML>, Consumer<XML> {
                         xpath.delete(0, 1);
                     }
                 }
+                continue;
             }
 
             // =================================================
             // Type (Universal) Selector
             // =================================================
             match = matcher.group(2);
-
-            if (match == null || match.equals("*")) {
-                xpath.append("*");
-            } else {
-                xpath.append("*[name()='").append(match.replace('|', ':').replaceAll("\\\\(.)", "$1")).append("']");
+            if (match != null) {
+                if (match.equals("*")) {
+                    current = "*";
+                } else {
+                    xpath.append("[local-name()='").append(current = match.replaceAll("\\\\(.)", "$1")).append("']");
+                }
+                continue;
             }
 
             // =================================================
             // ID Selector
             // =================================================
             match = matcher.group(3);
-
             if (match != null) {
                 xpath.append("[@id='").append(match.replaceAll("\\\\(.)", "$1")).append("']");
+                continue;
             }
 
             // =================================================
             // Class Selector
             // =================================================
             match = matcher.group(4);
-
-            if (match != null && match.length() != 0) {
-                for (String className : match.substring(1).split("\\.")) {
-                    xpath.append("[contains(concat(' ',normalize-space(@class),' '),' ")
-                            .append(className.replaceAll("\\\\(.)", "$1"))
-                            .append(" ')]");
-                }
+            if (match != null) {
+                xpath.append("[contains(concat(' ',normalize-space(@class),' '),' ")
+                        .append(match.replaceAll("\\\\(.)", "$1"))
+                        .append(" ')]");
+                continue;
             }
 
             // =================================================
             // Attribute Selector
             // =================================================
             match = matcher.group(5);
-
             if (match != null) {
+                match = "@*[local-name()='".concat(match).concat("']");
                 String value = matcher.group(8);
                 if (value == null) value = matcher.group(9);
 
@@ -1232,7 +1237,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
                     //
                     // Represents an element with the att attribute, whatever the value
                     // of the attribute.
-                    xpath.append("[@").append(match).append("]");
+                    xpath.append('[').append(match).append(']');
                 } else {
                     String type = matcher.group(6);
 
@@ -1241,7 +1246,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
                         //
                         // Represents an element with the att attribute whose value
                         // is exactly "val".
-                        xpath.append("[@").append(match).append("='").append(value).append("']");
+                        xpath.append('[').append(match).append("='").append(value).append("']");
                     } else {
                         switch (type.charAt(0)) {
                         case '~':
@@ -1252,7 +1257,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
                             // "val". If "val" contains whitespace, it will never represent
                             // anything (since the words are separated by spaces). Also, if "val"
                             // is the empty string, it will never represent anything.
-                            xpath.append("[contains(concat(' ',@").append(match).append(",' '),' ").append(value).append(" ')]");
+                            xpath.append("[contains(concat(' ',").append(match).append(",' '),' ").append(value).append(" ')]");
                             break;
 
                         case '*':
@@ -1261,7 +1266,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
                             // Represents an element with the att attribute whose value contains
                             // at least one instance of the substring "val". If "val" is the
                             // empty string then the selector does not represent anything.
-                            xpath.append("[contains(@").append(match).append(",'").append(value).append("')]");
+                            xpath.append("[contains(").append(match).append(",'").append(value).append("')]");
                             break;
 
                         case '^':
@@ -1270,7 +1275,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
                             // Represents an element with the att attribute whose value begins
                             // with the prefix "val". If "val" is the empty string then the
                             // selector does not represent anything.
-                            xpath.append("[starts-with(@").append(match).append(",'").append(value).append("')]");
+                            xpath.append("[starts-with(").append(match).append(",'").append(value).append("')]");
                             break;
 
                         case '$':
@@ -1279,13 +1284,13 @@ public class XML implements Iterable<XML>, Consumer<XML> {
                             // Represents an element with the att attribute whose value ends
                             // with the suffix "val". If "val" is the empty string then the
                             // selector does not represent anything.
-                            xpath.append("[substring(@")
+                            xpath.append("[substring(")
                                     .append(match)
-                                    .append(", string-length(@")
+                                    .append(",string-length(")
                                     .append(match)
-                                    .append(") - string-length('")
+                                    .append(")-string-length('")
                                     .append(value)
-                                    .append("') + 1) = '")
+                                    .append("')+1)='")
                                     .append(value)
                                     .append("']");
                             break;
@@ -1296,34 +1301,36 @@ public class XML implements Iterable<XML>, Consumer<XML> {
                             // Represents an element with the att attribute, its value either
                             // being exactly "val" or beginning with "val" immediately followed by
                             // "-" (U+002D).
-                            xpath.append("[@")
+                            xpath.append('[')
                                     .append(match)
                                     .append("='")
                                     .append(value)
-                                    .append("' or starts-with(@")
+                                    .append("' or starts-with(")
                                     .append(match)
-                                    .append(", '")
+                                    .append(",'")
                                     .append(value)
                                     .append("-')]");
                             break;
                         }
                     }
                 }
+                continue;
             }
 
             // =================================================
             // Structural Pseudo Classes Selector
             // =================================================
             match = matcher.group(10);
-
             if (match != null) {
+                String arg = matcher.group(11);
+
                 switch (match.hashCode()) {
                 case -947996741: // only-child
                     xpath.append("[count(parent::*/*)=1]");
                     break;
 
                 case 1455900751: // only-of-type
-                    xpath.append("[count(parent::*/").append(matcher.group(2)).append(")=1]");
+                    xpath.append("[count(parent::*/").append(current).append(")=1]");
                     break;
 
                 case 96634189: // empty
@@ -1333,18 +1340,10 @@ public class XML implements Iterable<XML>, Consumer<XML> {
                 case 109267: // not
                 case 103066: // has
                     xpath.append('[');
-
                     if (match.charAt(0) == 'n') {
                         xpath.append("not");
                     }
-                    xpath.append('(');
-
-                    String sub = convert(matcher.group(11), axis);
-
-                    if (sub.startsWith("descendant::")) {
-                        sub = sub.replace("descendant::", "descendant-or-self::");
-                    }
-                    xpath.append(sub).append(")]");
+                    xpath.append('(').append(convert(arg, axis).replace("descendant::", "descendant-or-self::")).append(")]");
                     break;
 
                 case -995424086: // parent
@@ -1356,78 +1355,65 @@ public class XML implements Iterable<XML>, Consumer<XML> {
                     break;
 
                 case -567445985: // contains
-                    xpath.append("[contains(text(),'").append(matcher.group(11)).append("')]");
-                    break;
-
-                case 835834661: // last-child
-                    xpath.append("[not(following-sibling::*)]");
+                    xpath.append("[contains(text(),'").append(arg).append("')]");
                     break;
 
                 case -2136991809: // first-child
+                case 835834661: // last-child
                 case 1292941139: // first-of-type
                 case 2025926969: // last-of-type
                 case -1754914063: // nth-child
                 case -1629748624: // nth-last-child
                 case -897532411: // nth-of-type
                 case -872629820: // nth-last-of-type
-                    String coefficient = matcher.group(12);
-                    String remainder = matcher.group(11);
+                    String coefficient = "0";
+                    String remainder = "0";
+                    if (match.startsWith("nth")) {
+                        int index = arg.indexOf('n');
 
-                    if (remainder == null) {
-                        // coefficient = null; // coefficient is already null
-                        remainder = "1";
-                    } else if (matcher.group(13) == null) {
-                        coefficient = null;
-                        // remainder = matcher.group(11); // remainder is already assigned
-
-                        if (remainder.equals("even")) {
+                        if (arg.equals("even")) {
                             coefficient = "2";
-                            remainder = "0";
-                        } else if (remainder.equals("odd")) {
+                            // remainder = 0;
+                        } else if (arg.equals("odd")) {
                             coefficient = "2";
                             remainder = "1";
+                        } else if (index == -1) {
+                            remainder = arg;
+                        } else {
+                            coefficient = arg.substring(0, index).trim();
+                            coefficient = coefficient.isEmpty() ? "1" : coefficient.equals("-") ? "-1" : coefficient;
+
+                            String after = arg.substring(index + 1).trim().replace("+", "");
+                            if (!after.isEmpty()) remainder = after;
                         }
                     } else {
-                        // coefficient = matcher.group(12); // coefficient is already assigned
-                        remainder = matcher.group(14);
-
-                        if (remainder == null) {
-                            remainder = "0";
-                        }
+                        remainder = "1";
                     }
 
-                    xpath.append("[(count(");
+                    // construct xpath
+                    String type = match.contains("type") ? current : "*";
+                    String expr = "(count(" + (match.contains("last") ? "following" : "preceding") + "-sibling::" + type + ")+1)";
 
-                    if (match.contains("last")) {
-                        xpath.append("following");
+                    xpath.append('[');
+                    if (coefficient.equals("0")) {
+                        // remainder only
+                        xpath.append(expr).append("=").append(remainder);
                     } else {
-                        xpath.append("preceding");
-                    }
-
-                    xpath.append("-sibling::");
-
-                    if (match.endsWith("child")) {
-                        xpath.append("*");
-                    } else {
-                        xpath.append(matcher.group(2));
-                    }
-                    xpath.append(")+1)");
-
-                    if (coefficient != null) {
-                        if (coefficient.length() == 0) {
-                            coefficient = "1";
+                        String term = "(" + expr + "-" + remainder + ")";
+                        if (coefficient.startsWith("-")) {
+                            coefficient = coefficient.replace("-", "");
+                            term = "-".concat(term);
                         }
-                        xpath.append(" mod ").append(coefficient);
+                        xpath.append('(').append(term).append(" mod ").append(coefficient).append("=0)and(");
+                        xpath.append(term).append(" div ").append(coefficient).append(">=0)");
                     }
-                    xpath.append('=').append(remainder).append("]");
+                    xpath.append(']');
                     break;
                 }
-            }
-
-            if (suffix != null) {
-                xpath.append(suffix);
+                continue;
             }
         }
+
         return xpath.toString();
     }
 

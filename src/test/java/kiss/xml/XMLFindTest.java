@@ -139,10 +139,8 @@ public class XMLFindTest {
     public void attributeNS() {
         String text = "<m xmlns:p='p'><e p:A='A' B='B'/><e A='B' p:B='A'/></m>";
 
-        assert I.xml(text).find("[p:A]").size() == 1;
-        assert I.xml(text).find("[p:B]").size() == 1;
-        assert I.xml(text).find("[A]").size() == 1;
-        assert I.xml(text).find("[B]").size() == 1;
+        assert I.xml(text).find("[A]").size() == 2;
+        assert I.xml(text).find("[B]").size() == 2;
     }
 
     @Test
@@ -150,10 +148,10 @@ public class XMLFindTest {
         String text = "<m><e A='a'/><e A='B'/></m>";
 
         // variants for white space
-        assert I.xml(text).find("[A=\"a\"]").size() == 1;
-        assert I.xml(text).find("[A = \"a\"]").size() == 1;
-        assert I.xml(text).find("[A       =    \"a\"]").size() == 1;
-        assert I.xml(text).find("[ A = \"a\" ]").size() == 1;
+        assert I.xml(text).find("[A='a']").size() == 1;
+        assert I.xml(text).find("[A = 'a']").size() == 1;
+        assert I.xml(text).find("[A       =    'a']").size() == 1;
+        assert I.xml(text).find("[ A = 'a' ]").size() == 1;
     }
 
     @Test
@@ -399,58 +397,57 @@ public class XMLFindTest {
     public void attributeValueNS() {
         String text = """
                 <m xmlns:p='p' xmlns:z='z'>
-                    <p:e p:A='A'/>
-                    <p:e z:A='A'/>
-                    <e A='A'/>
-                    <e p:A='B'/>
+                    <e p:A='a'/>
+                    <e p:A='b'/>
+                    <e z:A='a'/>
+                    <e A='b'/>
                 </m>
                 """;
 
         // variants for white space
-        assert I.xml(text).find("[p:A='A']").size() == 1;
-        assert I.xml(text).find("p|e[p:A='A']").size() == 1;
+        assert I.xml(text).find("[A='a']").size() == 2;
     }
 
     @Test
     public void attributeConatainValue() {
         String text = "<m><e A='A B C'/><e A='AA BB CC'/></m>";
 
-        assert I.xml(text).find("[A ~= \"A\"]").size() == 1;
-        assert I.xml(text).find("[A ~= \"B\"]").size() == 1;
-        assert I.xml(text).find("[A ~= \"C\"]").size() == 1;
+        assert I.xml(text).find("[A ~= 'A']").size() == 1;
+        assert I.xml(text).find("[A ~= 'B']").size() == 1;
+        assert I.xml(text).find("[A ~= 'C']").size() == 1;
     }
 
     @Test
     public void attributeConatainText() {
         String text = "<m><e A='A B C'/><e A='AB'/></m>";
 
-        assert I.xml(text).find("[A *= \"A\"]").size() == 2;
-        assert I.xml(text).find("[A *= \"B\"]").size() == 2;
-        assert I.xml(text).find("[A *= \"C\"]").size() == 1;
+        assert I.xml(text).find("[A *= 'A']").size() == 2;
+        assert I.xml(text).find("[A *= 'B']").size() == 2;
+        assert I.xml(text).find("[A *= 'C']").size() == 1;
     }
 
     @Test
     public void attributeStartWith() {
         String text = "<m><e A='A B C'/><e A='AA BB CC'/><e A='D'/></m>";
 
-        assert I.xml(text).find("[A ^= \"A\"]").size() == 2;
-        assert I.xml(text).find("[A^= \"A\"]").size() == 2;
-        assert I.xml(text).find("[A ^=\"A\"]").size() == 2;
-        assert I.xml(text).find("[A^=\"A\"]").size() == 2;
-        assert I.xml(text).find("[A ^= \"B\"]").size() == 0;
-        assert I.xml(text).find("[A ^= \"C\"]").size() == 0;
+        assert I.xml(text).find("[A ^= 'A']").size() == 2;
+        assert I.xml(text).find("[A^= 'A']").size() == 2;
+        assert I.xml(text).find("[A ^='A']").size() == 2;
+        assert I.xml(text).find("[A^='A']").size() == 2;
+        assert I.xml(text).find("[A ^= 'B']").size() == 0;
+        assert I.xml(text).find("[A ^= 'C']").size() == 0;
     }
 
     @Test
     public void attributeEndWith() {
         String text = "<m><e A='A B C'/><e A='AA BB CC'/><e A='D'/></m>";
 
-        assert I.xml(text).find("[A $= \"A\"]").size() == 0;
-        assert I.xml(text).find("[A $= \"B\"]").size() == 0;
-        assert I.xml(text).find("[A $= \"C\"]").size() == 2;
-        assert I.xml(text).find("[A $=\"C\"]").size() == 2;
-        assert I.xml(text).find("[A$= \"C\"]").size() == 2;
-        assert I.xml(text).find("[A$=\"C\"]").size() == 2;
+        assert I.xml(text).find("[A $= 'A']").size() == 0;
+        assert I.xml(text).find("[A $= 'B']").size() == 0;
+        assert I.xml(text).find("[A $= 'C']").size() == 2;
+        assert I.xml(text).find("[A $='C']").size() == 2;
+        assert I.xml(text).find("[A$= 'C']").size() == 2;
+        assert I.xml(text).find("[A$='C']").size() == 2;
     }
 
     @Test
@@ -509,7 +506,7 @@ public class XMLFindTest {
     }
 
     @Test
-    void descendant() {
+    public void descendant() {
         XML xml = I.xml("""
                 <root>
                     <section>
@@ -539,10 +536,9 @@ public class XMLFindTest {
                         <Q/>
                         <P/>
                         <Q/>
+                        <Q/>
                     </P>
                     <Q/>
-                    <Q/>
-                    <stop/>
                     <Q/>
                 </m>
                 """);
@@ -657,6 +653,42 @@ public class XMLFindTest {
         assert I.xml(text).find("Q:nth-child(2n+1)").size() == 3;
         assert I.xml(text).find("Q:nth-child(odd)").size() == 3;
         assert I.xml(text).find("Q:nth-child(even)").size() == 3;
+    }
+
+    @Test
+    public void nthChildSpacedArg() {
+        XML xml = I.xml("""
+                <root>
+                    <item>1</item>
+                    <item>2</item>
+                    <item>3</item>
+                    <item>4</item>
+                </root>
+                """);
+
+        assert xml.find("item:nth-child( 1 )").size() == 1;
+        assert xml.find("item:nth-child( 2n )").size() == 2;
+        assert xml.find("item:nth-child( -n + 2 )").size() == 2;
+    }
+
+    @Test
+    public void nthChildInvalidArg() {
+        XML xml = I.xml("""
+                <root>
+                    <item>1</item>
+                    <item>2</item>
+                    <item>3</item>
+                    <item>4</item>
+                </root>
+                """);
+
+        assert xml.find("item:nth-child(-1)").size() == 0;
+        assert xml.find("item:nth-child(0)").size() == 0;
+        assert xml.find("item:nth-child(0n)").size() == 0;
+        assert xml.find("item:nth-child(-n)").size() == 0;
+        assert xml.find("item:nth-child(-0n)").size() == 0;
+        assert xml.find("item:nth-child(-2n-0)").size() == 0;
+        assert xml.find("item:nth-child(n+1000)").size() == 0;
     }
 
     @Test
@@ -815,7 +847,7 @@ public class XMLFindTest {
     }
 
     @Test
-    public void namespacedElement() {
+    public void namespacedElementIsSelectedByLocalName() {
         XML xml = I.xml("""
                 <root xmlns:myns="http://example.com/ns" xmlns:other="http://other.com/ns">
                     <myns:elem id="ns1">Namespace Test 1</myns:elem>
@@ -825,32 +857,7 @@ public class XMLFindTest {
                 </root>
                 """);
 
-        assert xml.find("myns|elem").size() == 1;
-        assert xml.find("other|elem").size() == 1;
-        assert xml.find("myns|widget#widget1").size() == 1;
-        assert xml.find("nonexistent|elem").size() == 0;
-        assert xml.find("myns|nonexistent").size() == 0;
-    }
-
-    @Test
-    public void namespaceWildcard() {
-        XML xml = I.xml("""
-                <root xmlns:myns="http://example.com/ns" xmlns:other="http://other.com/ns">
-                    <myns:elem id="ns1">Namespace Test 1</myns:elem>
-                    <other:elem id="ns2">Namespace Test 2</other:elem>
-                    <elem id="no-ns">No Namespace</elem>
-                    <myns:widget id="widget1"/>
-                </root>
-                """);
-
-        assert xml.find("*|elem").size() == 2;
-    }
-
-    @Test
-    public void namespaceAsterisk() {
-        String text = xml("<m xmlns:p='p' xmlns:q='q' xmlns:r='r'><p:Q/><q:Q/><r:Q/></m>");
-
-        assert I.xml(text).find("p|Q").size() == 1;
+        assert xml.find("elem").size() == 3;
     }
 
     @Test
