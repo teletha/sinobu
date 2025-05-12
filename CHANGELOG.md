@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.10.1](https://github.com/teletha/sinobu/compare/4.10.0...4.10.1) (2025-05-12)
+
+
+### Bug Fixes
+
+* selector cache is broken ([bdb027e](https://github.com/teletha/sinobu/commit/bdb027e6135fa5a888f9bef88aa89a34a3146390))
+
 ## [4.10.0](https://github.com/teletha/sinobu/compare/4.9.0...4.10.0) (2025-05-12)
 
 
