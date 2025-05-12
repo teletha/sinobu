@@ -876,7 +876,7 @@ public class Manual {
          * #### 🎯 CSS Selector Power
          * Leverages CSS selectors for efficient and flexible element selection,
          * similar to JavaScript libraries like jQuery.
-         * {@link XMLFindTest#type() @}
+         * {@link XMLFindTest#tag() @}
          * 
          * #### 🛠️ jQuery-Like API
          * Provides a fluent and chainable API for easy DOM manipulation,
@@ -948,7 +948,7 @@ public class Manual {
          * the {@link XML#find(String)} method. This provides a powerful and familiar way to select
          * nodes, similar to JavaScript's `document.querySelectorAll`.
          * This library supports many standard CSS3 selectors and includes some useful extensions.
-         * {@link XMLFindTest#type() @}
+         * {@link XMLFindTest#tag() @}
          * {@link XMLFindTest#attribute() @}
          * {@link XMLFindTest#clazz() @}
          * {@link XMLFindTest#child1() @}
@@ -1155,7 +1155,7 @@ public class Manual {
              * | {@link XML#find(String)}| Find descendants matching the selector. |
              * 
              * {@link XMLTraversingTest#first() @}
-             * {@link XMLFindTest#type() @}
+             * {@link XMLFindTest#tag() @}
              */
             public class Filtering {
             }

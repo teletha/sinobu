@@ -17,10 +17,40 @@ import kiss.XML;
 public class XMLFindTest {
 
     @Test
-    public void type() {
-        String text = "<m><E/><E/><e><E/></e></m>";
+    public void tag() {
+        XML xml = I.xml("""
+                <root>
+                    <article></article>
+                    <article></article>
+                    <h1></h1>
+                    <h1></h1>
+                    <lonely-child></lonely-child>
+                    <div></div>
+                </root>
+                """);
+        assert xml.find("article").size() == 2;
+        assert xml.find("  article  ").size() == 2;
+        assert xml.find("h1").size() == 2;
+        assert xml.find("lonely-child").size() == 1;
+        assert xml.find("nonexistent").size() == 0;
+    }
 
-        assert I.xml(text).find("E").size() == 3;
+    @Test
+    public void universalSelector() {
+        XML xml = I.xml("""
+                <root>
+                    <main>
+                        <item1/>
+                        <item2/>
+                        <item3/>
+                    </main>
+                    <other/>
+                </root>
+                """);
+        assert xml.find("*").size() == 5;
+        assert xml.find(" * ").size() == 5;
+        assert xml.find("main > *").size() == 3;
+        assert xml.find("main *").size() == 3;
     }
 
     @Test
@@ -57,9 +87,20 @@ public class XMLFindTest {
 
     @Test
     public void clazz() {
-        String text = "<m><e class='C'/><e class='none'/></m>";
-
-        assert I.xml(text).find(".C").size() == 1;
+        XML xml = I.xml("""
+                <root>
+                    <div class="post featured"></div>
+                    <article class="post"></article>
+                    <span class="post icon"></span>
+                    <a class="featured"></a>
+                    <p class="external"></p>
+                    <p class="external large"></p>
+                </root>
+                """);
+        assert xml.find(".post").size() == 3;
+        assert xml.find(".featured").size() == 2;
+        assert xml.find(".external").size() == 2;
+        assert xml.find(".nonexistent").size() == 0;
     }
 
     @Test
@@ -95,20 +136,36 @@ public class XMLFindTest {
     }
 
     @Test
-    public void clazzMultiple() {
-        String text = "<m><e class='A B C'/><e class='AA BB CC'/></m>";
-
-        assert I.xml(text).find(".A.B").size() == 1;
-        assert I.xml(text).find(".B.C").size() == 1;
-        assert I.xml(text).find(".C.A").size() == 1;
+    public void multipleClasses() {
+        XML xml = I.xml("""
+                <root>
+                    <div class="a b c"></div>
+                    <div class="a b"></div>
+                    <div class="a c"></div>
+                    <div class="a"></div>
+                </root>
+                """);
+        assert xml.find(".a.b.c").size() == 1;
+        assert xml.find(".a.b").size() == 2;
+        assert xml.find(".b.a").size() == 2; // Order doesn't matter
+        assert xml.find(".a.c").size() == 2;
+        assert xml.find(".a.d").size() == 0;
     }
 
     @Test
     public void id() {
-        String text = "<m><e id='A'/><e id='AA'/></m>";
-
-        assert I.xml(text).find("#A").size() == 1;
-        assert I.xml(text).find("#AA").size() == 1;
+        XML xml = I.xml("""
+                <root>
+                    <div id="main-content"></div>
+                    <span id="title-element"></span>
+                    <a id="link-item"></a>
+                    <p id="another"></p>
+                </root>
+                """);
+        assert xml.find("#main-content").size() == 1;
+        assert xml.find("#title-element").size() == 1;
+        assert xml.find("#link-item").size() == 1;
+        assert xml.find("#nonexistent").size() == 0;
     }
 
     @Test
@@ -315,6 +372,92 @@ public class XMLFindTest {
     }
 
     @Test
+    public void attributeExactValue() {
+        XML xml = I.xml("""
+                <root>
+                    <item data-id="1"></item>
+                    <item data-id='2'></item>
+                    <item data-id="value"></item>
+                    <item data-name="test-name"></item>
+                    <item data-foo="bar" data-bar='baz'></item>
+                </root>
+                """);
+        assert xml.find("[data-id=1]").size() == 1;
+        assert xml.find("[data-id='2']").size() == 1;
+        assert xml.find("[data-id=\"value\"]").size() == 1;
+        assert xml.find("item[data-name=test-name]").size() == 1;
+        assert xml.find("[data-foo=\"bar\"][data-bar='baz']").size() == 1;
+        assert xml.find("[data-id=nonexistent]").size() == 0;
+    }
+
+    @Test
+    public void attributeWhitespaceSeparatedList() {
+        XML xml = I.xml("""
+                <root>
+                    <div class="alpha beta gamma"></div>
+                    <div class="beta delta"></div>
+                    <div class="epsilon"></div>
+                    <span class="alpha"></span>
+                </root>
+                """);
+        assert xml.find("[class~=alpha]").size() == 2;
+        assert xml.find("[class~=beta]").size() == 2;
+        assert xml.find("[class~=gamma]").size() == 1;
+        assert xml.find("[class~=epsilon]").size() == 1;
+        assert xml.find("[class~=zeta]").size() == 0;
+    }
+
+    @Test
+    public void attributeHyphenSeparatedList() {
+        XML xml = I.xml("""
+                <root>
+                    <p lang="en"></p>
+                    <p lang="en-US"></p>
+                    <p lang="en-GB"></p>
+                    <p lang="fr"></p>
+                    <p lang="de-DE"></p>
+                </root>
+                """);
+        assert xml.find("[lang|=en]").size() == 3;
+        assert xml.find("[lang|=fr]").size() == 1;
+        assert xml.find("[lang|=de]").size() == 1;
+        assert xml.find("[lang|=de-DE]").size() == 1;
+        assert xml.find("[lang|=es]").size() == 0;
+    }
+
+    @Test
+    public void attributeSubstringContains() {
+        XML xml = I.xml("""
+                <root>
+                    <a title="main link"></a>
+                    <a title="secondary link here"></a>
+                    <a title="another unrelated"></a>
+                </root>
+                """);
+        assert xml.find("[title*=link]").size() == 2;
+        assert xml.find("[title*=main]").size() == 1;
+        assert xml.find("[title*=secondary]").size() == 1;
+        assert xml.find("[title*=other]").size() == 1;
+        assert xml.find("[title*=xyz]").size() == 0;
+    }
+
+    @Test
+    public void multipleAttributes() {
+        XML xml = I.xml("""
+                <root>
+                    <item class="widget" data-type="A" lang="en"></item>
+                    <item class="widget" data-type="B" lang="fr"></item>
+                    <item class="tool" data-type="A" lang="en"></item>
+                    <item class="widget" data-type="A"></item> <!-- No lang -->
+                </root>
+                """);
+        assert xml.find("item[class=widget][data-type=A]").size() == 2;
+        assert xml.find("item[class=widget][lang=en]").size() == 1;
+        assert xml.find("item[data-type=A][lang=en]").size() == 2;
+        assert xml.find("item[class=widget][data-type=A][lang=en]").size() == 1;
+    }
+
+    @Test
     public void multipleAttributeSelectors() {
         String text = """
                 <root>
@@ -463,9 +606,79 @@ public class XMLFindTest {
                 """);
 
         assert xml.find("a, b").size() == 2;
+        assert xml.find(" a , b ").size() == 2;
         assert xml.find("a, .value").size() == 3;
         assert xml.find("a:first-child, .value").size() == 3;
         assert xml.find("b:first-child, .value:last-child").size() == 1;
+    }
+
+    @Test
+    public void combineIdAndClassAnd() {
+        XML xml = I.xml("""
+                <root>
+                    <article id="art1" class="post featured"></article>
+                    <section id="main" class="content"></section>
+                    <h1 id="art1"></h1>
+                    <div class="post"></div>
+                </root>
+                """);
+        assert xml.find("article#art1").size() == 1;
+        assert xml.find("section#main").size() == 1;
+        assert xml.find(".post#art1").size() == 1;
+        assert xml.find(" .post#art1 ").size() == 1;
+        assert xml.find("#art1.post").size() == 1; // ID on article.post
+        assert xml.find("article.featured").size() == 1;
+        assert xml.find(".content#main").size() == 1;
+
+        assert xml.find("article#main").size() == 0; // ID main is on section
+        assert xml.find(".post#title1").size() == 0; // ID title1 is on h1
+    }
+
+    @Test
+    public void combineIdAndClassAndAttribute() {
+        XML xml = I.xml("""
+                <root>
+                    <article class="post" data-id="100" id="featured-post"></article>
+                    <item class="widget external" id="link-item-2" data-ref="xyz"></item>
+                </root>
+                """);
+        assert xml.find("article.post[data-id='100']").size() == 1;
+        assert xml.find("article[data-id='100'].post").size() == 1;
+        assert xml.find(".post[data-id='100']#featured-post").size() == 1;
+        assert xml.find("#featured-post.post[data-id='100']").size() == 1;
+        assert xml.find("item.external#link-item-2[data-ref]").size() == 1;
+        assert xml.find("#link-item-2.widget[data-ref=xyz].external").size() == 1;
+    }
+
+    @Test
+    public void combinedStressTest() {
+        XML xml = I.xml("""
+                <test-root>
+                    <section id="main">
+                        <article class="post featured" data-id="1">
+                            <h1 id="title1">Title One</h1>
+                            <p class="intro">An Introduction paragraph.</p>
+                        </article>
+                    </section>
+                    <aside>
+                        <ul class="widget links">
+                            <li id="l1">L1</li>
+                            <li id="l2" class="ext">L2</li> <!-- even -->
+                            <li id="l3">L3</li>
+                            <li id="l4" class="ext">L4</li> <!-- even -->
+                        </ul>
+                    </aside>
+                    <footer id="ft">
+                        <nav>
+                            <a href="/h" class="nl">Home</a> <!-- odd, not special -->
+                            <a href="/a" class="nl sp">About</a> <!-- even, special -->
+                        </nav>
+                    </footer>
+                </test-root>
+                """);
+        assert xml.find("section#main article.post.featured > h1#title1 + p.intro:contains(Introduction)").size() == 1;
+        assert xml.find("aside ul.links li.ext:nth-child(even):not(#link100)").size() == 2;
+        assert xml.find("footer nav a.nl:nth-of-type(odd):not(.sp)").size() == 1;
     }
 
     @Test
@@ -837,13 +1050,6 @@ public class XMLFindTest {
         assert I.xml(text).find("Q:contains(a)").size() == 2;
         assert I.xml(text).find("Q:contains(b)").size() == 1;
         assert I.xml(text).find("Q:contains(aa)").size() == 1;
-    }
-
-    @Test
-    public void asterisk() {
-        String text = xml("<m><Q><a/><b/><c/></Q></m>");
-
-        assert I.xml(text).find("Q *").size() == 3;
     }
 
     @Test
