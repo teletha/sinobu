@@ -1080,6 +1080,27 @@ public class XMLFindTest {
         assert root.find("> Q").find("~Q").size() == 1;
     }
 
+    @Test
+    public void checkCacheKeyWithDifferentAxis() {
+        XML root = I.xml("""
+                <root>
+                    <h>heading1</h>
+                    <p>para1-1</p>
+                    <h>heading2</h>
+                    <p>para2-1</p>
+                    <h>heading3</h>
+                    <p>para3-1</p>
+                </root>
+                """);
+
+        // the compiled XPATH cache key must take into account the axis as well as the selector.
+        XML xml = root.find("h");
+        assert xml.size() == 3;
+        for (XML h : xml) {
+            assert h.nextUntil("h").size() == 1;
+        }
+    }
+
     /**
      * <p>
      * Format to human-redable text for display when assertion is fail..

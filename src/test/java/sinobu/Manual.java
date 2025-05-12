@@ -107,27 +107,51 @@ public class Manual {
         }
 
         /**
-         * Sinobu's design philosophy is guided by several core principles:
+         * Sinobu's design philosophy is guided by several core principles,
+         * aimed at delivering a powerful yet minimalistic development experience:
          *
-         * #### 🚀 Lightweight &amp; Zero Dependency
-         * A minimal footprint (~120 KB) and no external dependencies mean faster startup,
-         * smaller deployment sizes, and freedom from dependency hell.
+         * #### 🚀 Lightweight
+         * Sinobu maintains a minimal footprint (approximately 120 KB) with absolutely no external
+         * dependencies. This design choice results in faster startup times, significantly smaller
+         * deployment packages, and complete avoidance of dependency conflicts — an ideal fit
+         * for embedded systems, microservices, or any environment where lean execution is key.
          *
          * #### ⚡ High Performance
-         * Speed is a key design goal. Operations like JSON parsing, logging, and template
-         * rendering are optimized for minimal overhead and garbage generation.
-         * Refer to the {@link sinobu.Manual.Benchmark benchmark} section for
-         * comparative results.
+         * Performance is at the heart of every component. Internal operations — such as JSON
+         * parsing, structured logging, and template rendering — are implemented with a focus on low
+         * memory overhead and high throughput. Most allocations are short-lived and
+         * garbage-friendly, which makes Sinobu suitable even for latency-sensitive systems.
+         * See the {@link sinobu.Manual.Benchmark benchmark} section for in-depth comparative
+         * results.
          *
-         * #### ✨ Simplicity (Keep it simple stupid &amp; Less is more)
-         * APIs are designed to be concise, intuitive, and require minimal boilerplate.
-         * Often, static methods on the {@link I} class provide direct access to functionality.
+         * #### ✨ Simplicity
+         * The API surface is deliberately kept minimal and expressive. Developers can often
+         * accomplish complex tasks using a few static methods on the {@link I} facade class. This
+         * reduces boilerplate, encourages readability, and lowers the learning curve for new
+         * contributors. Even advanced concurrency features, such as asynchronous control are
+         * exposed in a clean and approachable way.
          * {@link Futures#access() @}
          *
-         * #### 🛡️ Safety (Type safety &amp; Refactoring safety)
-         * Leverages Java's static typing to catch errors at compile time. APIs are designed
-         * to be refactoring-friendly, reducing the risk of runtime errors during code changes.
-         * Constructor injection is preferred over less safe alternatives.
+         * #### 🖥️ Multifunction
+         * Despite its small size, Sinobu is packed with a wide array of capabilities — from
+         * lightweight dependency injection to various data handling, asynchronous task handling,
+         * configuration management, and more. These features are not isolated; they are
+         * thoughtfully composed so that they work together seamlessly, forming a cohesive and
+         * versatile toolkit.
+         * 
+         * #### ♻️ Reactivity
+         * Sinobu embraces reactivity as a foundation for composing asynchronous, event-driven
+         * logic. The {@link Signal} class acts as a reactive primitive that allows values to
+         * propagate through a declarative flow of transformations, observers, and combinators.
+         * Unlike traditional callback-based or Future-based models, Signal encourages a push-based
+         * architecture where state changes and derived computations naturally react to upstream
+         * updates.
+         *
+         * #### 🛡️ Type Safety
+         * All APIs are designed to leverage Java’s static type system to the fullest. This promotes
+         * correctness, allows for confident refactoring, and minimizes the risk of runtime errors.
+         * Through careful use of generics, fluent interfaces, and compile-time checks, Sinobu
+         * empowers developers to write expressive and safe code without sacrificing flexibility.
          */
         public class Futures {
             void access() {

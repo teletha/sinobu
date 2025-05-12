@@ -1104,7 +1104,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      */
     private static XPathExpression compile(String selector, String axis) {
         // check cache
-        XPathExpression compiled = selectors.get(selector);
+        XPathExpression compiled = selectors.get(selector.concat(axis));
 
         if (compiled == null) {
             try {
@@ -1112,7 +1112,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
                 compiled = I.xpath.compile(convert(selector, axis));
 
                 // cache it
-                selectors.put(selector, compiled);
+                selectors.put(selector.concat(axis), compiled);
             } catch (XPathExpressionException e) {
                 throw I.quiet(e);
             }
