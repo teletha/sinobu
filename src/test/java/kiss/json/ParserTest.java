@@ -404,10 +404,9 @@ class ParserTest {
     }
 
     @Test
-    void emptyObjectyInMiddle() {
+    void emptyObjectyWithFollowingProperty() {
         JSON json = parse("""
                 {
-                    "a": 1,
                     "e": {},
                     "last": 2
                 }

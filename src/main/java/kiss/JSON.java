@@ -418,11 +418,10 @@ public class JSON implements Serializable {
 
         // object
         case '{':
-            System.out.println("start object " + ((char) current) + "  " + index + "  ");
             Object object = model == null ? new HashMap() : I.make(model.type);
             readUnspace();
             if (current == '}') {
-                System.out.println("end object " + ((char) current) + "  " + index);
+                readUnspace();
                 return object;
             }
             do {
