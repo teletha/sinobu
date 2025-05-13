@@ -19,6 +19,7 @@ class JSONSerializationTest {
     private void validate(String json) {
         JSON original = I.json(json);
         String encoded = original.toString();
+        System.out.println(encoded);
         JSON decoded = I.json(encoded);
         assert encoded.equals(decoded.toString());
     }

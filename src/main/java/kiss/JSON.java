@@ -297,8 +297,13 @@ public class JSON implements Serializable {
      */
     @Override
     public String toString() {
+        // JSON writer = new JSON(new StringWriter());
+        // writer.write((Map) root);
+        // return writer.out.toString();
+
+        MapModel model = new MapModel(root instanceof LinkedHashMap ? List.class : Map.class, null, null);
         JSON writer = new JSON(new StringWriter());
-        writer.write((Map) root);
+        writer.write(model, new Property(model, "", null), root);
         return writer.out.toString();
     }
 
