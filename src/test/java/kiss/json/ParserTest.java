@@ -368,14 +368,51 @@ class ParserTest {
     }
 
     @Test
-    void object() {
-        parse("""
+    void emptyArray() {
+        JSON json = parse("""
                 {
-                    "value": {"a": 1, "b": false, "c": null},
-                    "space": { " " : " " },
+                    "value": 1,
+                    "empty": []
+                }
+                """);
+
+        assert json.get(int.class, "value") == 1;
+    }
+
+    @Test
+    void emptyArrayInMiddle() {
+        JSON json = parse("""
+                {
+                    "value": 1,
+                    "empty": [],
+                    "last": 2
+                }
+                """);
+
+        assert json.get(int.class, "last") == 2;
+    }
+
+    @Test
+    void emptyObject() {
+        JSON json = parse("""
+                {
+                    "value": 1,
                     "empty": {}
                 }
                 """);
+        assert json.get(int.class, "value") == 1;
+    }
+
+    @Test
+    void emptyObjectyInMiddle() {
+        JSON json = parse("""
+                {
+                    "a": 1,
+                    "e": {},
+                    "last": 2
+                }
+                """);
+        assert json.get(int.class, "last") == 2;
     }
 
     @Test
