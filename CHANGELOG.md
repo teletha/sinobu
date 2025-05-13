@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.11.0](https://github.com/teletha/sinobu/compare/4.10.1...4.11.0) (2025-05-13)
+
+
+### Features
+
+* JSON can output json format text ([cd4cea1](https://github.com/teletha/sinobu/commit/cd4cea1c4c6ff5c48804c34b770ba165b4f1f214))
+
 ## [4.10.1](https://github.com/teletha/sinobu/compare/4.10.0...4.10.1) (2025-05-12)
 
 
