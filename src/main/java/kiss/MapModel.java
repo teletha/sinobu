@@ -34,7 +34,7 @@ class MapModel<K, V> extends Model<Map<K, V>> {
     MapModel(Class clazz, Type[] types, Type base) {
         super(clazz);
 
-        if (types.length == 0) {
+        if (types == null || types.length == 0) {
             types = new Type[] {Object.class, Object.class};
         }
         this.key = Model.of(types[0], base);
@@ -72,8 +72,10 @@ class MapModel<K, V> extends Model<Map<K, V>> {
     @Override
     public void walk(Map<K, V> object, WiseTriConsumer<Model<Map<K, V>>, Property, Object> walker) {
         if (object != null) {
-            for (Entry<K, V> entry : object.entrySet()) {
-                walker.accept(this, new Property(value, I.transform(entry.getKey(), String.class), null), entry.getValue());
+            for (Entry e : object.entrySet()) {
+                walker.accept(this, new Property(value.type != Object.class ? value
+                        : e.getValue() instanceof Map ? this : Model.of(String.class), I.transform(e.getKey(), String.class), null), e
+                                .getValue());
             }
         }
     }

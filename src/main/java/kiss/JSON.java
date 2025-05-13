@@ -11,7 +11,9 @@ package kiss;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.io.Serializable;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,7 +26,8 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
 
-public class JSON {
+@SuppressWarnings("serial")
+public class JSON implements Serializable {
 
     /** The root object. */
     private Object root;
@@ -294,7 +297,10 @@ public class JSON {
      */
     @Override
     public String toString() {
-        return root.toString();
+        MapModel model = new MapModel(Map.class, null, null);
+        JSON writer = new JSON(new StringWriter());
+        writer.write(model, new Property(model, "", null), root);
+        return writer.out.toString();
     }
 
     // ===========================================================
