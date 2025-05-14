@@ -1,5 +1,14 @@
 # Changelog
 
+## [4.11.1](https://github.com/teletha/sinobu/compare/4.11.0...4.11.1) (2025-05-14)
+
+
+### Bug Fixes
+
+* preserve correct nesting after empty object during JSON parsing ([2cc0001](https://github.com/teletha/sinobu/commit/2cc00013cb4ca2149f68b399c366b726fce8631a))
+* reunified json writer ([2314f23](https://github.com/teletha/sinobu/commit/2314f23cfc0bd704431e6215c3258db6c1d4975a))
+* rewrite json writer ([a9d38bd](https://github.com/teletha/sinobu/commit/a9d38bd657d9948c6c05fe23e37be0d6f2a88d42))
+
 ## [4.11.0](https://github.com/teletha/sinobu/compare/4.10.1...4.11.0) (2025-05-13)
 
 
