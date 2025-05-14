@@ -9,19 +9,50 @@
  */
 package kiss.json;
 
+import java.util.function.Consumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
 import kiss.JSON;
 
-class JSONSerializationTest {
+class RawWriterTest {
 
-    private void validate(String json) {
+    private void validate(String json, Consumer<String>... validators) {
         JSON original = I.json(json);
         String encoded = original.toString();
-        System.out.println(encoded);
         JSON decoded = I.json(encoded);
         assert encoded.equals(decoded.toString());
+
+        for (Consumer<String> validator : validators) {
+            validator.accept(encoded);
+        }
+    }
+
+    private Consumer<String> requireArray(int count) {
+        return json -> {
+            assert json.chars().filter(c -> c == '[').count() == count;
+            assert json.chars().filter(c -> c == ']').count() == count;
+        };
+    }
+
+    private Consumer<String> requireNull(int count) {
+        return json -> {
+            assert count(json, "[^\"]null[^\"]") == count;
+        };
+    }
+
+    private int count(String input, String p) {
+        Pattern pattern = Pattern.compile(p);
+        Matcher matcher = pattern.matcher(input);
+
+        int count = 0;
+        while (matcher.find()) {
+            count++;
+        }
+        return count;
     }
 
     @Test
@@ -66,7 +97,16 @@ class JSONSerializationTest {
                 {
                     "value": null
                 }
-                """);
+                """, requireNull(1));
+    }
+
+    @Test
+    void nullString() {
+        validate("""
+                {
+                    "value": "null"
+                }
+                """, requireNull(0));
     }
 
     @Test
@@ -87,7 +127,7 @@ class JSONSerializationTest {
                 {
                     "numbers": [1, 2, 3, 4]
                 }
-                """);
+                """, requireArray(1));
     }
 
     @Test
@@ -99,7 +139,7 @@ class JSONSerializationTest {
                         {"name": "Takina"}
                     ]
                 }
-                """);
+                """, requireArray(1));
     }
 
     @Test
@@ -117,7 +157,7 @@ class JSONSerializationTest {
                 {
                     "list": []
                 }
-                """);
+                """, requireArray(1));
     }
 
     @Test
@@ -161,7 +201,7 @@ class JSONSerializationTest {
                 {
                     "mixed": [1, "two", true, null, {"key": "value"}]
                 }
-                """);
+                """, requireArray(1));
     }
 
     @Test
@@ -222,7 +262,7 @@ class JSONSerializationTest {
                     "object": { "key": "value" },
                     "array": [1, 2, 3]
                 }
-                """);
+                """, requireArray(1));
     }
 
     @Test
@@ -234,7 +274,7 @@ class JSONSerializationTest {
     void rootIsArray() {
         validate("""
                 [1, "text", true, {"key": "value"}, null, [10, 20]]
-                """);
+                """, requireArray(2));
     }
 
     @Test
@@ -244,12 +284,12 @@ class JSONSerializationTest {
                     {"id": 1, "name": "Alice", "tags": ["user", "active"]},
                     {"id": 2, "name": "Bob", "tags": ["user", "inactive"]}
                 ]
-                """);
+                """, requireArray(3));
     }
 
     @Test
     void rootIsEmptyArray() {
-        validate("[]");
+        validate("[]", requireArray(1));
     }
 
     @Test

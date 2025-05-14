@@ -297,10 +297,6 @@ public class JSON implements Serializable {
      */
     @Override
     public String toString() {
-        // JSON writer = new JSON(new StringWriter());
-        // writer.write((Map) root);
-        // return writer.out.toString();
-
         MapModel model = new MapModel(root instanceof LinkedHashMap ? List.class : Map.class, null, null);
         JSON writer = new JSON(new StringWriter());
         writer.write(model, new Property(model, "", null), root);
@@ -731,47 +727,6 @@ public class JSON implements Serializable {
      */
     JSON(Appendable out) {
         this.out = out;
-    }
-
-    void write(Map<String, Object> value) {
-        try {
-            boolean list = value instanceof LinkedHashMap;
-            out.append(list ? '[' : '{');
-
-            for (Entry<String, Object> e : value.entrySet()) {
-                // non-first properties requires separator
-                if (index++ != 0) out.append(',');
-
-                // indent
-                out.append('\n').append("\t".repeat(current + 1));
-
-                if (!list) {
-                    write(e.getKey(), String.class);
-                    out.append(": ");
-                }
-
-                Object v = e.getValue();
-                if (v == null) {
-                    out.append("null");
-                } else if (v instanceof Map map) {
-                    if (64 < current) {
-                        throw new ClassCircularityError();
-                    }
-
-                    JSON walker = new JSON(out);
-                    walker.current = current + 1;
-                    walker.write(map);
-                } else {
-                    write(I.transform(v, String.class), String.class);
-                }
-            }
-
-            // indent
-            out.append('\n').append("\t".repeat(current));
-            out.append(list ? ']' : '}');
-        } catch (IOException e) {
-            throw I.quiet(e);
-        }
     }
 
     /**
