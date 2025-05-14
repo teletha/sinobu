@@ -25,7 +25,6 @@ class RawWriterTest {
         String encoded = original.toString();
         JSON decoded = I.json(encoded);
         assert encoded.equals(decoded.toString());
-        System.out.println(encoded);
 
         for (Consumer<String> validator : validators) {
             validator.accept(encoded);
