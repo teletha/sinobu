@@ -21,10 +21,21 @@ import java.util.Map.Entry;
 class MapModel<K, V> extends Model<Map<K, V>> {
 
     /** The parameterized key of this model. */
-    private final Model<K> key;
+    private final Model key;
 
     /** The parameterized value of this model. */
-    private final Model<V> value;
+    private final Model value;
+
+    /**
+     * Special model for {@link JSON} writing.
+     * 
+     * @param o
+     */
+    MapModel(Object o) {
+        super(o instanceof LinkedHashMap ? List.class : Map.class);
+        key = null;
+        value = Model.of(String.class);
+    }
 
     /**
      * Create MapModel instance.
@@ -36,9 +47,10 @@ class MapModel<K, V> extends Model<Map<K, V>> {
     MapModel(Class clazz, Type[] types, Type base) {
         super(clazz);
 
-        if (types == null || types.length == 0) {
+        if (types.length == 0) {
             types = new Type[] {Object.class, Object.class};
         }
+
         this.key = Model.of(types[0], base);
         this.value = Model.of(types[1], base);
     }
@@ -75,9 +87,7 @@ class MapModel<K, V> extends Model<Map<K, V>> {
     public void walk(Map<K, V> object, WiseTriConsumer<Model<Map<K, V>>, Property, Object> walker) {
         if (object != null) {
             for (Entry e : object.entrySet()) {
-                Model sub = value.type != Object.class ? value
-                        : e.getValue() instanceof Map m ? new MapModel(m instanceof LinkedHashMap ? List.class : Map.class, null, null)
-                                : Model.of(String.class);
+                Model sub = key == null && e.getValue() instanceof Map ? new MapModel(e.getValue()) : value;
                 walker.accept(this, new Property(sub, I.transform(e.getKey(), String.class), null), e.getValue());
             }
         }

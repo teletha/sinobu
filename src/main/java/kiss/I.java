@@ -2486,12 +2486,12 @@ public class I implements ParameterizedType {
      *
      * @param input A Java object. All properties will be serialized deeply. <code>null</code> will
      *            throw {@link java.lang.NullPointerException}.
-     * @param out A serialized data output. <code>null</code> will throw
+     * @param output A serialized data output. <code>null</code> will throw
      *            {@link NullPointerException}.
      * @throws NullPointerException If the input Java object or the output is <code>null</code> .
      */
-    public static void write(Object input, Appendable out) {
-        write(Model.of(input), input, out);
+    public static void write(Object input, Appendable output) {
+        write(Model.of(input), input, output);
     }
 
     /**
@@ -2506,19 +2506,19 @@ public class I implements ParameterizedType {
      * @param model A root model of the input object.
      * @param input A Java object. All properties will be serialized deeply. <code>null</code> will
      *            throw {@link java.lang.NullPointerException}.
-     * @param out A serialized data output. <code>null</code> will throw
+     * @param output A serialized data output. <code>null</code> will throw
      *            {@link NullPointerException}.
      * @throws NullPointerException If the input Java object or the output is <code>null</code> .
      */
-    public static void write(Model model, Object input, Appendable out) {
-        Objects.requireNonNull(out);
+    public static void write(Model model, Object input, Appendable output) {
+        Objects.requireNonNull(output);
 
         try {
             // traverse object as json
-            new JSON(out).write(model, new Property(model, "", null), input);
+            new JSON(output).write(model, new Property(model, "", null), input);
         } finally {
             // close carefully
-            I.quiet(out);
+            I.quiet(output);
         }
     }
 
