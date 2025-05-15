@@ -685,7 +685,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
         for (Node node : nodes) {
             Node p = node.getParentNode();
 
-            if (p != null && !p.getNodeName().equals("ǃ")) {
+            if (p != null) {
                 list.addIfAbsent(p instanceof Element ? p : node);
             }
         }
@@ -770,7 +770,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
         for (Node node : nodes) {
             while (true) {
                 node = traverse.apply(node);
-                if (node == null || node.getNodeName().equals("ǃ")) break;
+                if (node == null) break;
                 if (node.getNodeType() == Node.ELEMENT_NODE) {
                     try {
                         if ((Boolean) x.evaluate(node, XPathConstants.BOOLEAN)) {
@@ -1136,20 +1136,20 @@ public class XML implements Iterable<XML>, Consumer<XML> {
     private static String convert(String selector, String axis) {
         if (selector.startsWith("xpath:")) return selector.substring(6);
 
+        boolean init = true;
         int start = 0;
         String current = null;
         StringBuilder xpath = new StringBuilder();
         Matcher matcher = SELECTOR.matcher(selector.trim());
 
         while (matcher.find()) {
-            boolean contextual = matcher.start() == 0;
-
             // =================================================
             // Combinators
             // =================================================
             String match = matcher.group(1);
             if (match == null) {
-                if (contextual) {
+                if (init) {
+                    init = false;
                     xpath.append(axis).append('*');
                 }
             } else {
@@ -1178,15 +1178,17 @@ public class XML implements Iterable<XML>, Consumer<XML> {
 
                     case ',': // selector separator
                         // reset processing context
+                        init = true;
                         current = null;
                         start = xpath.length() + 1;
 
-                        xpath.append('|').append(axis).append('*');
-                        break;
+                        xpath.append('|');
+                        continue;
                     }
 
-                    if (contextual) {
-                        xpath.delete(0, 1);
+                    if (init) {
+                        init = false;
+                        xpath.delete(start, start + 1);
                     }
                 }
                 continue;

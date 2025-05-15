@@ -269,7 +269,7 @@ public class XMLTraversingTest {
         assert root.size() == 1;
 
         XML parent = root.parent();
-        assert parent.size() == 0;
+        assert parent.size() == 1;
     }
 
     @Test
@@ -1801,7 +1801,7 @@ public class XMLTraversingTest {
                 """);
 
         XML result = root.find("#start").parentUntil(".nonexistent");
-        assert result.size() == 3;
+        assert result.size() == 4;
 
         List<XML> list = I.signal(result).toList();
         assert list.get(0).name().equals("span");

@@ -1038,7 +1038,7 @@ public class XMLFindTest {
 
     @Test
     public void root() {
-        String text = xml("""
+        XML xml = I.xml("""
                 <root>
                     <a/>
                     <b/>
@@ -1046,16 +1046,16 @@ public class XMLFindTest {
                 </root>
                 """);
 
-        assert I.xml(text).find(":root").name().equals("root");
-        assert I.xml(text).find("a").find(":root").name().equals("root");
-        assert I.xml(text).find(":root b").size() == 1;
-        assert I.xml(text).find(":root , b").size() == 2;
-        assert I.xml(text).find("b , :root").size() == 2;
+        assert xml.find(":root").name().equals("root");
+        assert xml.find("a").find(":root").name().equals("root");
+        assert xml.find(":root b").size() == 1;
+        assert xml.find(":root , b").size() == 2;
+        assert xml.find("b , :root").size() == 2;
     }
 
     @Test
     public void scope() {
-        String text = xml("""
+        XML xml = I.xml("""
                 <root>
                     <a/>
                     <b/>
@@ -1063,11 +1063,27 @@ public class XMLFindTest {
                 </root>
                 """);
 
-        assert I.xml(text).find(":scope").name().equals("root");
-        assert I.xml(text).find("a").find(":scope").name().equals("a");
-        assert I.xml(text).find(":scope b").size() == 1;
-        assert I.xml(text).find(":scope , b").size() == 2;
-        assert I.xml(text).find("b , :scope").size() == 2;
+        assert xml.find(":scope").name().equals("root");
+        assert xml.find("a").find(":scope").name().equals("a");
+        assert xml.find(":scope b").size() == 1;
+        assert xml.find(":scope , b").size() == 2;
+        assert xml.find("b , :scope").size() == 2;
+    }
+
+    @Test
+    public void scopeWithCombinator() {
+        XML xml = I.xml("""
+                <root>
+                    <a/>
+                    <b/>
+                    <c/>
+                </root>
+                """);
+
+        assert xml.find("a").find(":scope ~ *, :scope").size() == 3;
+        assert xml.find("a").find("~ *, :scope").size() == 3;
+        assert xml.find("a").find(":scope, :scope ~ *").size() == 3;
+        assert xml.find("a").find(":scope,  ~ *").size() == 3;
     }
 
     @Test
