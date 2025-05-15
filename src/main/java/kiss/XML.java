@@ -718,20 +718,6 @@ public class XML implements Iterable<XML>, Consumer<XML> {
     }
 
     /**
-     * Get all preceding sibling elements of each element in the current set of matched elements.
-     * This is equivalent to {@code find("~*")} in CSS selector semantics, but in the reverse
-     * direction.
-     * Only element nodes are returned. The elements are returned in document order,
-     * with the one closest to the starting element appearing first.
-     *
-     * @return A new {@code XML} object containing all previous sibling elements of each matched
-     *         element.
-     */
-    public final XML prevs() {
-        return prevUntil(":not(*)");
-    }
-
-    /**
      * Get all preceding sibling elements of each element in the current set of matched elements,
      * up to but not including the element matched by the selector.
      * The elements are returned in document order (the one closest to the starting element first).
@@ -752,18 +738,6 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      */
     public final XML next() {
         return find("+*");
-    }
-
-    /**
-     * Get all following sibling elements of each element in the current set of matched elements.
-     * This is equivalent to {@code find("~*")} in CSS selector semantics.
-     * Only element nodes are returned. The elements are returned in document order.
-     *
-     * @return A new {@code XML} object containing all next sibling elements of each matched
-     *         element.
-     */
-    public final XML nexts() {
-        return find("~*");
     }
 
     /**
@@ -1162,6 +1136,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
     private static String convert(String selector, String axis) {
         if (selector.startsWith("xpath:")) return selector.substring(6);
 
+        int start = 0;
         String current = null;
         StringBuilder xpath = new StringBuilder();
         Matcher matcher = SELECTOR.matcher(selector.trim());
@@ -1202,10 +1177,11 @@ public class XML implements Iterable<XML>, Consumer<XML> {
                         break;
 
                     case ',': // selector separator
-                        xpath.append('|').append(axis).append('*');
-
                         // reset processing context
                         current = null;
+                        start = xpath.length() + 1;
+
+                        xpath.append('|').append(axis).append('*');
                         break;
                     }
 
@@ -1377,7 +1353,11 @@ public class XML implements Iterable<XML>, Consumer<XML> {
                     break;
 
                 case 3506402: // root
-                    xpath.delete(0, xpath.length()).append("/*");
+                    xpath.delete(start, xpath.length()).append("/descendant-or-self::*[local-name()!='ǃ'][1]");
+                    break;
+
+                case 109264468: // scope
+                    xpath.delete(start, xpath.length()).append(".");
                     break;
 
                 case -567445985: // contains

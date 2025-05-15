@@ -1038,9 +1038,36 @@ public class XMLFindTest {
 
     @Test
     public void root() {
-        String text = xml("<Q><Q/></Q>");
+        String text = xml("""
+                <root>
+                    <a/>
+                    <b/>
+                    <c/>
+                </root>
+                """);
 
-        assert I.xml(text).find("Q:root").size() == 1;
+        assert I.xml(text).find(":root").name().equals("root");
+        assert I.xml(text).find("a").find(":root").name().equals("root");
+        assert I.xml(text).find(":root b").size() == 1;
+        assert I.xml(text).find(":root , b").size() == 2;
+        assert I.xml(text).find("b , :root").size() == 2;
+    }
+
+    @Test
+    public void scope() {
+        String text = xml("""
+                <root>
+                    <a/>
+                    <b/>
+                    <c/>
+                </root>
+                """);
+
+        assert I.xml(text).find(":scope").name().equals("root");
+        assert I.xml(text).find("a").find(":scope").name().equals("a");
+        assert I.xml(text).find(":scope b").size() == 1;
+        assert I.xml(text).find(":scope , b").size() == 2;
+        assert I.xml(text).find("b , :scope").size() == 2;
     }
 
     @Test
