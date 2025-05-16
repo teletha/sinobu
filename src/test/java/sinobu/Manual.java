@@ -51,11 +51,13 @@ import kiss.json.ManipulateTest;
 import kiss.lifestyle.PrototypeTest;
 import kiss.lifestyle.SingletonTest;
 import kiss.model.ModelLensTest;
+import kiss.xml.ChildrenTest;
+import kiss.xml.FirstTest;
 import kiss.xml.HTMLSoupTest;
+import kiss.xml.NextTest;
 import kiss.xml.ReadTest;
 import kiss.xml.XMLFindTest;
 import kiss.xml.XMLManipulationTest;
-import kiss.xml.XMLTraversingTest;
 import kiss.xml.XMLWriterTest;
 import sinobu.ExtensionTest.Codec;
 import sinobu.ExtensionTest.LocalDateCodec;
@@ -1168,7 +1170,7 @@ public class Manual {
              * | {@link XML#last()} | Reduce the set to the last element. |
              * | {@link XML#find(String)}| Find descendants matching the selector. |
              * 
-             * {@link XMLTraversingTest#first() @}
+             * {@link FirstTest#first() @}
              * {@link XMLFindTest#tag() @}
              */
             public class Filtering {
@@ -1191,8 +1193,8 @@ public class Manual {
              * | {@link XML#next()} | Get the immediately following sibling of each element in the
              * set. |
              * 
-             * {@link XMLTraversingTest#children() @}
-             * {@link XMLTraversingTest#next() @}
+             * {@link ChildrenTest#children() @}
+             * {@link NextTest#next() @}
              */
             public class Tree_Navigation {
             }
