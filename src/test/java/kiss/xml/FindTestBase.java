@@ -34,7 +34,6 @@ public class FindTestBase {
         String[] spaces = {" ", "  ", "\t"};
         for (String s : spaces) {
             String spaced = selector.replaceAll("(\\^=|\\$=|~=|\\|=|\\*=|=)", s + "$1" + s).replace("[", "[" + s).replace("]", s + "]");
-            System.out.println(spaced);
             assert xml.find(spaced).size() == expectedCount;
         }
     }

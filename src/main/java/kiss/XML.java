@@ -1109,7 +1109,6 @@ public class XML implements Iterable<XML>, Consumer<XML> {
         if (compiled == null) {
             try {
                 // compile actually
-                System.out.println(convert(selector, axis) + "   @ " + selector);
                 compiled = I.xpath.compile(convert(selector, axis));
 
                 // cache it
@@ -1400,14 +1399,12 @@ public class XML implements Iterable<XML>, Consumer<XML> {
                     }
 
                     // construct xpath
-                    String type = match.contains("type") ? current.equals("*") ? "*[name() = my:test(name(), ., current())]" : current
-                            : "*";
-                    String expr = "(count(" + (match.contains("last") ? "following" : "preceding") + "-sibling::" + type + ")+1)";
+                    String expr = "(e:x(" + (match.contains("type") ? "name()" : "'*'") + "," + (match.contains("last") ? "following"
+                            : "preceding") + "-sibling::*)+1)";
 
                     xpath.append('[');
                     if (coefficient.equals("0")) {
                         // remainder only
-                        xpath.append("my:aaa(name(), ., current())][");
                         xpath.append(expr).append("=").append(remainder);
                     } else {
                         String term = "(" + expr + "-" + remainder + ")";
