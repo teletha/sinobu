@@ -93,7 +93,9 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.helpers.DefaultHandler;
 
@@ -234,6 +236,47 @@ public class I implements ParameterizedType {
             .executor(Jobs)
             .build();
 
+    public static void debugNodeList(NodeList list) {
+        if (list == null) {
+            System.out.println("NodeList is null");
+            return;
+        }
+        int length = list.getLength();
+        System.out.println("NodeList length = " + length);
+        for (int i = 0; i < length; i++) {
+            Node node = list.item(i);
+            System.out.println("[" + i + "] " + describeNode(node));
+        }
+    }
+
+    private static String describeNode(Node node) {
+        if (node == null) return "null";
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("NodeType=").append(node.getNodeType()).append(", Name=").append(node.getNodeName());
+
+        if (node.getNodeType() == Node.ELEMENT_NODE) {
+            sb.append(", Attributes=[");
+            NamedNodeMap attrs = node.getAttributes();
+            for (int j = 0; j < attrs.getLength(); j++) {
+                Node attr = attrs.item(j);
+                sb.append(attr.getNodeName()).append("=\"").append(attr.getNodeValue()).append("\"");
+                if (j < attrs.getLength() - 1) sb.append(", ");
+            }
+            sb.append("]");
+        }
+
+        String text = node.getTextContent();
+        if (text != null) {
+            String compact = text.trim().replaceAll("\\s+", " ");
+            if (!compact.isEmpty()) {
+                sb.append(", Text=\"").append(compact).append("\"");
+            }
+        }
+
+        return sb.toString();
+    }
+
     // initialization
     static {
         // built-in lifestyles
@@ -261,6 +304,22 @@ public class I implements ParameterizedType {
             dom = factory.newDocumentBuilder();
             dom.setErrorHandler(new DefaultHandler());
             xpath = XPathFactory.newInstance().newXPath();
+            xpath.setXPathFunctionResolver((q, arity) -> {
+                return args -> {
+                    try {
+                        System.out.println(q.getLocalPart());
+                        System.out.println((String) args.get(0));
+                        debugNodeList((NodeList) args.get(1));
+                        debugNodeList((NodeList) args.get(2));
+                        System.out.println("");
+
+                        return q.getLocalPart().equals("aaa") ? true : args.get(0);
+                    } catch (Throwable e) {
+                        e.printStackTrace();
+                        throw e;
+                    }
+                };
+            });
 
             // Automatic translation is often done multiple times in a short period of time, and
             // it is not efficient to save the translation results every time you get them, so

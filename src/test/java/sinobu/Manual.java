@@ -52,6 +52,9 @@ import kiss.lifestyle.PrototypeTest;
 import kiss.lifestyle.SingletonTest;
 import kiss.model.ModelLensTest;
 import kiss.xml.ChildrenTest;
+import kiss.xml.FindAttributeTest;
+import kiss.xml.FindClassTest;
+import kiss.xml.FindTagTest;
 import kiss.xml.FirstTest;
 import kiss.xml.HTMLSoupTest;
 import kiss.xml.NextTest;
@@ -892,7 +895,7 @@ public class Manual {
          * #### 🎯 CSS Selector Power
          * Leverages CSS selectors for efficient and flexible element selection,
          * similar to JavaScript libraries like jQuery.
-         * {@link XMLFindTest#tag() @}
+         * {@link FindTagTest#tag() @}
          * 
          * #### 🛠️ jQuery-Like API
          * Provides a fluent and chainable API for easy DOM manipulation,
@@ -964,9 +967,9 @@ public class Manual {
          * the {@link XML#find(String)} method. This provides a powerful and familiar way to select
          * nodes, similar to JavaScript's `document.querySelectorAll`.
          * This library supports many standard CSS3 selectors and includes some useful extensions.
-         * {@link XMLFindTest#tag() @}
-         * {@link XMLFindTest#attribute() @}
-         * {@link XMLFindTest#clazz() @}
+         * {@link FindTagTest#tag() @}
+         * {@link FindAttributeTest#attribute() @}
+         * {@link FindClassTest#singleClass() @}
          * {@link XMLFindTest#child1() @}
          */
         public class CSS_Selector {
@@ -1171,7 +1174,7 @@ public class Manual {
              * | {@link XML#find(String)}| Find descendants matching the selector. |
              * 
              * {@link FirstTest#first() @}
-             * {@link XMLFindTest#tag() @}
+             * {@link FindTagTest#tag() @}
              */
             public class Filtering {
             }

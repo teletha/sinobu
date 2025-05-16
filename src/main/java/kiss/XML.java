@@ -78,7 +78,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
             + "|\\.((?:[\\w\\-]|\\\\.)+)"
             // Group 5: Attribute selector (namespace is not supported)
             // G5:attrName, G6:op, G7:quote, G8:q_val, G9:unq_val. Backref \\7 is correct.
-            + "|\\[\\s?([\\w\\-_]+)(?:\\s*([=~^$*|])?=\\s*(?:(['\"])(.*?)\\7|([^\\]\\s]+)))?\\s*\\]"
+            + "|\\[\\s*([\\w\\-_]+)(?:\\s*([=~^$*|])?=\\s*(?:(['\"])(.*?)\\7|([^\\]\\s]+)))?\\s*\\]"
             // Group 10: Pseudo-class part
             // G10: Pseudo-class name (e.g., "nth-child", "not")
             // G11: Pseudo-class argument (e.g., "2n+1", "p.foo", null if no arg)
@@ -1109,6 +1109,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
         if (compiled == null) {
             try {
                 // compile actually
+                System.out.println(convert(selector, axis) + "   @ " + selector);
                 compiled = I.xpath.compile(convert(selector, axis));
 
                 // cache it
@@ -1399,12 +1400,14 @@ public class XML implements Iterable<XML>, Consumer<XML> {
                     }
 
                     // construct xpath
-                    String type = match.contains("type") ? current : "*";
+                    String type = match.contains("type") ? current.equals("*") ? "*[name() = my:test(name(), ., current())]" : current
+                            : "*";
                     String expr = "(count(" + (match.contains("last") ? "following" : "preceding") + "-sibling::" + type + ")+1)";
 
                     xpath.append('[');
                     if (coefficient.equals("0")) {
                         // remainder only
+                        xpath.append("my:aaa(name(), ., current())][");
                         xpath.append(expr).append("=").append(remainder);
                     } else {
                         String term = "(" + expr + "-" + remainder + ")";
