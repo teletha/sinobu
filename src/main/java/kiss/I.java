@@ -262,7 +262,7 @@ public class I implements ParameterizedType {
             dom = factory.newDocumentBuilder();
             dom.setErrorHandler(new DefaultHandler());
             xpath = XPathFactory.newInstance().newXPath();
-            xpath.setXPathFunctionResolver((_, _) -> {
+            xpath.setXPathFunctionResolver((e, x) -> {
                 // Since the type pseudo-class of css selector cannot be implemented using only
                 // XPATH 1.0 by any means, it is implemented using an extended function.
                 //
