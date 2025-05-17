@@ -1,13 +1,13 @@
-package kiss.xml;
+package kiss.xml.selector;
 
-import static kiss.xml.FindAssetion.*;
+import static kiss.xml.selector.FindAssetion.*;
 
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
 import kiss.XML;
 
-public class FindNthLastChildTest {
+public class NthLastChildTypeTest {
 
     @Test
     public void nthLastChild() {
@@ -247,5 +247,26 @@ public class FindNthLastChildTest {
         assert select(xml, 10, "e:nth-last-child(10n)");
         assert select(xml, 4, "e:nth-last-child(33n+1)");
         assert select(xml, 0, "e:nth-last-child(101)");
+    }
+
+    @Test
+    public void nthLastOfTypeWithUniversalSelector() {
+        XML xml = I.xml("""
+                <m>
+                  <A/>
+                  <A/>
+                  <A/>
+                  <B/>
+                  <C/>
+                  <D/>
+                  <A/>
+                  <B/>
+                </m>
+                """);
+
+        assert select(xml, 4, "*:nth-last-of-type(1)");
+        assert select(xml, 2, "*:nth-last-of-type(2)");
+        assert select(xml, 3, "*:nth-last-of-type(even)");
+        assert select(xml, 5, "*:nth-last-of-type(odd)");
     }
 }

@@ -7,16 +7,16 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss.xml;
+package kiss.xml.selector;
 
-import static kiss.xml.FindAssetion.*;
+import static kiss.xml.selector.FindAssetion.*;
 
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
 import kiss.XML;
 
-public class FindIdTest {
+public class IdTest {
 
     @Test
     public void id() {

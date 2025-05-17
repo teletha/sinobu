@@ -17,25 +17,6 @@ import kiss.XML;
 public class XMLFindTest {
 
     @Test
-    public void multiple() {
-        XML xml = I.xml("""
-                <root>
-                    <a/>
-                    <b/>
-                    <c/>
-                    <d class='value'/>
-                    <e class='value'/>
-                </root>
-                """);
-
-        assert xml.find("a, b").size() == 2;
-        assert xml.find(" a , b ").size() == 2;
-        assert xml.find("a, .value").size() == 3;
-        assert xml.find("a:first-child, .value").size() == 3;
-        assert xml.find("b:first-child, .value:last-child").size() == 1;
-    }
-
-    @Test
     public void combineIdAndClassAnd() {
         XML xml = I.xml("""
                 <root>
@@ -102,13 +83,6 @@ public class XMLFindTest {
         assert xml.find("section#main article.post.featured > h1#title1 + p.intro:contains(Introduction)").size() == 1;
         assert xml.find("aside ul.links li.ext:nth-child(even):not(#link100)").size() == 2;
         assert xml.find("footer nav a.nl:nth-of-type(odd):not(.sp)").size() == 1;
-    }
-
-    @Test
-    public void empty() {
-        String text = xml("<m><Q/><Q>text</Q><Q><r/></Q></m>");
-
-        assert I.xml(text).find("Q:empty").size() == 1;
     }
 
     @Test

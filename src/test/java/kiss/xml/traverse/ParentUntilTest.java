@@ -7,7 +7,7 @@
  *
  *          https://opensource.org/licenses/MIT
  */
-package kiss.xml;
+package kiss.xml.traverse;
 
 import java.util.List;
 

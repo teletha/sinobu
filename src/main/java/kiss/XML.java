@@ -1338,7 +1338,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
                     break;
 
                 case 96634189: // empty
-                    xpath.append("[not(node())]");
+                    xpath.append("[not(*|text())]");
                     break;
 
                 case 109267: // not

@@ -38,14 +38,6 @@ public class JSONTraverseBenchmark {
             return list;
         });
 
-        benchmark.measure("SinobuFind", () -> {
-            List list = new ArrayList();
-            for (JSON e : I.json(json).find("params", "message", "*")) {
-                list.add(e);
-            }
-            return list;
-        });
-
         Gson gson = new Gson();
         benchmark.measure("Gson", () -> {
             List list = new ArrayList();

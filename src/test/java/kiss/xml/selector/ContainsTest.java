@@ -1,13 +1,13 @@
-package kiss.xml;
+package kiss.xml.selector;
 
-import static kiss.xml.FindAssetion.*;
+import static kiss.xml.selector.FindAssetion.*;
 
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
 import kiss.XML;
 
-public class FindContainTest {
+public class ContainsTest {
 
     @Test
     public void contains() {

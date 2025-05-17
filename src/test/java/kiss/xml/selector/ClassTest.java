@@ -7,14 +7,14 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss.xml;
+package kiss.xml.selector;
 
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
 import kiss.XML;
 
-public class FindClassTest extends FindAssetion {
+public class ClassTest extends FindAssetion {
 
     @Test
     public void clazz() {

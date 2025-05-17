@@ -1,22 +1,13 @@
-/*
- * Copyright (C) 2025 Nameless Production Committee
- *
- * Licensed under the MIT License (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *          http://opensource.org/licenses/mit-license.php
- */
-package kiss.xml;
+package kiss.xml.selector;
 
-import static kiss.xml.FindAssetion.*;
+import static kiss.xml.selector.FindAssetion.*;
 
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
 import kiss.XML;
 
-public class FindLastTest {
+public class LastChildTypeTest {
     @Test
     public void lastChild() {
         XML xml = I.xml("""
@@ -32,7 +23,7 @@ public class FindLastTest {
     }
 
     @Test
-    public void lastChild_singleElement() {
+    public void lastChildSingleElement() {
         XML xml = I.xml("""
                 <m>
                   <A/>
@@ -42,7 +33,7 @@ public class FindLastTest {
     }
 
     @Test
-    public void lastChild_multipleDistinctElements() {
+    public void lastChildMultipleDistinctElements() {
         XML xml = I.xml("""
                 <m>
                   <A/>
@@ -56,7 +47,7 @@ public class FindLastTest {
     }
 
     @Test
-    public void lastChild_mixedElements() {
+    public void lastChildMixedElements() {
         // Last child is the second B
         XML xml = I.xml("""
                 <m>
@@ -71,13 +62,13 @@ public class FindLastTest {
     }
 
     @Test
-    public void lastChild_emptyParent() {
+    public void lastChildEmptyParent() {
         XML xml = I.xml("<m/>");
         assert select(xml, 0, "A:last-child");
     }
 
     @Test
-    public void lastChild_nestedStructure() {
+    public void lastChildNestedStructure() {
         XML xml = I.xml("""
                 <m>
                   <P>
@@ -103,7 +94,7 @@ public class FindLastTest {
     }
 
     @Test
-    public void lastChild_noMatch() {
+    public void lastChildNoMatch() {
         XML xml = I.xml("""
                 <m>
                   <A/>
@@ -111,6 +102,37 @@ public class FindLastTest {
                 </m>
                 """);
         assert select(xml, 0, "C:last-child");
+    }
+
+    @Test
+    public void lastChildWithUniversalSelector() {
+        XML xml = I.xml("""
+                <m>
+                  <A/>
+                  <B/>
+                  <C/>
+                </m>
+                """);
+
+        assert select(xml, 1, "*:last-child");
+    }
+
+    @Test
+    public void lastChildNestedWithUniversalSelector() {
+        XML xml = I.xml("""
+                <root>
+                  <A>
+                    <B/>
+                    <C/>
+                  </A>
+                  <D>
+                    <E/>
+                    <F/>
+                  </D>
+                </root>
+                """);
+
+        assert select(xml, 3, "*:last-child");
     }
 
     @Test
@@ -128,7 +150,7 @@ public class FindLastTest {
     }
 
     @Test
-    public void lastOfType_singleElement() {
+    public void lastOfTypeSingleElement() {
         XML xml = I.xml("""
                 <m>
                   <A/>
@@ -138,7 +160,7 @@ public class FindLastTest {
     }
 
     @Test
-    public void lastOfType_multipleDistinctElements() {
+    public void lastOfTypeMultipleDistinctElements() {
         XML xml = I.xml("""
                 <m>
                   <A/>
@@ -152,7 +174,7 @@ public class FindLastTest {
     }
 
     @Test
-    public void lastOfType_mixedElements() {
+    public void lastOfTypeMixedElements() {
         XML xml = I.xml("""
                 <m>
                   <A/>
@@ -169,13 +191,13 @@ public class FindLastTest {
     }
 
     @Test
-    public void lastOfType_emptyParent() {
+    public void lastOfTypeEmptyParent() {
         XML xml = I.xml("<m/>");
         assert select(xml, 0, "A:last-of-type");
     }
 
     @Test
-    public void lastOfType_nestedStructure() {
+    public void lastOfTypeNestedStructure() {
         XML xml = I.xml("""
                 <m>
                   <P>
@@ -203,7 +225,7 @@ public class FindLastTest {
     }
 
     @Test
-    public void lastOfType_noMatch() {
+    public void lastOfTypeNoMatch() {
         XML xml = I.xml("""
                 <m>
                   <A/>
@@ -211,5 +233,20 @@ public class FindLastTest {
                 </m>
                 """);
         assert select(xml, 0, "C:last-of-type");
+    }
+
+    @Test
+    public void lastOfTypeWithUniversalSelector() {
+        XML xml = I.xml("""
+                <m>
+                  <A/>
+                  <B/>
+                  <A/>
+                  <C/>
+                  <B/>
+                </m>
+                """);
+
+        assert select(xml, 3, "*:last-of-type");
     }
 }

@@ -7,7 +7,7 @@
  *
  *          http://opensource.org/licenses/mit-license.php
  */
-package kiss.xml;
+package kiss.xml.traverse;
 
 import org.junit.jupiter.api.Test;
 

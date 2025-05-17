@@ -51,17 +51,17 @@ import kiss.json.ManipulateTest;
 import kiss.lifestyle.PrototypeTest;
 import kiss.lifestyle.SingletonTest;
 import kiss.model.ModelLensTest;
-import kiss.xml.ChildrenTest;
-import kiss.xml.FindAttributeTest;
-import kiss.xml.FindClassTest;
-import kiss.xml.FindDescendantTest;
-import kiss.xml.FindTagTest;
-import kiss.xml.FirstTest;
 import kiss.xml.HTMLSoupTest;
-import kiss.xml.NextTest;
 import kiss.xml.ReadTest;
 import kiss.xml.XMLManipulationTest;
 import kiss.xml.XMLWriterTest;
+import kiss.xml.selector.AttributeTest;
+import kiss.xml.selector.ClassTest;
+import kiss.xml.selector.DescendantTest;
+import kiss.xml.selector.ElementTest;
+import kiss.xml.traverse.ChildrenTest;
+import kiss.xml.traverse.FirstTest;
+import kiss.xml.traverse.NextTest;
 import sinobu.ExtensionTest.Codec;
 import sinobu.ExtensionTest.LocalDateCodec;
 import sinobu.MustacheTest.Person;
@@ -895,7 +895,7 @@ public class Manual {
          * #### 🎯 CSS Selector Power
          * Leverages CSS selectors for efficient and flexible element selection,
          * similar to JavaScript libraries like jQuery.
-         * {@link FindTagTest#tag() @}
+         * {@link ElementTest#tag() @}
          * 
          * #### 🛠️ jQuery-Like API
          * Provides a fluent and chainable API for easy DOM manipulation,
@@ -967,10 +967,10 @@ public class Manual {
          * the {@link XML#find(String)} method. This provides a powerful and familiar way to select
          * nodes, similar to JavaScript's `document.querySelectorAll`.
          * This library supports many standard CSS3 selectors and includes some useful extensions.
-         * {@link FindTagTest#tag() @}
-         * {@link FindAttributeTest#attribute() @}
-         * {@link FindClassTest#clazz() @}
-         * {@link FindDescendantTest#mix() @}
+         * {@link ElementTest#tag() @}
+         * {@link AttributeTest#attribute() @}
+         * {@link ClassTest#clazz() @}
+         * {@link DescendantTest#mix() @}
          */
         public class CSS_Selector {
 
@@ -1174,7 +1174,7 @@ public class Manual {
              * | {@link XML#find(String)}| Find descendants matching the selector. |
              * 
              * {@link FirstTest#first() @}
-             * {@link FindTagTest#tag() @}
+             * {@link ElementTest#tag() @}
              */
             public class Filtering {
             }

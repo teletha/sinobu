@@ -61,7 +61,7 @@ public class Project extends bee.api.Project {
         require("com.fasterxml.jackson.core", "jackson-databind").atTest();
         require("com.fasterxml.jackson.module", "jackson-module-afterburner").atTest();
         require("com.google.code.gson", "gson").atTest();
-        require("com.alibaba.fastjson2", "fastjson2").atTest();
+        require("com.alibaba.fastjson2", "fastjson2", "2.0.57").atTest();
 
         // For XML benchmark
         require("org.jsoup", "jsoup").atTest();
