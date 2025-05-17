@@ -1,5 +1,21 @@
 # Changelog
 
+## [4.12.0](https://github.com/teletha/sinobu/compare/4.11.1...4.12.0) (2025-05-17)
+
+
+### Features
+
+* add XML#prevs and #nexts ([a6bc071](https://github.com/teletha/sinobu/commit/a6bc0718ef92a89e1a0773954dfddb4316da04e0))
+* drop XML#prevs and #nexts ([61718ec](https://github.com/teletha/sinobu/commit/61718ece324543d088ad3b25fa99a9c298221d01))
+* support :scope selector ([61718ec](https://github.com/teletha/sinobu/commit/61718ece324543d088ad3b25fa99a9c298221d01))
+
+
+### Bug Fixes
+
+* css selector (xxx-child and xxx-of-type) ([f9b02a1](https://github.com/teletha/sinobu/commit/f9b02a1398f80f8e5dc56c0e23dd148b4026d3d6))
+* css selector can handle universal selector in only-of-type ([a95b606](https://github.com/teletha/sinobu/commit/a95b6067970730c8e7b1a3bcaef97b8a5019137a))
+* XML can handle the separated selector with scope ([7bbbac1](https://github.com/teletha/sinobu/commit/7bbbac1e95406579b533b4cc9261c84c4f31edf4))
+
 ## [4.11.1](https://github.com/teletha/sinobu/compare/4.11.0...4.11.1) (2025-05-14)
 
 
