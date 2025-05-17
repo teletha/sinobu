@@ -262,17 +262,27 @@ public class I implements ParameterizedType {
             dom = factory.newDocumentBuilder();
             dom.setErrorHandler(new DefaultHandler());
             xpath = XPathFactory.newInstance().newXPath();
-            xpath.setXPathFunctionResolver((q, a) -> {
+            xpath.setXPathFunctionResolver((_, _) -> {
+                // Since the type pseudo-class of css selector cannot be implemented using only
+                // XPATH 1.0 by any means, it is implemented using an extended function.
+                //
+                // Note that the extended function omits resolution by name, assuming this is
+                // the only use of the function.
                 return args -> {
+                    // It calculates whether an element should be selected or not from four
+                    // arguments: element name, group of elements to be counted, coefficient, and
+                    // remainder.
+                    //
+                    // Please note that the code has been over-optimized to reduce the amount of
+                    // code and may be difficult to read.
                     String name = (String) args.get(0);
                     NodeList nodes = (NodeList) args.get(1);
-                    int count = 0;
+                    int coefficient = ((Double) args.get(2)).intValue();
+                    int index = 1 - ((Double) args.get(3)).intValue();
                     for (int i = 0; i < nodes.getLength(); i++) {
-                        if (name.equals("*") || nodes.item(i).getLocalName().equals(name)) {
-                            count++;
-                        }
+                        if (name.equals("") || nodes.item(i).getLocalName().equals(name)) index++;
                     }
-                    return count;
+                    return coefficient == 0 ? index == 0 : coefficient * index < 0 ? false : index % coefficient == 0;
                 };
             });
 

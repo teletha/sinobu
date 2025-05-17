@@ -1398,24 +1398,8 @@ public class XML implements Iterable<XML>, Consumer<XML> {
                         remainder = "1";
                     }
 
-                    // construct xpath
-                    String expr = "(e:x(" + (match.contains("type") ? "name()" : "'*'") + "," + (match.contains("last") ? "following"
-                            : "preceding") + "-sibling::*)+1)";
-
-                    xpath.append('[');
-                    if (coefficient.equals("0")) {
-                        // remainder only
-                        xpath.append(expr).append("=").append(remainder);
-                    } else {
-                        String term = "(" + expr + "-" + remainder + ")";
-                        if (coefficient.startsWith("-")) {
-                            coefficient = coefficient.replace("-", "");
-                            term = "-".concat(term);
-                        }
-                        xpath.append('(').append(term).append(" mod ").append(coefficient).append("=0)and(");
-                        xpath.append(term).append(" div ").append(coefficient).append(">=0)");
-                    }
-                    xpath.append(']');
+                    xpath.append("[e:x(" + (match.contains("type") ? "name()" : "''") + "," + (match.contains("last") ? "following"
+                            : "preceding") + "-sibling::*," + coefficient + "," + remainder + ")]");
                     break;
                 }
                 continue;
