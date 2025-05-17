@@ -159,14 +159,14 @@ public class FindClassTest extends FindAssetion {
         XML xml = I.xml("""
                 <m>
                     <e class='1digit-start'/> <!-- Potentially problematic class name for CSS2 -->
-                    <e class='-hyphen-start'/>
-                    <e class='--double-hyphen-start'/>
+                    <e class='-hype-start'/>
+                    <e class='--double-hype-start'/>
                 </m>
                 """);
 
         assert select(xml, 1, ".1digit-start");
-        assert select(xml, 1, ".-hyphen-start");
-        assert select(xml, 1, ".--double-hyphen-start");
+        assert select(xml, 1, ".-hype-start");
+        assert select(xml, 1, ".--double-hype-start");
     }
 
     @Test

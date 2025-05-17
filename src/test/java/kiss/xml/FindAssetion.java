@@ -25,7 +25,11 @@ public class FindAssetion {
             for (String s : spaces) {
                 String spaced = selector.replaceAll("(\\^=|\\$=|~=|\\|=|\\*=|=|,|<|>|~|\\+)", s + "$1" + s)
                         .replace("[", "[" + s)
-                        .replace("]", s + "]");
+                        .replace("]", s + "]")
+                        .replace("(", "(" + s)
+                        .replace(")", s + ")")
+                        .replace("n-", "n" + s + "-" + s)
+                        .replace("n+", "n" + s + "+" + s);
                 assert xml.find(s + spaced + s).size() == expectedCount;
             }
         }

@@ -22,7 +22,7 @@ public class FindIdTest {
     public void id() {
         XML xml = I.xml("""
                 <root>
-                    <div id="main-content"></div>
+                    <div id="best-content"></div>
                     <span id="title-element"></span>
                     <a id="link-item"></a>
                     <p id="another"></p>
@@ -30,7 +30,7 @@ public class FindIdTest {
                     <p no-id-attr="true"></p> <!-- No ID attribute -->
                 </root>
                 """);
-        assert select(xml, 1, "#main-content");
+        assert select(xml, 1, "#best-content");
         assert select(xml, 1, "#title-element");
         assert select(xml, 1, "#link-item");
         assert select(xml, 1, "#another");
@@ -119,14 +119,14 @@ public class FindIdTest {
         XML xml = I.xml("""
                 <m>
                     <e id='1digit-start'/>
-                    <e id='-hyphen-start'/>
-                    <e id='--double-hyphen-start'/>
+                    <e id='-hype-start'/>
+                    <e id='--double-hype-start'/>
                 </m>
                 """);
         // Test if direct selection works, assuming flexibility or CSS3-like behavior.
         assert select(xml, 1, "#1digit-start");
-        assert select(xml, 1, "#-hyphen-start");
-        assert select(xml, 1, "#--double-hyphen-start");
+        assert select(xml, 1, "#-hype-start");
+        assert select(xml, 1, "#--double-hype-start");
 
         // For CSS2 strictness (if needed):
         // assert validateSelector(xml, 1, "#\\31 digit-start");

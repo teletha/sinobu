@@ -1109,7 +1109,6 @@ public class XML implements Iterable<XML>, Consumer<XML> {
         if (compiled == null) {
             try {
                 // compile actually
-                System.out.println(convert(selector, axis) + "  @" + selector);
                 compiled = I.xpath.compile(convert(selector, axis));
 
                 // cache it
@@ -1335,7 +1334,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
                     break;
 
                 case 1455900751: // only-of-type
-                    xpath.append("[count(parent::*/").append(current).append(")=1]");
+                    xpath.append("[e:x(local-name(),preceding-sibling::*|following-sibling::*,0,1)]");
                     break;
 
                 case 96634189: // empty
@@ -1363,7 +1362,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
                     break;
 
                 case -567445985: // contains
-                    xpath.append("[contains(string(.),'").append(arg).append("')]");
+                    xpath.append("[contains(string(.),").append(arg).append(")]");
                     break;
 
                 case -2136991809: // first-child
@@ -1378,6 +1377,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
                     String remainder = "0";
 
                     if (match.startsWith("nth")) {
+                        arg = arg.replaceAll("[+\\s]", "");
                         int index = arg.indexOf('n');
 
                         if (arg.equals("even")) {
@@ -1389,10 +1389,10 @@ public class XML implements Iterable<XML>, Consumer<XML> {
                         } else if (index == -1) {
                             remainder = arg;
                         } else {
-                            coefficient = arg.substring(0, index).trim();
+                            coefficient = arg.substring(0, index);
                             coefficient = coefficient.isEmpty() ? "1" : coefficient.equals("-") ? "-1" : coefficient;
 
-                            String after = arg.substring(index + 1).trim().replace("+", "");
+                            String after = arg.substring(index + 1);
                             if (!after.isEmpty()) remainder = after;
                         }
                     } else {

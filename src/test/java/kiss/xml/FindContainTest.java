@@ -1,12 +1,3 @@
-/*
- * Copyright (C) 2025 Nameless Production Committee
- *
- * Licensed under the MIT License (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *          http://opensource.org/licenses/mit-license.php
- */
 package kiss.xml;
 
 import static kiss.xml.FindAssetion.*;
@@ -28,9 +19,9 @@ public class FindContainTest {
                 </m>
                 """);
 
-        assert select(xml, 2, "Q:contains(a)");
-        assert select(xml, 1, "Q:contains(aa)");
-        assert select(xml, 1, "Q:contains(b)");
+        assert select(xml, 2, "Q:contains('a')");
+        assert select(xml, 1, "Q:contains('aa')");
+        assert select(xml, 1, "Q:contains('b')");
     }
 
     @Test
@@ -43,8 +34,8 @@ public class FindContainTest {
                 </m>
                 """);
 
-        assert select(xml, 2, "Q:contains(ab)");
-        assert select(xml, 1, "Q:contains(xyz)");
+        assert select(xml, 2, "Q:contains('ab')");
+        assert select(xml, 1, "Q:contains('xyz')");
     }
 
     @Test
@@ -57,9 +48,9 @@ public class FindContainTest {
                 </m>
                 """);
 
-        assert select(xml, 1, "Q:contains(Apple)");
-        assert select(xml, 1, "Q:contains(apple)");
-        assert select(xml, 1, "Q:contains(APPLE)");
+        assert select(xml, 1, "Q:contains('Apple')");
+        assert select(xml, 1, "Q:contains('apple')");
+        assert select(xml, 1, "Q:contains('APPLE')");
     }
 
     @Test
@@ -73,8 +64,8 @@ public class FindContainTest {
                             </m>
                             """);
 
-        assert select(xml, 1, "Q:contains(hello world)");
-        assert select(xml, 1, "Q:contains(hello\nworld)");
+        assert select(xml, 1, "Q:contains('hello world')");
+        assert select(xml, 1, "Q:contains('hello\nworld')");
     }
 
     @Test
@@ -87,9 +78,9 @@ public class FindContainTest {
                 </m>
                 """);
 
-        assert select(xml, 3, "Q:contains(alpha)");
-        assert select(xml, 2, "Q:contains(beta)");
-        assert select(xml, 2, "Q:contains(alpha beta)");
+        assert select(xml, 3, "Q:contains('alpha')");
+        assert select(xml, 2, "Q:contains('beta')");
+        assert select(xml, 2, "Q:contains('alpha beta')");
     }
 
     @Test
@@ -103,10 +94,10 @@ public class FindContainTest {
                 </m>
                 """);
 
-        assert select(xml, 1, "Q:contains(&)");
-        assert select(xml, 1, "Q:contains(<)", false);
-        assert select(xml, 1, "Q:contains(>)", false);
-        assert select(xml, 1, "Q:contains(\")");
+        assert select(xml, 1, "Q:contains('&')");
+        assert select(xml, 1, "Q:contains('<')", false);
+        assert select(xml, 1, "Q:contains('>')", false);
+        assert select(xml, 1, "Q:contains('\"')");
     }
 
     @Test
@@ -115,12 +106,12 @@ public class FindContainTest {
                 <m>
                     <Q></Q>
                     <Q> </Q>
-                    <Q>non-empty</Q>
+                    <Q>none-empty</Q>
                 </m>
                 """);
 
-        assert select(xml, 3, "Q:contains()");
-        assert select(xml, 1, "Q:contains( )");
-        assert select(xml, 1, "Q:contains(non-empty)");
+        assert select(xml, 3, "Q:contains('')");
+        assert select(xml, 1, "Q:contains(' ')");
+        assert select(xml, 1, "Q:contains('none-empty')");
     }
 }

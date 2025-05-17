@@ -316,12 +316,12 @@ class XpathComprehensiveTest {
                     <p>Another hello</p>
                 </root>
                 """);
-        assert xml.find("p:contains(Hello)").size() == 1; // Case-sensitive
-        assert xml.find("p:contains(hello)").size() == 1;
-        assert xml.find(":contains(Hello)").size() == 1; // p containing "Hello World"
-        assert xml.find(":contains(hello)").size() == 1; // p containing "Another hello"
-        assert xml.find("span:contains(Intro)").size() == 1;
-        assert xml.find("h1:contains(Title)").size() == 1;
-        assert xml.find(":contains(XYZ)").size() == 0;
+        assert xml.find("p:contains('Hello')").size() == 1; // Case-sensitive
+        assert xml.find("p:contains('hello')").size() == 1;
+        assert xml.find(":contains('Hello')").size() == 1; // p containing "Hello World"
+        assert xml.find(":contains('hello')").size() == 1; // p containing "Another hello"
+        assert xml.find("span:contains('Intro')").size() == 1;
+        assert xml.find("h1:contains('Title')").size() == 1;
+        assert xml.find(":contains('XYZ')").size() == 0;
     }
 }

@@ -105,51 +105,6 @@ public class XMLFindTest {
     }
 
     @Test
-    public void nthLastChild() {
-        String text = xml("<m><Q/><Q/><Q/><Q/><P/><Q/><Q/></m>");
-
-        assert I.xml(text).find("Q:nth-last-child(1)").size() == 1;
-        assert I.xml(text).find("Q:nth-last-child(2)").size() == 1;
-        assert I.xml(text).find("Q:nth-last-child(3)").size() == 0;
-        assert I.xml(text).find("Q:nth-last-child(100)").size() == 0;
-        assert I.xml(text).find("Q:nth-last-child(2n)").size() == 3;
-        assert I.xml(text).find("Q:nth-last-child(3n)").size() == 1;
-        assert I.xml(text).find("Q:nth-last-child(4n)").size() == 1;
-        assert I.xml(text).find("Q:nth-last-child(2n+1)").size() == 3;
-        assert I.xml(text).find("Q:nth-last-child(odd)").size() == 3;
-        assert I.xml(text).find("Q:nth-last-child(even)").size() == 3;
-    }
-
-    @Test
-    public void nthLastOfType() {
-        String text = xml("<m><Q/><P/><Q/><P/><P/><Q/><Q/></m>");
-
-        assert I.xml(text).find("Q:nth-last-of-type(1)").size() == 1;
-        assert I.xml(text).find("Q:nth-last-of-type(2)").size() == 1;
-        assert I.xml(text).find("Q:nth-last-of-type(5)").size() == 0;
-        assert I.xml(text).find("Q:nth-last-of-type(n)").size() == 4;
-        assert I.xml(text).find("Q:nth-last-of-type(2n)").size() == 2;
-        assert I.xml(text).find("Q:nth-last-of-type(3n)").size() == 1;
-        assert I.xml(text).find("Q:nth-last-of-type(2n+1)").size() == 2;
-        assert I.xml(text).find("Q:nth-last-of-type(odd)").size() == 2;
-        assert I.xml(text).find("Q:nth-last-of-type(even)").size() == 2;
-    }
-
-    @Test
-    public void onlyChild() {
-        String text = xml("<m><Q/><r><Q/></r><r><Q/></r></m>");
-
-        assert I.xml(text).find("Q:only-child").size() == 2;
-    }
-
-    @Test
-    public void onlyOfType() {
-        String text = xml("<m><Q/><r><Q/><P/></r><r><Q/></r><Q/></m>");
-
-        assert I.xml(text).find("Q:only-of-type").size() == 2;
-    }
-
-    @Test
     public void empty() {
         String text = xml("<m><Q/><Q>text</Q><Q><r/></Q></m>");
 
