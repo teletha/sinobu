@@ -54,12 +54,12 @@ import kiss.model.ModelLensTest;
 import kiss.xml.ChildrenTest;
 import kiss.xml.FindAttributeTest;
 import kiss.xml.FindClassTest;
+import kiss.xml.FindDescendantTest;
 import kiss.xml.FindTagTest;
 import kiss.xml.FirstTest;
 import kiss.xml.HTMLSoupTest;
 import kiss.xml.NextTest;
 import kiss.xml.ReadTest;
-import kiss.xml.XMLFindTest;
 import kiss.xml.XMLManipulationTest;
 import kiss.xml.XMLWriterTest;
 import sinobu.ExtensionTest.Codec;
@@ -969,8 +969,8 @@ public class Manual {
          * This library supports many standard CSS3 selectors and includes some useful extensions.
          * {@link FindTagTest#tag() @}
          * {@link FindAttributeTest#attribute() @}
-         * {@link FindClassTest#singleClass() @}
-         * {@link XMLFindTest#child1() @}
+         * {@link FindClassTest#clazz() @}
+         * {@link FindDescendantTest#mix() @}
          */
         public class CSS_Selector {
 

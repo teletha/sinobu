@@ -9,12 +9,14 @@
  */
 package kiss.xml;
 
+import static kiss.xml.FindAssetion.*;
+
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
 import kiss.XML;
 
-public class FindIdTest extends FindTestBase {
+public class FindIdTest {
 
     @Test
     public void id() {
@@ -28,11 +30,11 @@ public class FindIdTest extends FindTestBase {
                     <p no-id-attr="true"></p> <!-- No ID attribute -->
                 </root>
                 """);
-        validateSelector(xml, 1, "#main-content");
-        validateSelector(xml, 1, "#title-element");
-        validateSelector(xml, 1, "#link-item");
-        validateSelector(xml, 1, "#another");
-        validateSelector(xml, 0, "#nonexistent");
+        assert select(xml, 1, "#main-content");
+        assert select(xml, 1, "#title-element");
+        assert select(xml, 1, "#link-item");
+        assert select(xml, 1, "#another");
+        assert select(xml, 0, "#nonexistent");
     }
 
     @Test
@@ -45,18 +47,18 @@ public class FindIdTest extends FindTestBase {
                     <e id='-D'/>
                 </m>
                 """);
-        validateSelector(xml, 1, "#A-A");
-        validateSelector(xml, 1, "#A--A");
-        validateSelector(xml, 1, "#--C");
-        validateSelector(xml, 1, "#-D");
+        assert select(xml, 1, "#A-A");
+        assert select(xml, 1, "#A--A");
+        assert select(xml, 1, "#--C");
+        assert select(xml, 1, "#-D");
     }
 
     @Test
     public void idWithEscapedHyphenInSelector() {
         XML xml = I.xml("<m><e id='A-A'/><e id='A--A'/></m>");
-        
-        validateSelector(xml, 1, "#A\\-A");
-        validateSelector(xml, 1, "#A\\-\\-A");
+
+        assert select(xml, 1, "#A\\-A");
+        assert select(xml, 1, "#A\\-\\-A");
     }
 
     @Test
@@ -68,12 +70,12 @@ public class FindIdTest extends FindTestBase {
                     <div id="elem2">Element 2</div>
                 </root>
                 """);
-        
-        validateSelector(xml, 1, "div#elem1");
-        validateSelector(xml, 1, "span#elem1");
-        validateSelector(xml, 1, "div#elem2");
-        validateSelector(xml, 0, "p#elem1"); // No p with this ID
-        validateSelector(xml, 2, "*#elem1"); // Any element with ID elem1
+
+        assert select(xml, 1, "div#elem1");
+        assert select(xml, 1, "span#elem1");
+        assert select(xml, 1, "div#elem2");
+        assert select(xml, 0, "p#elem1"); // No p with this ID
+        assert select(xml, 2, "*#elem1"); // Any element with ID elem1
     }
 
     @Test
@@ -86,10 +88,10 @@ public class FindIdTest extends FindTestBase {
                 </root>
                 """);
         // ID attributes in XML are case-sensitive. CSS ID selectors are also case-sensitive.
-        validateSelector(xml, 1, "#myId");
-        validateSelector(xml, 1, "#myid");
-        validateSelector(xml, 1, "#MYID");
-        validateSelector(xml, 0, "#MyId"); // No match
+        assert select(xml, 1, "#myId");
+        assert select(xml, 1, "#myid");
+        assert select(xml, 1, "#MYID");
+        assert select(xml, 0, "#MyId"); // No match
     }
 
     @Test
@@ -102,14 +104,14 @@ public class FindIdTest extends FindTestBase {
                     <div id="4id"></div> <!-- ID starting with a digit -->
                 </root>
                 """);
-        validateSelector(xml, 1, "#item1");
-        validateSelector(xml, 1, "#item-2");
-        validateSelector(xml, 1, "#i4d");
+        assert select(xml, 1, "#item1");
+        assert select(xml, 1, "#item-2");
+        assert select(xml, 1, "#i4d");
         // CSS2: an ID cannot start with a digit unless escaped.
         // CSS3: more lenient. Test direct selection.
-        validateSelector(xml, 1, "#4id");
+        assert select(xml, 1, "#4id");
         // If strict CSS2 rules for identifiers applied without automatic handling:
-        // validateSelector(xml, 1, "#\\34 id"); // Escaped '4'
+        // assert validateSelector(xml, 1, "#\\34 id"); // Escaped '4'
     }
 
     @Test
@@ -122,13 +124,14 @@ public class FindIdTest extends FindTestBase {
                 </m>
                 """);
         // Test if direct selection works, assuming flexibility or CSS3-like behavior.
-        validateSelector(xml, 1, "#1digit-start");
-        validateSelector(xml, 1, "#-hyphen-start");
-        validateSelector(xml, 1, "#--double-hyphen-start");
+        assert select(xml, 1, "#1digit-start");
+        assert select(xml, 1, "#-hyphen-start");
+        assert select(xml, 1, "#--double-hyphen-start");
 
         // For CSS2 strictness (if needed):
-        // validateSelector(xml, 1, "#\\31 digit-start");
-        // validateSelector(xml, 1, "#\\-hyphen-start"); // A single hyphen at start might need
+        // assert validateSelector(xml, 1, "#\\31 digit-start");
+        // assert validateSelector(xml, 1, "#\\-hyphen-start"); // A single hyphen at start might
+        // need
         // escaping
     }
 
@@ -138,17 +141,17 @@ public class FindIdTest extends FindTestBase {
         // XML attribute: id="a.b" -> Selector: "#a\\.b"
         // XML attribute: id="a:b" -> Selector: "#a\\:b"
         XML xml = I.xml("<m><e id='dot.char'/><e id='colon:char'/><e id='space char'/></m>");
-        validateSelector(xml, 1, "#dot\\.char");
-        validateSelector(xml, 1, "#colon\\:char");
+        assert select(xml, 1, "#dot\\.char");
+        assert select(xml, 1, "#colon\\:char");
         // IDs with spaces are invalid in HTML, but XML allows them.
         // CSS selectors require spaces to be escaped: #space\ char or #space\\ char
-        validateSelector(xml, 1, "#space\\ char"); // or "#space\\000020char"
+        assert select(xml, 1, "#space\\ char"); // or "#space\\000020char"
     }
 
     @Test
     public void findByIdOnElementWithNoId() {
         XML xml = I.xml("<root><item>text</item></root>");
-        validateSelector(xml, 0, "#anyId");
+        assert select(xml, 0, "#anyId");
     }
 
     @Test
@@ -158,6 +161,6 @@ public class FindIdTest extends FindTestBase {
         // Let's test on an XML object that is empty but valid.
         XML root = I.xml("<root/>");
         XML empty = root.find("nonexistent"); // empty XML set
-        validateSelector(empty, 0, "#anyId");
+        assert select(empty, 0, "#anyId");
     }
 }

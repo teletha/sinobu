@@ -9,15 +9,31 @@
  */
 package kiss.xml;
 
+import static kiss.xml.FindAssetion.*;
+
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
 import kiss.XML;
 
-public class FindTagTest extends FindTestBase {
+public class FindTagTest {
 
     @Test
     public void tag() {
+        XML xml = I.xml("""
+                <root>
+                    <h1></h1>
+                    <article/>
+                    <article></article>
+                </root>
+                """);
+
+        assert xml.find("h1").size() == 1;
+        assert xml.find("article").size() == 2;
+    }
+
+    @Test
+    public void elementName() {
         XML xml = I.xml("""
                 <root>
                     <article></article>
@@ -29,12 +45,12 @@ public class FindTagTest extends FindTestBase {
                 </root>
                 """);
 
-        validateSelector(xml, 2, "article");
-        validateSelector(xml, 2, "h1");
-        validateSelector(xml, 1, "lonely-child");
-        validateSelector(xml, 1, "div");
-        validateSelector(xml, 0, "nonexistent");
-        validateSelector(xml, 0, "root");
+        assert select(xml, 2, "article");
+        assert select(xml, 2, "h1");
+        assert select(xml, 1, "lonely-child");
+        assert select(xml, 1, "div");
+        assert select(xml, 0, "nonexistent");
+        assert select(xml, 0, "root");
     }
 
     @Test
@@ -53,16 +69,16 @@ public class FindTagTest extends FindTestBase {
                 """);
         // xml is <root>. xml.find("*") finds descendants: main, item1, item2, item3, other. (5
         // elements)
-        validateSelector(xml, 5, "*");
+        assert select(xml, 5, "*");
 
         // Children of <root> are <main> and <other>. (2 elements)
-        validateSelector(xml, 2, ">", "*");
+        assert select(xml, 2, "> *");
 
         // Children of <main> are <item1>, <item2>, <item3>. (3 elements)
-        validateSelector(xml, 3, "main", ">", "*");
+        assert select(xml, 3, "main > *");
 
         // Descendants of <main> are <item1>, <item2>, <item3>. (3 elements)
-        validateSelector(xml, 3, "main", " ", "*");
+        assert select(xml, 3, "main *");
     }
 
     @Test
@@ -83,8 +99,8 @@ public class FindTagTest extends FindTestBase {
         assert xml.find("E ,F").size() == 2; // Space before comma
         assert xml.find("E , F").size() == 2; // Space around comma
 
-        // Test with validateSelector for the base case "E,F"
-        validateSelector(xml, 2, "E", ",", "F");
+        // Test with assert validateSelector for the base case "E,F"
+        assert select(xml, 2, "E , F");
 
         // Other combinations
         assert xml.find("E,G").size() == 2; // E (child of m), G (grandchild of m)
@@ -96,14 +112,14 @@ public class FindTagTest extends FindTestBase {
     @Test
     public void tagWithDot() {
         XML xml = I.xml("<m><E.E.E/></m>");
-        validateSelector(xml, 1, "E\\.E\\.E"); // Dots need to be escaped for literal match
+        assert select(xml, 1, "E\\.E\\.E"); // Dots need to be escaped for literal match
     }
 
     @Test
     public void tagWithHyphen() {
         XML xml = I.xml("<m><E-E/><E--E/></m>");
-        validateSelector(xml, 1, "E-E");
-        validateSelector(xml, 1, "E--E");
+        assert select(xml, 1, "E-E");
+        assert select(xml, 1, "E--E");
     }
 
     @Test
@@ -111,25 +127,25 @@ public class FindTagTest extends FindTestBase {
         XML xml = I.xml("<m><E-E/><E--E/></m>");
         // Standard CSS doesn't require escaping hyphens in type names unless ambiguous.
         // E-E is a valid type selector. E\-E should also select <E-E>.
-        validateSelector(xml, 1, "E\\-E");
-        validateSelector(xml, 1, "E\\-\\-E");
+        assert select(xml, 1, "E\\-E");
+        assert select(xml, 1, "E\\-\\-E");
     }
 
     @Test
     public void tagCaseSensitivity() {
         XML xml = I.xml("<m><item/><Item/><ITEM/></m>");
-        validateSelector(xml, 1, "item");
-        validateSelector(xml, 1, "Item");
-        validateSelector(xml, 1, "ITEM");
-        validateSelector(xml, 0, "iTeM"); // No match due to case difference
+        assert select(xml, 1, "item");
+        assert select(xml, 1, "Item");
+        assert select(xml, 1, "ITEM");
+        assert select(xml, 0, "iTeM"); // No match due to case difference
     }
 
     @Test
     public void tagWithNumbers() {
         XML xml = I.xml("<m><h1/><el2/><e3e/></m>");
-        validateSelector(xml, 1, "h1");
-        validateSelector(xml, 1, "el2");
-        validateSelector(xml, 1, "e3e");
+        assert select(xml, 1, "h1");
+        assert select(xml, 1, "el2");
+        assert select(xml, 1, "e3e");
     }
 
     @Test
@@ -138,12 +154,12 @@ public class FindTagTest extends FindTestBase {
 
         XML emptyChildrenSet = root.children(); // This will be an empty XML set
         assert emptyChildrenSet.size() == 0;
-        validateSelector(emptyChildrenSet, 0, "anyTag");
-        validateSelector(emptyChildrenSet, 0, "*");
+        assert select(emptyChildrenSet, 0, "anyTag");
+        assert select(emptyChildrenSet, 0, "*");
 
         XML nonExistentSet = root.find("nonexistent"); // This is also an empty XML set
         assert nonExistentSet.size() == 0;
-        validateSelector(nonExistentSet, 0, "anyTag");
-        validateSelector(nonExistentSet, 0, "*");
+        assert select(nonExistentSet, 0, "anyTag");
+        assert select(nonExistentSet, 0, "*");
     }
 }

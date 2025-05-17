@@ -9,21 +9,23 @@
  */
 package kiss.xml;
 
+import static kiss.xml.FindAssetion.*;
+
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
 import kiss.XML;
 
-public class FindFirstTest extends FindTestBase {
+public class FindFirstTest {
 
     @Test
     public void firstChildBasic() {
         XML xml = I.xml("<m><Q id='q1'/><Q id='q2'/><R id='r1'/></m>");
 
-        validateSelector(xml, 1, "Q#q1:first-child");
-        validateSelector(xml, 0, "Q#q2:first-child");
-        validateSelector(xml, 0, "R#r1:first-child");
-        validateSelector(xml, 1, "*#q1:first-child"); // ID selector before pseudo-class
+        assert select(xml, 1, "Q#q1:first-child");
+        assert select(xml, 0, "Q#q2:first-child");
+        assert select(xml, 0, "R#r1:first-child");
+        assert select(xml, 1, "*#q1:first-child"); // ID selector before pseudo-class
     }
 
     @Test
@@ -46,32 +48,32 @@ public class FindFirstTest extends FindTestBase {
                 </root>
                 """);
 
-        validateSelector(xml, 1, "childA#ca1:first-child");
-        validateSelector(xml, 0, "childB#cb1:first-child");
-        validateSelector(xml, 0, "childA#ca2:first-child");
-        validateSelector(xml, 1, "*[id='ca1']:first-child"); // Attribute selector before
-                                                             // pseudo-class
+        assert select(xml, 1, "childA#ca1:first-child");
+        assert select(xml, 0, "childB#cb1:first-child");
+        assert select(xml, 0, "childA#ca2:first-child");
+        assert select(xml, 1, "*[id='ca1']:first-child"); // Attribute selector before
+                                                          // pseudo-class
 
         XML childA_ca1 = xml.find("#ca1");
-        validateSelector(childA_ca1, 1, "grandchildA1#gca1:first-child");
-        validateSelector(childA_ca1, 0, "grandchildA2#gca2:first-child");
-        validateSelector(childA_ca1, 1, "*[id='gca1']:first-child");
+        assert select(childA_ca1, 1, "grandchildA1#gca1:first-child");
+        assert select(childA_ca1, 0, "grandchildA2#gca2:first-child");
+        assert select(childA_ca1, 1, "*[id='gca1']:first-child");
 
         XML childB_cb1 = xml.find("#cb1");
-        validateSelector(childB_cb1, 1, "grandchildB1#gcb1:first-child");
-        validateSelector(childB_cb1, 1, "*[id='gcb1']:first-child");
+        assert select(childB_cb1, 1, "grandchildB1#gcb1:first-child");
+        assert select(childB_cb1, 1, "*[id='gcb1']:first-child");
     }
 
     @Test
     public void firstChildWithOnlyOneChild() {
         XML xml = I.xml("<m><Q id='q1'/></m>");
-        validateSelector(xml, 1, "Q#q1:first-child");
+        assert select(xml, 1, "Q#q1:first-child");
     }
 
     @Test
     public void firstChildNoElementChildren() {
         XML xml = I.xml("<m>text <!-- comment --></m>");
-        validateSelector(xml, 0, "*:first-child"); // Pseudo-class is already at the end
+        assert select(xml, 0, "*:first-child"); // Pseudo-class is already at the end
     }
 
     @Test
@@ -83,23 +85,23 @@ public class FindFirstTest extends FindTestBase {
                     <div class='item first' id='d2'/>
                 </m>
                 """);
-        validateSelector(xml, 1, "div.item#d1:first-child");
-        validateSelector(xml, 0, "span.item:first-child"); // Type, class, then pseudo-class
-        validateSelector(xml, 0, "div.first:first-child"); // Type, class, then pseudo-class
+        assert select(xml, 1, "div.item#d1:first-child");
+        assert select(xml, 0, "span.item:first-child"); // Type, class, then pseudo-class
+        assert select(xml, 0, "div.first:first-child"); // Type, class, then pseudo-class
     }
 
     @Test
     public void firstOfTypeBasic() {
         XML xml = I.xml("<m><Q id='q1'/><Q id='q2'/><R id='r1'/><P id='p1'/><Q id='q3'/><R id='r2'/></m>");
 
-        validateSelector(xml, 1, "Q#q1:first-of-type");
-        validateSelector(xml, 0, "Q#q2:first-of-type");
-        validateSelector(xml, 0, "Q#q3:first-of-type");
+        assert select(xml, 1, "Q#q1:first-of-type");
+        assert select(xml, 0, "Q#q2:first-of-type");
+        assert select(xml, 0, "Q#q3:first-of-type");
 
-        validateSelector(xml, 1, "R#r1:first-of-type");
-        validateSelector(xml, 0, "R#r2:first-of-type");
+        assert select(xml, 1, "R#r1:first-of-type");
+        assert select(xml, 0, "R#r2:first-of-type");
 
-        validateSelector(xml, 1, "P#p1:first-of-type");
+        assert select(xml, 1, "P#p1:first-of-type");
     }
 
     @Test
@@ -121,17 +123,17 @@ public class FindFirstTest extends FindTestBase {
                 </root>
                 """);
 
-        validateSelector(xml, 1, "typeA#a1:first-of-type");
-        validateSelector(xml, 0, "typeA#a2:first-of-type");
-        validateSelector(xml, 1, "typeB#b1:first-of-type");
-        validateSelector(xml, 0, "typeB#b2:first-of-type");
-        validateSelector(xml, 1, "typeC#c3:first-of-type");
+        assert select(xml, 1, "typeA#a1:first-of-type");
+        assert select(xml, 0, "typeA#a2:first-of-type");
+        assert select(xml, 1, "typeB#b1:first-of-type");
+        assert select(xml, 0, "typeB#b2:first-of-type");
+        assert select(xml, 1, "typeC#c3:first-of-type");
 
         XML typeA_a2 = xml.find("#a2");
-        validateSelector(typeA_a2, 1, "typeC#c1:first-of-type");
-        validateSelector(typeA_a2, 0, "typeC#c2:first-of-type");
-        validateSelector(typeA_a2, 1, "typeA#a3:first-of-type");
-        validateSelector(typeA_a2, 1, "typeB#b3:first-of-type");
+        assert select(typeA_a2, 1, "typeC#c1:first-of-type");
+        assert select(typeA_a2, 0, "typeC#c2:first-of-type");
+        assert select(typeA_a2, 1, "typeA#a3:first-of-type");
+        assert select(typeA_a2, 1, "typeB#b3:first-of-type");
     }
 
     @Test
@@ -145,12 +147,12 @@ public class FindFirstTest extends FindTestBase {
                     <elemQ id='q2'/>
                 </root>
                 """);
-        // validateSelector(xml, 3, "*:first-of-type");
-        validateSelector(xml, 1, "*#p1:first-of-type");
-        validateSelector(xml, 1, "*#q1:first-of-type");
-        validateSelector(xml, 1, "*#r1:first-of-type");
-        validateSelector(xml, 0, "*#p2:first-of-type");
-        validateSelector(xml, 0, "*#q2:first-of-type");
+        // assert validateSelector(xml, 3, "*:first-of-type");
+        assert select(xml, 1, "*#p1:first-of-type");
+        assert select(xml, 1, "*#q1:first-of-type");
+        assert select(xml, 1, "*#r1:first-of-type");
+        assert select(xml, 0, "*#p2:first-of-type");
+        assert select(xml, 0, "*#q2:first-of-type");
     }
 
     @Test
@@ -164,39 +166,39 @@ public class FindFirstTest extends FindTestBase {
                     <div class='other' id='d3'/>
                 </m>
                 """);
-        validateSelector(xml, 1, "div.item#d1:first-of-type");
-        validateSelector(xml, 0, "div.item#d2:first-of-type");
+        assert select(xml, 1, "div.item#d1:first-of-type");
+        assert select(xml, 0, "div.item#d2:first-of-type");
 
-        validateSelector(xml, 1, "span.item#s1:first-of-type");
-        validateSelector(xml, 0, "span.item#s2:first-of-type");
+        assert select(xml, 1, "span.item#s1:first-of-type");
+        assert select(xml, 0, "span.item#s2:first-of-type");
 
-        validateSelector(xml, 0, "div.other#d3:first-of-type");
+        assert select(xml, 0, "div.other#d3:first-of-type");
     }
 
     @Test
     public void firstChildWithNoMatchingType() {
         XML xml = I.xml("<m><P/><Q id='q1'/></m>");
-        validateSelector(xml, 0, "Q:first-child");
+        assert select(xml, 0, "Q:first-child");
     }
 
     @Test
     public void firstOfTypeWithNoMatchingType() {
         XML xml = I.xml("<m><P/><R/></m>");
-        validateSelector(xml, 0, "Q:first-of-type");
+        assert select(xml, 0, "Q:first-of-type");
     }
 
     @Test
     public void firstChildIgnoresTextNodesAndComments() {
         XML xml = I.xml("<m>text<!--comment--><Q id='q1'/><R/></m>");
-        validateSelector(xml, 1, "Q#q1:first-child");
-        validateSelector(xml, 0, "R:first-child");
+        assert select(xml, 1, "Q#q1:first-child");
+        assert select(xml, 0, "R:first-child");
     }
 
     @Test
     public void firstOfTypeIgnoresTextNodesAndComments() {
         XML xml = I.xml("<m><P id='p1'/>text<!--comment--><Q id='q1'/><P id='p2'/><R/></m>");
-        validateSelector(xml, 1, "Q#q1:first-of-type");
-        validateSelector(xml, 1, "P#p1:first-child");
-        validateSelector(xml, 1, "P#p1:first-of-type");
+        assert select(xml, 1, "Q#q1:first-of-type");
+        assert select(xml, 1, "P#p1:first-child");
+        assert select(xml, 1, "P#p1:first-of-type");
     }
 }

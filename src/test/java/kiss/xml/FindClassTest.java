@@ -14,29 +14,22 @@ import org.junit.jupiter.api.Test;
 import kiss.I;
 import kiss.XML;
 
-public class FindClassTest extends FindTestBase {
+public class FindClassTest extends FindAssetion {
 
     @Test
-    public void singleClass() {
+    public void clazz() {
         XML xml = I.xml("""
                 <root>
-                    <div class="post featured"></div>
-                    <article class="post"></article>
-                    <span class="post icon"></span>
-                    <a class="featured"></a>
-                    <p class="external"></p>
-                    <p class="external large"></p>
-                    <p class=""></p> <!-- Empty class attribute -->
-                    <p no-class-attr="true"></p> <!-- No class attribute -->
+                    <p class="on"/>
+                    <p class="on large"/>
+                    <p class=""/>
+                    <p no-class-attr="on"/>
                 </root>
                 """);
 
-        validateSelector(xml, 3, ".post");
-        validateSelector(xml, 2, ".featured");
-        validateSelector(xml, 2, ".external");
-        validateSelector(xml, 1, ".icon");
-        validateSelector(xml, 1, ".large");
-        validateSelector(xml, 0, ".nonexistent");
+        assert xml.find(".on").size() == 2;
+        assert xml.find(".large").size() == 1;
+        assert xml.find(".on.large").size() == 1;
     }
 
     @Test
@@ -51,10 +44,10 @@ public class FindClassTest extends FindTestBase {
                 </m>
                 """);
 
-        validateSelector(xml, 1, ".a-b");
-        validateSelector(xml, 1, ".a--b");
-        validateSelector(xml, 1, ".--c");
-        validateSelector(xml, 1, ".-d");
+        assert select(xml, 1, ".a-b");
+        assert select(xml, 1, ".a--b");
+        assert select(xml, 1, ".--c");
+        assert select(xml, 1, ".-d");
     }
 
     @Test
@@ -67,8 +60,8 @@ public class FindClassTest extends FindTestBase {
                 </m>
                 """);
 
-        validateSelector(xml, 1, ".a\\-b");
-        validateSelector(xml, 1, ".a\\-\\-b");
+        assert select(xml, 1, ".a\\-b");
+        assert select(xml, 1, ".a\\-\\-b");
     }
 
     @Test
@@ -81,11 +74,11 @@ public class FindClassTest extends FindTestBase {
                 </m>
                 """);
 
-        validateSelector(xml, 1, ".A");
-        validateSelector(xml, 3, ".B");
-        validateSelector(xml, 1, ".C");
-        validateSelector(xml, 1, ".AA");
-        validateSelector(xml, 1, ".CC");
+        assert select(xml, 1, ".A");
+        assert select(xml, 3, ".B");
+        assert select(xml, 1, ".C");
+        assert select(xml, 1, ".AA");
+        assert select(xml, 1, ".CC");
     }
 
     @Test
@@ -101,13 +94,13 @@ public class FindClassTest extends FindTestBase {
                 </root>
                 """);
 
-        validateSelector(xml, 2, ".a.b.c");
-        validateSelector(xml, 3, ".a.b");
-        validateSelector(xml, 3, ".b.a");
-        validateSelector(xml, 3, ".a.c");
-        validateSelector(xml, 0, ".a.d");
-        validateSelector(xml, 3, ".b.c");
-        validateSelector(xml, 3, ".c.b");
+        assert select(xml, 2, ".a.b.c");
+        assert select(xml, 3, ".a.b");
+        assert select(xml, 3, ".b.a");
+        assert select(xml, 3, ".a.c");
+        assert select(xml, 0, ".a.d");
+        assert select(xml, 3, ".b.c");
+        assert select(xml, 3, ".c.b");
     }
 
     @Test
@@ -121,13 +114,13 @@ public class FindClassTest extends FindTestBase {
                 </root>
                 """);
 
-        validateSelector(xml, 2, "div.message");
-        validateSelector(xml, 1, "span.message");
-        validateSelector(xml, 1, "span.warning");
-        validateSelector(xml, 0, "p.message");
-        validateSelector(xml, 2, "*.error");
-        validateSelector(xml, 1, "div.error");
-        validateSelector(xml, 1, "p.error");
+        assert select(xml, 2, "div.message");
+        assert select(xml, 1, "span.message");
+        assert select(xml, 1, "span.warning");
+        assert select(xml, 0, "p.message");
+        assert select(xml, 2, "*.error");
+        assert select(xml, 1, "div.error");
+        assert select(xml, 1, "p.error");
     }
 
     @Test
@@ -140,10 +133,10 @@ public class FindClassTest extends FindTestBase {
                 </root>
                 """);
 
-        validateSelector(xml, 1, ".myClass");
-        validateSelector(xml, 1, ".myclass");
-        validateSelector(xml, 1, ".MYCLASS");
-        validateSelector(xml, 0, ".MyClass"); // No match
+        assert select(xml, 1, ".myClass");
+        assert select(xml, 1, ".myclass");
+        assert select(xml, 1, ".MYCLASS");
+        assert select(xml, 0, ".MyClass"); // No match
     }
 
     @Test
@@ -156,9 +149,9 @@ public class FindClassTest extends FindTestBase {
                 </root>
                 """);
 
-        validateSelector(xml, 1, ".item1");
-        validateSelector(xml, 1, ".item-2");
-        validateSelector(xml, 1, ".c4s");
+        assert select(xml, 1, ".item1");
+        assert select(xml, 1, ".item-2");
+        assert select(xml, 1, ".c4s");
     }
 
     @Test
@@ -171,9 +164,9 @@ public class FindClassTest extends FindTestBase {
                 </m>
                 """);
 
-        validateSelector(xml, 1, ".1digit-start");
-        validateSelector(xml, 1, ".-hyphen-start");
-        validateSelector(xml, 1, ".--double-hyphen-start");
+        assert select(xml, 1, ".1digit-start");
+        assert select(xml, 1, ".-hyphen-start");
+        assert select(xml, 1, ".--double-hyphen-start");
     }
 
     @Test
@@ -184,7 +177,7 @@ public class FindClassTest extends FindTestBase {
         // XML attribute: class="a[b]" -> Selector: ".a\\\\[b\\]" (more complex)
         XML xml = I.xml("<m><e class='dot.char'/><e class='colon:char'/></m>");
 
-        validateSelector(xml, 1, ".dot\\.char");
-        validateSelector(xml, 1, ".colon\\:char");
+        assert select(xml, 1, ".dot\\.char");
+        assert select(xml, 1, ".colon\\:char");
     }
 }

@@ -9,48 +9,55 @@
  */
 package kiss.xml;
 
+import static kiss.xml.FindAssetion.*;
+
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
 import kiss.XML;
 
-public class FindAttributeTest extends FindTestBase {
+public class FindAttributeTest {
 
     @Test
     public void attribute() {
-        XML xml = I.xml("<m><e A='A' B='B'/><e A='B' B='A'/></m>");
+        XML xml = I.xml("""
+                <m>
+                    <e A='one' B='one'/>
+                    <e A='two' B='two'/>
+                </m>
+                """);
 
-        validateAttributeSelector(xml, 2, "[A]");
-        validateAttributeSelector(xml, 2, "[B]");
+        assert xml.find("[A]").size() == 2;
+        assert xml.find("[A=one]").size() == 1;
     }
 
     @Test
     public void attributeNS() {
         XML xml = I.xml("<m xmlns:p='p'><e p:A='A' B='B'/><e A='B' p:B='A'/></m>");
 
-        validateAttributeSelector(xml, 2, "[A]");
-        validateAttributeSelector(xml, 2, "[B]");
+        assert select(xml, 2, "[A]");
+        assert select(xml, 2, "[B]");
     }
 
     @Test
     public void attributeValue() {
         XML xml = I.xml("<m><e A='a'/><e A='B'/></m>");
 
-        validateAttributeSelector(xml, 1, "[A='a']");
+        assert select(xml, 1, "[A='a']");
     }
 
     @Test
     public void attributeSingleQuote() {
         XML xml = I.xml("<m><e A='A'/><e A='B'/></m>");
 
-        validateAttributeSelector(xml, 1, "[A='A']");
+        assert select(xml, 1, "[A='A']");
     }
 
     @Test
     public void attributeWithoutQuote() {
         XML xml = I.xml("<m><e A='A'/><e A='B'/></m>");
 
-        validateAttributeSelector(xml, 1, "[A=A]");
+        assert select(xml, 1, "[A=A]");
     }
 
     @Test
@@ -63,10 +70,10 @@ public class FindAttributeTest extends FindTestBase {
                     <item name='four' class='test'/>
                 </root>
                 """);
-        validateAttributeSelector(xml, 2, "[name]");
-        validateAttributeSelector(xml, 1, "[id]");
-        validateAttributeSelector(xml, 1, "[class]");
-        validateAttributeSelector(xml, 0, "[unknown]");
+        assert select(xml, 2, "[name]");
+        assert select(xml, 1, "[id]");
+        assert select(xml, 1, "[class]");
+        assert select(xml, 0, "[unknown]");
     }
 
     @Test
@@ -79,11 +86,11 @@ public class FindAttributeTest extends FindTestBase {
                     <item name='ONE'/>
                 </root>
                 """);
-        validateAttributeSelector(xml, 1, "[name='one']");
-        validateAttributeSelector(xml, 1, "[name='two']");
-        validateAttributeSelector(xml, 1, "[name='one two']");
-        validateAttributeSelector(xml, 1, "[name='ONE']");
-        validateAttributeSelector(xml, 0, "[name='three']");
+        assert select(xml, 1, "[name='one']");
+        assert select(xml, 1, "[name='two']");
+        assert select(xml, 1, "[name='one two']");
+        assert select(xml, 1, "[name='ONE']");
+        assert select(xml, 0, "[name='three']");
     }
 
     @Test
@@ -97,15 +104,15 @@ public class FindAttributeTest extends FindTestBase {
                     <item class='other foo-bar'/>
                 </root>
                 """);
-        validateAttributeSelector(xml, 3, "[class~='foo']");
-        validateAttributeSelector(xml, 2, "[class~='bar']");
-        validateAttributeSelector(xml, 1, "[class~='baz']");
-        validateAttributeSelector(xml, 1, "[class~='foobar']");
+        assert select(xml, 3, "[class~='foo']");
+        assert select(xml, 2, "[class~='bar']");
+        assert select(xml, 1, "[class~='baz']");
+        assert select(xml, 1, "[class~='foobar']");
 
         // word
-        validateAttributeSelector(xml, 1, "[class~='foo-bar']");
-        validateAttributeSelector(xml, 1, "[class~='other']");
-        validateAttributeSelector(xml, 0, "[class~='b']"); // "b" is not a whole word
+        assert select(xml, 1, "[class~='foo-bar']");
+        assert select(xml, 1, "[class~='other']");
+        assert select(xml, 0, "[class~='b']"); // "b" is not a whole word
     }
 
     @Test
@@ -119,10 +126,10 @@ public class FindAttributeTest extends FindTestBase {
                     <item lang='english'/>
                 </root>
                 """);
-        validateAttributeSelector(xml, 3, "[lang|='en']");
-        validateAttributeSelector(xml, 1, "[lang|='fr']");
-        validateAttributeSelector(xml, 1, "[lang|='english']");
-        validateAttributeSelector(xml, 0, "[lang|='e']");
+        assert select(xml, 3, "[lang|='en']");
+        assert select(xml, 1, "[lang|='fr']");
+        assert select(xml, 1, "[lang|='english']");
+        assert select(xml, 0, "[lang|='e']");
     }
 
     @Test
@@ -135,9 +142,9 @@ public class FindAttributeTest extends FindTestBase {
                     <item href='test/http://example.com'/>
                 </root>
                 """);
-        validateAttributeSelector(xml, 2, "[href^='http://']");
-        validateAttributeSelector(xml, 1, "[href^='https://']");
-        validateAttributeSelector(xml, 0, "[href^='example']");
+        assert select(xml, 2, "[href^='http://']");
+        assert select(xml, 1, "[href^='https://']");
+        assert select(xml, 0, "[href^='example']");
     }
 
     @Test
@@ -150,11 +157,11 @@ public class FindAttributeTest extends FindTestBase {
                     <item src='photo.jpeg'/>
                 </root>
                 """);
-        validateAttributeSelector(xml, 1, "[src$='.png']");
-        validateAttributeSelector(xml, 1, "[src$='.js']");
-        validateAttributeSelector(xml, 1, "[src$='.zip']");
-        validateAttributeSelector(xml, 1, "[src$='jpeg']");
-        validateAttributeSelector(xml, 0, "[src$='photo']");
+        assert select(xml, 1, "[src$='.png']");
+        assert select(xml, 1, "[src$='.js']");
+        assert select(xml, 1, "[src$='.zip']");
+        assert select(xml, 1, "[src$='jpeg']");
+        assert select(xml, 0, "[src$='photo']");
     }
 
     @Test
@@ -167,25 +174,25 @@ public class FindAttributeTest extends FindTestBase {
                     <item title='chapter three'/>
                 </root>
                 """);
-        validateAttributeSelector(xml, 3, "[title*='Chapter']"); // Case sensitive match
-        validateAttributeSelector(xml, 1, "[title*='pter 2']");
-        validateAttributeSelector(xml, 0, "[title*='summary']"); // Case sensitive
-        validateAttributeSelector(xml, 1, "[title*='chapter']"); // Case sensitive match
-        validateAttributeSelector(xml, 0, "[title*='xyz']");
+        assert select(xml, 3, "[title*='Chapter']"); // Case sensitive match
+        assert select(xml, 1, "[title*='pter 2']");
+        assert select(xml, 0, "[title*='summary']"); // Case sensitive
+        assert select(xml, 1, "[title*='chapter']"); // Case sensitive match
+        assert select(xml, 0, "[title*='xyz']");
     }
 
     @Test
     public void attributeNameWithHyphen() {
         XML xml = I.xml("<m><e data-test='value'/><invalid/></m>");
-        validateAttributeSelector(xml, 1, "[data-test='value']");
-        validateAttributeSelector(xml, 1, "[data-test]");
+        assert select(xml, 1, "[data-test='value']");
+        assert select(xml, 1, "[data-test]");
     }
 
     @Test
     public void attributeNameWithUnderscore() {
         XML xml = I.xml("<m><e my_attr='value'/><invalid/></m>");
-        validateAttributeSelector(xml, 1, "[my_attr='value']");
-        validateAttributeSelector(xml, 1, "[my_attr]");
+        assert select(xml, 1, "[my_attr='value']");
+        assert select(xml, 1, "[my_attr]");
     }
 
     @Test
@@ -199,12 +206,12 @@ public class FindAttributeTest extends FindTestBase {
                     <item data-foo="bar" data-bar='baz'></item>
                 </root>
                 """);
-        validateAttributeSelector(xml, 1, "[data-id=1]");
-        validateAttributeSelector(xml, 1, "[data-id='2']");
-        validateAttributeSelector(xml, 1, "[data-id=\"value\"]");
-        validateAttributeSelector(xml, 1, "item[data-name=test-name]");
-        validateAttributeSelector(xml, 1, "[data-foo=\"bar\"][data-bar='baz']");
-        validateAttributeSelector(xml, 0, "[data-id=nonexistent]");
+        assert select(xml, 1, "[data-id=1]");
+        assert select(xml, 1, "[data-id='2']");
+        assert select(xml, 1, "[data-id=\"value\"]");
+        assert select(xml, 1, "item[data-name=test-name]");
+        assert select(xml, 1, "[data-foo=\"bar\"][data-bar='baz']");
+        assert select(xml, 0, "[data-id=nonexistent]");
     }
 
     @Test
@@ -217,11 +224,11 @@ public class FindAttributeTest extends FindTestBase {
                     <span class="alpha"></span>
                 </root>
                 """);
-        validateAttributeSelector(xml, 2, "[class~=alpha]");
-        validateAttributeSelector(xml, 2, "[class~=beta]");
-        validateAttributeSelector(xml, 1, "[class~=gamma]");
-        validateAttributeSelector(xml, 1, "[class~=epsilon]");
-        validateAttributeSelector(xml, 0, "[class~=zeta]");
+        assert select(xml, 2, "[class~=alpha]");
+        assert select(xml, 2, "[class~=beta]");
+        assert select(xml, 1, "[class~=gamma]");
+        assert select(xml, 1, "[class~=epsilon]");
+        assert select(xml, 0, "[class~=zeta]");
     }
 
     @Test
@@ -235,11 +242,11 @@ public class FindAttributeTest extends FindTestBase {
                     <p lang="de-DE"></p>
                 </root>
                 """);
-        validateAttributeSelector(xml, 3, "[lang|=en]");
-        validateAttributeSelector(xml, 1, "[lang|=fr]");
-        validateAttributeSelector(xml, 1, "[lang|=de]");
-        validateAttributeSelector(xml, 1, "[lang|=de-DE]");
-        validateAttributeSelector(xml, 0, "[lang|=es]");
+        assert select(xml, 3, "[lang|=en]");
+        assert select(xml, 1, "[lang|=fr]");
+        assert select(xml, 1, "[lang|=de]");
+        assert select(xml, 1, "[lang|=de-DE]");
+        assert select(xml, 0, "[lang|=es]");
     }
 
     @Test
@@ -251,11 +258,11 @@ public class FindAttributeTest extends FindTestBase {
                     <a title="another unrelated"></a>
                 </root>
                 """);
-        validateAttributeSelector(xml, 2, "[title*=link]");
-        validateAttributeSelector(xml, 1, "[title*=main]");
-        validateAttributeSelector(xml, 1, "[title*=secondary]");
-        validateAttributeSelector(xml, 1, "[title*=other]");
-        validateAttributeSelector(xml, 0, "[title*=xyz]");
+        assert select(xml, 2, "[title*=link]");
+        assert select(xml, 1, "[title*=main]");
+        assert select(xml, 1, "[title*=secondary]");
+        assert select(xml, 1, "[title*=other]");
+        assert select(xml, 0, "[title*=xyz]");
     }
 
     @Test
@@ -268,10 +275,10 @@ public class FindAttributeTest extends FindTestBase {
                     <item class="widget" data-type="A"></item> <!-- No lang -->
                 </root>
                 """);
-        validateAttributeSelector(xml, 2, "item[class=widget][data-type=A]");
-        validateAttributeSelector(xml, 1, "item[class=widget][lang=en]");
-        validateAttributeSelector(xml, 2, "item[data-type=A][lang=en]");
-        validateAttributeSelector(xml, 1, "item[class=widget][data-type=A][lang=en]");
+        assert select(xml, 2, "item[class=widget][data-type=A]");
+        assert select(xml, 1, "item[class=widget][lang=en]");
+        assert select(xml, 2, "item[data-type=A][lang=en]");
+        assert select(xml, 1, "item[class=widget][data-type=A][lang=en]");
     }
 
     @Test
@@ -285,10 +292,10 @@ public class FindAttributeTest extends FindTestBase {
                 </root>
                 """);
 
-        validateAttributeSelector(xml, 1, "[name='one'][type='a']");
-        validateAttributeSelector(xml, 1, "[name='one'][type='b']");
-        validateAttributeSelector(xml, 0, "[name='one'][type='c']");
-        validateAttributeSelector(xml, 3, "[name][type]");
+        assert select(xml, 1, "[name='one'][type='a']");
+        assert select(xml, 1, "[name='one'][type='b']");
+        assert select(xml, 0, "[name='one'][type='c']");
+        assert select(xml, 3, "[name][type]");
     }
 
     @Test
@@ -301,10 +308,10 @@ public class FindAttributeTest extends FindTestBase {
                     <item class='other'>Item 3</item>
                 </root>
                 """);
-        validateAttributeSelector(xml, 1, "item[class='target']");
-        validateAttributeSelector(xml, 1, "div[class='target']");
-        validateAttributeSelector(xml, 1, "item[class='other']");
-        validateAttributeSelector(xml, 0, "span[class='target']");
+        assert select(xml, 1, "item[class='target']");
+        assert select(xml, 1, "div[class='target']");
+        assert select(xml, 1, "item[class='other']");
+        assert select(xml, 0, "span[class='target']");
     }
 
     @Test
@@ -317,22 +324,22 @@ public class FindAttributeTest extends FindTestBase {
                 """);
         // Attribute names in XML are case-sensitive.
         // CSS attribute selectors are case-sensitive for names.
-        validateAttributeSelector(xml, 1, "[dataName]");
-        validateAttributeSelector(xml, 1, "[dataname]");
-        validateAttributeSelector(xml, 0, "[DATANAME]");
+        assert select(xml, 1, "[dataName]");
+        assert select(xml, 1, "[dataname]");
+        assert select(xml, 0, "[DATANAME]");
 
         // Attribute values in CSS selectors are case-sensitive by default.
-        validateAttributeSelector(xml, 1, "[data-value='ValueA']");
-        validateAttributeSelector(xml, 1, "[data-value='valuea']");
-        validateAttributeSelector(xml, 0, "[data-value='VALUEA']");
+        assert select(xml, 1, "[data-value='ValueA']");
+        assert select(xml, 1, "[data-value='valuea']");
+        assert select(xml, 0, "[data-value='VALUEA']");
 
         // Test with different types of selectors
-        validateAttributeSelector(xml, 1, "[dataName^='value']");
-        validateAttributeSelector(xml, 0, "[dataName^='VALUE']");
+        assert select(xml, 1, "[dataName^='value']");
+        assert select(xml, 0, "[dataName^='VALUE']");
 
-        validateAttributeSelector(xml, 1, "[data-value*='lueA']");
-        validateAttributeSelector(xml, 1, "[data-value*='luea']");
-        validateAttributeSelector(xml, 0, "[data-value*='LUEA']");
+        assert select(xml, 1, "[data-value*='lueA']");
+        assert select(xml, 1, "[data-value*='luea']");
+        assert select(xml, 0, "[data-value*='LUEA']");
     }
 
     @Test
@@ -343,10 +350,10 @@ public class FindAttributeTest extends FindTestBase {
                     <item title='helloworld'/>
                 </root>
                 """);
-        validateAttributeSelector(xml, 1, "[title='hello world']");
-        validateAttributeSelector(xml, 1, "[title*='hello w']");
-        validateAttributeSelector(xml, 1, "[title~='hello']");
-        validateAttributeSelector(xml, 1, "[title~='world']");
+        assert select(xml, 1, "[title='hello world']");
+        assert select(xml, 1, "[title*='hello w']");
+        assert select(xml, 1, "[title~='hello']");
+        assert select(xml, 1, "[title~='world']");
     }
 
     @Test
@@ -361,48 +368,48 @@ public class FindAttributeTest extends FindTestBase {
                 """);
 
         // variants for white space
-        validateAttributeSelector(xml, 2, "[A='a']");
+        assert select(xml, 2, "[A='a']");
     }
 
     @Test
     public void attributeConatainValue() {
         XML xml = I.xml("<m><e A='A B C'/><e A='AA BB CC'/></m>");
 
-        validateAttributeSelector(xml, 1, "[A ~= 'A']");
-        validateAttributeSelector(xml, 1, "[A ~= 'B']");
-        validateAttributeSelector(xml, 1, "[A ~= 'C']");
+        assert select(xml, 1, "[A ~= 'A']");
+        assert select(xml, 1, "[A ~= 'B']");
+        assert select(xml, 1, "[A ~= 'C']");
     }
 
     @Test
     public void attributeConatainText() {
         XML xml = I.xml("<m><e A='A B C'/><e A='AB'/></m>");
 
-        validateAttributeSelector(xml, 2, "[A *= 'A']");
-        validateAttributeSelector(xml, 2, "[A *= 'B']");
-        validateAttributeSelector(xml, 1, "[A *= 'C']");
+        assert select(xml, 2, "[A *= 'A']");
+        assert select(xml, 2, "[A *= 'B']");
+        assert select(xml, 1, "[A *= 'C']");
     }
 
     @Test
     public void attributeStartWith() {
         XML xml = I.xml("<m><e A='A B C'/><e A='AA BB CC'/><e A='D'/></m>");
 
-        validateAttributeSelector(xml, 2, "[A ^= 'A']");
-        validateAttributeSelector(xml, 2, "[A^= 'A']");
-        validateAttributeSelector(xml, 2, "[A ^='A']");
-        validateAttributeSelector(xml, 2, "[A^='A']");
-        validateAttributeSelector(xml, 0, "[A ^= 'B']");
-        validateAttributeSelector(xml, 0, "[A ^= 'C']");
+        assert select(xml, 2, "[A ^= 'A']");
+        assert select(xml, 2, "[A^= 'A']");
+        assert select(xml, 2, "[A ^='A']");
+        assert select(xml, 2, "[A^='A']");
+        assert select(xml, 0, "[A ^= 'B']");
+        assert select(xml, 0, "[A ^= 'C']");
     }
 
     @Test
     public void attributeEndWith() {
         XML xml = I.xml("<m><e A='A B C'/><e A='AA BB CC'/><e A='D'/></m>");
 
-        validateAttributeSelector(xml, 0, "[A $= 'A']");
-        validateAttributeSelector(xml, 0, "[A $= 'B']");
-        validateAttributeSelector(xml, 2, "[A $= 'C']");
-        validateAttributeSelector(xml, 2, "[A $='C']");
-        validateAttributeSelector(xml, 2, "[A$= 'C']");
-        validateAttributeSelector(xml, 2, "[A$='C']");
+        assert select(xml, 0, "[A $= 'A']");
+        assert select(xml, 0, "[A $= 'B']");
+        assert select(xml, 2, "[A $= 'C']");
+        assert select(xml, 2, "[A $='C']");
+        assert select(xml, 2, "[A$= 'C']");
+        assert select(xml, 2, "[A$='C']");
     }
 }

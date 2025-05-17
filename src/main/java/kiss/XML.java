@@ -1109,6 +1109,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
         if (compiled == null) {
             try {
                 // compile actually
+                System.out.println(convert(selector, axis) + "  @" + selector);
                 compiled = I.xpath.compile(convert(selector, axis));
 
                 // cache it
@@ -1342,12 +1343,11 @@ public class XML implements Iterable<XML>, Consumer<XML> {
                     break;
 
                 case 109267: // not
+                    xpath.append("[not(").append(convert(arg, "self::")).append(")]");
+                    break;
+
                 case 103066: // has
-                    xpath.append('[');
-                    if (match.charAt(0) == 'n') {
-                        xpath.append("not");
-                    }
-                    xpath.append('(').append(convert(arg, axis).replace("descendant::", "descendant-or-self::")).append(")]");
+                    xpath.append("[(").append(convert(arg, "descendant-or-self::")).append(")]");
                     break;
 
                 case -995424086: // parent
@@ -1363,7 +1363,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
                     break;
 
                 case -567445985: // contains
-                    xpath.append("[contains(text(),'").append(arg).append("')]");
+                    xpath.append("[contains(string(.),'").append(arg).append("')]");
                     break;
 
                 case -2136991809: // first-child
@@ -1376,6 +1376,7 @@ public class XML implements Iterable<XML>, Consumer<XML> {
                 case -872629820: // nth-last-of-type
                     String coefficient = "0";
                     String remainder = "0";
+
                     if (match.startsWith("nth")) {
                         int index = arg.indexOf('n');
 
