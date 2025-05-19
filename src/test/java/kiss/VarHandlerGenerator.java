@@ -15,7 +15,7 @@ import java.lang.constant.ConstantDescs;
 import java.lang.constant.MethodTypeDesc;
 import java.util.Arrays;
 
-import kiss.HolderGenerator.Person;
+import kiss.sample.Person;
 import net.bytebuddy.jar.asm.Type;
 
 public class VarHandlerGenerator {

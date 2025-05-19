@@ -1,104 +1,141 @@
 package kiss;
 
+import static java.lang.classfile.ClassFile.*;
+import static java.lang.constant.ConstantDescs.*;
+
 import java.lang.classfile.ClassFile;
 import java.lang.constant.ClassDesc;
-import java.lang.constant.ConstantDescs;
 import java.lang.constant.MethodTypeDesc;
+import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.util.function.BiConsumer;
+import java.lang.invoke.MethodHandles.Lookup;
+import java.util.function.BiFunction;
 import java.util.function.Function;
+
+import kiss.sample.Person;
 
 public class HolderGenerator {
 
-    /**
-     * VarHandleを保持する静的クラスを動的に生成します（privateフィールド対応）
-     */
-    public static Object generateVarHandleClass(Class<?> targetClass, String propertyName, Class<?> propertyType) throws Throwable {
-        // クラス名とフィールドの型情報
-        ClassDesc thisClass = ClassDesc.of(targetClass.getName() + "$$" + propertyName);
-        ClassDesc targetClassDesc = ClassDesc.of(targetClass.getName());
-        ClassDesc propertyTypeDesc = ClassDesc.of(propertyType.getName());
-        ClassDesc varHandleDesc = ClassDesc.of("java.lang.invoke.VarHandle");
-        ClassDesc lookupDesc = ClassDesc.of("java.lang.invoke.MethodHandles$Lookup");
-        ClassDesc methodHandlesDesc = ClassDesc.of("java.lang.invoke.MethodHandles");
+    public static Object bypass(Class model, String name, Class p) throws Throwable {
+        ClassDesc thiz = ClassDesc.of(model.getName().concat("$$").concat(name));
+        ClassDesc m = type(model);
+        ClassDesc mh = type(MethodHandle.class);
 
-        // クラスファイル生成
-        byte[] classBytes = ClassFile.of().build(thisClass, classBuilder -> {
-            classBuilder.withFlags(ClassFile.ACC_PUBLIC | ClassFile.ACC_FINAL)
-                    .withInterfaceSymbols(ClassDesc.of("java.util.function.Function"), ClassDesc.of("java.util.function.BiConsumer"))
-                    .withField("h", varHandleDesc, ClassFile.ACC_PUBLIC | ClassFile.ACC_STATIC | ClassFile.ACC_FINAL)
+        byte[] bytes = ClassFile.of().build(thiz, classBuilder -> {
+            classBuilder.withFlags(ACC_PUBLIC | ClassFile.ACC_FINAL)
+                    .withInterfaceSymbols(type(Function.class), type(WiseBiFunction.class))
+                    .withField("getter", mh, ACC_PUBLIC | ACC_STATIC | ACC_FINAL)
+                    .withField("setter", mh, ACC_PUBLIC | ACC_STATIC | ACC_FINAL)
 
-                    // <clinit> : privateフィールドに対応した VarHandle を初期化
-                    .withMethodBody("<clinit>", MethodTypeDesc.of(ConstantDescs.CD_void), ClassFile.ACC_STATIC, code -> {
-                        code.ldc(targetClassDesc); // target class
-                        code.invokestatic(methodHandlesDesc, "lookup", MethodTypeDesc.of(lookupDesc)); // MethodHandles.lookup()
-                        code.invokestatic(methodHandlesDesc, "privateLookupIn", MethodTypeDesc
-                                .of(lookupDesc, ConstantDescs.CD_Class, lookupDesc)); // privateLookupIn(targetClass,
-                                                                                      // lookup)
+                    // static initializer
+                    .withMethodBody("<clinit>", MethodTypeDesc.of(CD_void), ACC_STATIC, code -> {
+                        code.ldc(m)
+                                .invokestatic(CD_MethodHandles, "lookup", MethodTypeDesc.of(type(Lookup.class)))
+                                .invokestatic(CD_MethodHandles, "privateLookupIn", MethodTypeDesc
+                                        .of(type(Lookup.class), CD_Class, type(Lookup.class)))
+                                .dup()
 
-                        code.dup(); // lookup for findVarHandle
+                                // exact setter
+                                .ldc(m)
+                                .ldc(name)
+                                .ldc(type(p))
+                                .invokevirtual(type(Lookup.class), "findSetter", MethodTypeDesc.of(mh, CD_Class, CD_String, CD_Class))
+                                .putstatic(thiz, "setter", mh)
 
-                        code.ldc(targetClassDesc); // TargetClass.class
-                        code.ldc(propertyName); // property name
-                        code.ldc(propertyTypeDesc); // PropertyType.class
-
-                        code.invokevirtual(lookupDesc, "findVarHandle", MethodTypeDesc
-                                .of(varHandleDesc, ConstantDescs.CD_Class, ConstantDescs.CD_String, ConstantDescs.CD_Class));
-
-                        code.putstatic(thisClass, "h", varHandleDesc);
+                                // exact getter
+                                .ldc(m)
+                                .ldc(name)
+                                .ldc(type(p))
+                                .invokevirtual(type(Lookup.class), "findGetter", MethodTypeDesc.of(mh, CD_Class, CD_String, CD_Class))
+                                .putstatic(thiz, "getter", mh);
                         code.return_();
                     })
 
-                    // コンストラクタ
-                    .withMethodBody("<init>", MethodTypeDesc.of(ConstantDescs.CD_void), ClassFile.ACC_PUBLIC, code -> {
-                        code.aload(0);
-                        code.invokespecial(ConstantDescs.CD_Object, "<init>", MethodTypeDesc.of(ConstantDescs.CD_void));
-                        code.return_();
+                    // constructor
+                    .withMethodBody("<init>", MethodTypeDesc.of(CD_void), ACC_PUBLIC, code -> {
+                        code.aload(0).invokespecial(CD_Object, "<init>", MethodTypeDesc.of(CD_void)).return_();
                     })
 
-                    // BiConsumer.accept(Object, Object) : handle.set(t, u)
-                    .withMethodBody("accept", MethodTypeDesc
-                            .of(ConstantDescs.CD_void, ConstantDescs.CD_Object, ConstantDescs.CD_Object), ClassFile.ACC_PUBLIC, code -> {
-                                code.getstatic(thisClass, "h", varHandleDesc);
-                                code.aload(1);
-                                code.aload(2);
-                                code.invokevirtual(varHandleDesc, "set", MethodTypeDesc
-                                        .of(ConstantDescs.CD_void, ConstantDescs.CD_Object, ConstantDescs.CD_Object));
-                                code.return_();
-                            })
+                    // implement Function
+                    .withMethodBody("apply", MethodTypeDesc.of(CD_Object, CD_Object), ACC_PUBLIC, code -> {
+                        code.getstatic(thiz, "getter", mh)
+                                .aload(1)
+                                .checkcast(m)
+                                .invokevirtual(mh, "invokeExact", MethodTypeDesc.of(type(p), m));
+                        if (p.isPrimitive()) {
+                            code.invokestatic(type(I.wrap(p)), "valueOf", MethodTypeDesc.of(type(I.wrap(p)), type(p)));
+                        }
+                        code.areturn();
+                    })
 
-                    // Function.apply(Object) : return handle.get(t)
-                    .withMethodBody("apply", MethodTypeDesc
-                            .of(ConstantDescs.CD_Object, ConstantDescs.CD_Object), ClassFile.ACC_PUBLIC, code -> {
-                                code.getstatic(thisClass, "h", varHandleDesc);
-                                code.aload(1);
-                                code.invokevirtual(varHandleDesc, "get", MethodTypeDesc
-                                        .of(ConstantDescs.CD_Object, ConstantDescs.CD_Object));
-                                code.areturn();
-                            });
+                    // implement WiseBiFunction
+                    .withMethodBody("apply", MethodTypeDesc.of(CD_Object, CD_Object, CD_Object), ACC_PUBLIC, code -> {
+                        code.getstatic(thiz, "setter", mh).aload(1).checkcast(m).aload(2).checkcast(type(I.wrap(p)));
+                        if (p.isPrimitive()) {
+                            code.invokevirtual(type(I.wrap(p)), p.getName().concat("Value"), MethodTypeDesc.of(type(p)));
+                        }
+                        code.invokevirtual(mh, "invokeExact", MethodTypeDesc.of(CD_void, m, type(p))).aload(1).areturn();
+                    });
         });
 
-        // Hidden Classとして定義（NestMateにすることでパッケージ制限回避）
-        MethodHandles.Lookup lookup = MethodHandles.lookup();
-        Class<?> generatedClass = lookup.defineHiddenClass(classBytes, true, MethodHandles.Lookup.ClassOption.NESTMATE).lookupClass();
-        return generatedClass.getConstructor().newInstance();
+        return MethodHandles.privateLookupIn(model, MethodHandles.lookup())
+                .defineHiddenClass(bytes, true, MethodHandles.Lookup.ClassOption.NESTMATE)
+                .lookupClass()
+                .getConstructor()
+                .newInstance();
     }
 
-    // 使用例
+    private static ClassDesc type(Class type) {
+        return ClassDesc.ofDescriptor(type.descriptorString());
+    }
+
     public static void main(String[] args) throws Throwable {
-        Object handle = generateVarHandleClass(Person.class, "name", String.class);
+        Object name = bypass(Person.class, "name", String.class);
+        Object age = bypass(Person.class, "age", int.class);
 
-        Person person = new Person();
-        person.name = "Takina";
+        Person person = new Person("Takina", 15);
 
-        String value = ((Function<Person, String>) handle).apply(person);
-        System.out.println("Name: " + value);
+        String value = ((Function<Person, String>) name).apply(person);
+        int valueAge = ((Function<Person, Integer>) age).apply(person);
+        System.out.println("Name: " + value + "   " + valueAge);
 
-        ((BiConsumer<Person, String>) handle).accept(person, "Chisato");
-        System.out.println("Updated: " + person.name);
+        ((WiseBiFunction<Person, String, Person>) name).apply(person, "Chisato");
+        ((WiseBiFunction<Person, Integer, Person>) age).apply(person, 17);
+        System.out.println("Updated: " + person);
     }
 
-    public static class Person {
-        private String name;
+    public static class Holder implements BiFunction {
+
+        private static final MethodHandle setter;
+
+        private static final MethodHandle getter;
+
+        static {
+            try {
+                setter = MethodHandles.lookup().findSetter(ReflectionFieldSetterBenchmark.class, "one", int.class);
+                getter = MethodHandles.lookup().findGetter(ReflectionFieldSetterBenchmark.class, "one", int.class);
+            } catch (Exception e) {
+                throw I.quiet(e);
+            }
+        }
+
+        // @Override
+        // public Object apply(Object t) {
+        // try {
+        // return getter.invokeExact(t);
+        // } catch (Throwable e) {
+        // throw I.quiet(e);
+        // }
+        // }
+
+        @Override
+        public Object apply(Object t, Object u) {
+            try {
+                setter.invokeExact(t, u);
+                return t;
+            } catch (Throwable e) {
+                throw I.quiet(e);
+            }
+        }
     }
 }

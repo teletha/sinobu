@@ -9,10 +9,15 @@
  */
 package kiss;
 
+import static java.lang.classfile.ClassFile.*;
+import static java.lang.constant.ConstantDescs.*;
 import static java.lang.reflect.Modifier.*;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Repeatable;
+import java.lang.classfile.ClassFile;
+import java.lang.constant.ClassDesc;
+import java.lang.constant.MethodTypeDesc;
 import java.lang.invoke.LambdaMetafactory;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -43,6 +48,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 /**
  * {@link Model} is the advanced representation of {@link Class} in Sinobu.
@@ -217,11 +223,14 @@ public class Model<M> {
                                                 return c.newInstance(values);
                                             };
                                         } else {
-                                            MethodHandle setter = MethodHandles.lookup().unreflectSetter(field);
-                                            property.setter = (m, v) -> {
-                                                setter.invoke(m, v);
-                                                return m;
-                                            };
+                                            property.setter = (WiseBiFunction) bypass(clazz, property.name, field.getType());
+
+                                            // MethodHandle setter =
+                                            // MethodHandles.lookup().unreflectSetter(field);
+                                            // property.setter = (m, v) -> {
+                                            // setter.invoke(m, v);
+                                            // return m;
+                                            // };
                                         }
 
                                         // register it
@@ -794,5 +803,78 @@ public class Model<M> {
             method.setAccessible(true);
             return method::invoke;
         }
+    }
+
+    public static Object bypass(Class model, String name, Class p) throws Throwable {
+        ClassDesc thiz = ClassDesc.of(model.getName().concat("$$").concat(name));
+        ClassDesc m = type(model);
+        ClassDesc mh = type(MethodHandle.class);
+
+        byte[] bytes = ClassFile.of().build(thiz, classBuilder -> {
+            classBuilder.withFlags(ACC_PUBLIC | ClassFile.ACC_FINAL)
+                    .withInterfaceSymbols(type(Function.class), type(WiseBiFunction.class))
+                    .withField("getter", mh, ACC_PUBLIC | ACC_STATIC | ACC_FINAL)
+                    .withField("setter", mh, ACC_PUBLIC | ACC_STATIC | ACC_FINAL)
+
+                    // static initializer
+                    .withMethodBody("<clinit>", MethodTypeDesc.of(CD_void), ACC_STATIC, code -> {
+                        code.ldc(m)
+                                .invokestatic(CD_MethodHandles, "lookup", MethodTypeDesc.of(type(Lookup.class)))
+                                .invokestatic(CD_MethodHandles, "privateLookupIn", MethodTypeDesc
+                                        .of(type(Lookup.class), CD_Class, type(Lookup.class)))
+                                .dup()
+
+                                // exact setter
+                                .ldc(m)
+                                .ldc(name)
+                                .ldc(type(p))
+                                .invokevirtual(type(Lookup.class), "findSetter", MethodTypeDesc.of(mh, CD_Class, CD_String, CD_Class))
+                                .putstatic(thiz, "setter", mh)
+
+                                // exact getter
+                                .ldc(m)
+                                .ldc(name)
+                                .ldc(type(p))
+                                .invokevirtual(type(Lookup.class), "findGetter", MethodTypeDesc.of(mh, CD_Class, CD_String, CD_Class))
+                                .putstatic(thiz, "getter", mh);
+                        code.return_();
+                    })
+
+                    // constructor
+                    .withMethodBody("<init>", MethodTypeDesc.of(CD_void), ACC_PUBLIC, code -> {
+                        code.aload(0).invokespecial(CD_Object, "<init>", MethodTypeDesc.of(CD_void)).return_();
+                    })
+
+                    // implement Function
+                    .withMethodBody("apply", MethodTypeDesc.of(CD_Object, CD_Object), ACC_PUBLIC, code -> {
+                        code.getstatic(thiz, "getter", mh)
+                                .aload(1)
+                                .checkcast(m)
+                                .invokevirtual(mh, "invokeExact", MethodTypeDesc.of(type(p), m));
+                        if (p.isPrimitive()) {
+                            code.invokestatic(type(I.wrap(p)), "valueOf", MethodTypeDesc.of(type(I.wrap(p)), type(p)));
+                        }
+                        code.areturn();
+                    })
+
+                    // implement WiseBiFunction
+                    .withMethodBody("apply", MethodTypeDesc.of(CD_Object, CD_Object, CD_Object), ACC_PUBLIC, code -> {
+                        code.getstatic(thiz, "setter", mh).aload(1).checkcast(m).aload(2).checkcast(type(I.wrap(p)));
+                        if (p.isPrimitive()) {
+                            code.invokevirtual(type(I.wrap(p)), p.getName().concat("Value"), MethodTypeDesc.of(type(p)));
+                        }
+                        code.invokevirtual(mh, "invokeExact", MethodTypeDesc.of(CD_void, m, type(p))).aload(1).areturn();
+                    });
+        });
+
+        return MethodHandles.privateLookupIn(model, MethodHandles.lookup())
+                .defineHiddenClass(bytes, true, MethodHandles.Lookup.ClassOption.NESTMATE)
+                .lookupClass()
+                .getConstructor()
+                .newInstance();
+    }
+
+    private static ClassDesc type(Class type) {
+        return ClassDesc.ofDescriptor(type.descriptorString());
     }
 }
