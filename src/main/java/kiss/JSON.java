@@ -616,26 +616,34 @@ public class JSON implements Serializable {
      * @throws IOException
      */
     private void readUnspace() throws IOException {
-        do {
-            if (index == fill) {
-                if (reader == null) {
-                    current = 0;
-                    return;
-                }
-
-                if (captureStart != -1) {
-                    capture.append(buffer, captureStart, fill - captureStart);
-                    captureStart = 0;
-                }
-
-                fill = reader.read(buffer);
-                index = 0;
-                if (fill == -1) {
-                    current = 0;
-                    return;
-                }
+        // Skip consecutive spaces in the current buffer at once
+        while (index < fill) {
+            current = buffer[index++];
+            if (current > ' ') {
+                return;
             }
-        } while ((current = buffer[index++]) <= ' ');
+        }
+
+        // Processing when the end of buffer is reached
+        if (reader == null) {
+            current = 0;
+            return;
+        }
+
+        if (captureStart != -1) {
+            capture.append(buffer, captureStart, fill - captureStart);
+            captureStart = 0;
+        }
+
+        fill = reader.read(buffer);
+        index = 0;
+        if (fill == -1) {
+            current = 0;
+            return;
+        }
+
+        // Skip contiguous spaces, even in new buffers
+        readUnspace();
     }
 
     /**

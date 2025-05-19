@@ -10,7 +10,6 @@
 package kiss.json;
 
 import java.io.IOException;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,7 +46,7 @@ public class JSONMappingBenchmark {
             """;
 
     public static void main(String[] args) throws IOException {
-        Benchmark benchmark = new Benchmark().visualize().trial(3).duration(Duration.ofSeconds(20));
+        Benchmark benchmark = new Benchmark().visualize().trial(5);
 
         benchmark.measure("Sinobu", () -> {
             return I.json(json, Group.class);
