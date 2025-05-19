@@ -48,7 +48,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
 
 /**
  * {@link Model} is the advanced representation of {@link Class} in Sinobu.
@@ -208,8 +207,9 @@ public class Model<M> {
                                         properties.put(property.name, property);
                                     } else if ((fieldModel.atomic && notFinal) || !fieldModel.atomic || type.isRecord()) {
                                         Property property = new Property(fieldModel, field.getName(), field);
+                                        Object o = access(clazz, property.name, field.getType());
 
-                                        property.getter = field::get;
+                                        property.getter = (WiseFunction) o;
                                         if (type.isRecord()) {
                                             property.setter = (m, v) -> {
                                                 Constructor c = collectConstructors(type)[0];
@@ -223,14 +223,7 @@ public class Model<M> {
                                                 return c.newInstance(values);
                                             };
                                         } else {
-                                            property.setter = (WiseBiFunction) bypass(clazz, property.name, field.getType());
-
-                                            // MethodHandle setter =
-                                            // MethodHandles.lookup().unreflectSetter(field);
-                                            // property.setter = (m, v) -> {
-                                            // setter.invoke(m, v);
-                                            // return m;
-                                            // };
+                                            property.setter = (WiseBiFunction) o;
                                         }
 
                                         // register it
@@ -297,7 +290,11 @@ public class Model<M> {
         if (property.model.atomic && value instanceof String) {
             value = property.model.decoder.decode((String) value);
         }
-        return (M) property.setter.apply(object, value);
+        try {
+            return (M) property.setter.APPLY(object, value);
+        } catch (Throwable e) {
+            throw I.quiet(e);
+        }
     }
 
     /**
@@ -805,16 +802,16 @@ public class Model<M> {
         }
     }
 
-    public static Object bypass(Class model, String name, Class p) throws Throwable {
+    static Object access(Class model, String name, Class p) throws Throwable {
         ClassDesc thiz = ClassDesc.of(model.getName().concat("$$").concat(name));
         ClassDesc m = type(model);
         ClassDesc mh = type(MethodHandle.class);
 
         byte[] bytes = ClassFile.of().build(thiz, classBuilder -> {
-            classBuilder.withFlags(ACC_PUBLIC | ClassFile.ACC_FINAL)
-                    .withInterfaceSymbols(type(Function.class), type(WiseBiFunction.class))
-                    .withField("getter", mh, ACC_PUBLIC | ACC_STATIC | ACC_FINAL)
-                    .withField("setter", mh, ACC_PUBLIC | ACC_STATIC | ACC_FINAL)
+            classBuilder.withFlags(ACC_PUBLIC)
+                    .withInterfaceSymbols(type(WiseFunction.class), type(WiseBiFunction.class))
+                    .withField("getter", mh, ACC_PRIVATE | ACC_STATIC | ACC_FINAL)
+                    .withField("setter", mh, ACC_PRIVATE | ACC_STATIC | ACC_FINAL)
 
                     // static initializer
                     .withMethodBody("<clinit>", MethodTypeDesc.of(CD_void), ACC_STATIC, code -> {
@@ -836,8 +833,8 @@ public class Model<M> {
                                 .ldc(name)
                                 .ldc(type(p))
                                 .invokevirtual(type(Lookup.class), "findGetter", MethodTypeDesc.of(mh, CD_Class, CD_String, CD_Class))
-                                .putstatic(thiz, "getter", mh);
-                        code.return_();
+                                .putstatic(thiz, "getter", mh)
+                                .return_();
                     })
 
                     // constructor
@@ -846,7 +843,7 @@ public class Model<M> {
                     })
 
                     // implement Function
-                    .withMethodBody("apply", MethodTypeDesc.of(CD_Object, CD_Object), ACC_PUBLIC, code -> {
+                    .withMethodBody("APPLY", MethodTypeDesc.of(CD_Object, CD_Object), ACC_PUBLIC, code -> {
                         code.getstatic(thiz, "getter", mh)
                                 .aload(1)
                                 .checkcast(m)
@@ -858,7 +855,7 @@ public class Model<M> {
                     })
 
                     // implement WiseBiFunction
-                    .withMethodBody("apply", MethodTypeDesc.of(CD_Object, CD_Object, CD_Object), ACC_PUBLIC, code -> {
+                    .withMethodBody("APPLY", MethodTypeDesc.of(CD_Object, CD_Object, CD_Object), ACC_PUBLIC, code -> {
                         code.getstatic(thiz, "setter", mh).aload(1).checkcast(m).aload(2).checkcast(type(I.wrap(p)));
                         if (p.isPrimitive()) {
                             code.invokevirtual(type(I.wrap(p)), p.getName().concat("Value"), MethodTypeDesc.of(type(p)));
@@ -867,11 +864,7 @@ public class Model<M> {
                     });
         });
 
-        return MethodHandles.privateLookupIn(model, MethodHandles.lookup())
-                .defineHiddenClass(bytes, true, MethodHandles.Lookup.ClassOption.NESTMATE)
-                .lookupClass()
-                .getConstructor()
-                .newInstance();
+        return MethodHandles.privateLookupIn(model, MethodHandles.lookup()).defineClass(bytes).getConstructor().newInstance();
     }
 
     private static ClassDesc type(Class type) {
