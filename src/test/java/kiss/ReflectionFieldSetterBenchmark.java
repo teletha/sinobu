@@ -29,8 +29,8 @@ public class ReflectionFieldSetterBenchmark {
 
     static {
         try {
-            staticSetter = MethodHandles.lookup().findSetter(ReflectionFieldSetterBenchmark.class, "one", int.class);
-            handle = MethodHandles.lookup().findVarHandle(ReflectionFieldSetterBenchmark.class, "one", int.class);
+            staticSetter = MethodHandles.lookup().findSetter(ReflectionFieldSetterBenchmark.class, "one", String.class);
+            handle = MethodHandles.lookup().findVarHandle(ReflectionFieldSetterBenchmark.class, "one", String.class);
         } catch (NoSuchFieldException e) {
             throw I.quiet(e);
         } catch (IllegalAccessException e) {
@@ -42,18 +42,7 @@ public class ReflectionFieldSetterBenchmark {
         Benchmark benchmark = new Benchmark();
         ReflectionFieldSetterBenchmark base = new ReflectionFieldSetterBenchmark();
 
-        Object handle = HolderGenerator.generateVarHandleClass(ReflectionFieldSetterBenchmark.class, "one", int.class);
-        BiConsumer set = (BiConsumer) handle;
-        benchmark.measure("Generated VH", () -> {
-            try {
-                set.accept(base, Integer.valueOf(1));
-                return "one";
-            } catch (Throwable e) {
-                throw I.quiet(e);
-            }
-        });
-
-        MethodHandle mh = MethodHandles.lookup().findSetter(ReflectionFieldSetterBenchmark.class, "one", int.class);
+        MethodHandle mh = MethodHandles.lookup().findSetter(ReflectionFieldSetterBenchmark.class, "one", String.class);
         MethodType type = mh.type();
         type = type.wrap().changeReturnType(void.class);
 
@@ -63,7 +52,7 @@ public class ReflectionFieldSetterBenchmark {
         CallSite site = LambdaMetafactory.metafactory(MethodHandles.lookup(), "accept", factoryType, interfaceMethodType, impl, type);
         BiConsumer<Object, Object> functionSetter = (BiConsumer<Object, Object>) site.getTarget().invokeExact(mh);
         benchmark.measure("BiConsumerMH", () -> {
-            functionSetter.accept(base, 1);
+            functionSetter.accept(base, "one");
             return "one";
         });
 
@@ -71,7 +60,7 @@ public class ReflectionFieldSetterBenchmark {
         setter.setAccessible(true);
         benchmark.measure("Reflection", () -> {
             try {
-                setter.set(base, 1);
+                setter.set(base, "one");
                 return "one";
             } catch (Exception e) {
                 throw I.quiet(e);
@@ -80,40 +69,51 @@ public class ReflectionFieldSetterBenchmark {
 
         benchmark.measure("StaticMH", () -> {
             try {
-                staticSetter.invokeExact(base, 1);
+                staticSetter.invokeExact(base, "one");
                 return "one";
             } catch (Throwable e) {
                 throw I.quiet(e);
             }
         });
 
-        // benchmark.measure("MH", () -> {
-        // try {
-        // mh.invokeExact(base, 1);
-        // return "one";
-        // } catch (Throwable e) {
-        // throw I.quiet(e);
-        // }
-        // });
-        //
-        // benchmark.measure("Static VH", () -> {
-        // try {
-        // handle.set(base, 1);
-        // return "one";
-        // } catch (Throwable e) {
-        // throw I.quiet(e);
-        // }
-        // });
+        benchmark.measure("MH", () -> {
+            try {
+                mh.invokeExact(base, "one");
+                return "one";
+            } catch (Throwable e) {
+                throw I.quiet(e);
+            }
+        });
 
-        // VarHandle instant = handle;
-        // benchmark.measure("VH", () -> {
-        // try {
-        // instant.set(base, 1);
-        // return "one";
-        // } catch (Throwable e) {
-        // throw I.quiet(e);
-        // }
-        // });
+        benchmark.measure("Static VH", () -> {
+            try {
+                handle.set(base, "one");
+                return "one";
+            } catch (Throwable e) {
+                throw I.quiet(e);
+            }
+        });
+
+        VarHandle instant = handle;
+        benchmark.measure("VH", () -> {
+            try {
+                instant.set(base, "one");
+                return "one";
+            } catch (Throwable e) {
+                throw I.quiet(e);
+            }
+        });
+
+        Object handle = HolderGenerator.generateVarHandleClass(ReflectionFieldSetterBenchmark.class, "one", String.class);
+        BiConsumer set = (BiConsumer) handle;
+        benchmark.measure("Generated VH", () -> {
+            try {
+                set.accept(base, "one");
+                return "one";
+            } catch (Throwable e) {
+                throw I.quiet(e);
+            }
+        });
 
         // BiIntConsumer lambda = createSetter(setter);
         // benchmark.measure("LambdaMeta", () -> {
@@ -127,7 +127,7 @@ public class ReflectionFieldSetterBenchmark {
 
         benchmark.measure("DirectCall", () -> {
             try {
-                base.one = 1;
+                base.one = "one";
                 return "one";
             } catch (Throwable e) {
                 throw I.quiet(e);
@@ -137,7 +137,7 @@ public class ReflectionFieldSetterBenchmark {
         benchmark.perform();
     }
 
-    public int one = 0;
+    public String one;
 
     public interface BiIntConsumer<T> {
         void accept(T one, int two);

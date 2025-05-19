@@ -17,19 +17,7 @@ public class HolderGenerator {
         // クラス名とフィールドの型情報
         ClassDesc thisClass = ClassDesc.of(targetClass.getName() + "$$" + propertyName);
         ClassDesc targetClassDesc = ClassDesc.of(targetClass.getName());
-        ClassDesc propertyTypeDesc = propertyType.isPrimitive() ? ClassDesc.ofDescriptor(switch (propertyType.getName()) {
-        case "int" -> "I";
-        case "long" -> "J";
-        case "double" -> "D";
-        case "float" -> "F";
-        case "boolean" -> "Z";
-        case "char" -> "C";
-        case "short" -> "S";
-        case "byte" -> "B";
-        case "void" -> "V";
-        default -> throw new IllegalArgumentException("Unknown primitive: " + propertyType);
-        }) : ClassDesc.of(propertyType.getName());
-        System.out.println(propertyTypeDesc);
+        ClassDesc propertyTypeDesc = ClassDesc.of(propertyType.getName());
         ClassDesc varHandleDesc = ClassDesc.of("java.lang.invoke.VarHandle");
         ClassDesc lookupDesc = ClassDesc.of("java.lang.invoke.MethodHandles$Lookup");
         ClassDesc methodHandlesDesc = ClassDesc.of("java.lang.invoke.MethodHandles");
@@ -69,13 +57,13 @@ public class HolderGenerator {
                     })
 
                     // BiConsumer.accept(Object, Object) : handle.set(t, u)
-                    .withMethodBody("accept", MethodTypeDesc.of(ConstantDescs.CD_void, ConstantDescs.CD_Object, ClassDesc
-                            .of(I.wrap(propertyType).getName())), ClassFile.ACC_PUBLIC, code -> {
+                    .withMethodBody("accept", MethodTypeDesc
+                            .of(ConstantDescs.CD_void, ConstantDescs.CD_Object, ConstantDescs.CD_Object), ClassFile.ACC_PUBLIC, code -> {
                                 code.getstatic(thisClass, "h", varHandleDesc);
                                 code.aload(1);
                                 code.aload(2);
                                 code.invokevirtual(varHandleDesc, "set", MethodTypeDesc
-                                        .of(ConstantDescs.CD_void, ConstantDescs.CD_Object, ClassDesc.of(I.wrap(propertyType).getName())));
+                                        .of(ConstantDescs.CD_void, ConstantDescs.CD_Object, ConstantDescs.CD_Object));
                                 code.return_();
                             })
 
@@ -97,7 +85,7 @@ public class HolderGenerator {
     }
 
     // 使用例
-    public static void main1(String[] args) throws Throwable {
+    public static void main(String[] args) throws Throwable {
         Object handle = generateVarHandleClass(Person.class, "name", String.class);
 
         Person person = new Person();
@@ -113,31 +101,4 @@ public class HolderGenerator {
     public static class Person {
         private String name;
     }
-
-    // public static class Holder implements WiseBiConsumer, WiseFunction {
-    //
-    // private static final MethodHandle s;
-    //
-    // private static final MethodHandle h;
-    //
-    // static {
-    // s = MethodHandles.lookup().findSetter(Person.class, "name", String.class);
-    // }
-    //
-    // /**
-    // * {@inheritDoc}
-    // */
-    // @Override
-    // public Object APPLY(Object param) throws Throwable {
-    // return h.invoke(param);
-    // }
-    //
-    // /**
-    // * {@inheritDoc}
-    // */
-    // @Override
-    // public void ACCEPT(Object param1, Object param2) throws Throwable {
-    // s.invoke(param1, param2);
-    // }
-    // }
 }
