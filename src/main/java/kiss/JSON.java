@@ -380,7 +380,7 @@ public class JSON implements Serializable {
      */
     private Object value(Model model) throws IOException {
         if (current == '"') {
-            return string(false);
+            return string();
         } else if (current == '{') {
             Object object = model == null ? new HashMap() : I.make(model.type);
             readUnspace();
@@ -390,7 +390,7 @@ public class JSON implements Serializable {
             }
             do {
                 if (current != '"') expected('"');
-                String name = string(true);
+                String name = string();
                 if (current != ':') expected(":");
                 readUnspace();
                 if (model == null) {
@@ -426,25 +426,17 @@ public class JSON implements Serializable {
             return array;
         } else if ((current >= '0' && current <= '9') || current == '-') {
             captureStart = index - 1;
-            if (current == '-') read();
-            if (current == '0') {
-                read();
-            } else {
-                digit();
-            }
 
-            if (current == '.') {
-                read();
-                digit();
+            while (true) {
+                if (index == fill) fill(0);
+                current = buffer[index++];
+                if (('0' <= current && current <= '9') || current == '.' || current == '-' || current == '+' || current == 'e' || current == 'E') {
+                    continue;
+                } else {
+                    break;
+                }
             }
-
-            if (current == 'e' || current == 'E') {
-                read();
-                if (current == '+' || current == '-') read();
-                digit();
-            }
-
-            return endCapture(false);
+            return endCapture();
         } else if (current == 't') {
             if (index + 3 > fill) fill(3);
             if (buffer[index++] == 'r' && buffer[index++] == 'u' && buffer[index++] == 'e') {
@@ -459,7 +451,6 @@ public class JSON implements Serializable {
                 readUnspace();
                 return "false";
             } else {
-                System.out.println(index + "  " + fill);
                 expected("false");
             }
         } else if (current == 'n') {
@@ -477,47 +468,30 @@ public class JSON implements Serializable {
     }
 
     /**
-     * Read the sequence of digit.
-     * 
-     * @throws IOException
-     */
-    private void digit() throws IOException {
-        int count = 0;
-
-        while ('0' <= current && current <= '9') {
-            read();
-            count++;
-        }
-
-        if (count == 0) {
-            expected("digit");
-        }
-    }
-
-    /**
      * Read the sequence of String.
      * 
      * @return A parsed string.
      * @throws IOException
      */
-    private String string(boolean useCache) throws IOException {
+    private String string() throws IOException {
         captureStart = index;
 
-        read();
-        while (current != '"') {
-            if (current == '\\') {
+        while (true) {
+            if (index == fill) fill(0);
+
+            char ch = buffer[index++];
+            if (ch == '"') break;
+            if (ch == '\\') {
                 // pause capture
-                int end = index - 1;
-                capture.append(buffer, captureStart, end - captureStart);
+                capture.append(buffer, captureStart, index - 1 - captureStart);
                 captureStart = -1;
 
-                // escape
-                read();
-                switch (current) {
+                if (index == fill) fill(0);
+                switch (buffer[index++]) {
                 case '"':
                 case '/':
                 case '\\':
-                    capture.append((char) current);
+                    capture.append(buffer[index - 1]);
                     break;
                 case 'b':
                     capture.append('\b');
@@ -537,30 +511,28 @@ public class JSON implements Serializable {
                 case 'u':
                     char[] chars = new char[4];
                     for (int i = 0; i < 4; i++) {
-                        read();
-                        chars[i] = (char) current;
+                        if (index == fill) fill(0);
+                        chars[i] = buffer[index++];
                     }
                     capture.append((char) Integer.parseInt(new String(chars), 16));
                     break;
                 default:
                     expected("escape sequence");
                 }
-                read();
 
                 // start capture
-                captureStart = index - 1;
-            } else {
-                read();
+                captureStart = index;
             }
         }
-        String string = endCapture(useCache);
+
+        String string = endCapture();
         readUnspace();
         return string;
     }
 
-    private int fill(int req) throws IOException {
+    private void fill(int req) throws IOException {
         if (reader == null) {
-            return 0;
+            return;
         }
 
         if (captureStart != -1) {
@@ -569,48 +541,12 @@ public class JSON implements Serializable {
         }
 
         int remain = fill - index;
-        if (0 < remain) {
-            System.arraycopy(buffer, index, buffer, 0, remain);
-        }
-
-        System.out.println("Fill  " + index + "  " + fill);
-        System.out.println(Arrays.toString(buffer));
+        if (0 < remain) System.arraycopy(buffer, index, buffer, 0, remain);
 
         fill = reader.read(buffer, remain, buffer.length - remain) + remain;
+        if (fill < req) expected("shortage");
 
-        if (fill < req) {
-            return 0;
-        }
-        System.out.println(Arrays.toString(buffer));
         index = 0;
-        return current = buffer[index++];
-    }
-
-    /**
-     * Read the next character.
-     * 
-     * @throws IOException
-     */
-    private void read() throws IOException {
-        if (index == fill) {
-            if (reader == null) {
-                current = 0;
-                return;
-            }
-
-            if (captureStart != -1) {
-                capture.append(buffer, captureStart, fill - captureStart);
-                captureStart = 0;
-            }
-
-            fill = reader.read(buffer);
-            index = 0;
-            if (fill == -1) {
-                current = 0;
-                return;
-            }
-        }
-        current = buffer[index++];
     }
 
     /**
@@ -682,14 +618,15 @@ public class JSON implements Serializable {
     /**
      * Stop text capturing.
      */
-    private String endCapture(boolean useCache) {
+    private String endCapture() {
         int end = index - 1;
+        int len = end - captureStart;
         String captured;
         if (capture.length() > 0) {
-            captured = capture.append(buffer, captureStart, end - captureStart).toString();
+            captured = capture.append(buffer, captureStart, len).toString();
             capture.setLength(0);
-        } else if (!useCache) {
-            captured = new String(buffer, captureStart, end - captureStart);
+        } else if (len > 12) {
+            captured = new String(buffer, captureStart, len);
         } else {
             int hash = 0;
             for (int i = captureStart; i < end; i++) {
@@ -707,7 +644,7 @@ public class JSON implements Serializable {
             if (cache != null && Arrays.equals(buffer, captureStart, end, cache.ⅱ, 0, cache.ⅱ.length)) {
                 captured = cache.ⅰ;
             } else {
-                S[hash & 65535] = I.pair(captured = new String(buffer, captureStart, end - captureStart), captured.toCharArray());
+                S[hash & 65535] = I.pair(captured = new String(buffer, captureStart, len), captured.toCharArray());
             }
         }
         captureStart = -1;
