@@ -379,42 +379,9 @@ public class JSON implements Serializable {
      * @throws IOException
      */
     private Object value(Model model) throws IOException {
-        switch (current) {
-        // keyword
-        case 'n':
-            return keyword(null);
-        case 't':
-            return keyword("true");
-        case 'f':
-            return keyword("false");
-
-        // string
-        case '"':
+        if (current == '"') {
             return string(false);
-
-        // array
-        case '[':
-            Object array = model == null ? new LinkedHashMap() : I.make(model.type);
-            readUnspace();
-            if (current == ']') {
-                readUnspace();
-                return array;
-            }
-
-            int count = -1;
-            do {
-                String name = ++count <= 9 ? C[count] : Integer.toString(count);
-                if (model == null) {
-                    ((Map) array).put(name, value(null));
-                } else {
-                    Property p = model.property(name);
-                    model.set(array, p, value(p.model));
-                }
-            } while (readSeparator(']'));
-            return array;
-
-        // object
-        case '{':
+        } else if (current == '{') {
             Object object = model == null ? new HashMap() : I.make(model.type);
             readUnspace();
             if (current == '}') {
@@ -438,20 +405,26 @@ public class JSON implements Serializable {
                 }
             } while (readSeparator('}'));
             return object;
+        } else if (current == '[') {
+            Object array = model == null ? new LinkedHashMap() : I.make(model.type);
+            readUnspace();
+            if (current == ']') {
+                readUnspace();
+                return array;
+            }
 
-        // number
-        case '-':
-        case '0':
-        case '1':
-        case '2':
-        case '3':
-        case '4':
-        case '5':
-        case '6':
-        case '7':
-        case '8':
-        case '9':
-            // start capture
+            int count = -1;
+            do {
+                String name = ++count <= 9 ? C[count] : Integer.toString(count);
+                if (model == null) {
+                    ((Map) array).put(name, value(null));
+                } else {
+                    Property p = model.property(name);
+                    model.set(array, p, value(p.model));
+                }
+            } while (readSeparator(']'));
+            return array;
+        } else if ((current >= '0' && current <= '9') || current == '-') {
             captureStart = index - 1;
             if (current == '-') read();
             if (current == '0') {
@@ -460,28 +433,47 @@ public class JSON implements Serializable {
                 digit();
             }
 
-            // fraction
             if (current == '.') {
                 read();
                 digit();
             }
 
-            // exponent
             if (current == 'e' || current == 'E') {
                 read();
                 if (current == '+' || current == '-') read();
                 digit();
             }
+
             return endCapture(false);
-
-        // End of Text
-        case 0x00:
+        } else if (current == 't') {
+            if (index + 3 > fill) fill(3);
+            if (buffer[index++] == 'r' && buffer[index++] == 'u' && buffer[index++] == 'e') {
+                readUnspace();
+                return "true";
+            } else {
+                expected("true");
+            }
+        } else if (current == 'f') {
+            if (index + 4 > fill) fill(4);
+            if (buffer[index++] == 'a' && buffer[index++] == 'l' && buffer[index++] == 's' && buffer[index++] == 'e') {
+                readUnspace();
+                return "false";
+            } else {
+                System.out.println(index + "  " + fill);
+                expected("false");
+            }
+        } else if (current == 'n') {
+            if (index + 3 > fill) fill(3);
+            if (buffer[index++] == 'u' && buffer[index++] == 'l' && buffer[index++] == 'l') {
+                readUnspace();
+                return null;
+            } else {
+                expected(null);
+            }
+        } else if (current == 0x00) {
             return null;
-
-        // invalid token
-        default:
-            return expected("value");
         }
+        return expected("value");
     }
 
     /**
@@ -500,23 +492,6 @@ public class JSON implements Serializable {
         if (count == 0) {
             expected("digit");
         }
-    }
-
-    /**
-     * Read the sequence of keyword.
-     * 
-     * @param keyword A target value.
-     * @return A target value.
-     * @throws IOException
-     */
-    private Object keyword(Object keyword) throws IOException {
-        String value = String.valueOf(keyword);
-
-        for (int i = 0; i < value.length(); i++) {
-            if (current != value.charAt(i)) expected(value);
-            read();
-        }
-        return keyword;
     }
 
     /**
@@ -581,6 +556,34 @@ public class JSON implements Serializable {
         String string = endCapture(useCache);
         readUnspace();
         return string;
+    }
+
+    private int fill(int req) throws IOException {
+        if (reader == null) {
+            return 0;
+        }
+
+        if (captureStart != -1) {
+            capture.append(buffer, captureStart, fill - captureStart);
+            captureStart = 0;
+        }
+
+        int remain = fill - index;
+        if (0 < remain) {
+            System.arraycopy(buffer, index, buffer, 0, remain);
+        }
+
+        System.out.println("Fill  " + index + "  " + fill);
+        System.out.println(Arrays.toString(buffer));
+
+        fill = reader.read(buffer, remain, buffer.length - remain) + remain;
+
+        if (fill < req) {
+            return 0;
+        }
+        System.out.println(Arrays.toString(buffer));
+        index = 0;
+        return current = buffer[index++];
     }
 
     /**
