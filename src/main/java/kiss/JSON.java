@@ -592,26 +592,20 @@ public class JSON implements Serializable {
      * @return A result.
      * @throws IOException
      */
-    private boolean readSeparator(char end) throws IOException {
-        switch (current) {
-        case ',':
-            readUnspace();
-            return true;
-
-        case ' ':
-        case '\t':
-        case '\r':
-        case '\n':
-            readUnspace();
-            return readSeparator(end);
-
-        default:
-            if (current == end) {
+    private boolean readSeparator(int end) throws IOException {
+        while (true) {
+            if (current == ',') {
+                readUnspace();
+                return true;
+            } else if (current == end) {
+                readUnspace();
+                return false;
+            } else if (current == ' ' || current == '\n' || current == '\t' || current == '\r') {
+                // continue
                 readUnspace();
             } else {
                 expected(end);
             }
-            return false;
         }
     }
 
