@@ -683,8 +683,8 @@ public class JSON implements Serializable {
                 if (index++ != 0) out.append(',');
 
                 // all properties need the properly indents
-                if (0 < current) {
-                    out.append('\n').append("\t".repeat(current)); // indent
+                if (0 < fill) {
+                    out.append('\n').append("\t".repeat(fill)); // indent
 
                     // property key (List node doesn't need key)
                     if (model.type != List.class) {
@@ -699,18 +699,18 @@ public class JSON implements Serializable {
                 } else if (value == null) {
                     out.append("null");
                 } else {
-                    if (64 < current) throw new ClassCircularityError();
+                    if (64 < fill) throw new ClassCircularityError();
 
                     JSON walker = new JSON(out);
-                    walker.current = current + 1;
+                    walker.fill = fill + 1;
                     out.append(property.model.type == List.class ? '[' : '{');
                     Model<Object> m = property.model;
                     if ((m.type.getModifiers() & Modifier.ABSTRACT) != 0 && m.getClass() == Model.class) {
                         m = Model.of(value);
-                        out.append('\n').append("\t".repeat(current + 1)).append("\"#\": \"").append(m.type.getName()).append("\",");
+                        out.append('\n').append("\t".repeat(fill + 1)).append("\"#\": \"").append(m.type.getName()).append("\",");
                     }
                     m.walk(value, walker::write);
-                    if (walker.index != 0) out.append('\n').append("\t".repeat(current)); // indent
+                    if (walker.index != 0) out.append('\n').append("\t".repeat(fill)); // indent
                     out.append(property.model.type == List.class ? ']' : '}');
                 }
             } catch (IOException e) {
