@@ -140,7 +140,7 @@ With a few exceptions, Sinobu and its APIs are designed to be simple to use and 
 		<dependency>
 			<groupId>io.reactivex.rxjava3</groupId>
 			<artifactId>rxjava</artifactId>
-			<version>3.1.10</version>
+			<version>3.1.11-RC4</version>
 			<scope>test</scope>
 			<exclusions/>
 		</dependency>
