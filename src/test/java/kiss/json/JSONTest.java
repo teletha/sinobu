@@ -9,7 +9,7 @@
  */
 package kiss.json;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -21,8 +21,6 @@ import java.util.Map;
 import java.util.StringJoiner;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.Execution;
-import org.junit.jupiter.api.parallel.ExecutionMode;
 
 import kiss.I;
 import kiss.JSON;
@@ -39,7 +37,6 @@ import kiss.sample.bean.StringMapProperty;
 import kiss.sample.bean.Student;
 import kiss.sample.bean.TransientBean;
 
-@Execution(ExecutionMode.SAME_THREAD)
 class JSONTest {
 
     @Test

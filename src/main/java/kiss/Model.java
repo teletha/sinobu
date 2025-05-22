@@ -358,7 +358,7 @@ public class Model<M> {
      * @throws IllegalArgumentException If the given model class is not found.
      */
     public static synchronized <M> Model<M> of(Class<? super M> modelClass) {
-        Ⅱ<Class, Type[]> key = I.pair(modelClass, new Type[0]);
+        Ⅱ<Class, Type[]> key = I.pair(modelClass, null);
 
         // check cache
         Model model = models.get(key);
