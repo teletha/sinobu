@@ -13,13 +13,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.Execution;
-import org.junit.jupiter.api.parallel.ExecutionMode;
 
 import kiss.I;
 import kiss.JSON;
 
-@Execution(ExecutionMode.SAME_THREAD)
 class ParserTest {
 
     @Test
