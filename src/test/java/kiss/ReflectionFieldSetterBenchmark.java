@@ -36,7 +36,7 @@ public class ReflectionFieldSetterBenchmark {
         Benchmark benchmark = new Benchmark();
         ReflectionFieldSetterBenchmark base = new ReflectionFieldSetterBenchmark();
 
-        WiseBiFunction h = (WiseBiFunction) HolderGenerator.bypass(ReflectionFieldSetterBenchmark.class, "one", int.class);
+        WiseBiFunction h = (WiseBiFunction) HolderGenerator2.bypass(ReflectionFieldSetterBenchmark.class, "one", int.class);
         benchmark.measure("Generated VH", () -> {
             try {
                 h.apply(base, 1);

@@ -13,6 +13,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+
 import antibug.profiler.Benchmark;
 import kiss.I;
 
@@ -50,19 +53,19 @@ public class JSONMappingBenchmark {
             return I.json(json, Group.class);
         });
 
-        // benchmark.measure("FastJson", () -> {
-        // return com.alibaba.fastjson2.JSON.parseObject(json, Group.class);
-        // });
-        //
-        // Gson gson = new Gson();
-        // benchmark.measure("Gson", () -> {
-        // return gson.fromJson(json, Group.class);
-        // });
-        //
-        // ObjectMapper mapper = new ObjectMapper();
-        // benchmark.measure("Jackson", () -> {
-        // return mapper.readValue(json, Group.class);
-        // });
+        benchmark.measure("FastJson", () -> {
+            return com.alibaba.fastjson2.JSON.parseObject(json, Group.class);
+        });
+
+        Gson gson = new Gson();
+        benchmark.measure("Gson", () -> {
+            return gson.fromJson(json, Group.class);
+        });
+
+        ObjectMapper mapper = new ObjectMapper();
+        benchmark.measure("Jackson", () -> {
+            return mapper.readValue(json, Group.class);
+        });
 
         benchmark.perform();
     }
