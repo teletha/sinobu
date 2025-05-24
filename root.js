@@ -43,6 +43,13 @@ const root = {
 		{
 			"modifiers": {
 				"#": "java.util.Collections$UnmodifiableSet",},
+			"name": "HolderGenerator2",
+			"packageName": "kiss",
+			"type": "Class"
+		},
+		{
+			"modifiers": {
+				"#": "java.util.Collections$UnmodifiableSet",},
 			"name": "I",
 			"packageName": "kiss",
 			"type": "Class"
