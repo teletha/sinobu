@@ -37,33 +37,54 @@ public class ReflectionFieldSetterBenchmark {
         ReflectionFieldSetterBenchmark base = new ReflectionFieldSetterBenchmark();
 
         WiseBiFunction h = (WiseBiFunction) HolderGenerator2.bypass(ReflectionFieldSetterBenchmark.class, "one", int.class);
-        benchmark.measure("Generated VH", () -> {
+        benchmark.measure("GeneratedM", () -> {
             try {
-                h.apply(base, 1);
-                return "one";
+                return h.apply(base, 1);
             } catch (Throwable e) {
                 throw I.quiet(e);
             }
         });
 
-        // MethodType factoryType = MethodType.methodType(BiConsumer.class, MethodHandle.class);
-        // MethodType interfaceMethodType = type.erase();
-        // MethodHandle impl = MethodHandles.exactInvoker(mh.type());
-        // CallSite site = LambdaMetafactory.metafactory(MethodHandles.lookup(), "accept",
-        // factoryType, interfaceMethodType, impl, type);
-        // BiConsumer<Object, Object> functionSetter = (BiConsumer<Object, Object>)
-        // site.getTarget().invokeExact(mh);
-        // benchmark.measure("BiConsumerMH", () -> {
-        // functionSetter.accept(base, "one");
-        // return "one";
-        // });
+        Lookup loop = MethodHandles.lookup();
+        MethodHandle get = loop.findGetter(ReflectionFieldSetterBenchmark.class, "one", int.class);
+        MethodHandle set = loop.findSetter(ReflectionFieldSetterBenchmark.class, "one", int.class);
+        WiseBiFunction h2 = (WiseBiFunction) HolderGenerator2.bypass(ReflectionFieldSetterBenchmark.class, get, set);
+        WiseBiFunction[] aaa = {h2};
+        benchmark.measure("GeneratedM2", () -> {
+            try {
+                return aaa[0].apply(base, 1);
+            } catch (Throwable e) {
+                throw I.quiet(e);
+            }
+        });
+
+        Model mode = Model.of(ReflectionFieldSetterBenchmark.class);
+        Property field = mode.property("one");
+        Property method = mode.property("two");
+        benchmark.measure("SinobuF", () -> {
+            try {
+                mode.set(base, field, 1);
+                return base;
+            } catch (Throwable e) {
+                throw I.quiet(e);
+            }
+        });
+
+        benchmark.measure("SinobuM", () -> {
+            try {
+                mode.set(base, method, 1);
+                return base;
+            } catch (Throwable e) {
+                throw I.quiet(e);
+            }
+        });
 
         Field setter = ReflectionFieldSetterBenchmark.class.getDeclaredField("one");
         setter.setAccessible(true);
         benchmark.measure("Reflection", () -> {
             try {
                 setter.set(base, 1);
-                return "one";
+                return base;
             } catch (Exception e) {
                 throw I.quiet(e);
             }
@@ -72,7 +93,7 @@ public class ReflectionFieldSetterBenchmark {
         benchmark.measure("StaticMH", () -> {
             try {
                 staticSetter.invokeExact(base, 1);
-                return "one";
+                return base;
             } catch (Throwable e) {
                 throw I.quiet(e);
             }
@@ -81,7 +102,7 @@ public class ReflectionFieldSetterBenchmark {
         benchmark.measure("DirectCall", () -> {
             try {
                 base.one = 1;
-                return "one";
+                return base;
             } catch (Throwable e) {
                 throw I.quiet(e);
             }
@@ -91,6 +112,16 @@ public class ReflectionFieldSetterBenchmark {
     }
 
     public int one;
+
+    private int two;
+
+    public final int getTwo() {
+        return two;
+    }
+
+    public final void setTwo(int two) {
+        this.two = two;
+    }
 
     public interface BiIntConsumer<T> {
         void accept(T one, int two);
