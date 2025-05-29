@@ -24,7 +24,7 @@ public class ReflectionFieldSetterBenchmark {
 
     static {
         try {
-            staticSetter = MethodHandles.lookup().findSetter(ReflectionFieldSetterBenchmark.class, "one", int.class);
+            staticSetter = MethodHandles.lookup().findSetter(ReflectionFieldSetterBenchmark.class, "one", String.class);
         } catch (NoSuchFieldException e) {
             throw I.quiet(e);
         } catch (IllegalAccessException e) {
@@ -36,23 +36,20 @@ public class ReflectionFieldSetterBenchmark {
         Benchmark benchmark = new Benchmark();
         ReflectionFieldSetterBenchmark base = new ReflectionFieldSetterBenchmark();
 
-        WiseBiFunction h = (WiseBiFunction) HolderGenerator2.bypass(ReflectionFieldSetterBenchmark.class, "one", int.class);
+        WiseBiFunction h = (WiseBiFunction) HolderGenerator2.bypass(ReflectionFieldSetterBenchmark.class, "one", String.class);
         benchmark.measure("GeneratedM", () -> {
             try {
-                return h.apply(base, 1);
+                return h.apply(base, "1");
             } catch (Throwable e) {
                 throw I.quiet(e);
             }
         });
 
-        Lookup loop = MethodHandles.lookup();
-        MethodHandle get = loop.findGetter(ReflectionFieldSetterBenchmark.class, "one", int.class);
-        MethodHandle set = loop.findSetter(ReflectionFieldSetterBenchmark.class, "one", int.class);
-        WiseBiFunction h2 = (WiseBiFunction) HolderGenerator2.bypass(ReflectionFieldSetterBenchmark.class, get, set);
-        WiseBiFunction[] aaa = {h2};
-        benchmark.measure("GeneratedM2", () -> {
+        MethodHandle hh = staticSetter;
+        benchmark.measure("Norma MH", () -> {
             try {
-                return aaa[0].apply(base, 1);
+                hh.invokeExact(base, "1");
+                return base;
             } catch (Throwable e) {
                 throw I.quiet(e);
             }
@@ -63,7 +60,7 @@ public class ReflectionFieldSetterBenchmark {
         Property method = mode.property("two");
         benchmark.measure("SinobuF", () -> {
             try {
-                mode.set(base, field, 1);
+                mode.set(base, field, "1");
                 return base;
             } catch (Throwable e) {
                 throw I.quiet(e);
@@ -72,7 +69,7 @@ public class ReflectionFieldSetterBenchmark {
 
         benchmark.measure("SinobuM", () -> {
             try {
-                mode.set(base, method, 1);
+                mode.set(base, method, "1");
                 return base;
             } catch (Throwable e) {
                 throw I.quiet(e);
@@ -83,7 +80,7 @@ public class ReflectionFieldSetterBenchmark {
         setter.setAccessible(true);
         benchmark.measure("Reflection", () -> {
             try {
-                setter.set(base, 1);
+                setter.set(base, "1");
                 return base;
             } catch (Exception e) {
                 throw I.quiet(e);
@@ -92,7 +89,7 @@ public class ReflectionFieldSetterBenchmark {
 
         benchmark.measure("StaticMH", () -> {
             try {
-                staticSetter.invokeExact(base, 1);
+                staticSetter.invokeExact(base, "1");
                 return base;
             } catch (Throwable e) {
                 throw I.quiet(e);
@@ -101,7 +98,7 @@ public class ReflectionFieldSetterBenchmark {
 
         benchmark.measure("DirectCall", () -> {
             try {
-                base.one = 1;
+                base.one = "1";
                 return base;
             } catch (Throwable e) {
                 throw I.quiet(e);
@@ -111,7 +108,7 @@ public class ReflectionFieldSetterBenchmark {
         benchmark.perform();
     }
 
-    public int one;
+    public String one;
 
     private int two;
 

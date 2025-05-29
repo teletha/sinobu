@@ -218,17 +218,17 @@ public class Model<M> {
                                             };
                                         } else {
 
-                                            Lookup loop = MethodHandles.lookup();
-                                            WiseBiFunction bypass = (WiseBiFunction) HolderGenerator2
-                                                    .bypass(type, loop.unreflectGetter(field), loop.unreflectSetter(field));
-                                            property.setter = bypass;
+                                            // WiseBiFunction bypass = (WiseBiFunction)
+                                            // HolderGenerator2
+                                            // .bypass(field.getDeclaringClass(), field.getName(),
+                                            // field.getType());
+                                            // property.setter = bypass;
 
-                                            // MethodHandle setter =
-                                            // MethodHandles.lookup().unreflectSetter(field);
-                                            // property.setter = (m, v) -> {
-                                            // setter.invoke(m, v);
-                                            // return m;
-                                            // };
+                                            MethodHandle setter = MethodHandles.lookup().unreflectSetter(field);
+                                            property.setter = (m, v) -> {
+                                                setter.invoke(m, v);
+                                                return m;
+                                            };
                                         }
 
                                         // register it
@@ -292,14 +292,10 @@ public class Model<M> {
      * @throws IllegalArgumentException If the given object can't resolve the given property.
      */
     public M set(M object, Property property, Object value) {
-        // if (property.model.atomic && value instanceof String) {
-        // value = property.model.decoder.decode((String) value);
-        // }
-        try {
-            return (M) property.setter.APPLY(object, value);
-        } catch (Throwable e) {
-            throw I.quiet(e);
+        if (property.model.atomic && value instanceof String) {
+            value = property.model.decoder.decode((String) value);
         }
+        return (M) property.setter.apply(object, value);
     }
 
     /**

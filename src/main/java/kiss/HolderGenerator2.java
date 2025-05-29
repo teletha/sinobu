@@ -9,7 +9,6 @@ import java.lang.constant.MethodTypeDesc;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.reflect.Member;
 
 public class HolderGenerator2 {
 
@@ -46,61 +45,6 @@ public class HolderGenerator2 {
                                 .ldc(name)
                                 .ldc(type(p))
                                 .invokevirtual(type(Lookup.class), "findGetter", MethodTypeDesc.of(mh, CD_Class, CD_String, CD_Class))
-                                .putstatic(thiz, "getter", mh)
-                                .return_();
-                    })
-
-                    // constructor
-                    .withMethodBody("<init>", MTD_void, ACC_PUBLIC, code -> {
-                        code.aload(0).invokespecial(CD_Object, "<init>", MTD_void).return_();
-                    })
-
-                    // implement WiseFunction
-                    .withMethodBody("APPLY", MethodTypeDesc.of(CD_Object, CD_Object), ACC_PUBLIC, code -> {
-                        code.getstatic(thiz, "getter", mh)
-                                .aload(1)
-                                .checkcast(m)
-                                .invokevirtual(mh, "invokeExact", MethodTypeDesc.of(type(p), m));
-                        if (p.isPrimitive()) {
-                            code.invokestatic(type(I.wrap(p)), "valueOf", MethodTypeDesc.of(type(I.wrap(p)), type(p)));
-                        }
-                        code.areturn();
-                    })
-
-                    // implement WiseBiFunction
-                    .withMethodBody("APPLY", MethodTypeDesc.of(CD_Object, CD_Object, CD_Object), ACC_PUBLIC, code -> {
-                        code.getstatic(thiz, "setter", mh).aload(1).checkcast(m).aload(2).checkcast(type(I.wrap(p)));
-                        if (p.isPrimitive()) {
-                            code.invokevirtual(type(I.wrap(p)), p.getName().concat("Value"), MethodTypeDesc.of(type(p)));
-                        }
-                        code.invokevirtual(mh, "invokeExact", MethodTypeDesc.of(CD_void, m, type(p))).aload(1).areturn();
-                    });
-        });
-
-        return MethodHandles.privateLookupIn(model, MethodHandles.lookup()).defineClass(bytes).getConstructor().newInstance();
-    }
-
-    public static Object bypass(Class model, MethodHandle getter, MethodHandle setter) throws Throwable {
-        ClassDesc thiz = ClassDesc.of(model.getName().concat("$$").concat(String.valueOf(count++)));
-        ClassDesc m = type(model);
-        Class p = getter.type().returnType();
-        ClassDesc mh = type(MethodHandle.class);
-
-        byte[] bytes = ClassFile.of().build(thiz, classBuilder -> {
-            classBuilder.withFlags(ACC_PUBLIC | ClassFile.ACC_FINAL)
-                    .withInterfaceSymbols(type(WiseFunction.class), type(WiseBiFunction.class))
-                    .withField("getter", mh, ACC_PRIVATE | ACC_STATIC | ACC_FINAL)
-                    .withField("setter", mh, ACC_PRIVATE | ACC_STATIC | ACC_FINAL)
-
-                    // static initializer
-                    .withMethodBody("<clinit>", MTD_void, ACC_STATIC, code -> {
-
-                        // exact setter
-                        code.ldc(setter.describeConstable().get())
-                                .putstatic(thiz, "setter", mh)
-
-                                // exact getter
-                                .ldc(getter.describeConstable().get())
                                 .putstatic(thiz, "getter", mh)
                                 .return_();
                     })
