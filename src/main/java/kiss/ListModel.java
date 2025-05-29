@@ -18,7 +18,7 @@ import java.util.List;
 class ListModel<V> extends Model<List<V>> {
 
     /** The parameterized item of this model. */
-    private final Model itemModel;
+    final Model item;
 
     /**
      * Create ListModel instance.
@@ -30,7 +30,7 @@ class ListModel<V> extends Model<List<V>> {
     ListModel(Class clazz, Type[] types, Type base) {
         super(clazz);
 
-        itemModel = Model.of(types.length == 0 ? Object.class : types[0], base);
+        item = Model.of(types.length == 0 ? Object.class : types[0], base);
     }
 
     /**
@@ -38,7 +38,7 @@ class ListModel<V> extends Model<List<V>> {
      */
     @Override
     public Property property(String name) {
-        return new Property(itemModel, name, null);
+        return new Property(item, name, null);
     }
 
     /**
@@ -84,7 +84,7 @@ class ListModel<V> extends Model<List<V>> {
             int counter = 0;
 
             for (V value : object) {
-                walker.accept(this, new Property(itemModel, String.valueOf(counter++), null), value);
+                walker.accept(this, new Property(item, String.valueOf(counter++), null), value);
             }
         }
     }

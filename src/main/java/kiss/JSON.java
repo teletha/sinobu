@@ -415,12 +415,11 @@ public class JSON implements Serializable {
 
             int count = -1;
             do {
-                String name = ++count <= 9 ? C[count] : Integer.toString(count);
                 if (model == null) {
+                    String name = ++count <= 9 ? C[count] : Integer.toString(count);
                     ((Map) array).put(name, value(null));
                 } else {
-                    Property p = model.property(name);
-                    model.set(array, p, value(p.model));
+                    ((List) array).add(value(((ListModel) model).item));
                 }
             } while (readSeparator(']'));
             return array;
