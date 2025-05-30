@@ -46,7 +46,7 @@ public class JSONMappingBenchmark {
             """;
 
     public static void main(String[] args) throws IOException {
-        Benchmark benchmark = new Benchmark().trial(10);
+        Benchmark benchmark = new Benchmark().visualize().trial(5);
         // benchmark = benchmark.duration(20, TimeUnit.SECONDS);
 
         benchmark.measure("Sinobu", () -> {

@@ -10,7 +10,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 
-public class HolderGenerator2 {
+public class AutoHandle {
 
     private static int count = 0;
 

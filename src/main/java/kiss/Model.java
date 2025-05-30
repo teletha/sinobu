@@ -217,13 +217,6 @@ public class Model<M> {
                                                 return c.newInstance(values);
                                             };
                                         } else {
-
-                                            // WiseBiFunction bypass = (WiseBiFunction)
-                                            // HolderGenerator2
-                                            // .bypass(field.getDeclaringClass(), field.getName(),
-                                            // field.getType());
-                                            // property.setter = bypass;
-
                                             MethodHandle setter = MethodHandles.lookup().unreflectSetter(field);
                                             property.setter = (m, v) -> {
                                                 setter.invoke(m, v);

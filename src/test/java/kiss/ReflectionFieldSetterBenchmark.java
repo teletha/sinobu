@@ -9,11 +9,8 @@
  */
 package kiss;
 
-import java.lang.invoke.LambdaMetafactory;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.invoke.MethodType;
 import java.lang.reflect.Field;
 
 import antibug.profiler.Benchmark;
@@ -36,20 +33,10 @@ public class ReflectionFieldSetterBenchmark {
         Benchmark benchmark = new Benchmark();
         ReflectionFieldSetterBenchmark base = new ReflectionFieldSetterBenchmark();
 
-        WiseBiFunction h = (WiseBiFunction) HolderGenerator2.bypass(ReflectionFieldSetterBenchmark.class, "one", String.class);
+        WiseBiFunction h = (WiseBiFunction) AutoHandle.bypass(ReflectionFieldSetterBenchmark.class, "one", String.class);
         benchmark.measure("GeneratedM", () -> {
             try {
                 return h.apply(base, "1");
-            } catch (Throwable e) {
-                throw I.quiet(e);
-            }
-        });
-
-        MethodHandle hh = staticSetter;
-        benchmark.measure("Norma MH", () -> {
-            try {
-                hh.invokeExact(base, "1");
-                return base;
             } catch (Throwable e) {
                 throw I.quiet(e);
             }
@@ -118,19 +105,5 @@ public class ReflectionFieldSetterBenchmark {
 
     public final void setTwo(int two) {
         this.two = two;
-    }
-
-    public interface BiIntConsumer<T> {
-        void accept(T one, int two);
-    }
-
-    static BiIntConsumer createSetter(Field field) throws Throwable {
-        Lookup lookup = MethodHandles.privateLookupIn(field.getDeclaringClass(), MethodHandles.lookup());
-        MethodHandle mh = lookup.unreflectSetter(field);
-        mh = lookup.findSetter(field.getDeclaringClass(), field.getName(), field.getType());
-
-        return (BiIntConsumer) LambdaMetafactory.metafactory(lookup, "accept", MethodType.methodType(BiIntConsumer.class), mh.type()
-                .generic()
-                .changeReturnType(void.class), mh, mh.type().wrap().changeReturnType(void.class)).dynamicInvoker().invokeExact();
     }
 }
