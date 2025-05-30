@@ -426,23 +426,24 @@ public class JSON implements Serializable {
         } else if ((current >= '0' && current <= '9') || current == '-') {
             captureStart = index - 1;
 
-            boolean nn = false;
-            while (true) {
-                if (index == fill) fill(0);
-                current = buffer[index++];
-                if ('0' <= current && current <= '9') {
-                    nn = false;
-                    continue;
-                } else if (current == '.' || current == '-' || current == '+' || current == 'e' || current == 'E') {
-                    nn = true;
-                    continue;
-                } else {
-                    if (nn) {
-                        expected("digit");
-                    } else {
-                        break;
-                    }
-                }
+            if (current == '-') read();
+            if (current == '0') {
+                read();
+            } else {
+                digit();
+            }
+
+            // fraction
+            if (current == '.') {
+                read();
+                digit();
+            }
+
+            // exponent
+            if (current == 'e' || current == 'E') {
+                read();
+                if (current == '+' || current == '-') read();
+                digit();
             }
             return endCapture();
         } else if (current == 't') {
@@ -476,6 +477,35 @@ public class JSON implements Serializable {
     }
 
     /**
+     * Read the next character.
+     * 
+     * @return
+     * @throws IOException
+     */
+    private int read() throws IOException {
+        if (index == fill) fill(0);
+        return current = buffer[index++];
+    }
+
+    /**
+     * Read the sequence of digit.
+     * 
+     * @throws IOException
+     */
+    private void digit() throws IOException {
+        int count = 0;
+
+        while ('0' <= current && current <= '9') {
+            read();
+            count++;
+        }
+
+        if (count == 0) {
+            expected("digit");
+        }
+    }
+
+    /**
      * Read the sequence of String.
      * 
      * @return A parsed string.
@@ -485,17 +515,13 @@ public class JSON implements Serializable {
         captureStart = index;
 
         while (true) {
-            if (index == fill) fill(0);
-
-            char ch = buffer[index++];
-            if (ch == '"') break;
-            if (ch == '\\') {
+            if (read() == '"') break;
+            if (current == '\\') {
                 // pause capture
                 capture.append(buffer, captureStart, index - 1 - captureStart);
                 captureStart = -1;
 
-                if (index == fill) fill(0);
-                switch (buffer[index++]) {
+                switch (read()) {
                 case '"':
                 case '/':
                 case '\\':
@@ -519,8 +545,7 @@ public class JSON implements Serializable {
                 case 'u':
                     char[] chars = new char[4];
                     for (int i = 0; i < 4; i++) {
-                        if (index == fill) fill(0);
-                        chars[i] = buffer[index++];
+                        chars[i] = (char) read();
                     }
                     capture.append((char) Integer.parseInt(new String(chars), 16));
                     break;
