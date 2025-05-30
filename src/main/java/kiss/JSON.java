@@ -426,13 +426,22 @@ public class JSON implements Serializable {
         } else if ((current >= '0' && current <= '9') || current == '-') {
             captureStart = index - 1;
 
+            boolean nn = false;
             while (true) {
                 if (index == fill) fill(0);
                 current = buffer[index++];
-                if (('0' <= current && current <= '9') || current == '.' || current == '-' || current == '+' || current == 'e' || current == 'E') {
+                if ('0' <= current && current <= '9') {
+                    nn = false;
+                    continue;
+                } else if (current == '.' || current == '-' || current == '+' || current == 'e' || current == 'E') {
+                    nn = true;
                     continue;
                 } else {
-                    break;
+                    if (nn) {
+                        expected("digit");
+                    } else {
+                        break;
+                    }
                 }
             }
             return endCapture();
@@ -591,7 +600,7 @@ public class JSON implements Serializable {
      * @return A result.
      * @throws IOException
      */
-    private boolean readSeparator(int end) throws IOException {
+    private boolean readSeparator(char end) throws IOException {
         while (true) {
             if (current == ',') {
                 readUnspace();

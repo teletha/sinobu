@@ -11,7 +11,6 @@ package kiss.json;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
@@ -551,7 +550,6 @@ class ParserTest {
     }
 
     @Test
-    @Disabled
     void invalidZeroPrefix() {
         assertThrows(IllegalStateException.class, () -> {
             parse("""
@@ -563,7 +561,6 @@ class ParserTest {
     }
 
     @Test
-    @Disabled
     void invalidMinusZeroPrefix() {
         assertThrows(IllegalStateException.class, () -> {
             parse("""
@@ -575,7 +572,7 @@ class ParserTest {
     }
 
     @Test
-    void invalidFraction() {
+    void invalidFraction1() {
         assertThrows(IllegalStateException.class, () -> {
             parse("""
                     {
@@ -586,7 +583,18 @@ class ParserTest {
     }
 
     @Test
-    void invalidExponent() {
+    void invalidFraction2() {
+        assertThrows(IllegalStateException.class, () -> {
+            parse("""
+                    {
+                        "fraction-abbr": 1.
+                    }
+                    """);
+        });
+    }
+
+    @Test
+    void invalidExponent1() {
         assertThrows(IllegalStateException.class, () -> {
             parse("""
                     {
@@ -598,7 +606,42 @@ class ParserTest {
     }
 
     @Test
-    @Disabled
+    void invalidExponent2() {
+        assertThrows(IllegalStateException.class, () -> {
+            parse("""
+                    {
+                        "invalid": 1e
+                    }
+                    """);
+
+        });
+    }
+
+    @Test
+    void invalidExponent3() {
+        assertThrows(IllegalStateException.class, () -> {
+            parse("""
+                    {
+                        "invalid": 1e+
+                    }
+                    """);
+
+        });
+    }
+
+    @Test
+    void invalidExponent4() {
+        assertThrows(IllegalStateException.class, () -> {
+            parse("""
+                    {
+                        "invalid": 1e-
+                    }
+                    """);
+
+        });
+    }
+
+    @Test
     void invalidMinusOnly() {
         assertThrows(IllegalStateException.class, () -> {
             parse("""
@@ -616,6 +659,17 @@ class ParserTest {
             parse("""
                     {
                         "minus": -a
+                    }
+                    """);
+        });
+    }
+
+    @Test
+    void invalidAlphabet() {
+        assertThrows(IllegalStateException.class, () -> {
+            parse("""
+                    {
+                        "minus": 10a
                     }
                     """);
         });
