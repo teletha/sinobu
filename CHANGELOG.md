@@ -1,5 +1,25 @@
 # Changelog
 
+## [4.12.0](https://github.com/teletha/sinobu/compare/4.11.1...4.12.0) (2025-05-30)
+
+
+### Features
+
+* add XML#prevs and #nexts ([a6bc071](https://github.com/teletha/sinobu/commit/a6bc0718ef92a89e1a0773954dfddb4316da04e0))
+* drop XML#prevs and #nexts ([61718ec](https://github.com/teletha/sinobu/commit/61718ece324543d088ad3b25fa99a9c298221d01))
+* support :scope selector ([61718ec](https://github.com/teletha/sinobu/commit/61718ece324543d088ad3b25fa99a9c298221d01))
+
+
+### Bug Fixes
+
+* css selector (xxx-child and xxx-of-type) ([f9b02a1](https://github.com/teletha/sinobu/commit/f9b02a1398f80f8e5dc56c0e23dd148b4026d3d6))
+* css selector can handle universal selector in only-of-type ([a95b606](https://github.com/teletha/sinobu/commit/a95b6067970730c8e7b1a3bcaef97b8a5019137a))
+* improved JSON parsing speed ([f9cc007](https://github.com/teletha/sinobu/commit/f9cc0074f4426119948b96a174e375c73e250891))
+* JSON can parse number correctly ([78b4650](https://github.com/teletha/sinobu/commit/78b4650d8ea09c2b53ee8930b32c8f5551237c6c))
+* parsing speed of JSON arrays has been improved ([cc8fd46](https://github.com/teletha/sinobu/commit/cc8fd46e1be40a5e6297501d5285221041bcd267))
+* remove unnecessary instant generation ([ebd393b](https://github.com/teletha/sinobu/commit/ebd393b426209b70c6645ca595c5656c4b1896c0))
+* XML can handle the separated selector with scope ([7bbbac1](https://github.com/teletha/sinobu/commit/7bbbac1e95406579b533b4cc9261c84c4f31edf4))
+
 ## [4.11.1](https://github.com/teletha/sinobu/compare/4.11.0...4.11.1) (2025-05-14)
 
 
