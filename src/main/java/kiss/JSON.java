@@ -493,15 +493,12 @@ public class JSON implements Serializable {
      * @throws IOException
      */
     private void digit() throws IOException {
-        int count = 0;
+        if ('0' > current || current > '9') {
+            expected("digit");
+        }
 
         while ('0' <= current && current <= '9') {
             read();
-            count++;
-        }
-
-        if (count == 0) {
-            expected("digit");
         }
     }
 
