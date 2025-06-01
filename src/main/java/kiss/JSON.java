@@ -382,70 +382,11 @@ public class JSON implements Serializable {
         if (current == '"') {
             return string();
         } else if (current == '{') {
-            Object object = model == null ? new HashMap() : I.make(model.type);
-            readUnspace();
-            if (current == '}') {
-                readUnspace();
-                return object;
-            }
-            do {
-                if (current != '"') expected('"');
-                String name = string();
-                if (current != ':') expected(":");
-                readUnspace();
-                if (model == null) {
-                    ((Map) object).put(name, value(null));
-                } else {
-                    Property p = model.property(name);
-                    if (p.model.atomic) {
-                        model.set(object, p, p.model.decoder.decode((String) value(p.model)));
-                    } else {
-                        model.set(object, p, value(p.model));
-                    }
-                }
-            } while (readSeparator('}'));
-            return object;
+            return object(model);
         } else if (current == '[') {
-            Object array = model == null ? new LinkedHashMap() : I.make(model.type);
-            readUnspace();
-            if (current == ']') {
-                readUnspace();
-                return array;
-            }
-
-            int count = -1;
-            do {
-                if (model == null) {
-                    String name = ++count <= 9 ? C[count] : Integer.toString(count);
-                    ((Map) array).put(name, value(null));
-                } else {
-                    ((List) array).add(value(((ListModel) model).item));
-                }
-            } while (readSeparator(']'));
-            return array;
+            return array(model);
         } else if ((current >= '0' && current <= '9') || current == '-') {
-            captureStart = index - 1;
-
-            if (current == '-') read();
-            if (current == '0') {
-                read();
-            } else {
-                digit();
-            }
-
-            // fraction
-            if (current == '.') {
-                read();
-                digit();
-            }
-
-            // exponent
-            if (current == 'e' || current == 'E') {
-                read();
-                if (current == '+' || current == '-') read();
-                digit();
-            }
-            return endCapture();
+            return num();
         } else if (current == 't') {
             if (index + 3 > fill) fill(3);
             if (buffer[index++] == 'r' && buffer[index++] == 'u' && buffer[index++] == 'e') {
@@ -474,6 +415,91 @@ public class JSON implements Serializable {
             return null;
         }
         return expected("value");
+    }
+
+    /**
+     * @return
+     * @throws IOException
+     */
+    private Object num() throws IOException {
+        captureStart = index - 1;
+
+        if (current == '-') read();
+        if (current == '0') {
+            read();
+        } else {
+            digit();
+        }
+
+        // fraction
+        if (current == '.') {
+            read();
+            digit();
+        }
+
+        // exponent
+        if (current == 'e' || current == 'E') {
+            read();
+            if (current == '+' || current == '-') read();
+            digit();
+        }
+        return endCapture();
+    }
+
+    /**
+     * @param model
+     * @return
+     * @throws IOException
+     */
+    private Object array(Model model) throws IOException {
+        Object array = model == null ? new LinkedHashMap() : I.make(model.type);
+        readUnspace();
+        if (current == ']') {
+            readUnspace();
+            return array;
+        }
+
+        int count = -1;
+        do {
+            if (model == null) {
+                String name = ++count <= 9 ? C[count] : Integer.toString(count);
+                ((Map) array).put(name, value(null));
+            } else {
+                ((List) array).add(value(((ListModel) model).item));
+            }
+        } while (readSeparator(']'));
+        return array;
+    }
+
+    /**
+     * @param model
+     * @return
+     * @throws IOException
+     */
+    private Object object(Model model) throws IOException {
+        Object object = model == null ? new HashMap() : I.make(model.type);
+        readUnspace();
+        if (current == '}') {
+            readUnspace();
+            return object;
+        }
+        do {
+            if (current != '"') expected('"');
+            String name = string();
+            if (current != ':') expected(":");
+            readUnspace();
+            if (model == null) {
+                ((Map) object).put(name, value(null));
+            } else {
+                Property p = model.property(name);
+                if (p.model.atomic) {
+                    model.set(object, p, p.model.decoder.decode((String) value(p.model)));
+                } else {
+                    model.set(object, p, value(p.model));
+                }
+            }
+        } while (readSeparator('}'));
+        return object;
     }
 
     /**
@@ -511,9 +537,14 @@ public class JSON implements Serializable {
     private String string() throws IOException {
         captureStart = index;
 
-        while (true) {
-            if (read() == '"') break;
-            if (current == '\\') {
+        root: while (true) {
+            if (index == fill) fill(0);
+
+            switch (buffer[index++]) {
+            case '"':
+                break root;
+
+            case '\\':
                 // pause capture
                 capture.append(buffer, captureStart, index - 1 - captureStart);
                 captureStart = -1;
