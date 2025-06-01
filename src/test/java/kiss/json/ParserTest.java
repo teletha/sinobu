@@ -517,6 +517,72 @@ class ParserTest {
     }
 
     @Test
+    void invalidTrue() {
+        assertThrows(IllegalStateException.class, () -> {
+            parse("""
+                    {
+                        "key": TRUE
+                    }
+                    """);
+        });
+    }
+
+    @Test
+    void invalidTrue2() {
+        assertThrows(IllegalStateException.class, () -> {
+            parse("""
+                    {
+                        "key": truA
+                    }
+                    """);
+        });
+    }
+
+    @Test
+    void invalidTrue3() {
+        assertThrows(IllegalStateException.class, () -> {
+            parse("""
+                    {
+                        "key": tru\t
+                    }
+                    """);
+        });
+    }
+
+    @Test
+    void invalidFalse() {
+        assertThrows(IllegalStateException.class, () -> {
+            parse("""
+                    {
+                        "key": FLASE
+                    }
+                    """);
+        });
+    }
+
+    @Test
+    void invalidFalse2() {
+        assertThrows(IllegalStateException.class, () -> {
+            parse("""
+                    {
+                        "key": falsP
+                    }
+                    """);
+        });
+    }
+
+    @Test
+    void invalidFalse3() {
+        assertThrows(IllegalStateException.class, () -> {
+            parse("""
+                    {
+                        "key": fals\t
+                    }
+                    """);
+        });
+    }
+
+    @Test
     void invalidNoQuotedName() {
         assertThrows(IllegalStateException.class, () -> {
             parse("""
