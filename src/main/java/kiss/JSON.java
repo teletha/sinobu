@@ -334,14 +334,14 @@ public class JSON implements Serializable {
     private int captureStart;
 
     /**
-     * Parser the given json.
-     * 
-     * @param <T>
-     * @param reader A input stream.
-     * @param text An input text.
-     * @param type A model type.
-     * @return
-     * @throws IOException
+     * Parses the given JSON input.
+     *
+     * @param <T> The target type.
+     * @param reader A Reader to read input from, or {@code null} if using the text parameter.
+     * @param text A JSON text to parse. Used if {@code reader} is {@code null}.
+     * @param type The class representing the target type.
+     * @return The parsed object.
+     * @throws IOException If an I/O error occurs during parsing.
      */
     <T> T parse(Reader reader, String text, Class<T> type) throws IOException {
         Ⅱ<char[], StringBuilder> b = P.poll();
@@ -374,9 +374,11 @@ public class JSON implements Serializable {
     }
 
     /**
-     * Read value.
-     * 
-     * @throws IOException
+     * Parses a JSON value from the current buffer.
+     *
+     * @param model The model describing the target structure, or {@code null}.
+     * @return The parsed value (String, Map, List, or primitive).
+     * @throws IOException If an I/O error occurs.
      */
     private Object value(Model model) throws IOException {
         if (current == '"') {
@@ -392,24 +394,18 @@ public class JSON implements Serializable {
             if (buffer[index++] == 'r' && buffer[index++] == 'u' && buffer[index++] == 'e') {
                 readUnspace();
                 return "true";
-            } else {
-                expected("true");
             }
         } else if (current == 'f') {
             if (index + 4 > fill) fill(4);
             if (buffer[index++] == 'a' && buffer[index++] == 'l' && buffer[index++] == 's' && buffer[index++] == 'e') {
                 readUnspace();
                 return "false";
-            } else {
-                expected("false");
             }
         } else if (current == 'n') {
             if (index + 3 > fill) fill(3);
             if (buffer[index++] == 'u' && buffer[index++] == 'l' && buffer[index++] == 'l') {
                 readUnspace();
                 return null;
-            } else {
-                expected(null);
             }
         } else if (current == 0x00) {
             return null;
@@ -418,8 +414,10 @@ public class JSON implements Serializable {
     }
 
     /**
-     * @return
-     * @throws IOException
+     * Parses a number value from the buffer.
+     *
+     * @return The parsed number as a String.
+     * @throws IOException If an I/O error occurs.
      */
     private Object num() throws IOException {
         captureStart = index - 1;
@@ -447,9 +445,11 @@ public class JSON implements Serializable {
     }
 
     /**
-     * @param model
-     * @return
-     * @throws IOException
+     * Parses a JSON array.
+     *
+     * @param model The model describing the array structure.
+     * @return The parsed array as a Map or List.
+     * @throws IOException If an I/O error occurs.
      */
     private Object array(Model model) throws IOException {
         Object array = model == null ? new LinkedHashMap() : I.make(model.type);
@@ -472,9 +472,11 @@ public class JSON implements Serializable {
     }
 
     /**
-     * @param model
-     * @return
-     * @throws IOException
+     * Parses a JSON object.
+     *
+     * @param model The model describing the object structure.
+     * @return The parsed object as a Map or a model instance.
+     * @throws IOException If an I/O error occurs.
      */
     private Object object(Model model) throws IOException {
         Object object = model == null ? new HashMap() : I.make(model.type);
@@ -503,10 +505,10 @@ public class JSON implements Serializable {
     }
 
     /**
-     * Read the next character.
-     * 
-     * @return
-     * @throws IOException
+     * Reads the next character from the buffer or underlying reader.
+     *
+     * @return The character read.
+     * @throws IOException If an I/O error occurs.
      */
     private int read() throws IOException {
         if (index == fill) fill(0);
@@ -514,9 +516,9 @@ public class JSON implements Serializable {
     }
 
     /**
-     * Read the sequence of digit.
-     * 
-     * @throws IOException
+     * Consumes a sequence of digits (0-9) from the input.
+     *
+     * @throws IOException If a non-digit character is encountered or an I/O error occurs.
      */
     private void digit() throws IOException {
         if ('0' > current || current > '9') {
@@ -529,10 +531,10 @@ public class JSON implements Serializable {
     }
 
     /**
-     * Read the sequence of String.
-     * 
-     * @return A parsed string.
-     * @throws IOException
+     * Parses a string enclosed in double quotes from the buffer.
+     *
+     * @return The parsed string.
+     * @throws IOException If an I/O error occurs.
      */
     private String string() throws IOException {
         captureStart = index;
@@ -591,6 +593,12 @@ public class JSON implements Serializable {
         return string;
     }
 
+    /**
+     * Fills the buffer with input from the reader.
+     *
+     * @param req The minimum number of characters required.
+     * @throws IOException If an I/O error occurs or not enough characters can be read.
+     */
     private void fill(int req) throws IOException {
         if (reader == null) {
             return;
@@ -611,9 +619,9 @@ public class JSON implements Serializable {
     }
 
     /**
-     * Read the next character.
-     * 
-     * @throws IOException
+     * Skips whitespace characters and reads the next non-space character.
+     *
+     * @throws IOException If an I/O error occurs.
      */
     private void readUnspace() throws IOException {
         // Skip consecutive spaces in the current buffer at once
@@ -647,11 +655,11 @@ public class JSON implements Serializable {
     }
 
     /**
-     * Read the specified character.
-     * 
-     * @param end The ending character.
-     * @return A result.
-     * @throws IOException
+     * Reads the next separator character (comma or ending character) in an array or object.
+     *
+     * @param end The expected ending character (e.g., ']' or '}').
+     * @return {@code true} if a comma was found, {@code false} if the ending character was found.
+     * @throws IOException If an unexpected character is encountered or an I/O error occurs.
      */
     private boolean readSeparator(char end) throws IOException {
         while (true) {
@@ -671,7 +679,9 @@ public class JSON implements Serializable {
     }
 
     /**
-     * Stop text capturing.
+     * Ends a capture sequence and returns the captured string.
+     *
+     * @return The captured string.
      */
     private String endCapture() {
         int end = index - 1;
@@ -707,10 +717,10 @@ public class JSON implements Serializable {
     }
 
     /**
-     * Throw parsing error.
-     * 
-     * @param expected A reason.
-     * @return This method NEVER return value.
+     * Throws a parsing exception indicating that a specific token was expected.
+     *
+     * @param expected The expected token or type.
+     * @return This method never returns normally.
      */
     private Object expected(Object expected) {
         throw new IllegalStateException("Expected ".concat(String.valueOf(expected)));

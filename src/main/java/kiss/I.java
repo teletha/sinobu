@@ -2260,21 +2260,22 @@ public class I implements ParameterizedType {
         if (input == null) return null;
 
         // shortcut for numbers
-        if (input instanceof Number num) {
-            if (output == int.class || output == Integer.class) {
-                return (Out) Integer.valueOf(num.intValue());
-            } else if (output == long.class || output == Long.class) {
-                return (Out) Long.valueOf(num.longValue());
-            } else if (output == double.class || output == Double.class) {
-                return (Out) Double.valueOf(num.doubleValue());
-            } else if (output == float.class || output == Float.class) {
-                return (Out) Float.valueOf(num.floatValue());
-            } else if (output == byte.class || output == Byte.class) {
-                return (Out) Byte.valueOf(num.byteValue());
-            } else if (output == short.class || output == Short.class) {
-                return (Out) Short.valueOf(num.shortValue());
-            }
-        }
+        // if (input instanceof Number num) {
+        // output = wrap(output);
+        // if (output == Integer.class) {
+        // return (Out) Integer.valueOf(num.intValue());
+        // } else if (output == Long.class) {
+        // return (Out) Long.valueOf(num.longValue());
+        // } else if (output == Double.class) {
+        // return (Out) Double.valueOf(num.doubleValue());
+        // } else if (output == Float.class) {
+        // return (Out) Float.valueOf(num.floatValue());
+        // } else if (output == Byte.class) {
+        // return (Out) Byte.valueOf(num.byteValue());
+        // } else if (output == Short.class) {
+        // return (Out) Short.valueOf(num.shortValue());
+        // }
+        // }
 
         String encoded = input instanceof String ? (String) input : find(Encoder.class, input.getClass()).encode(input);
 
