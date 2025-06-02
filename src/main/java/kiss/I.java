@@ -295,7 +295,7 @@ public class I implements ParameterizedType {
         }
 
         // built-in encoders
-        load(ExtensionFactory.class, Encoder.class, () -> (ExtensionFactory<Encoder>) type -> {
+        load(ExtensionFactory.class, Encoder.class, (ExtensionFactory<Encoder>) type -> {
             if (type.isEnum()) return (Encoder<Enum>) Enum::name;
             switch (type.getName().hashCode()) {
             case -530663260: // java.lang.Class
@@ -310,7 +310,7 @@ public class I implements ParameterizedType {
         });
 
         // built-in decoders
-        load(ExtensionFactory.class, Decoder.class, () -> (ExtensionFactory<Decoder>) type -> {
+        load(ExtensionFactory.class, Decoder.class, (ExtensionFactory<Decoder>) type -> {
             if (type.isEnum()) return value -> Enum.valueOf((Class<Enum>) type, value);
             switch (type.getName().hashCode()) {
             case 64711720: // boolean
@@ -911,19 +911,23 @@ public class I implements ParameterizedType {
      */
     public static <E extends Extensible> E find(Class<E> extensionPoint, Class key) {
         if (extensionPoint != null && key != null) {
-            Ⅱ<List<Class<E>>, Map<Class, Lifestyle<E>>> extensions = findBy(extensionPoint);
+            Ⅱ<List<Class<E>>, Map<Class, E>> extensions = findBy(extensionPoint);
 
             // In the majority of cases, a search query for an extension uses the extension key
             // itself, and rarely a subclass of the extension key is used. Since it is very costly
             // to obtain all types of extension key, we try to save computation resource by
             // performing a search with the specified extension key at the beginning.
-            Lifestyle<E> lifestyle = extensions.ⅱ.get(key);
-            if (lifestyle != null) return lifestyle.get();
+            E lifestyle = extensions.ⅱ.get(key);
+            if (lifestyle != null) return lifestyle;
 
             // search from extension factory
             if (extensionPoint != ExtensionFactory.class) {
                 ExtensionFactory<E> factory = find(ExtensionFactory.class, extensionPoint);
-                if (factory != null) return factory.create(key);
+                if (factory != null) {
+                    E e = factory.create(key);
+                    if (e != null) load(extensionPoint, key, e);
+                    return e;
+                }
             }
 
             // Since a search query using the extension key itself did not find any extensions, we
@@ -931,7 +935,7 @@ public class I implements ParameterizedType {
             for (Class type : Model.collectTypes(key)) {
                 lifestyle = extensions.ⅱ.get(type);
 
-                if (lifestyle != null) return lifestyle.get();
+                if (lifestyle != null) return lifestyle;
             }
         }
         return null;
@@ -968,7 +972,7 @@ public class I implements ParameterizedType {
      * @return A extension definition.
      * @throws NullPointerException If the extension point is null.
      */
-    private static <E extends Extensible> Ⅱ<List<Class<E>>, Map<Class, Lifestyle<E>>> findBy(Class<E> extensionPoint) {
+    private static <E extends Extensible> Ⅱ<List<Class<E>>, Map<Class, E>> findBy(Class<E> extensionPoint) {
         return extensions.computeIfAbsent(extensionPoint, p -> pair(new CopyOnWriteArrayList(), new ConcurrentHashMap()));
     }
 
@@ -1367,7 +1371,7 @@ public class I implements ParameterizedType {
         for (Class<E> extensionPoint : Model.collectTypes(extension)) {
             if (Arrays.asList(extensionPoint.getInterfaces()).contains(Extensible.class)) {
                 // register as new extension
-                Ⅱ<List<Class<E>>, Map<Class, Lifestyle<E>>> extensions = findBy(extensionPoint);
+                Ⅱ<List<Class<E>>, Map<Class, E>> extensions = findBy(extensionPoint);
 
                 // exclude duplication
                 if (extensions.ⅰ.contains(extension)) return null;
@@ -1383,7 +1387,7 @@ public class I implements ParameterizedType {
                     Class clazz = (Class) params[0];
 
                     // register extension by key
-                    disposer.add(load(extensionPoint, clazz, I.makeLifestyle(extension)));
+                    disposer.add(load(extensionPoint, clazz, I.make(extension)));
 
                     // The user has registered a newly custom lifestyle, so we
                     // should update lifestyle for this extension key class.
@@ -1414,7 +1418,7 @@ public class I implements ParameterizedType {
      * @param extension A extension to register.
      * @return A disposer to unregister.
      */
-    private static <E extends Extensible> Disposable load(Class<E> extensionPoint, Class extensionKey, Lifestyle<E> extension) {
+    private static <E extends Extensible> Disposable load(Class<E> extensionPoint, Class extensionKey, E extension) {
         findBy(extensionPoint).ⅱ.put(extensionKey, extension);
         return () -> findBy(extensionPoint).ⅱ.remove(extensionKey);
     }
@@ -2254,6 +2258,23 @@ public class I implements ParameterizedType {
      */
     public static <In, Out> Out transform(In input, Class<Out> output) {
         if (input == null) return null;
+
+        // shortcut for numbers
+        if (input instanceof Number num) {
+            if (output == int.class || output == Integer.class) {
+                return (Out) Integer.valueOf(num.intValue());
+            } else if (output == long.class || output == Long.class) {
+                return (Out) Long.valueOf(num.longValue());
+            } else if (output == double.class || output == Double.class) {
+                return (Out) Double.valueOf(num.doubleValue());
+            } else if (output == float.class || output == Float.class) {
+                return (Out) Float.valueOf(num.floatValue());
+            } else if (output == byte.class || output == Byte.class) {
+                return (Out) Byte.valueOf(num.byteValue());
+            } else if (output == short.class || output == Short.class) {
+                return (Out) Short.valueOf(num.shortValue());
+            }
+        }
 
         String encoded = input instanceof String ? (String) input : find(Encoder.class, input.getClass()).encode(input);
 

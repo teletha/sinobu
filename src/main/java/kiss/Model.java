@@ -65,7 +65,7 @@ public class Model<M> {
     public final Encoder<M> encoder;
 
     /** The unmodifiable properties list of this object model. */
-    Map<String, Property> properties;
+    private Map<String, Property> properties;
 
     /**
      * Create Model instance.

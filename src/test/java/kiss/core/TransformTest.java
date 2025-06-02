@@ -90,6 +90,72 @@ class TransformTest {
     }
 
     @Test
+    void intTo() {
+        int value = 1;
+        assert I.transform(value, int.class) == 1;
+        assert I.transform(value, long.class) == 1L;
+        assert I.transform(value, float.class) == 1F;
+        assert I.transform(value, double.class) == 1D;
+        assert I.transform(value, byte.class) == (byte) 1;
+        assert I.transform(value, short.class) == (short) 1;
+    }
+
+    @Test
+    void longTo() {
+        long value = 1;
+        assert I.transform(value, int.class) == 1;
+        assert I.transform(value, long.class) == 1L;
+        assert I.transform(value, float.class) == 1F;
+        assert I.transform(value, double.class) == 1D;
+        assert I.transform(value, byte.class) == (byte) 1;
+        assert I.transform(value, short.class) == (short) 1;
+    }
+
+    @Test
+    void floatTo() {
+        float value = 1;
+        assert I.transform(value, int.class) == 1;
+        assert I.transform(value, long.class) == 1L;
+        assert I.transform(value, float.class) == 1F;
+        assert I.transform(value, double.class) == 1D;
+        assert I.transform(value, byte.class) == (byte) 1;
+        assert I.transform(value, short.class) == (short) 1;
+    }
+
+    @Test
+    void doubleTo() {
+        double value = 1;
+        assert I.transform(value, int.class) == 1;
+        assert I.transform(value, long.class) == 1L;
+        assert I.transform(value, float.class) == 1F;
+        assert I.transform(value, double.class) == 1D;
+        assert I.transform(value, byte.class) == (byte) 1;
+        assert I.transform(value, short.class) == (short) 1;
+    }
+
+    @Test
+    void byteTo() {
+        byte value = 1;
+        assert I.transform(value, int.class) == 1;
+        assert I.transform(value, long.class) == 1L;
+        assert I.transform(value, float.class) == 1F;
+        assert I.transform(value, double.class) == 1D;
+        assert I.transform(value, byte.class) == (byte) 1;
+        assert I.transform(value, short.class) == (short) 1;
+    }
+
+    @Test
+    void shortTo() {
+        short value = 1;
+        assert I.transform(value, int.class) == 1;
+        assert I.transform(value, long.class) == 1L;
+        assert I.transform(value, float.class) == 1F;
+        assert I.transform(value, double.class) == 1D;
+        assert I.transform(value, byte.class) == (byte) 1;
+        assert I.transform(value, short.class) == (short) 1;
+    }
+
+    @Test
     void url() throws MalformedURLException, URISyntaxException {
         URL value = URI.create("http://localhost:8888/").toURL();
         String text = "http://localhost:8888/";
