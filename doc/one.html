@@ -1,0 +1,3288 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8"/>
+		<meta content="width=device-width, initial-scale=1" name="viewport"/>
+		<meta content="Explains how to use sinobu and its API. " name="description"/>
+		<link href="https://cdn.jsdelivr.net" rel="preconnect"/>
+		<link href="https://fonts.googleapis.com" rel="preconnect"/>
+		<link crossorigin="null" href="https://fonts.gstatic.com" rel="preconnect"/>
+		<link as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Inter" rel="preload"/>
+		<link href="https://fonts.googleapis.com/css2?display=swap&amp;family=Inter" media="print" onload="this.media=&apos;all&apos;" rel="stylesheet"/>
+		<link as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Material+Icons" rel="preload"/>
+		<link href="https://fonts.googleapis.com/css2?display=swap&amp;family=Material+Icons" media="print" onload="this.media=&apos;all&apos;" rel="stylesheet"/>
+		<link as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Vollkorn" rel="preload"/>
+		<link href="https://fonts.googleapis.com/css2?display=swap&amp;family=Vollkorn" media="print" onload="this.media=&apos;all&apos;" rel="stylesheet"/>
+		<title>sinobu API</title>
+		<base href="../"/>
+		<script src="mimic.js" type="module"></script>
+		<link href="https://cdn.jsdelivr.net/npm/ress@4.0.0/dist/ress.min.css" rel="stylesheet"/>
+		<link href="main.css" rel="stylesheet"/>
+	</head>
+	<body class="W">
+		<header class="X" date="2025-06-02">
+			<h1 class="n"><a href="index.html"><code>sinobu</code></a></h1>
+			<nav class="HB"><a href="doc/sinobu.Manual.Introduction.html" id="Manual"><svg class="text">
+						<use href="main.svg#text"/>
+					</svg>
+				</a><a href="api/main.html" id="API"><svg class="package">
+						<use href="main.svg#package"/>
+					</svg>
+				</a><a href="doc/changelog.html" id="Activity"><svg class="activity">
+						<use href="main.svg#activity"/>
+					</svg>
+				</a><a href="https://github.com/teletha/sinobu/discussions" id="Community" target="_blank"><svg class="user">
+						<use href="main.svg#user"/>
+					</svg>
+				</a><a href="https://github.com/teletha/sinobu" id="Repository" target="_blank"><svg class="github">
+						<use href="main.svg#github"/>
+					</svg>
+				</a></nav>
+			<div class="O"><a aria-label="Change color scheme" id="theme"><svg class="sun">
+						<use href="main.svg#sun"/>
+					</svg><svg class="moon">
+						<use href="main.svg#moon"/>
+					</svg>
+				</a></div>
+		</header>
+		<nav class="a"></nav>
+		<article class="Y" id="Article">
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Introduction.Overview">
+					<header class="A l">
+						<h2>Overview</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L77-L109"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>Sinobu is not obsolete framework but utility.
+It acts as an extremely condensed facade for common development tasks,
+designed to be intuitive and efficient.</p><p>Weighing in at approximately 120 KB with zero external dependencies,
+Sinobu prioritizes lightweight deployment and avoids dependency conflicts.
+Despite its small size, its various operations are engineered for high performance,
+often rivaling or exceeding competing specialized libraries (see
+Benchmark).</p><p>This library aims to simplify and consolidate functionalities frequently
+encountered in real-world projects, making them easier and safer to use.
+Key areas covered include:</p><ul>
+							<li><a href="https://en.wikipedia.org/wiki/Dependency_injection">Dependency Injection</a></li>
+							<li>Object lifecycle management</li>
+							<li>Property based object modeling</li>
+							<li>HTTP(S) Client</li>
+							<li>Web Socket Client</li>
+							<li><a href="https://en.wikipedia.org/wiki/JSON">JSON</a></li>
+							<li><a href="https://en.wikipedia.org/wiki/HTML">HTML</a> (Tag Soup Tolerant)</li>
+							<li><a href="https://en.wikipedia.org/wiki/XML">XML</a></li>
+							<li>Reactive Programming (<a href="http://reactivex.io">Rx</a>)</li>
+							<li>Asynchronous &amp; Parallel processing</li>
+							<li>Multilingualization</li>
+							<li>Template Engine (<a href="https://mustache.github.io/mustache.5.html">Mustache</a> Syntax)</li>
+							<li>Dynamic Extensibility / Plugin System</li>
+							<li>Object persistence</li>
+							<li>Logging (Garbage-Less)</li>
+							<li>Virtual Job Scheduler</li>
+							<li>Task Scheduling (<a href="https://en.wikipedia.org/wiki/Cron">Cron</a> Syntax)</li>
+						</ul><p>Sinobu adheres to core principles ensuring ease of use, safety, and efficiency.</p></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Introduction.Futures">
+					<header class="A l">
+						<h2>Futures</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L115-L149"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>Sinobu&apos;s design philosophy is guided by several core principles,
+aimed at delivering a powerful yet minimalistic development experience:</p><h4>🚀 Lightweight</h4><p>Sinobu maintains a minimal footprint (approximately 120 KB) with absolutely no external
+dependencies. This design choice results in faster startup times, significantly smaller
+deployment packages, and complete avoidance of dependency conflicts — an ideal fit
+for embedded systems, microservices, or any environment where lean execution is key.</p><h4>⚡ High Performance</h4><p>Performance is at the heart of every component. Internal operations are implemented with
+a focus on low memory overhead and high throughput. Most allocations are short-lived and
+garbage-friendly, which makes Sinobu suitable even for latency-sensitive systems. See the
+<a aria-label="sinobu.Manual.Benchmark" href="doc/sinobu.Manual.Benchmark.html">benchmark</a> section for in-depth comparative results.</p><h4>✨ Simplicity</h4><p>The API surface is deliberately kept minimal and expressive. Developers can often
+accomplish complex tasks using a few static methods on the <code><a aria-label="kiss.I" href="api/kiss.I.html">I</a></code> facade class. This
+reduces boilerplate, encourages readability, and lowers the learning curve for new
+contributors.</p><pre class="lang-java"><code>void access() {
+    I.http(&quot;http://xxx.com/&quot;, XML.class).to(html -&gt; {
+        String name = html.find(&quot;#user&quot;).text();
+    });
+}</code></pre><h4>🖥️ Multifunction</h4><p>Despite its small size, Sinobu is packed with a wide array of capabilities. These
+features are not isolated; they are thoughtfully composed so that they work together
+seamlessly, forming a cohesive and versatile toolkit.</p><h4>♻️ Reactivity</h4><p>Sinobu embraces reactivity as a foundation for composing asynchronous, event-driven
+logic. The <code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code> class acts as a reactive primitive that allows values to
+propagate through a declarative flow of transformations, observers, and combinators.</p><h4>🛡️ Type Safety</h4><p>All APIs are designed to leverage Java’s static type system to the fullest. This promotes
+correctness, allows for confident refactoring, and minimizes the risk of runtime errors.</p></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Introduction.How_to_install">
+					<header class="A l">
+						<h2>How to install</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L160-L170"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>It is probably easiest to use a build tool such as
+<a href="https://maven.apache.org">Maven</a> or <a href="https://gradle.org">Gradle</a>.
+Replace `` with the desired version number.</p><pre class="lang-xml"><code>&lt;dependency&gt;
+     &lt;groupId&gt;com.github.teletha&lt;/groupId&gt;
+     &lt;artifactId&gt;sinobu&lt;/artifactId&gt;
+     &lt;version&gt;VERSION&lt;version&gt;
+ &lt;/dependency&gt;</code></pre></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Introduction.Getting_Involved">
+					<header class="A l">
+						<h2>Getting Involved</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L176-L182"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>Sinobu is an open-source project hosted on GitHub. Contributions, bug reports,
+and feature requests are welcome.</p><ul>
+							<li><strong>Repository:</strong><a href="https://github.com/teletha/sinobu">https://github.com/teletha/sinobu</a></li>
+							<li><strong>Issues:</strong> Please report bugs or suggest features via GitHub Issues.</li>
+							<li><strong>Contributions:</strong> Pull requests are welcome! Please ensure code style consistency and
+include tests where applicable.</li>
+						</ul></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Lifestyle_Management.Concept">
+					<header class="A l">
+						<h2>Concept</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L191-L193"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>In Sinobu, lifestyle refers to the way an object is created and managed, corresponding to
+the scope in terms of DI containers such as SpringFramework and Guice, but without the
+process of registering with the container or destroying the object.</p></span></section>
+				<section class="A FB" id="sinobu.Manual.Lifestyle_Management.Concept.Creating_an_object">
+					<header class="A u">
+						<h3 icon="📄">Creating an object</h3>
+					</header><span class="A"><p>In Java, it is common to use the new operator on the constructor to create a new
+object. In many cases, this is sufficient, but in the following situations, it is a
+bit insufficient.</p><ul>
+							<li>To manage the number of objects to be created.</li>
+							<li>To create objects associated with a specific context.</li>
+							<li>To generate objects with complex dependencies.</li>
+							<li>The type of the object to be generated is not statically determined.</li>
+						</ul><p>While DI containers such as SpringFramework or Guice are commonly used to deal with
+such problems, Sinobu comes with its own very simple DI container. The following code
+shows the creation of an object using DI container.</p><pre class="lang-java"><code>void createObject() {
+    class Tweet {
+    }
+
+    Tweet one = I.make(Tweet.class);
+    assert one != null;
+}</code></pre><p>As you can see from the above code, there is no actual container object; Sinobu has
+only one global container in the JVM, and that object cannot be accessed directly. In
+order to create an object from a container, we need to call <code><a aria-label="kiss.I" href="api/kiss.I.html#make(java.lang.Class)">I#make(Class)</a></code>.</p></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Lifestyle_Management.Defining_lifestyle">
+					<header class="A l">
+						<h2>Defining lifestyle</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L230-L239"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>In order to define a lifestyle, you need to implement Lifestyle interface. This interface
+is essentially equivalent to Callable. It is called when container requests the specific
+type. It makes the following 3 decisions:</p><ol>
+							<li>Which class to instantiate actually.</li>
+							<li>How to instantiate it.</li>
+							<li>How to manage the instances.</li>
+						</ol><p>Sinobu defines two lifestyles that are frequently used. One is the prototype pattern and
+the other is the singleton pattern.</p></span></section>
+				<section class="A FB" id="sinobu.Manual.Lifestyle_Management.Defining_lifestyle.Prototype">
+					<header class="A u">
+						<h3 icon="📄">Prototype</h3>
+					</header><span class="A"><p>The default lifestyle is Prototype, it creates a new instance on demand. This is
+applied automatically and you have to configure nothing.</p><pre class="lang-java"><code>public void prototype() {
+    class Tweet {
+    }
+
+    Tweet one = I.make(Tweet.class);
+    Tweet other = I.make(Tweet.class);
+    assert one != other; // two different instances
+}</code></pre></span></section>
+				<section class="A FB" id="sinobu.Manual.Lifestyle_Management.Defining_lifestyle.Singleton">
+					<header class="A u">
+						<h3 icon="📄">Singleton</h3>
+					</header><span class="A"><p>The other is the singleton lifestyle, which keeps a single instance in the JVM and
+always returns it. This time, the lifestyle is applied with annotations when defining
+the class.</p><pre class="lang-java"><code>public void singleton() {
+    @Managed(Singleton.class)
+    class Tweet {
+    }
+
+    Tweet one = I.make(Tweet.class);
+    Tweet other = I.make(Tweet.class);
+    assert one == other; // same instance
+}</code></pre></span></section>
+				<section class="A FB" id="sinobu.Manual.Lifestyle_Management.Defining_lifestyle.Custom_lifestyle">
+					<header class="A u">
+						<h3 icon="📄">Custom lifestyle</h3>
+					</header><span class="A"><p>You can also implement lifestyles tied to specific contexts. Custom class requires to
+implement the Lifestyle interface and receive the requested type in the constructor.
+I&apos;m using <code><a aria-label="kiss.I" href="api/kiss.I.html#prototype(java.lang.Class)">I#prototype(Class)</a></code> here to make Dependency Injection work, but you
+can use any instantiation technique.</p><pre class="lang-java"><code>class PerThread&lt;T&gt; implements Lifestyle&lt;T&gt; {
+    private final ThreadLocal&lt;T&gt; local;
+
+    PerThread(Class&lt;T&gt; requestedType) {
+        // use sinobu&apos;s default instance builder
+        Lifestyle&lt;T&gt; prototype = I.prototype(requestedType);
+
+        // use ThreadLocal as contextual instance holder
+        local = ThreadLocal.withInitial(prototype::get);
+    }
+
+    public T call() throws Exception {
+        return local.get();
+    }
+}</code></pre><pre class="lang-java"><code>public void perThread() {
+    @Managed(PerThread.class)
+    class User {
+    }
+
+    // create contextual user
+    User user1 = I.make(User.class);
+    User user2 = I.make(User.class);
+    assert user1 == user2; // same
+
+    new Thread(() -&gt; {
+        User user3 = I.make(User.class);
+        assert user1 != user3; // different
+    }).start();
+}</code></pre></span></section>
+				<section class="A FB" id="sinobu.Manual.Lifestyle_Management.Defining_lifestyle.Builtin_lifestyles">
+					<header class="A u">
+						<h3 icon="📄">Builtin lifestyles</h3>
+					</header><span class="A"><p>Sinobu has built-in defined lifestyles for specific types.</p><ul>
+							<li><code><a aria-label="java.util.List 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/List.html">List</a></code> - Create new instance each time. (<code><a aria-label="java.util.ArrayList 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/ArrayList.html">ArrayList</a></code>)</li>
+							<li><code><a aria-label="java.util.Set 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/Set.html">Set</a></code> - Create new instance each time. (<code><a aria-label="java.util.HashSet 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/HashSet.html">HashSet</a></code>)</li>
+							<li><code><a aria-label="java.util.Map 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/Map.html">Map</a></code> - Create new instance each time. (<code><a aria-label="java.util.HashMap 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/HashMap.html">HashMap</a></code>)</li>
+							<li><code><a aria-label="java.util.Locale 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/Locale.html">Locale</a></code> - Always returns the instance retrieved from
+<code><a aria-label="java.util.Locale 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/Locale.html#getDefault()">Locale#getDefault()</a></code>.</li>
+						</ul></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Lifestyle_Management.Applying_lifestyle">
+					<header class="A l">
+						<h2>Applying lifestyle</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L321-L322"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>To apply a non-prototype lifestyle, you need to configure each class individually. There
+are two ways to do this.</p></span></section>
+				<section class="A FB" id="sinobu.Manual.Lifestyle_Management.Applying_lifestyle.Use_Managed_annotation">
+					<header class="A u">
+						<h3 icon="📄">Use Managed annotation</h3>
+					</header><span class="A"><p>One is to use <code><a aria-label="kiss.Managed" href="api/kiss.Managed.html">Managed</a></code> annotation. This method is useful if you want to apply
+lifestyle to classes that are under your control.</p><pre class="lang-java"><code>@Managed(Singleton.class)
+class UnderYourControl {
+}</code></pre></span></section>
+				<section class="A FB" id="sinobu.Manual.Lifestyle_Management.Applying_lifestyle.Use_Lifestyle_extension">
+					<header class="A u">
+						<h3 icon="📄">Use Lifestyle extension</h3>
+					</header><span class="A"><p>Another is to load the Lifestyle implementation. Sinobu has a wide variety of
+extension points, and Lifestyle is one of them. This method is useful if you want to
+apply lifestyle to classes that are not under your control.</p><pre class="lang-java"><code>class GlobalThreadPool implements Lifestyle&lt;Executor&gt; {
+
+    private static final Executor pool = Executors.newCachedThreadPool();
+
+    public Executor call() throws Exception {
+        return pool;
+    }
+}</code></pre><pre class="lang-java"><code>public void loadLifestyle() {
+    I.load(GlobalThreadPool.class);
+}</code></pre></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Dependency_Injection.Concept">
+					<header class="A l">
+						<h2>Concept</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L367-L376"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>Dependency Injection (DI) is a mechanism that solves various problems related to
+component dependencies in &apos;a nice way&apos;. Component dependency refers to the relationship
+from upper layer to lower layer, such as Controller → Service → Repository in a general
+layered architecture.
+&apos;A nice way&apos; means that the framework will take care of the problem without the developer
+having to work hard manually.</p><p>In modern Java application development, DI is an almost indispensable mechanism.
+The detailed explanation of the DI concept is left to <a href="https://en.wikipedia.org/wiki/Dependency_injection">another
+website</a>.</p></span></section>
+				<section class="A FB" id="sinobu.Manual.Dependency_Injection.Concept.DI_Container">
+					<header class="A u">
+						<h3 icon="📄">DI Container</h3>
+					</header><span class="A"><p>Unlike other DI frameworks, there is no explicit DI container in Sinobu. It has only
+one container implicitly inside, but the user is not aware of it. Therefore, there is
+also no need to define dependencies explicitly by means of code or external files.
+All dependencies are automatically resolved based on type.</p></span></section>
+				<section class="A FB" id="sinobu.Manual.Dependency_Injection.Concept.Injection_Type">
+					<header class="A u">
+						<h3 icon="📄">Injection Type</h3>
+					</header><span class="A"><p>Commonly, there are four main types in which a client can receive injected services.</p><ul>
+							<li>Constructor injection, where dependencies are provided through a client&apos;s class
+constructor.</li>
+							<li>Setter injection, where the client exposes a setter method which accepts the
+dependency.</li>
+							<li>Field injection, where the client exposes a field which accepts the dependency.</li>
+							<li>Interface injection, where the dependency&apos;s interface provides an injector method
+that will inject the dependency into any client passed to it.</li>
+						</ul><p class="CAUTION">Sinobu supports constructor injection exclusively.
+Other forms of injection are intentionally not supported, as they compromise object
+safety and are unlikely to be supported in the future.</p></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Dependency_Injection.Constructor_Injection">
+					<header class="A l">
+						<h2>Constructor Injection</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L410-L414"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>The most common form of dependency injection is for a class to request its
+dependencies through its constructor. This ensures the client is always in a valid
+state, since it cannot be instantiated without its necessary dependencies.</p><pre class="lang-java"><code>public void objectInjection() {
+    class Injectable {
+    }
+
+    class Injection {
+        private Injectable value;
+
+        Injection(Injectable injectable) {
+            this.value = injectable;
+        }
+    }
+
+    assert I.make(Injection.class).value != null;
+}</code></pre></span></section>
+				<section class="A FB" id="sinobu.Manual.Dependency_Injection.Constructor_Injection.Injectable_Type">
+					<header class="A u">
+						<h3 icon="📄">Injectable Type</h3>
+					</header><span class="A"><p>Any type can be injectable, but there are a few types that receive special treatment.</p><ul>
+							<li>Primitives - A default value (0 for int, false for boolean) is assigned.</li>
+						</ul><pre class="lang-java"><code>public void primitiveIntInjection() {
+    class Injection {
+        private int value;
+
+        Injection(int injectable) {
+            this.value = injectable;
+        }
+    }
+
+    assert I.make(Injection.class).value == 0;
+}</code></pre><pre class="lang-java"><code>public void primitiveBooleanInjection() {
+    class Injection {
+        private boolean value;
+
+        Injection(boolean injectable) {
+            this.value = injectable;
+        }
+    }
+
+    assert I.make(Injection.class).value == false;
+}</code></pre><ul>
+							<li><code><a aria-label="kiss.Lifestyle" href="api/kiss.Lifestyle.html">Lifestyle</a></code> - The resolution of dependencies can be delayed until the user
+actually needs it. Type variables must be correctly specified.</li>
+						</ul><pre class="lang-java"><code>public void objectLazyInjection() {
+    class Injection {
+        private Lifestyle&lt;Person&gt; lazy;
+
+        Injection(Lifestyle&lt;Person&gt; injectable) {
+            this.lazy = injectable;
+        }
+    }
+
+    assert I.make(Injection.class).lazy.get() != null;
+}</code></pre><ul>
+							<li><code><a aria-label="java.lang.Class 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Class.html">Class</a></code> - The currently processing model type. This feature is mainly
+available when implementing the special generic <code><a aria-label="kiss.Lifestyle" href="api/kiss.Lifestyle.html">Lifestyle</a></code>.</li>
+						</ul><pre class="lang-java"><code>public void typeInjection() {
+    class Injection {
+        private Class type;
+
+        Injection(Class injectable) {
+            this.type = injectable;
+        }
+    }
+
+    assert I.make(Injection.class).type == null;
+}</code></pre></span></section>
+				<section class="A FB" id="sinobu.Manual.Dependency_Injection.Constructor_Injection.Priority">
+					<header class="A u">
+						<h3 icon="📄">Priority</h3>
+					</header><span class="A"><p>If only one constructor is defined for the class being injected, it is used. If more
+than one constructor is defined, it must detect which constructor is to be used.</p><p>The constructor with the <code><a aria-label="kiss.Managed" href="api/kiss.Managed.html">Managed</a></code> annotation has the highest priority.</p><pre class="lang-java"><code>public void priorityManaged() {
+    class Injection {
+
+        private int value;
+
+        Injection() {
+            value = 10;
+        }
+
+        // This constructore is used.
+        @Managed
+        Injection(int injectable) {
+            this.value = injectable;
+        }
+    }
+
+    assert I.make(Injection.class).value == 0;
+}</code></pre><p>Next priority is given to constructors with the Inject annotation. The Inject
+annotation targets all annotations with the simple name &apos;Inject&apos;, so annotations such
+as jakarta.inject.Inject used in JSR330 etc. can also be used.</p><pre class="lang-java"><code>public void priorityInject() {
+    class Injection {
+
+        private int value;
+
+        Injection() {
+            value = 10;
+        }
+
+        // This constructore is used.
+        @Inject
+        Injection(int injectable) {
+            this.value = injectable;
+        }
+    }
+
+    assert I.make(Injection.class).value == 0;
+}</code></pre><p>If no annotation is found, the constructor with the lowest number of arguments is
+used.</p><pre class="lang-java"><code>public void priorityMinParam() {
+    class Injection {
+
+        private int value;
+
+        // This constructore is used.
+        Injection() {
+            value = 10;
+        }
+
+        Injection(int injectable) {
+            this.value = injectable;
+        }
+    }
+
+    assert I.make(Injection.class).value == 10;
+}</code></pre><p>If several constructors with the smallest number of arguments are defined, the first
+constructor found among them is used. (which is implementation-dependent in the JDK)</p><pre class="lang-java"><code>public void priorityMinParams() {
+    class Injection {
+
+        private int value;
+
+        // This constructore is used.
+        Injection(boolean injectable) {
+            value = injectable ? 1 : 10;
+        }
+
+        Injection(int injectable) {
+            this.value = injectable;
+        }
+    }
+
+    assert I.make(Injection.class).value == 10;
+}</code></pre></span></section>
+				<section class="A FB" id="sinobu.Manual.Dependency_Injection.Constructor_Injection.Circular_Reference">
+					<header class="A u">
+						<h3 icon="📄">Circular Reference</h3>
+					</header><span class="A"><p>One of the problems with constructor injection is that it cannot resolve circular
+dependencies. To partially solve this problem, Sinobu provides a delayed dependency
+injection method, but it does not completely solve any situation. If a solution is
+not possible, an error will occur.</p><pre class="lang-java"><code>public static class CircularLifestyleA {
+
+    private Lifestyle&lt;CircularLifestyleB&gt; other;
+
+    private CircularLifestyleA(Lifestyle&lt;CircularLifestyleB&gt; other) {
+        this.other = other;
+    }
+}</code></pre><pre class="lang-java"><code>public static class CircularLifestyleB {
+
+    private Lifestyle&lt;CircularLifestyleA&gt; other;
+
+    private CircularLifestyleB(Lifestyle&lt;CircularLifestyleA&gt; other) {
+        this.other = other;
+    }
+}</code></pre><pre class="lang-java"><code>public void circularDependenciesWithProvider() {
+    CircularLifestyleA circularA = I.make(CircularLifestyleA.class);
+    assert circularA.other != null;
+
+    CircularLifestyleB circularB = I.make(CircularLifestyleB.class);
+    assert circularB.other != null;
+}</code></pre></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Object_Modeling.Concept">
+					<header class="A l">
+						<h2>Concept</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L475-L493"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>In the context of Java programming, a &apos;property&apos; generally refers to the characteristics
+or attributes of a class or object. These properties define the state of an object and
+encapsulate the data associated with it. In Java, properties are typically represented as
+private fields within a class, with corresponding getter and setter methods to access and
+modify their values.</p><p>Here&apos;s an example of a Java class with properties:</p><pre class="lang-java"><code>class Person {
+    private String name; // Property: name
+
+    private int age; // Property: age
+
+    // Constructor
+    public Person(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    // Getter method for name property
+    public String getName() {
+        return name;
+    }
+
+    // Setter method for name property
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    // Getter method for age property
+    public int getAge() {
+        return age;
+    }
+
+    // Setter method for age property
+    public void setAge(int age) {
+        this.age = age;
+    }
+}</code></pre><p>In this example, the Person class has two properties: name and age. These properties are
+declared as private fields within the class to encapsulate their implementation details
+and prevent direct access from outside the class. Getter and setter methods (getName(),
+setName(), getAge(), setAge()) are provided to allow controlled access to these
+properties.</p><p>Using properties in Java classes promotes encapsulation, which is one of the fundamental
+principles of object-oriented programming (OOP). Encapsulation hides the internal state
+of an object and exposes only the necessary interfaces for interacting with it, improving
+code maintainability, reusability, and flexibility.</p></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Object_Modeling.Models">
+					<header class="A l">
+						<h2>Models</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L531-L537"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>In Sinobu, model is a set of properties. If a class you define has properties, it is
+already a model.</p><p>Models can be retrieved from a class using the <code><a aria-label="kiss.Model" href="api/kiss.Model.html#of(java.lang.Class)">kiss.Model#of(Class)</a></code> method, but
+there should not be many situations where the end user needs to retrieve the model
+directly.</p><pre class="lang-java"><code>Model model = Model.of(Person.class);</code></pre></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Object_Modeling.Property">
+					<header class="A l">
+						<h2>Property</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L545-L546"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>In Sinobu, a property refers to a value accessible by name and defined by a field or
+method. Property name is arbitrary.</p></span></section>
+				<section class="A FB" id="sinobu.Manual.Object_Modeling.Property.By_Field">
+					<header class="A u">
+						<h3 icon="📄">By Field</h3>
+					</header><span class="A"><p>Property definition by field.</p><pre class="lang-java"><code>public String filedProperty = &quot;This is property&quot;;</code></pre><p>With the final modifier, the value cannot be changed and is therefore not treated as
+a property.</p><pre class="lang-java"><code>public final String finalField = &quot;This is NOT property&quot;;</code></pre><p>Access modifiers other than public are not treated as properties.</p><pre class="lang-java"><code>protected String nonPublicField = &quot;This is NOT property&quot;;</code></pre><p>If you want to treat fields with access modifiers other than public as properties,
+use the <code><a aria-label="kiss.Managed" href="api/kiss.Managed.html">Managed</a></code> annotation.</p><pre class="lang-java"><code>@Managed
+protected String managedField = &quot;This is property&quot;;</code></pre></span></section>
+				<section class="A FB" id="sinobu.Manual.Object_Modeling.Property.By_Variable_Field">
+					<header class="A u">
+						<h3 icon="📄">By Variable Field</h3>
+					</header><span class="A"><p>Property definition by <code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a></code> field.</p><pre class="lang-java"><code>public Variable&lt;String&gt; variableField = Variable.of(&quot;This is property&quot;);</code></pre><p>Unlike normal fields, they are treated as properties even if they have final
+modifier.</p><pre class="lang-java"><code>public final Variable&lt;String&gt; finalField = Variable.of(&quot;This is property&quot;);</code></pre><p>Access modifiers other than public are not treated as properties.</p><pre class="lang-java"><code>protected Variable&lt;String&gt; nonPublicField = Variable.of(&quot;This is NOT property&quot;);</code></pre><p>If you want to treat fields with access modifiers other than public as properties,
+use the <code><a aria-label="kiss.Managed" href="api/kiss.Managed.html">Managed</a></code> annotation.</p><pre class="lang-java"><code>@Managed
+protected Variable&lt;String&gt; managedField = Variable.of(&quot;This is property&quot;);</code></pre></span></section>
+				<section class="A FB" id="sinobu.Manual.Object_Modeling.Property.By_Method">
+					<header class="A u">
+						<h3 icon="📄">By Method</h3>
+					</header><span class="A"><p>Property definition by method. The getter and setter methods must be defined
+according to the Java Bean naming conventions.</p><pre class="lang-java"><code>class GetterAndSetter {
+    private String property = &quot;This is property&quot;;
+
+    public String getProperty() {
+        return property;
+    }
+
+    public void setProperty(String property) {
+        this.property = property;
+    }
+}</code></pre><p>The getter and setter methods do not need to have a public modifier.</p><pre class="lang-java"><code>class NonPublicGetterAndSetter {
+    private String property = &quot;This is property&quot;;
+
+    String getProperty() {
+        return property;
+    }
+
+    void setProperty(String property) {
+        this.property = property;
+    }
+}</code></pre></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Object_Modeling.Manipulation">
+					<header class="A l">
+						<h2>Manipulation</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L641-L644"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>Normally, end users do not use <code><a aria-label="kiss.Model" href="api/kiss.Model.html">Model</a></code> API to manipulate or traverse properties.
+The following is mainly required for framework and library production.</p><p>Models and properties can be used to get, set and monitor property values.</p></span></section>
+				<section class="A FB" id="sinobu.Manual.Object_Modeling.Manipulation.Get">
+					<header class="A u">
+						<h3 icon="📄">Get</h3>
+					</header><span class="A"><p>Get the value by name.</p><pre class="lang-java"><code>public void getProperty() {
+    Person person = new Person();
+    person.setAge(1);
+
+    Model model = Model.of(Person.class);
+    Property property = model.property(&quot;age&quot;);
+
+    assert model.get(person, property).equals(1);
+}</code></pre></span></section>
+				<section class="A FB" id="sinobu.Manual.Object_Modeling.Manipulation.Set">
+					<header class="A u">
+						<h3 icon="📄">Set</h3>
+					</header><span class="A"><p>Set the value by name.</p><pre class="lang-java"><code>public void setProperty() {
+    Person person = new Person();
+    Model model = Model.of(Person.class);
+    Property property = model.property(&quot;age&quot;);
+
+    // assign property value
+    model.set(person, property, 1);
+
+    assert 1 == person.getAge();
+}</code></pre><p>If you set a property value, it is recommended that you reassign the return value to
+the object. This is necessary because the Record is immutable.</p><pre class="lang-java"><code>public void setAtRecord() {
+    Point point = new Point(0, 0);
+    Model&lt;Point&gt; model = Model.of(Point.class);
+    point = model.set(point, model.property(&quot;x&quot;), 10);
+    assert point.x == 10;
+    point = model.set(point, model.property(&quot;y&quot;), 20d);
+    assert point.y == 20d;
+}</code></pre></span></section>
+				<section class="A FB" id="sinobu.Manual.Object_Modeling.Manipulation.Monitor">
+					<header class="A u">
+						<h3 icon="📄">Monitor</h3>
+					</header><span class="A"><p>Monitor the <code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a></code> value.</p><pre class="lang-java"><code>public void observeVariableProperty() {
+    class Item {
+        public Variable&lt;Integer&gt; count = Variable.of(0);
+    }
+
+    Item item = new Item();
+    Model model = Model.of(Item.class);
+    List&lt;Integer&gt; values = model.observe(item, model.property(&quot;count&quot;)).toList();
+    assert values.isEmpty();
+
+    item.count.set(1);
+    item.count.set(2);
+    item.count.set(3);
+    assert values.get(0) == 1;
+    assert values.get(1) == 2;
+    assert values.get(2) == 3;
+}</code></pre></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Extensibility.Usage">
+					<header class="A l">
+						<h2>Usage</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L678-L678"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><pre class="lang-java"><code>import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import org.junit.jupiter.api.Test;
+import kiss.Extensible;
+import kiss.I;
+
+public class ExtensionTest {
+
+    /**
+     * This is extension point.
+     */
+    interface Codec&lt;T&gt; extends Extensible {
+
+        String encode(T value);
+    }
+
+    /**
+     * This is extension with LocalDate key.
+     */
+    class LocalDateCodec implements Codec&lt;LocalDate&gt; {
+
+        public String encode(LocalDate value) {
+            return DateTimeFormatter.ISO_DATE.format(value);
+        }
+    }
+
+    /**
+     * Load all extensions once at application&apos;s entry point.
+     */
+    static {
+        I.load(ExtensionTest.class);
+    }
+
+    /**
+     * User code.
+     */
+    @Test
+    void usage() {
+        // find extension by type
+        Codec&lt;LocalDate&gt; codec = I.find(Codec.class, LocalDate.class);
+        assert codec.encode(LocalDate.of(2022, 11, 11)).equals(&quot;2022-11-11&quot;);
+    }
+}</code></pre>
+					</span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Extensibility.Extension_Point">
+					<header class="A l">
+						<h2>Extension Point</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L684-L700"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>Sinobu has a general-purpose plug-in mechanism for extending application functions.
+An
+extensible place is called Extension Point, and its substance is a type (interface or
+class) marked with the <code><a aria-label="kiss.Extensible" href="api/kiss.Extensible.html">Extensible</a></code> interface.</p><p>We give a definition of <em>Extension Point</em> like the following.</p><ul>
+							<li>It implements <code><a aria-label="kiss.Extensible" href="api/kiss.Extensible.html">Extensible</a></code> interface directly.</li>
+						</ul><pre class="lang-java"><code>interface ThisIsExtensionPoint extends Extensible {
+}</code></pre><pre class="lang-java"><code>class ThisIsAlsoExtensionPoint implements Extensible {
+    // This class is both Extension Point and Extension.
+}</code></pre><pre class="lang-java"><code>interface ThisIsNotExtensionPoint extends ThisIsExtensionPoint {
+}</code></pre><p>In the usage example, Codec is the extension point that converts any object to a
+string
+representation.</p><pre class="lang-java"><code>interface Codec&lt;T&gt; extends Extensible {
+    String encode(T value);
+}</code></pre></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Extensibility.Extension">
+					<header class="A l">
+						<h2>Extension</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L716-L729"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>We give a definition of <em>Extension</em> like the following.</p><ul>
+							<li>It implements any Extension Point or is Extension Point itself.</li>
+							<li>It must be concrete class and has a suitable constructor for Sinobu (see also
+<code><a aria-label="kiss.I" href="api/kiss.I.html#make(java.lang.Class)">I#make(Class)</a></code> method).</li>
+						</ul><pre class="lang-java"><code>class ThisIsExtension implements Extensible {
+    // This class is both Extension Point and Extension.
+}</code></pre><pre class="lang-java"><code>class ThisIsAlsoExtension extends ThisIsExtension {
+    // But not Extension Point.
+}</code></pre><pre class="lang-java"><code>class ThisIsNotExtension extends ThisIsExtension {
+
+    public ThisIsNotExtension(NotInjectable object) {
+        // because of invalid constructor
+    }
+}</code></pre><p>In the usage example, LocalDateCodec is the extension that is special implementation
+for
+<code><a aria-label="java.time.LocalDate 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/time/LocalDate.html">LocalDate</a></code>.</p><pre class="lang-java"><code>class LocalDateCodec implements Codec&lt;LocalDate&gt; {
+
+    public String encode(LocalDate value) {
+        return DateTimeFormatter.ISO_DATE.format(value);
+    }
+}</code></pre></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Extensibility.Extension_Key">
+					<header class="A l">
+						<h2>Extension Key</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L752-L760"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>You can provide <em>Extension Key</em> for each Extensions by using parameter.</p><pre class="lang-java"><code>interface ExtensionPointWithKey&lt;K&gt; extends Extensible {
+}</code></pre><pre class="lang-java"><code>class ExtensionWithStringKey implements ExtensionPointWithKey&lt;String&gt; {
+    // Associate this Extension with String class.
+}</code></pre><pre class="lang-java"><code>class ExtensionWithListKey implements ExtensionPointWithKey&lt;List&gt; {
+    // Associate this Extension with List interface.
+}</code></pre><p>The key makes easy finding an Extension you need (see also
+<code><a aria-label="kiss.I" href="api/kiss.I.html#find(java.lang.Class,java.lang.Class)">I#find(Class, Class)</a></code>).</p><pre class="lang-java"><code>void findExtensionByKey() {
+    assert I.find(ExtensionPointWithKey.class, String.class) instanceof ExtensionWithStringKey;
+}</code></pre></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Extensibility.Dynamic_Loading">
+					<header class="A l">
+						<h2>Dynamic Loading</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L781-L785"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>All extensions are not recognized automatically, you have to load them explicitly
+using
+<code><a aria-label="kiss.I" href="api/kiss.I.html#load(java.lang.Class)">I#load(Class)</a></code>.</p><pre class="lang-java"><code>class ExtensionUser {
+    static {
+        I.load(ExtensionUser.class);
+    }
+
+    // write your code
+}</code></pre><pre class="lang-java"><code>class ApplicationMain {
+    public static void main(String[] args) {
+        I.load(ApplicationMain.class);
+
+        // start your application
+    }
+}</code></pre></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.JSON.Concept">
+					<header class="A l">
+						<h2>Concept</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L809-L831"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>JSON (JavaScript Object Notation) is a lightweight data-interchange format.
+It is easy for humans to read and write and easy for machines to parse and generate.
+It has become a de facto standard for data exchange on the web, especially for APIs.
+(<a href="https://en.wikipedia.org/wiki/JSON">JSON on Wikipedia</a>)</p><p>Sinobu offers built-in support for JSON processing with an emphasis on performance,
+usability, and integration with Java object models.</p><h4>✅ Simplicity</h4><p>Offering straightforward APIs for parsing JSON from various sources and serializing Java
+objects into JSON.</p><pre class="lang-java"><code>void read() {
+    I.json(&quot;&quot;&quot;
+                {
+                &quot;name&quot;: &quot;Misa&quot;,
+                &quot;age&quot;: 21
+            }
+            &quot;&quot;&quot;);
+}</code></pre><h4>🧩 Model-Centric</h4><p>Seamlessly mapping JSON data to and from Java objects
+(POJOs or Records) based on Sinobu&apos;s property model, reducing boilerplate.</p><pre class="lang-java"><code>public void writeRecord() {
+    record Person(String name, int age) {
+    }
+
+    Person person = new Person(&quot;Joe&quot;, 23);
+    String json = I.write(person);
+
+    assertSame(json, &quot;&quot;&quot;
+            {
+                &quot;age&quot;: 23,
+                &quot;name&quot;: &quot;Joe&quot;
+            }
+            &quot;&quot;&quot;);
+}</code></pre><h4>👉 Direct Manipulation</h4><p>Parsed JSON can be navigated and mutated via a DOM-like tree model using the JSON
+class. Access elements by key or index, modify values, or restructure nodes with
+intuitive syntax.</p><pre class="lang-java"><code>public void readValue() {
+    JSON json = I.json(&quot;&quot;&quot;
+            {
+                &quot;number&quot; : 10,
+                &quot;bool&quot; : false
+            }
+            &quot;&quot;&quot;);
+
+    assert json.get(int.class, &quot;number&quot;) == 10;
+    assert json.get(boolean.class, &quot;bool&quot;) == false;
+}</code></pre></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.JSON.Reading">
+					<header class="A l">
+						<h2>Reading</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L845-L847"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>You can read JSON from strings, files, and various inputs. All data will be expanded
+into memory in a tree format. It is not a streaming format, so please be careful when
+parsing very large JSON.</p></span></section>
+				<section class="A FB" id="sinobu.Manual.JSON.Reading.Access_to_the_value">
+					<header class="A u">
+						<h3 icon="📄">Access to the value</h3>
+					</header><span class="A"><p>You can access the value by specifying the key.</p><pre class="lang-java"><code>public void readValue() {
+    JSON json = I.json(&quot;&quot;&quot;
+            {
+                &quot;number&quot; : 10,
+                &quot;bool&quot; : false
+            }
+            &quot;&quot;&quot;);
+
+    assert json.get(int.class, &quot;number&quot;) == 10;
+    assert json.get(boolean.class, &quot;bool&quot;) == false;
+}</code></pre></span></section>
+				<section class="A FB" id="sinobu.Manual.JSON.Reading.Access_to_the_nested_value">
+					<header class="A u">
+						<h3 icon="📄">Access to the nested value</h3>
+					</header><span class="A"><p>You can specify a key multiple times to access nested values.</p><pre class="lang-java"><code>public void readNestedValue() {
+    JSON json = I.json(&quot;&quot;&quot;
+            {
+                &quot;child1&quot; : {
+                    &quot;name&quot; : &quot;first&quot;
+                },
+                &quot;child2&quot; : {
+                    &quot;name&quot; : &quot;second&quot;
+                }
+            }
+            &quot;&quot;&quot;);
+
+    assert json.get(&quot;child1&quot;).get(&quot;name&quot;).as(String.class).equals(&quot;first&quot;);
+    assert json.get(&quot;child2&quot;).get(&quot;name&quot;).as(String.class).equals(&quot;second&quot;);
+}</code></pre><p>You can also find all values by the sequential keys.</p><pre class="lang-java"><code>public void readNestedValueBySequentialKeys() {
+    JSON json = I.json(&quot;&quot;&quot;
+            [
+                {
+                    &quot;type&quot; : {
+                        &quot;name&quot; : &quot;first&quot;
+                    }
+                },
+                {
+                    &quot;type&quot; : {
+                        &quot;name&quot; : &quot;second&quot;
+                    }
+                }
+            ]
+            &quot;&quot;&quot;);
+
+    List&lt;String&gt; found = json.find(String.class, &quot;*&quot;, &quot;type&quot;, &quot;name&quot;);
+    assert found.size() == 2;
+    assert found.get(0).equals(&quot;first&quot;);
+    assert found.get(1).equals(&quot;second&quot;);
+}</code></pre></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.JSON.Writing">
+					<header class="A l">
+						<h2>Writing</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L871-L873"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>You can write JSON from property-based model.</p><pre class="lang-java"><code>public void writeRecord() {
+    record Person(String name, int age) {
+    }
+
+    Person person = new Person(&quot;Joe&quot;, 23);
+    String json = I.write(person);
+
+    assertSame(json, &quot;&quot;&quot;
+            {
+                &quot;age&quot;: 23,
+                &quot;name&quot;: &quot;Joe&quot;
+            }
+            &quot;&quot;&quot;);
+}</code></pre></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.HTML.Concept">
+					<header class="A l">
+						<h2>Concept</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L884-L907"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>Sinobu provides functionality for handling HTML and XML documents.
+It uses a built-in, lenient parser (often called a tag soup parser)
+that can handle malformed HTML, similar to how web browsers do.
+The core class for this is <code><a aria-label="kiss.XML" href="api/kiss.XML.html">XML</a></code>, which offers a jQuery-like
+API for traversing and manipulating the document structure.</p><h4>🍜 Tag Soup Friendly</h4><p>Handles malformed HTML gracefully, tolerating missing or mismatched tags
+commonly found in real-world web content.</p><pre class="lang-java"><code>public void caseInconsistencyLowerUpper() {
+    XML root = parseAsHTML(&quot;&lt;div&gt;crazy&lt;/DIV&gt;&quot;);
+
+    assert root.find(&quot;div&quot;).size() == 1;
+}</code></pre><h4>🎯 CSS Selector Power</h4><p>Leverages CSS selectors for efficient and flexible element selection,
+similar to JavaScript libraries like jQuery.</p><pre class="lang-java"><code>public void tag() {
+    XML xml = I.xml(&quot;&quot;&quot;
+            &lt;root&gt;
+                &lt;h1&gt;&lt;/h1&gt;
+                &lt;article/&gt;
+                &lt;article&gt;&lt;/article&gt;
+            &lt;/root&gt;
+            &quot;&quot;&quot;);
+
+    assert xml.find(&quot;h1&quot;).size() == 1;
+    assert xml.find(&quot;article&quot;).size() == 2;
+}</code></pre><h4>🛠️ jQuery-Like API</h4><p>Provides a fluent and chainable API for easy DOM manipulation,
+inspired by the familiar jQuery syntax.</p><pre class="lang-java"><code>public void append() {
+    XML root = I.xml(&quot;&lt;m&gt;&lt;Q&gt;&lt;P/&gt;&lt;/Q&gt;&lt;Q&gt;&lt;P/&gt;&lt;/Q&gt;&lt;/m&gt;&quot;);
+
+    assert root.find(&quot;Q&quot;).append(&quot;&lt;R/&gt;&lt;R/&gt;&quot;).find(&quot;R&quot;).size() == 4;
+    assert root.find(&quot;Q &gt; R&quot;).size() == 4;
+    assert root.find(&quot;Q &gt; R:first-child&quot;).size() == 0;
+}</code></pre><h4>🌐 XML Ready</h4><p>Supports not only HTML but also XML documents, providing a unified interface
+for structured data processing.</p></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.HTML.Reading">
+					<header class="A l">
+						<h2>Reading</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L913-L929"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>You can parse HTML/XML from various sources using the <code><a aria-label="kiss.I" href="api/kiss.I.html">I</a></code> class utility methods.
+Sinobu automatically detects whether the input is a URL, file path, or raw string.
+The parser is designed to be tolerant of errors and can handle common issues
+found in real-world HTML, such as missing tags or incorrect nesting.
+This makes it suitable for scraping or processing potentially messy markup.</p><ul>
+							<li><code><a aria-label="kiss.I" href="api/kiss.I.html#xml(java.lang.String)">I#xml(String)</a></code></li>
+							<li><code><a aria-label="kiss.I" href="api/kiss.I.html#xml(java.nio.file.Path)">I#xml(java.nio.file.Path)</a></code></li>
+							<li><code><a aria-label="kiss.I" href="api/kiss.I.html#xml(java.io.InputStream)">I#xml(java.io.InputStream)</a></code></li>
+							<li><code><a aria-label="kiss.I" href="api/kiss.I.html#xml(java.io.Reader)">I#xml(java.io.Reader)</a></code></li>
+							<li><code><a aria-label="kiss.I" href="api/kiss.I.html#xml(org.w3c.dom.Node)">I#xml(Node)</a></code></li>
+						</ul><pre class="lang-java"><code>public void htmlLiteral() {
+    XML root = I.xml(&quot;&lt;html/&gt;&quot;);
+
+    assert root.size() == 1;
+    assert root.name() == &quot;html&quot;;
+}</code></pre><p>And can parse the invalid structure.</p><pre class="lang-java"><code>public void caseInconsistencyLowerUpper() {
+    XML root = parseAsHTML(&quot;&lt;div&gt;crazy&lt;/DIV&gt;&quot;);
+
+    assert root.find(&quot;div&quot;).size() == 1;
+}</code></pre><pre class="lang-java"><code>public void slipOut() {
+    XML root = parseAsHTML(&quot;&lt;a&gt;&lt;b&gt;crazy&lt;/a&gt;&lt;/b&gt;&quot;);
+
+    assert root.find(&quot;a&quot;).text().equals(&quot;crazy&quot;);
+    assert root.find(&quot;b&quot;).text().equals(&quot;crazy&quot;);
+}</code></pre></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.HTML.Writing">
+					<header class="A l">
+						<h2>Writing</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L935-L960"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>You can serialize the XML structure back into a string representation or write it to an
+<code><a aria-label="java.lang.Appendable 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Appendable.html">Appendable</a></code> (like <code><a aria-label="java.io.Writer 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/io/Writer.html">Writer</a></code> or <code><a aria-label="java.lang.StringBuilder 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/StringBuilder.html">StringBuilder</a></code>).
+Sinobu offers both compact and formatted output options.</p><p>The <code><a aria-label="kiss.XML" href="api/kiss.XML.html#toString()">XML#toString()</a></code> method provides a compact string representation without
+extra formatting.</p><pre class="lang-java"><code>public void format() {
+    XML root = I.xml(&quot;&lt;root&gt;&lt;child/&gt;&lt;child/&gt;&lt;/root&gt;&quot;);
+
+    assert root.toString().equals(normalize(&quot;&quot;&quot;
+            &lt;root&gt;
+                &lt;child/&gt;
+                &lt;child/&gt;
+            &lt;/root&gt;
+            &quot;&quot;&quot;));
+}</code></pre><p>The <code><a aria-label="kiss.XML" href="api/kiss.XML.html#to(java.lang.Appendable,java.lang.String,java.lang.String...)">XML#to(Appendable, String, String...)</a></code> method allows for pretty-printing
+the XML structure with configurable indentation for improved readability.
+You can specify the indentation string (e.g., a tab character <code>\t</code> or spaces).</p><pre class="lang-java"><code>public void specialIndent() {
+    StringBuilder out = new StringBuilder();
+    I.xml(&quot;&lt;root&gt;&lt;child&gt;&lt;nested/&gt;&lt;/child&gt;&lt;/root&gt;&quot;).to(out, &quot;*&quot;);
+
+    assert out.toString().equals(normalize(&quot;&quot;&quot;
+            &lt;root&gt;
+            *&lt;child&gt;
+            **&lt;nested/&gt;
+            *&lt;/child&gt;
+            &lt;/root&gt;
+            &quot;&quot;&quot;));
+}</code></pre><p>You can also specify tag names that should be treated as inline elements (no line
+breaks around them), preserving the original formatting for elements like <code>&lt;span&gt;</code> or
+<code>&lt;a&gt;</code>.</p><pre class="lang-java"><code>public void inlineElement() {
+    StringBuilder out = new StringBuilder();
+    I.xml(&quot;&lt;root&gt;&lt;inline/&gt;&lt;/root&gt;&quot;).to(out, &quot;\t&quot;, &quot;inline&quot;);
+
+    assert out.toString().equals(&quot;&lt;root&gt;&lt;inline/&gt;&lt;/root&gt;&quot;);
+}</code></pre><p>By using the special prefix `` before a tag name, you can also specify tags that
+should always be treated as non-empty elements (always have a closing tag like
+<code>&lt;script&gt;&lt;/script&gt;</code>, even if empty).</p><pre class="lang-java"><code>public void nonEmptyElement() {
+    StringBuilder out = new StringBuilder();
+    I.xml(&quot;&lt;root/&gt;&quot;).to(out, &quot;\t&quot;, &quot;&amp;root&quot;);
+
+    assert out.toString().equals(&quot;&lt;root&gt;&lt;/root&gt;&quot;);
+}</code></pre><p>By passing <code>null</code> as the indent character, formatting (indentation and line breaks)
+is disabled, similar to <code>toString()</code> but writing to an <code><a aria-label="java.lang.Appendable 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Appendable.html">Appendable</a></code>.</p><pre class="lang-java"><code>public void withoutFormat() {
+    StringBuilder out = new StringBuilder();
+    I.xml(&quot;&lt;root&gt;&lt;child/&gt;&lt;/root&gt;&quot;).to(out, null);
+
+    assert out.toString().equals(&quot;&lt;root&gt;&lt;child/&gt;&lt;/root&gt;&quot;);
+}</code></pre></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.HTML.CSS_Selector">
+					<header class="A l">
+						<h2>CSS Selector</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L966-L973"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>Sinobu leverages CSS selectors for querying elements within the document structure using
+the <code><a aria-label="kiss.XML" href="api/kiss.XML.html#find(java.lang.String)">XML#find(String)</a></code> method. This provides a powerful and familiar way to select
+nodes, similar to JavaScript&apos;s <code>document.querySelectorAll</code>.
+This library supports many standard CSS3 selectors and includes some useful extensions.</p><pre class="lang-java"><code>public void tag() {
+    XML xml = I.xml(&quot;&quot;&quot;
+            &lt;root&gt;
+                &lt;h1&gt;&lt;/h1&gt;
+                &lt;article/&gt;
+                &lt;article&gt;&lt;/article&gt;
+            &lt;/root&gt;
+            &quot;&quot;&quot;);
+
+    assert xml.find(&quot;h1&quot;).size() == 1;
+    assert xml.find(&quot;article&quot;).size() == 2;
+}</code></pre><pre class="lang-java"><code>public void attribute() {
+    XML xml = I.xml(&quot;&quot;&quot;
+            &lt;m&gt;
+                &lt;e A=&apos;one&apos; B=&apos;one&apos;/&gt;
+                &lt;e A=&apos;two&apos; B=&apos;two&apos;/&gt;
+            &lt;/m&gt;
+            &quot;&quot;&quot;);
+
+    assert xml.find(&quot;[A]&quot;).size() == 2;
+    assert xml.find(&quot;[A=one]&quot;).size() == 1;
+}</code></pre><pre class="lang-java"><code>public void clazz() {
+    XML xml = I.xml(&quot;&quot;&quot;
+            &lt;root&gt;
+                &lt;p class=&quot;on&quot;/&gt;
+                &lt;p class=&quot;on large&quot;/&gt;
+                &lt;p class=&quot;&quot;/&gt;
+                &lt;p no-class-attr=&quot;on&quot;/&gt;
+            &lt;/root&gt;
+            &quot;&quot;&quot;);
+
+    assert xml.find(&quot;.on&quot;).size() == 2;
+    assert xml.find(&quot;.large&quot;).size() == 1;
+    assert xml.find(&quot;.on.large&quot;).size() == 1;
+}</code></pre><pre class="lang-java"><code>public void mix() {
+    XML xml = I.xml(&quot;&quot;&quot;
+            &lt;m&gt;
+                &lt;ok/&gt;
+                &lt;ok&gt;
+                    &lt;ok id=&quot;not&quot;/&gt;
+                    &lt;not&gt;
+                        &lt;ok/&gt;
+                    &lt;/not&gt;
+                &lt;/ok&gt;
+            &lt;/m&gt;
+            &quot;&quot;&quot;);
+
+    assert xml.find(&quot;ok&quot;).size() == 4;
+    assert xml.find(&quot;not ok&quot;).size() == 1;
+    assert xml.find(&quot;ok &gt; ok&quot;).size() == 1;
+}</code></pre></span></section>
+				<section class="A FB" id="sinobu.Manual.HTML.CSS_Selector.Combinators">
+					<header class="A u">
+						<h3 icon="📄">Combinators</h3>
+					</header><span class="A"><p>Combinators define the relationship between selectors.</p><table>
+							<thead>
+								<tr>
+									<th align="left">Combinator</th>
+									<th align="left">Description</th>
+									<th align="left">Notes</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td align="left"><code></code> (Space)</td>
+									<td align="left">Descendant</td>
+									<td align="left">Default combinator between selectors</td>
+								</tr>
+								<tr>
+									<td align="left"><code>&gt;</code></td>
+									<td align="left">Child</td>
+									<td align="left">Direct children</td>
+								</tr>
+								<tr>
+									<td align="left"><code>+</code></td>
+									<td align="left">Adjacent Sibling</td>
+									<td align="left">Immediately following sibling</td>
+								</tr>
+								<tr>
+									<td align="left"><code>~</code></td>
+									<td align="left">General Sibling</td>
+									<td align="left">All following siblings</td>
+								</tr>
+								<tr>
+									<td align="left"><code>&lt;</code></td>
+									<td align="left">Adjacent Previous Sibling</td>
+									<td align="left"><strong>Sinobu Extension</strong></td>
+								</tr>
+								<tr>
+									<td align="left"><code>,</code></td>
+									<td align="left">Selector List</td>
+									<td align="left">Groups multiple selectors</td>
+								</tr>
+								<tr>
+									<td align="left"><code>|</code></td>
+									<td align="left">Namespace Separator</td>
+									<td align="left">Used with type and attribute selectors</td>
+								</tr>
+							</tbody>
+						</table></span></section>
+				<section class="A FB" id="sinobu.Manual.HTML.CSS_Selector.Basic_Selectors">
+					<header class="A u">
+						<h3 icon="📄">Basic Selectors</h3>
+					</header><span class="A"><p>Basic selectors target elements based on their type, class, or ID.</p><table>
+							<thead>
+								<tr>
+									<th align="left">Selector Type</th>
+									<th align="left">Example</th>
+									<th align="left">Description</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td align="left">Type</td>
+									<td align="left"><code>div</code></td>
+									<td align="left">By element name</td>
+								</tr>
+								<tr>
+									<td align="left">Class</td>
+									<td align="left"><code>.warning</code></td>
+									<td align="left">By <code>class</code> attribute</td>
+								</tr>
+								<tr>
+									<td align="left">ID</td>
+									<td align="left"><code>#main</code></td>
+									<td align="left">By <code>id</code> attribute</td>
+								</tr>
+								<tr>
+									<td align="left">Universal</td>
+									<td align="left"><code>*</code></td>
+									<td align="left">All elements</td>
+								</tr>
+							</tbody>
+						</table></span></section>
+				<section class="A FB" id="sinobu.Manual.HTML.CSS_Selector.Attribute_Selectors">
+					<header class="A u">
+						<h3 icon="📄">Attribute Selectors</h3>
+					</header><span class="A"><p>Attribute selectors target elements based on the presence or value of their
+attributes.</p><table>
+							<thead>
+								<tr>
+									<th align="left">Selector Syntax</th>
+									<th align="left">Description</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td align="left"><code>[attr]</code></td>
+									<td align="left">Elements with an <code>attr</code> attribute</td>
+								</tr>
+								<tr>
+									<td align="left"><code>[attr=value]</code></td>
+									<td align="left">Elements where <code>attr</code> equals <code>value</code></td>
+								</tr>
+								<tr>
+									<td align="left"><code>[attr~=value]</code></td>
+									<td align="left">Elements where <code>attr</code> contains the word <code>value</code></td>
+								</tr>
+								<tr>
+									<td align="left"><code>[attr*=value]</code></td>
+									<td align="left">Elements where <code>attr</code> contains substring <code>value</code></td>
+								</tr>
+								<tr>
+									<td align="left"><code>[attr^=value]</code></td>
+									<td align="left">Elements where <code>attr</code> starts with <code>value</code></td>
+								</tr>
+								<tr>
+									<td align="left"><code>[attr$=value]</code></td>
+									<td align="left">Elements where <code>attr</code> ends with <code>value</code></td>
+								</tr>
+								<tr>
+									<td align="left"><code>[ns:attr]</code></td>
+									<td align="left">Elements with attribute <code>attr</code> in namespace <code>ns</code></td>
+								</tr>
+								<tr>
+									<td align="left"><code>[ns:attr=value]</code></td>
+									<td align="left">Elements with namespaced attribute and value</td>
+								</tr>
+							</tbody>
+						</table></span></section>
+				<section class="A FB" id="sinobu.Manual.HTML.CSS_Selector.Pseudo_Class_Selectors">
+					<header class="A u">
+						<h3 icon="📄">Pseudo Class Selectors</h3>
+					</header><span class="A"><p>Pseudo-classes select elements based on their state, position, or characteristics not
+reflected by simple selectors. The table includes standard pseudo-classes and kiss
+library specific extensions (marked as Sinobu Extension).</p><table>
+							<thead>
+								<tr>
+									<th align="left">Pseudo-Class</th>
+									<th align="left">Description</th>
+									<th align="left">Notes</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td align="left"><code>:first-child</code></td>
+									<td align="left">First element among siblings</td>
+									<td align="left"></td>
+								</tr>
+								<tr>
+									<td align="left"><code>:last-child</code></td>
+									<td align="left">Last element among siblings</td>
+									<td align="left"></td>
+								</tr>
+								<tr>
+									<td align="left"><code>:only-child</code></td>
+									<td align="left">Element that is the only child</td>
+									<td align="left"></td>
+								</tr>
+								<tr>
+									<td align="left"><code>:first-of-type</code></td>
+									<td align="left">First element of its type among siblings</td>
+									<td align="left"></td>
+								</tr>
+								<tr>
+									<td align="left"><code>:last-of-type</code></td>
+									<td align="left">Last element of its type among siblings</td>
+									<td align="left"></td>
+								</tr>
+								<tr>
+									<td align="left"><code>:only-of-type</code></td>
+									<td align="left">Element that is the only one of its type</td>
+									<td align="left"></td>
+								</tr>
+								<tr>
+									<td align="left"><code>:nth-child(n)</code></td>
+									<td align="left">n-th element among siblings</td>
+									<td align="left">keyword</td>
+								</tr>
+								<tr>
+									<td align="left"><code>:nth-last-child(n)</code></td>
+									<td align="left">n-th element among siblings, from last</td>
+									<td align="left">keyword</td>
+								</tr>
+								<tr>
+									<td align="left"><code>:nth-of-type(n)</code></td>
+									<td align="left">n-th element of its type among siblings</td>
+									<td align="left">keyword</td>
+								</tr>
+								<tr>
+									<td align="left"><code>:nth-last-of-type(n)</code></td>
+									<td align="left">n-th element of type among siblings from last</td>
+									<td align="left">keyword</td>
+								</tr>
+								<tr>
+									<td align="left"><code>:empty</code></td>
+									<td align="left">Elements with no children (incl. text)</td>
+									<td align="left"></td>
+								</tr>
+								<tr>
+									<td align="left"><code>:not(selector)</code></td>
+									<td align="left">Elements not matching the inner <code>selector</code></td>
+									<td align="left"></td>
+								</tr>
+								<tr>
+									<td align="left"><code>:has(selector)</code></td>
+									<td align="left">Elements having a descendant matching <code>selector</code></td>
+									<td align="left"></td>
+								</tr>
+								<tr>
+									<td align="left"><code>:root</code></td>
+									<td align="left">Document&apos;s root element</td>
+									<td align="left"></td>
+								</tr>
+								<tr>
+									<td align="left"><code>:contains(text)</code></td>
+									<td align="left">Elements containing <code>text</code> directly</td>
+									<td align="left"><strong>Sinobu Extension</strong></td>
+								</tr>
+								<tr>
+									<td align="left"><code>:parent</code></td>
+									<td align="left">Parent element</td>
+									<td align="left"><strong>Sinobu Extension</strong></td>
+								</tr>
+							</tbody>
+						</table><p>Note: User interface state pseudo-classes (like <code>:hover</code>, <code>:focus</code>, <code>:checked</code>) are
+generally not supported as they relate to browser interactions rather than static
+document structure analysis.</p></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.HTML.Manipulation">
+					<header class="A l">
+						<h2>Manipulation</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L1056-L1061"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>The <code><a aria-label="kiss.XML" href="api/kiss.XML.html">XML</a></code> object provides a fluent API, similar to jQuery, for modifying the
+document structure.</p><p><strong>Important:</strong> These manipulation methods modify the underlying DOM structure directly;
+the <code><a aria-label="kiss.XML" href="api/kiss.XML.html">XML</a></code> object itself is mutable in this regard. Explore the nested classes for
+specific manipulation categories.</p></span></section>
+				<section class="A FB" id="sinobu.Manual.HTML.Manipulation.Adding_Content">
+					<header class="A u">
+						<h3 icon="📄">Adding Content</h3>
+					</header><span class="A"><p>Methods for inserting new content (elements, text, or other XML structures)
+relative to the selected elements in the document.</p><table>
+							<thead>
+								<tr>
+									<th align="left">Method Link</th>
+									<th align="left">Description</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#append(java.lang.Object)">XML#append(Object)</a></code></td>
+									<td align="left">Insert content at the end of each element.</td>
+								</tr>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#prepend(java.lang.Object)">XML#prepend(Object)</a></code></td>
+									<td align="left">Insert content at the beginning of each element.</td>
+								</tr>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#before(java.lang.Object)">XML#before(Object)</a></code></td>
+									<td align="left">Insert content before each element.</td>
+								</tr>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#after(java.lang.Object)">XML#after(Object)</a></code></td>
+									<td align="left">Insert content after each element.</td>
+								</tr>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#child(java.lang.String)">XML#child(String)</a></code></td>
+									<td align="left">Create and append a new child element.</td>
+								</tr>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#child(java.lang.String,java.util.function.Consumer)">XML#child(String, Consumer)</a></code></td>
+									<td align="left">Create, append, and configure a new child.</td>
+								</tr>
+							</tbody>
+						</table><pre class="lang-java"><code>public void append() {
+    XML root = I.xml(&quot;&lt;m&gt;&lt;Q&gt;&lt;P/&gt;&lt;/Q&gt;&lt;Q&gt;&lt;P/&gt;&lt;/Q&gt;&lt;/m&gt;&quot;);
+
+    assert root.find(&quot;Q&quot;).append(&quot;&lt;R/&gt;&lt;R/&gt;&quot;).find(&quot;R&quot;).size() == 4;
+    assert root.find(&quot;Q &gt; R&quot;).size() == 4;
+    assert root.find(&quot;Q &gt; R:first-child&quot;).size() == 0;
+}</code></pre><pre class="lang-java"><code>public void prepend() {
+    String xml = &quot;&lt;m&gt;&lt;Q&gt;&lt;P/&gt;&lt;/Q&gt;&lt;Q&gt;&lt;P/&gt;&lt;/Q&gt;&lt;/m&gt;&quot;;
+
+    XML e = I.xml(xml);
+    assert e.find(&quot;Q&quot;).prepend(&quot;&lt;R/&gt;&lt;R/&gt;&quot;).find(&quot;R&quot;).size() == 4;
+    assert e.find(&quot;Q &gt; R&quot;).size() == 4;
+    assert e.find(&quot;Q &gt; R:first-child&quot;).size() == 2;
+}</code></pre></span></section>
+				<section class="A FB" id="sinobu.Manual.HTML.Manipulation.Removing_Content">
+					<header class="A u">
+						<h3 icon="📄">Removing Content</h3>
+					</header><span class="A"><p>Methods for removing content or elements from the document.</p><table>
+							<thead>
+								<tr>
+									<th align="left">Method Link</th>
+									<th align="left">Description</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#empty()">XML#empty()</a></code></td>
+									<td align="left">Remove all child nodes from elements.</td>
+								</tr>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#remove()">XML#remove()</a></code></td>
+									<td align="left">Remove the selected elements from the DOM.</td>
+								</tr>
+							</tbody>
+						</table><pre class="lang-java"><code>public void empty() {
+    XML root = I.xml(&quot;&lt;Q&gt;&lt;P/&gt;&lt;P/&gt;&lt;/Q&gt;&quot;);
+    root.empty();
+
+    assert root.find(&quot;P&quot;).size() == 0;
+}</code></pre><pre class="lang-java"><code>public void remove() {
+    XML root = I.xml(&quot;&lt;Q&gt;&lt;S/&gt;&lt;T/&gt;&lt;S/&gt;&lt;/Q&gt;&quot;);
+    assert root.find(&quot;*&quot;).remove().size() == 3;
+
+    assert root.find(&quot;S&quot;).size() == 0;
+    assert root.find(&quot;T&quot;).size() == 0;
+}</code></pre></span></section>
+				<section class="A FB" id="sinobu.Manual.HTML.Manipulation.Wrapping">
+					<header class="A u">
+						<h3 icon="📄">Wrapping</h3>
+					</header><span class="A"><p>Methods for wrapping selected elements with new HTML structures.</p><table>
+							<thead>
+								<tr>
+									<th align="left">Method Link</th>
+									<th align="left">Description</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#wrap(java.lang.Object)">XML#wrap(Object)</a></code></td>
+									<td align="left">Wrap each selected element individually.</td>
+								</tr>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#wrapAll(java.lang.Object)">XML#wrapAll(Object)</a></code></td>
+									<td align="left">Wrap all elements together with one structure.</td>
+								</tr>
+							</tbody>
+						</table><pre class="lang-java"><code>public void wrap() {
+    String xml = &quot;&lt;m&gt;&lt;Q/&gt;&lt;Q/&gt;&lt;/m&gt;&quot;;
+
+    XML e = I.xml(xml);
+    e.find(&quot;Q&quot;).wrap(&quot;&lt;P/&gt;&quot;);
+
+    assert e.find(&quot;P &gt; Q&quot;).size() == 2;
+    assert e.find(&quot;P&quot;).size() == 2;
+    assert e.find(&quot;Q&quot;).size() == 2;
+}</code></pre><pre class="lang-java"><code>public void wrapAll() {
+    String xml = &quot;&lt;m&gt;&lt;Q/&gt;&lt;Q/&gt;&lt;/m&gt;&quot;;
+
+    XML e = I.xml(xml);
+    e.find(&quot;Q&quot;).wrapAll(&quot;&lt;P/&gt;&quot;);
+
+    assert e.find(&quot;P &gt; Q&quot;).size() == 2;
+    assert e.find(&quot;P&quot;).size() == 1;
+    assert e.find(&quot;Q&quot;).size() == 2;
+}</code></pre></span></section>
+				<section class="A FB" id="sinobu.Manual.HTML.Manipulation.Text_Content">
+					<header class="A u">
+						<h3 icon="📄">Text Content</h3>
+					</header><span class="A"><p>Methods for getting or setting the text content of elements.
+Text content represents the combined text of an element and its descendants.</p><table>
+							<thead>
+								<tr>
+									<th align="left">Method Link</th>
+									<th align="left">Description</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#text()">XML#text()</a></code></td>
+									<td align="left">Get the combined text content of elements.</td>
+								</tr>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#text(java.lang.String)">XML#text(String)</a></code></td>
+									<td align="left">Set text content, replacing existing.</td>
+								</tr>
+							</tbody>
+						</table><pre class="lang-java"><code>public void textGet() {
+    String xml = &quot;&lt;Q&gt;ss&lt;P&gt;a&lt;i&gt;a&lt;/i&gt;a&lt;/P&gt;&lt;P&gt; b &lt;/P&gt;&lt;P&gt;c c&lt;/P&gt;ss&lt;/Q&gt;&quot;;
+
+    assert I.xml(xml).find(&quot;P&quot;).text().equals(&quot;aaa b c c&quot;);
+}</code></pre><pre class="lang-java"><code>public void textSet() {
+    String xml = &quot;&lt;Q&gt;&lt;P&gt;aaa&lt;/P&gt;&lt;/Q&gt;&quot;;
+
+    XML e = I.xml(xml);
+    e.find(&quot;P&quot;).text(&quot;set&quot;);
+
+    assert e.find(&quot;P:contains(set)&quot;).size() == 1;
+}</code></pre></span></section>
+				<section class="A FB" id="sinobu.Manual.HTML.Manipulation.Attributes">
+					<header class="A u">
+						<h3 icon="📄">Attributes</h3>
+					</header><span class="A"><p>Methods for managing element attributes (e.g., <code>href</code>, <code>src</code>, <code>id</code>). Since the
+<code>class</code> attribute is frequently manipulated, dedicated helper methods are provided
+for convenience.</p><table>
+							<thead>
+								<tr>
+									<th align="left">Method Link</th>
+									<th align="left">Description</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#attr(java.lang.String)">XML#attr(String)</a></code></td>
+									<td align="left">Get attribute value for the first element.</td>
+								</tr>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#attr(java.lang.String,java.lang.Object)">XML#attr(String, Object)</a></code></td>
+									<td align="left">Set attribute value; <code>null</code> removes attribute.</td>
+								</tr>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#addClass(java.lang.String...)">XML#addClass(String...)</a></code></td>
+									<td align="left">Add one or more classes.</td>
+								</tr>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#removeClass(java.lang.String...)">XML#removeClass(String...)</a></code></td>
+									<td align="left">Remove one or more classes.</td>
+								</tr>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#toggleClass(java.lang.String)">XML#toggleClass(String)</a></code></td>
+									<td align="left">Add or remove a class based on presence.</td>
+								</tr>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#hasClass(java.lang.String)">XML#hasClass(String)</a></code></td>
+									<td align="left">Check if any element has the class.</td>
+								</tr>
+							</tbody>
+						</table><pre class="lang-java"><code>public void attrGet() {
+    String xml = &quot;&lt;Q name=&apos;value&apos; key=&apos;map&apos;/&gt;&quot;;
+
+    assert I.xml(xml).attr(&quot;name&quot;).equals(&quot;value&quot;);
+    assert I.xml(xml).attr(&quot;key&quot;).equals(&quot;map&quot;);
+}</code></pre><pre class="lang-java"><code>public void attrSet() {
+    String xml = &quot;&lt;Q name=&apos;value&apos; key=&apos;map&apos;/&gt;&quot;;
+
+    XML e = I.xml(xml);
+    e.attr(&quot;name&quot;, &quot;set&quot;);
+
+    assert e.attr(&quot;name&quot;).equals(&quot;set&quot;);
+    assert e.attr(&quot;key&quot;).equals(&quot;map&quot;);
+    assert e.attr(&quot;name&quot;, null).find(&quot;Q[name]&quot;).size() == 0;
+}</code></pre><pre class="lang-java"><code>public void addClass() {
+    assert I.xml(&quot;&lt;a/&gt;&quot;).addClass(&quot;add&quot;).attr(&quot;class&quot;).equals(&quot;add&quot;);
+    assert I.xml(&quot;&lt;a class=&apos;base&apos;/&gt;&quot;).addClass(&quot;add&quot;).attr(&quot;class&quot;).equals(&quot;base add&quot;);
+    assert I.xml(&quot;&lt;a class=&apos;base&apos;/&gt;&quot;).addClass(&quot;base&quot;).attr(&quot;class&quot;).equals(&quot;base&quot;);
+    assert I.xml(&quot;&lt;a class=&apos;base&apos;/&gt;&quot;).addClass(&quot;add&quot;, &quot;base&quot;, &quot;ad&quot;).attr(&quot;class&quot;).equals(&quot;base add ad&quot;);
+}</code></pre></span></section>
+				<section class="A FB" id="sinobu.Manual.HTML.Manipulation.Cloning">
+					<header class="A u">
+						<h3 icon="📄">Cloning</h3>
+					</header><span class="A"><p>Method for duplicating elements, creating a deep copy.</p><table>
+							<thead>
+								<tr>
+									<th align="left">Method Link</th>
+									<th align="left">Description</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#clone()">XML#clone()</a></code></td>
+									<td align="left">Create a deep copy of selected elements.</td>
+								</tr>
+							</tbody>
+						</table></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.HTML.Traversing">
+					<header class="A l">
+						<h2>Traversing</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L1159-L1162"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>Navigate the DOM tree relative to the currently selected elements.
+Most traversal methods return a new <code><a aria-label="kiss.XML" href="api/kiss.XML.html">XML</a></code> object containing the resulting elements,
+allowing for method chaining without modifying the original selection (unless intended).
+Explore the nested classes for specific traversal categories.</p></span></section>
+				<section class="A FB" id="sinobu.Manual.HTML.Traversing.Filtering">
+					<header class="A u">
+						<h3 icon="📄">Filtering</h3>
+					</header><span class="A"><p>Methods for filtering the current set of selected elements or finding new ones within
+the current context.</p><table>
+							<thead>
+								<tr>
+									<th align="left">Method Link</th>
+									<th align="left">Description</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#first()">XML#first()</a></code></td>
+									<td align="left">Reduce the set to the first element.</td>
+								</tr>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#last()">XML#last()</a></code></td>
+									<td align="left">Reduce the set to the last element.</td>
+								</tr>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#find(java.lang.String)">XML#find(String)</a></code></td>
+									<td align="left">Find descendants matching the selector.</td>
+								</tr>
+							</tbody>
+						</table><pre class="lang-java"><code>public void first() {
+    XML xml = I.xml(&quot;&quot;&quot;
+            &lt;root&gt;
+                &lt;child1 class=&apos;a&apos;/&gt;
+                &lt;child2 class=&apos;a&apos;/&gt;
+                &lt;child3 class=&apos;a&apos;/&gt;
+            &lt;/root&gt;
+            &quot;&quot;&quot;);
+    XML found = xml.find(&quot;.a&quot;);
+    assert found.size() == 3;
+
+    XML first = found.first();
+    assert first.size() == 1;
+    assert first.name().equals(&quot;child1&quot;);
+}</code></pre><pre class="lang-java"><code>public void tag() {
+    XML xml = I.xml(&quot;&quot;&quot;
+            &lt;root&gt;
+                &lt;h1&gt;&lt;/h1&gt;
+                &lt;article/&gt;
+                &lt;article&gt;&lt;/article&gt;
+            &lt;/root&gt;
+            &quot;&quot;&quot;);
+
+    assert xml.find(&quot;h1&quot;).size() == 1;
+    assert xml.find(&quot;article&quot;).size() == 2;
+}</code></pre></span></section>
+				<section class="A FB" id="sinobu.Manual.HTML.Traversing.Tree_Navigation">
+					<header class="A u">
+						<h3 icon="📄">Tree Navigation</h3>
+					</header><span class="A"><p>Methods for navigating the DOM tree relative to the current elements,
+including moving vertically (up to parents, down to children) and
+horizontally (sideways to siblings).</p><table>
+							<thead>
+								<tr>
+									<th align="left">Method Link</th>
+									<th align="left">Description</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#parent()">XML#parent()</a></code></td>
+									<td align="left">Get the direct parent of each element in the current set.  Duplicates are removed.</td>
+								</tr>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#children()">XML#children()</a></code></td>
+									<td align="left">Get the direct children of each element in the set.</td>
+								</tr>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#firstChild()">XML#firstChild()</a></code></td>
+									<td align="left">Get the first direct child of each element in the set.</td>
+								</tr>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#lastChild()">XML#lastChild()</a></code></td>
+									<td align="left">Get the last direct child of each element in the set.</td>
+								</tr>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#prev()">XML#prev()</a></code></td>
+									<td align="left">Get the immediately preceding sibling of each element in the  set.</td>
+								</tr>
+								<tr>
+									<td align="left"><code><a aria-label="kiss.XML" href="api/kiss.XML.html#next()">XML#next()</a></code></td>
+									<td align="left">Get the immediately following sibling of each element in the  set.</td>
+								</tr>
+							</tbody>
+						</table><pre class="lang-java"><code>public void children() {
+    XML root1 = I.xml(&quot;&quot;&quot;
+            &lt;root&gt;
+                &lt;first/&gt;
+                &lt;center/&gt;
+                &lt;last/&gt;
+            &lt;/root&gt;
+            &quot;&quot;&quot;);
+    assert root1.children().size() == 3;
+
+    XML root2 = I.xml(&quot;&quot;&quot;
+            &lt;root&gt;
+                text&lt;first/&gt;is
+                &lt;child&gt;
+                    &lt;center/&gt;
+                &lt;/child&gt;
+                ignored&lt;last/&gt;!!
+            &lt;/root&gt;
+            &quot;&quot;&quot;);
+    assert root2.children().size() == 3;
+
+    XML root3 = I.xml(&quot;&lt;root/&gt;&quot;);
+    assert root3.children().size() == 0;
+}</code></pre><pre class="lang-java"><code>public void next() {
+    XML root = I.xml(&quot;&quot;&quot;
+            &lt;root&gt;
+                &lt;first/&gt;
+                &lt;center/&gt;
+                text is ignored
+                &lt;last/&gt;
+            &lt;/root&gt;
+            &quot;&quot;&quot;);
+
+    XML next1 = root.find(&quot;first&quot;).next();
+    assert next1.name().equals(&quot;center&quot;);
+
+    XML next2 = root.find(&quot;center&quot;).next();
+    assert next2.name().equals(&quot;last&quot;);
+
+    XML next3 = root.find(&quot;last&quot;).next();
+    assert next3.size() == 0;
+}</code></pre></span></section>
+				<section class="A FB" id="sinobu.Manual.HTML.Traversing.Iteration">
+					<header class="A u">
+						<h3 icon="📄">Iteration</h3>
+					</header><span class="A"><p>The <code><a aria-label="kiss.XML" href="api/kiss.XML.html">XML</a></code> object implements <code><a aria-label="java.lang.Iterable 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Iterable.html">Iterable</a></code>, allowing easy iteration
+over each selected DOM element individually using a standard Java for-each loop.
+This is useful for processing each element in a selection.</p><pre class="lang-java"><code>void iterate() {
+    XML elements = I.xml(&quot;&lt;div&gt;&lt;p&gt;1&lt;/p&gt;&lt;p&gt;2&lt;/p&gt;&lt;/div&gt;&quot;).find(&quot;p&quot;);
+
+    for (XML p : elements) {
+        System.out.println(p.text());
+    }
+}</code></pre></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Template_Engine.Usage">
+					<header class="A l">
+						<h2>Usage</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L1227-L1227"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><pre class="lang-java"><code>import org.junit.jupiter.api.Test;
+import kiss.I;
+
+class MustacheTest {
+
+    String template = &quot;She is {name}, {age} years old.&quot;;
+
+    record Person(String name, int age) {
+    }
+
+    @Test
+    void use() {
+        Person data = new Person(&quot;Takina Inoue&quot;, 16);
+        assert I.express(template, data).equals(&quot;She is Takina Inoue, 16 years old.&quot;);
+    }
+}</code></pre>
+					</span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Template_Engine.Mustache">
+					<header class="A l">
+						<h2>Mustache</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L1233-L1242"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>Mustache can be used for HTML, config files, source code - anything. It works by
+expanding tags in a template using values provided in a hash or object. We call it
+&quot;logic-less&quot; because there are no if statements, else clauses, or for loops. Instead
+there are only tags. Some tags are replaced with a value, some nothing, and others a
+series of values.</p><p>Java19 does not yet have a language built-in template syntax. Therefore, Sinobu
+provides
+a mechanism to parse <a href="https://mustache.github.io/">Mustache</a> syntax
+instead.</p></span></section>
+				<section class="A FB" id="sinobu.Manual.Template_Engine.Mustache.Syntax">
+					<header class="A u">
+						<h3 icon="📄">Syntax</h3>
+					</header><span class="A"><p>To use Mustache, you must first create a Mustache template, which is written
+using a
+markup language such as HTML or XML. In template, you use special symbols called
+Mustache delimiters to specify where the data should be inserted. Mustache
+delimiters
+are written in the following format:</p><pre class="lang-"><code>{placeholder}</code></pre><p>As you can see, Mustache delimiter is a string of characters enclosed in single
+brace, such as &quot;{placeholder}&quot;. This string specifies the location
+where
+the data should be inserted. For example, consider the following Mustache
+template:</p><pre class="lang-java"><code>String template = &quot;She is {name}, {age} years old.&quot;;</code></pre><p>When using this template, you need to provide data for placeholders. For
+instance,
+you might have the following JavaBean object as data:</p><pre class="lang-java"><code>record Person(String name, int age)</code></pre><p>Passing the template string and context data to method
+<code><a aria-label="kiss.I" href="api/kiss.I.html#express(java.lang.String,java.lang.Object...)">I#express(String, Object...)</a></code>, we get a string in which the various
+placeholders are replaced by its data.</p><pre class="lang-java"><code>Person data = new Person(&quot;Takina Inoue&quot;, 16);
+
+assert I.express(template, data).equals(&quot;She is Takina Inoue, 16 years old.&quot;);</code></pre><p>Next, within the program that uses the Mustache template, the Mustache engine is
+initialized. At this point, the Mustache engine is passed the template and the
+data.
+The data is written using data structures such as JavaScript objects.</p><p>Finally, the Mustache engine is used to render the Mustache template. At this
+time,
+the Mustache engine replaces the Mustache specifier in the template and populates
+the
+data to produce a finished HTML, XML, or other markup language document.</p><p>The specific usage varies depending on the programming language and framework,
+but
+the above steps are a rough outline of the basic procedure for using Mustache.</p></span></section>
+				<section class="A FB" id="sinobu.Manual.Template_Engine.Mustache.Usage_at_Sinobu">
+					<header class="A u">
+						<h3 icon="📄">Usage at Sinobu</h3>
+					</header><span class="A"><p>In SInobu, Mustache can be used by calling the
+<code><a aria-label="kiss.I" href="api/kiss.I.html#express(java.lang.String,java.lang.Object...)">I#express(String, Object...)</a></code>
+method. This method parses the given string, reads the necessary variables from
+the
+context, substitutes them, and returns the resulting string.</p></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.HTTP.Concept">
+					<header class="A l">
+						<h2>Concept</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L1311-L1334"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>Sinobu provides a concise and powerful API for making HTTP(S) requests and handling
+WebSocket connections, built on top of Java&apos;s standard <code><a aria-label="java.net.http.HttpClient 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.net.http/java/net/http/HttpClient.html">HttpClient</a></code>.
+It simplifies common tasks like handling responses, content negotiation,
+and asynchronous processing using <code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code>.</p><h4>💡 Fluent API</h4><p>Simple static methods in <code><a aria-label="kiss.I" href="api/kiss.I.html">I</a></code> enable common HTTP GET requests and WebSocket
+connections without boilerplate.</p><h4>🔧 Standard Integration</h4><p>Built on <code><a aria-label="java.net.http.HttpRequest.Builder 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.net.http/java/net/http/HttpRequest.Builder.html">java.net.http.HttpRequest.Builder</a></code>, allowing fine-grained control over
+headers, methods, and request bodies.</p><h4>🔄 Automatic Content Handling</h4><p>Response bodies are automatically converted to suitable types (String, JSON, XML, beans,
+etc.), with gzip/deflate decompression handled transparently.</p><h4>⚙️ Reactive Streams</h4><p>Both HTTP and WebSocket messages are streamed asynchronously via <code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code>,
+promoting non-blocking and reactive design.</p><h4>🔌 WebSocket Support</h4><p>Provides a simple API for establishing WebSocket connections and handling
+incoming/outgoing messages with ease.</p></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.HTTP.Request_and_Response">
+					<header class="A l">
+						<h2>Request and Response</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L1340-L1373"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>Making HTTP requests and processing responses is streamlined using <code><a aria-label="kiss.I" href="api/kiss.I.html#http">I#http</a></code>
+methods.
+You can make simple GET requests with just a URL or use Java&apos;s
+<code><a aria-label="java.net.http.HttpRequest.Builder 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.net.http/java/net/http/HttpRequest.Builder.html">java.net.http.HttpRequest.Builder</a></code>
+for full control over the request details (method, headers, body, etc.).
+Responses are delivered asynchronously as a <code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code>.</p><pre class="lang-java"><code>// Simple GET request, response as String
+ I.http(&quot;https://example.com/data&quot;, String.class).to(html -&gt; {
+     System.out.println(&quot;Fetched HTML: &quot; + html.substring(0, 100) + &quot;...&quot;);
+ });
+
+ // POST request with custom headers, response mapped to a User object
+ HttpRequest.Builder request = HttpRequest.newBuilder(URI.create(&quot;https://api.example.com/users&quot;))
+         .POST(HttpRequest.BodyPublishers.ofString(&quot;{\&quot;name\&quot;:\&quot;John\&quot;}&quot;))
+         .header(&quot;Content-Type&quot;, &quot;application/json&quot;)
+         .header(&quot;Authorization&quot;, &quot;Bearer your_token&quot;);
+
+ I.http(request, User.class).to(user -&gt; {
+     System.out.println(&quot;Created user: &quot; + user.getName());
+ });
+
+ // Synchronous execution (blocks until response or error)
+ try {
+     String result = I.http(&quot;https://example.com&quot;, String.class).waitForTerminate().to().exact();
+     System.out.println(&quot;Synchronous result: &quot; + result);
+ } catch (Exception e) {
+     System.err.println(&quot;Request failed: &quot; + e);
+ }</code></pre><p>Errors during the request (network issues, HTTP status codes &gt;= 400) are propagated
+through the <code><a aria-label="kiss.I" href="api/kiss.I.html#signalError(java.lang.Throwable)">I#signalError(Throwable)</a></code> channel.</p></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.HTTP.Supported_Type">
+					<header class="A l">
+						<h2>Supported Type</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L1379-L1399"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>The <code><a aria-label="kiss.I" href="api/kiss.I.html#http">I#http</a></code> methods automatically convert the response body to the specified Java
+type.
+This simplifies handling different content types.</p><p>Supported types include:</p><ul>
+							<li><code><a aria-label="java.lang.String 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html">String</a></code>: The response body is read as a UTF-8 string.</li>
+							<li><code><a aria-label="java.io.InputStream 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/io/InputStream.html">InputStream</a></code>: Provides direct access to the (potentially decompressed)
+ response body stream. You are responsible for closing this stream.</li>
+							<li><code><a aria-label="java.net.http.HttpResponse 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.net.http/java/net/http/HttpResponse.html">HttpResponse</a></code>: Provides the full `HttpResponse
+								<inputstream>` object, giving
+ access to status code, headers, and the body stream.</inputstream>
+								<li><code><a aria-label="kiss.XML" href="api/kiss.XML.html">XML</a></code>: Parses the response body as XML/HTML into an <code><a aria-label="kiss.XML" href="api/kiss.XML.html">XML</a></code> object.</li>
+								<li>JSON: Parses the response body as JSON into a JSON object.</li>
+								<li><b>Any JSON-mappable Bean/Record</b>: Parses the JSON response body and maps it to an
+ instance of the specified class using Sinobu&apos;s object mapping capabilities.</li>
+							</li>
+							<p><b>Automatic Decompression:</b>
+Sinobu automatically inspects the <code>Content-Encoding</code> response header. If the content is
+compressed using <code>gzip</code> or <code>deflate</code>, it will be decompressed transparently before
+being passed to the type converter or returned as an <code>InputStream</code>.</p>
+						</ul>
+					</span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.HTTP.WebSocket_Support">
+					<header class="A l">
+						<h2>WebSocket Support</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L1405-L1448"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>Sinobu provides a simple way to establish WebSocket connections using
+<code><a aria-label="kiss.I" href="api/kiss.I.html#http(java.lang.String,java.util.function.Consumer,java.net.http.HttpClient...)">I#http(String, Consumer, HttpClient...)</a></code>.
+Communication is handled reactively using <code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code> for incoming messages and a
+<code><a aria-label="java.net.http.WebSocket 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.net.http/java/net/http/WebSocket.html">WebSocket</a></code>
+object for sending messages.</p><pre class="lang-java"><code>Disposable connection = I.http(&quot;wss://echo.websocket.org&quot;, ws -&gt; {
+     // Connection opened callback - send a message
+     System.out.println(&quot;WebSocket Opened!&quot;);
+     ws.sendText(&quot;Hello WebSocket!&quot;, true);
+
+     // You can send more messages later using the &apos;ws&apos; object
+     // ws.sendText(&quot;Another message&quot;, true);
+
+     // Request more messages from the server (default is 1)
+     // ws.request(5); // Request up to 5 more messages
+
+ }).to(message -&gt; { // onNext - received message
+     System.out.println(&quot;Received: &quot; + message);
+     // ws.sendText(&quot;Got it: &quot; + message, true); // Example: Echo back
+ }, error -&gt; { // onError - connection error
+     System.err.println(&quot;WebSocket Error: &quot; + error);
+ }, () -&gt; { // onComplete - connection closed
+     System.out.println(&quot;WebSocket Closed&quot;);
+ });
+
+ // To close the connection later:
+ // connection.dispose();</code></pre><p>The <code>Consumer&lt;WebSocket&gt; open</code> lambda is executed once the connection is successfully
+established.
+The <code><a aria-label="java.net.http.WebSocket 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.net.http/java/net/http/WebSocket.html">WebSocket</a></code> instance provided allows you to send messages (<code>sendText</code>,
+<code>sendBinary</code>, <code>sendPing</code>, etc.)
+and manage the connection state (<code>request</code>, <code>sendClose</code>).</p><p>Incoming messages are received through the <code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code> returned by <code>I.http</code>.</p><p><b>Automatic Decompression:</b>
+Similar to HTTP responses, Sinobu automatically handles WebSocket messages compressed
+with the
+standard <code>permessage-deflate</code> extension (commonly used for gzip/deflate over WebSockets),
+ensuring you receive decompressed text messages in the <code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code>.</p></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.HTTP.Custom_HttpClient">
+					<header class="A l">
+						<h2>Custom HttpClient</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L1454-L1481"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>While <code><a aria-label="kiss.I" href="api/kiss.I.html#http">I#http</a></code> methods use a default, shared <code><a aria-label="java.net.http.HttpClient 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.net.http/java/net/http/HttpClient.html">HttpClient</a></code> instance
+internally,
+you can provide your own configured <code>HttpClient</code> instance(s) as optional trailing
+arguments
+to any of the <code>I.http</code> methods. This allows customization of timeouts, proxies, SSL
+contexts,
+authenticators, cookie handlers, etc., using the standard Java <code>HttpClient.Builder</code> API.</p><pre class="lang-java"><code>HttpClient customClient = HttpClient.newBuilder()
+      .connectTimeout(Duration.ofSeconds(10))
+      .followRedirects(HttpClient.Redirect.NORMAL)
+      // .proxy(...)
+      // .sslContext(...)
+      // .authenticator(...)
+      // .cookieHandler(...)
+      .build();
+
+ // Use the custom client for the request
+ I.http(&quot;https://example.com&quot;, String.class, customClient).to(response -&gt; { ... });
+
+ // Use it for WebSocket too
+ I.http(&quot;wss://example.com/ws&quot;, ws -&gt; { ... }, customClient).to(message -&gt; { ... });</code></pre><p>If multiple clients are passed, the first non-null one is used. If none are provided or
+all are null,
+the default client (<code>I.client</code>) is used.</p></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Reactivity.Concept">
+					<header class="A l">
+						<h2>Concept</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L1489-L1527"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>The concept of ReactiveX is very well summarized on the official website, so it is better
+to read there.</p><ul>
+							<li><a href="https://reactivex.io/intro.html">ReactiveX</a></li>
+							<li><a href="https://reactivex.io/documentation/observable.html">Observable</a></li>
+							<li><a href="https://reactivex.io/documentation/operators.html">Operators</a></li>
+						</ul><p>The <code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code> class that implements the Reactive Pattern. This class provides
+methods for subscribing to the <code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code> as well as delegate methods to the various
+observers.</p><p>In Reactive Pattern an observer subscribes to a <code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code>. Then that observer reacts
+to whatever item or sequence of items the <code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code> emits. This pattern facilitates
+concurrent operations because it does not need to block while waiting for the
+<code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code>
+to emit objects, but instead it creates a sentry in the form of an observer that stands
+ready to react appropriately at whatever future time the <code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code> does so.</p><p>The subscribe method is how you connect an <code><a aria-label="kiss.Observer" href="api/kiss.Observer.html">Observer</a></code> to a <code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code>. Your
+<code><a aria-label="kiss.Observer" href="api/kiss.Observer.html">Observer</a></code> implements some subset of the following methods:</p><ul>
+							<li><code><a aria-label="kiss.Observer" href="api/kiss.Observer.html#accept(java.lang.Object)">Observer#accept(Object)</a></code> - A <code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code> calls this method whenever the
+<code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code> emits an item. This method takes as a parameter the item emitted by the
+<code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code>.</li>
+							<li><code><a aria-label="kiss.Observer" href="api/kiss.Observer.html#error(java.lang.Throwable)">Observer#error(Throwable)</a></code> - A <code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code> calls this method to indicate that
+it has failed to generate the expected data or has encountered some other error. It will
+not make further calls to <code><a aria-label="kiss.Observer" href="api/kiss.Observer.html#error(java.lang.Throwable)">Observer#error(Throwable)</a></code> or
+<code><a aria-label="kiss.Observer" href="api/kiss.Observer.html#complete()">Observer#complete()</a></code>. The <code><a aria-label="kiss.Observer" href="api/kiss.Observer.html#error(java.lang.Throwable)">Observer#error(Throwable)</a></code> method takes as its
+parameter an indication of what caused the error.</li>
+							<li><code><a aria-label="kiss.Observer" href="api/kiss.Observer.html#complete()">Observer#complete()</a></code> - A <code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code> calls this method after it has called
+<code><a aria-label="kiss.Observer" href="api/kiss.Observer.html#accept(java.lang.Object)">Observer#accept(Object)</a></code> for the final time, if it has not encountered any errors.</li>
+						</ul><p>By the terms of the <code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code> contract, it may call <code><a aria-label="kiss.Observer" href="api/kiss.Observer.html#accept(java.lang.Object)">Observer#accept(Object)</a></code>
+zero or more times, and then may follow those calls with a call to either
+<code><a aria-label="kiss.Observer" href="api/kiss.Observer.html#complete()">Observer#complete()</a></code> or <code><a aria-label="kiss.Observer" href="api/kiss.Observer.html#error(java.lang.Throwable)">Observer#error(Throwable)</a></code> but not both, which will
+be its last call. By convention, in this document, calls to
+<code><a aria-label="kiss.Observer" href="api/kiss.Observer.html#accept(java.lang.Object)">Observer#accept(Object)</a></code> are usually called “emissions” of items,
+whereas calls to <code><a aria-label="kiss.Observer" href="api/kiss.Observer.html#complete()">Observer#complete()</a></code> or <code><a aria-label="kiss.Observer" href="api/kiss.Observer.html#error(java.lang.Throwable)">Observer#error(Throwable)</a></code> are
+called “notifications.”</p></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Scheduling.Concept">
+					<header class="A l">
+						<h2>Concept</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L1545-L1562"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>Scheduling tasks to run at specific times or intervals is a common requirement.
+Sinobu provides a simple yet powerful mechanism for this, based on the well-known
+Cron expression format. It integrates seamlessly with Sinobu&apos;s reactive streams.</p><h4>✨ Simple API</h4><p>Schedule tasks with a single static method call: <code><a aria-label="kiss.I" href="api/kiss.I.html#schedule(java.lang.String)">I#schedule(String)</a></code>.
+No complex setup or scheduler instances needed.</p><pre class="lang-java"><code>void scheduling() {
+    I.schedule(() -&gt; {
+        // execute your job immediately on job thread
+    });
+
+    I.schedule(&quot;0 0 * * *&quot;).to(() -&gt; {
+        // execute your job regularly on job thread
+    });
+}</code></pre><h4>🗓️ Cron Expression Syntax</h4><p>Define complex schedules using the standard Cron format, specifying minutes,
+hours, days, months, and weekdays. Sinobu supports standard fields and special
+characters like <code>*</code>, <code>/</code>, <code>-</code>, <code>,</code>, <code>L</code>, <code>W</code>, <code>#</code>, <code>?</code>, and the randomizer <code>R</code>.</p><h4>🔄 Reactive Integration</h4><p>Scheduled events are delivered as a <code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code>, allowing you to use
+reactive operators for flow control (e.g., <a aria-label="kiss.Signal" href="api/kiss.Signal.html#take(long)">take</a>),
+transformation, and lifecycle management (<code><a aria-label="kiss.Disposable" href="api/kiss.Disposable.html">Disposable</a></code>).</p></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Scheduling.Usage">
+					<header class="A l">
+						<h2>Usage</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L1577-L1584"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>You can use <code><a aria-label="kiss.I" href="api/kiss.I.html#schedule(java.lang.String)">I#schedule(String)</a></code> to schedule jobs by cron expression.</p><pre class="lang-java"><code>void scheduling() {
+    I.schedule(&quot;0 0 * * *&quot;).to(() -&gt; {
+        // execute your job
+    });
+}</code></pre><p>To stop continuous task scheduling, execute the return value <code><a aria-label="kiss.Disposable" href="api/kiss.Disposable.html">Disposable</a></code>.</p><pre class="lang-java"><code>void stopScheduling() {
+    Disposable disposer = I.schedule(&quot;0 0 * * *&quot;).to(() -&gt; {
+        // execute your job
+    });
+
+    // stop scheduling
+    disposer.dispose();
+}</code></pre><p>Since the return value is <code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code>, it is easy to stop after five executions.</p><pre class="lang-java"><code>void stopSchedulingAfter5Executions() {
+    I.schedule(&quot;0 0 * * *&quot;).take(5).to(() -&gt; {
+        // execute your job
+    });
+}</code></pre></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Scheduling.Format">
+					<header class="A l">
+						<h2>Format</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L1610-L1631"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>A Cron expression consists of five or six fields, separated by spaces.
+From left to right, they represent seconds, minutes, hours, days, months, and days of the week, with seconds being optional.
+The possible values for each field are as follows, and some special function characters can also be used.</p><p>If you want to specify 9:00 every morning, it would look like this</p><pre><code>0 0 9 * * *
+</code></pre><p>Seconds field is optional and can be omitted.</p><pre><code>0 9 * * *
+</code></pre><table>
+							<thead>
+								<tr>
+									<th align="center">Field</th>
+									<th align="center">Required</th>
+									<th align="center">Acceptable Values</th>
+									<th>Special Characters</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td align="center">Seconds</td>
+									<td align="center">No</td>
+									<td align="center">0 ~ 59</td>
+									<td><code>,</code><code>-</code><code>*</code><code>/</code><code>R</code></td>
+								</tr>
+								<tr>
+									<td align="center">Minutes</td>
+									<td align="center">Yes</td>
+									<td align="center">0 ~ 59</td>
+									<td><code>,</code><code>-</code><code>*</code><code>/</code><code>R</code></td>
+								</tr>
+								<tr>
+									<td align="center">Hours</td>
+									<td align="center">Yes</td>
+									<td align="center">0 ~ 23</td>
+									<td><code>,</code><code>-</code><code>*</code><code>/</code><code>R</code></td>
+								</tr>
+								<tr>
+									<td align="center">Days</td>
+									<td align="center">Yes</td>
+									<td align="center">1 ~ 31</td>
+									<td><code>,</code><code>-</code><code>*</code><code>/</code><code>?</code><code>L</code><code>W</code><code>R</code></td>
+								</tr>
+								<tr>
+									<td align="center">Months</td>
+									<td align="center">Yes</td>
+									<td align="center">1 ~ 12 or JAN ~ DEC</td>
+									<td><code>,</code><code>-</code><code>*</code><code>/</code><code>R</code></td>
+								</tr>
+								<tr>
+									<td align="center">Weekdays</td>
+									<td align="center">Yes</td>
+									<td align="center">0 ~ 7 or SUN ~ SAT
+										<br/>0 and 7 represent Sunday</td>
+									<td><code>,</code><code>-</code><code>*</code><code>/</code><code>?</code><code>L</code><code>#</code><code>R</code></td>
+								</tr>
+							</tbody>
+						</table></span></section>
+				<section class="A FB" id="sinobu.Manual.Scheduling.Format.Second">
+					<header class="A u">
+						<h3 icon="📄">Second</h3>
+					</header><span class="A"><p>The seconds field can be a number from 0 to 59. It is optional and does not have to be specified.</p><table>
+							<thead>
+								<tr>
+									<th align="center">Expression</th>
+									<th align="center">Description</th>
+									<th align="center">Example</th>
+									<th>Execution Timing</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td align="center"><code>*</code></td>
+									<td align="center">Every minute</td>
+									<td align="center"><code>* * * * *</code></td>
+									<td>every minute</td>
+								</tr>
+								<tr>
+									<td align="center"><code>*/5</code></td>
+									<td align="center">Every 5 minutes</td>
+									<td align="center"><code>*/5 * * * *</code></td>
+									<td>every 5 minutes</td>
+								</tr>
+								<tr>
+									<td align="center"><code>5</code></td>
+									<td align="center">Specific minute</td>
+									<td align="center"><code>5 * * * *</code></td>
+									<td>at the 5th minute</td>
+								</tr>
+								<tr>
+									<td align="center"><code>1-30</code></td>
+									<td align="center">Range</td>
+									<td align="center"><code>1-30 * * * *</code></td>
+									<td>from minute 1 to 30</td>
+								</tr>
+								<tr>
+									<td align="center"><code>0,30</code></td>
+									<td align="center">Multiple values</td>
+									<td align="center"><code>0,30 * * * *</code></td>
+									<td>at minutes 0 and 30</td>
+								</tr>
+							</tbody>
+						</table></span></section>
+				<section class="A FB" id="sinobu.Manual.Scheduling.Format.Hour">
+					<header class="A u">
+						<h3 icon="📄">Hour</h3>
+					</header><span class="A"><p>The time field can be a number from 0 to 23.</p><table>
+							<thead>
+								<tr>
+									<th align="center">Expression</th>
+									<th align="center">Description</th>
+									<th align="center">Example</th>
+									<th>Execution Timing</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td align="center"><code>*</code></td>
+									<td align="center">Every hour</td>
+									<td align="center"><code>0 * * * *</code></td>
+									<td>at the 0th minute of every hour</td>
+								</tr>
+								<tr>
+									<td align="center"><code>*/3</code></td>
+									<td align="center">Every 3 hours</td>
+									<td align="center"><code>0 */3 * * *</code></td>
+									<td>every 3 hours at the 0th minute</td>
+								</tr>
+								<tr>
+									<td align="center"><code>0</code></td>
+									<td align="center">Midnight</td>
+									<td align="center"><code>0 0 * * *</code></td>
+									<td>at 12:00 AM every day</td>
+								</tr>
+								<tr>
+									<td align="center"><code>9-17</code></td>
+									<td align="center">Business hours</td>
+									<td align="center"><code>0 9-17 * * *</code></td>
+									<td>at the 0th minute between 9 AM and 5 PM</td>
+								</tr>
+								<tr>
+									<td align="center"><code>8,12,18</code></td>
+									<td align="center">Multiple times</td>
+									<td align="center"><code>0 8,12,18 * * *</code></td>
+									<td>at 8 AM, 12 PM, and 6 PM</td>
+								</tr>
+							</tbody>
+						</table></span></section>
+				<section class="A FB" id="sinobu.Manual.Scheduling.Format.Day">
+					<header class="A u">
+						<h3 icon="📄">Day</h3>
+					</header><span class="A"><p>The date field can be a number between 1 and 31.</p><table>
+							<thead>
+								<tr>
+									<th align="center">Expression</th>
+									<th align="center">Description</th>
+									<th align="center">Example</th>
+									<th>Execution Timing</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td align="center"><code>*</code></td>
+									<td align="center">Every day</td>
+									<td align="center"><code>0 0 * * *</code></td>
+									<td>at 12:00 AM every day</td>
+								</tr>
+								<tr>
+									<td align="center"><code>1</code></td>
+									<td align="center">First day of month</td>
+									<td align="center"><code>0 0 1 * *</code></td>
+									<td>at 12:00 AM on the 1st of every month</td>
+								</tr>
+								<tr>
+									<td align="center"><code>L</code></td>
+									<td align="center">Last day of month</td>
+									<td align="center"><code>0 0 L * *</code></td>
+									<td>at 12:00 AM on the last day of every month</td>
+								</tr>
+								<tr>
+									<td align="center"><code>*/2</code></td>
+									<td align="center">Every other day</td>
+									<td align="center"><code>0 0 */2 * *</code></td>
+									<td>at 12:00 AM every other day</td>
+								</tr>
+								<tr>
+									<td align="center"><code>1,15</code></td>
+									<td align="center">Multiple days</td>
+									<td align="center"><code>0 0 1,15 * *</code></td>
+									<td>at 12:00 AM on the 1st and 15th of every month</td>
+								</tr>
+								<tr>
+									<td align="center"><code>15W</code></td>
+									<td align="center">Nearest weekday</td>
+									<td align="center"><code>0 0 15W * *</code></td>
+									<td>at 12:00 AM on the nearest weekday to the 15th</td>
+								</tr>
+							</tbody>
+						</table></span></section>
+				<section class="A FB" id="sinobu.Manual.Scheduling.Format.Month">
+					<header class="A u">
+						<h3 icon="📄">Month</h3>
+					</header><span class="A"><p>The month field can be a number from 1 to 12.
+It can also be specified in English abbreviations such as <code>JUN</code>, <code>FEB</code>, <code>MAR</code>, etc.</p><table>
+							<thead>
+								<tr>
+									<th align="center">Expression</th>
+									<th align="center">Description</th>
+									<th align="center">Example</th>
+									<th>Execution Timing</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td align="center"><code>*</code></td>
+									<td align="center">Every month</td>
+									<td align="center"><code>0 0 1 * *</code></td>
+									<td>at 12:00 AM on the 1st of every month</td>
+								</tr>
+								<tr>
+									<td align="center"><code>1</code> or <code>JAN</code></td>
+									<td align="center">January</td>
+									<td align="center"><code>0 0 1 1 *</code></td>
+									<td>at 12:00 AM on January 1st</td>
+								</tr>
+								<tr>
+									<td align="center"><code>*/3</code></td>
+									<td align="center">Quarterly</td>
+									<td align="center"><code>0 0 1 */3 *</code></td>
+									<td>at 12:00 AM on the 1st every 3 months</td>
+								</tr>
+								<tr>
+									<td align="center"><code>3-5</code></td>
+									<td align="center">Specified period</td>
+									<td align="center"><code>0 0 1 3-5 *</code></td>
+									<td>at 12:00 AM on the 1st from March to May</td>
+								</tr>
+								<tr>
+									<td align="center"><code>1,6,12</code></td>
+									<td align="center">Multiple months</td>
+									<td align="center"><code>0 0 1 1,6,12 *</code></td>
+									<td>at 12:00 AM on January 1st, June 1st, and December 1st</td>
+								</tr>
+							</tbody>
+						</table></span></section>
+				<section class="A FB" id="sinobu.Manual.Scheduling.Format.Day_of_Week">
+					<header class="A u">
+						<h3 icon="📄">Day of Week</h3>
+					</header><span class="A"><p>The day of the week field can be a number from 0 to 7, where 0 is Sunday, 1 is Monday, 2 is Tuesday, and so on, returning to Sunday at 7.
+You can also specify the English abbreviation of <code>SUN</code>, <code>MON</code>, <code>TUE</code>, etc.</p><table>
+							<thead>
+								<tr>
+									<th align="center">Expression</th>
+									<th align="center">Description</th>
+									<th align="center">Example</th>
+									<th>Execution Timing</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td align="center"><code>*</code></td>
+									<td align="center">Every day</td>
+									<td align="center"><code>0 0 * * *</code></td>
+									<td>every day at 00:00</td>
+								</tr>
+								<tr>
+									<td align="center"><code>1-5</code></td>
+									<td align="center">Weekdays only</td>
+									<td align="center"><code>0 0 * * 1-5</code></td>
+									<td>at 00:00 on weekdays</td>
+								</tr>
+								<tr>
+									<td align="center"><code>0,6</code></td>
+									<td align="center">Weekends only</td>
+									<td align="center"><code>0 0 * * 0,6</code></td>
+									<td>at 00:00 on Saturday and Sunday</td>
+								</tr>
+								<tr>
+									<td align="center"><code>1#1</code></td>
+									<td align="center">Nth weekday</td>
+									<td align="center"><code>0 0 * * 1#1</code></td>
+									<td>at 00:00 on the first Monday of each month</td>
+								</tr>
+								<tr>
+									<td align="center"><code>5L</code></td>
+									<td align="center">Last weekday</td>
+									<td align="center"><code>0 0 * * 5L</code></td>
+									<td>at 00:00 on the last Friday of each month</td>
+								</tr>
+							</tbody>
+						</table></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Scheduling.Special_Characters">
+					<header class="A l">
+						<h2>Special Characters</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L1698-L1736"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>In addition to numbers, each field can contain characters with special meanings and functions.</p><table>
+							<thead>
+								<tr>
+									<th align="center">Character</th>
+									<th align="center">Description</th>
+									<th align="center">Example</th>
+									<th>Execution Timing</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td align="center"><code>*</code></td>
+									<td align="center">All values</td>
+									<td align="center"><code>* * * * *</code></td>
+									<td>every minute</td>
+								</tr>
+								<tr>
+									<td align="center"><code>,</code></td>
+									<td align="center">List of values</td>
+									<td align="center"><code>1,15,30 * * * *</code></td>
+									<td>at 1 minute, 15 minutes, and 30 minutes past every hour</td>
+								</tr>
+								<tr>
+									<td align="center"><code>-</code></td>
+									<td align="center">Range</td>
+									<td align="center"><code>9-17 * * * *</code></td>
+									<td>every minute from 9 AM to 5 PM</td>
+								</tr>
+								<tr>
+									<td align="center"><code>/</code></td>
+									<td align="center">Interval</td>
+									<td align="center"><code>*/15 * * * *</code></td>
+									<td>every 15 minutes</td>
+								</tr>
+								<tr>
+									<td align="center"><code>L</code></td>
+									<td align="center">Last</td>
+									<td align="center"><code>0 0 L * *</code></td>
+									<td>at 00:00 on the last day of each month</td>
+								</tr>
+								<tr>
+									<td align="center"><code>W</code></td>
+									<td align="center">Nearest weekday</td>
+									<td align="center"><code>0 0 15W * *</code></td>
+									<td>at 00:00 on the nearest weekday to the 15th</td>
+								</tr>
+								<tr>
+									<td align="center"><code>#</code></td>
+									<td align="center">Nth occurrence</td>
+									<td align="center"><code>0 0 * * 1#1</code></td>
+									<td>at 00:00 on the first Monday of each month</td>
+								</tr>
+								<tr>
+									<td align="center"><code>R</code></td>
+									<td align="center">Random</td>
+									<td align="center"><code>R 10 * * *</code></td>
+									<td>once at a random minute in 10:00 a.m</td>
+								</tr>
+								<tr>
+									<td align="center"><code>?</code></td>
+									<td align="center">No date specification</td>
+									<td align="center"><code>0 0 ? * MON</code></td>
+									<td>at 00:00 every Monday</td>
+								</tr>
+							</tbody>
+						</table><p>Complex time specifications can be made by combining several special characters as follows</p><table>
+							<thead>
+								<tr>
+									<th align="center">Example</th>
+									<th>Execution Timing</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td align="center"><code>30 17 * * 5L</code></td>
+									<td>at 17:30 on the last Friday of each month</td>
+								</tr>
+								<tr>
+									<td align="center"><code>*/30 9-17 * * 1-5</code></td>
+									<td>every 30 minutes from 9 AM to 5 PM on weekdays</td>
+								</tr>
+								<tr>
+									<td align="center"><code>0 0 1,15,L * *</code></td>
+									<td>at 00:00 on the 1st, 15th, and last day of each month</td>
+								</tr>
+								<tr>
+									<td align="center"><code>0 12 * * 1#2,1#4</code></td>
+									<td>at 12:00 on the 2nd and 4th Monday of each month</td>
+								</tr>
+								<tr>
+									<td align="center"><code>0 9 15W * *</code></td>
+									<td>at 09:00 on the nearest weekday to the 15th</td>
+								</tr>
+								<tr>
+									<td align="center"><code>0 22 * 1-3 0L</code></td>
+									<td>at 22:00 on the last Sunday of each month from January to March</td>
+								</tr>
+								<tr>
+									<td align="center"><code>15 9-17/2 * * 1,3,5</code></td>
+									<td>every 2 hours from 09:15 to 17:15 on Mondays, Wednesdays, and Fridays</td>
+								</tr>
+								<tr>
+									<td align="center"><code>0 0-5/2 * * *</code></td>
+									<td>every 2 hours between 00:00 and 05:00 every day</td>
+								</tr>
+								<tr>
+									<td align="center"><code>0 18-22 * * 1-5</code></td>
+									<td>at every hour from 18:00 to 22:00 on weekdays</td>
+								</tr>
+								<tr>
+									<td align="center"><code>0 0 1 * 2</code></td>
+									<td>at 00:00 on the first day of every month, but only if it is a Tuesday</td>
+								</tr>
+								<tr>
+									<td align="center"><code>0 0 15 * 1#3</code></td>
+									<td>at 00:00 on the third Monday of every month when it falls on the 15th</td>
+								</tr>
+								<tr>
+									<td align="center"><code>0 12 1 1 *</code></td>
+									<td>at 12:00 on January 1st every year</td>
+								</tr>
+								<tr>
+									<td align="center"><code>*/10 * * * 6#3</code></td>
+									<td>every 10 minutes on the third Saturday of each month</td>
+								</tr>
+								<tr>
+									<td align="center"><code>0 8-18/3 * * 0</code></td>
+									<td>every 3 hours from 08:00 to 18:00 on Sundays</td>
+								</tr>
+								<tr>
+									<td align="center"><code>0 0-23/6 * * *</code></td>
+									<td>every 6 hours, at 00:00, 06:00, 12:00, and 18:00 every day</td>
+								</tr>
+								<tr>
+									<td align="center"><code>0 15 1 1,7 *</code></td>
+									<td>at 15:00 on January 1st and July 1st every year</td>
+								</tr>
+								<tr>
+									<td align="center"><code>0 20 * * 1#2</code></td>
+									<td>at 20:00 on the second Monday of each month</td>
+								</tr>
+								<tr>
+									<td align="center"><code>0-30R 10,22 * * *</code></td>
+									<td>once each at random times between 0 and 30 minutes at 10:00 or 22:00</td>
+								</tr>
+								<tr>
+									<td align="center"><code>0 0 1-5,10-15 * *</code></td>
+									<td>at 00:00 on the 1st to 5th and the 10th to 15th day of each month</td>
+								</tr>
+								<tr>
+									<td align="center"><code>0 1-5/2,10-15 * * *</code></td>
+									<td>at every 2 hours from 01:00 to 05:00 and every hour from 10:00 to 15:00 every day</td>
+								</tr>
+							</tbody>
+						</table></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Logging.Concept">
+					<header class="A l">
+						<h2>Concept</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L1744-L1763"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>Sinobu provides a minimalist, high-performance logging library designed with an emphasis
+on garbage-less operation and zero-boilerplate code. It is especially well-suited for
+high-throughput applications where every microsecond and memory allocation matters.</p><h4>🚀 No Boilerplate</h4><p>Logging is as simple as calling a static method like <code><a aria-label="kiss.I" href="api/kiss.I.html#info(java.lang.Object)">I#info(Object)</a></code>. Therefore,
+there’s no need to create logger instances per class. This approach dramatically reduces
+code clutter and eliminates repetitive logger setup.</p><pre class="lang-java"><code>void log() {
+    I.info(&quot;Hello Logging&quot;);
+}</code></pre><h4>♻️ Garbage Less</h4><p>Many logging libraries create temporary objects (log events, strings, byte arrays, etc.)
+each time they output logs, causing GC latency; Sinobu tackles this problem head on and
+does not create new objects unless you explicitly request stack trace.</p><h4>⚡ High Performance</h4><p>Sinobu is engineered for speed. Its optimized encoding, buffer reuse, and minimal
+synchronization mean it can outperform many mainstream logging libraries. Even under
+heavy logging loads, it maintains consistent performance with minimal CPU and memory
+impact. Check <a aria-label="sinobu.Manual.Benchmark.Logging" href="doc/sinobu.Manual.Benchmark.html#sinobu.Manual.Benchmark.Logging">benchmark</a>.</p></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Logging.Usage">
+					<header class="A l">
+						<h2>Usage</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L1773-L1790"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>Logging is performed via static methods such as <code><a aria-label="kiss.I" href="api/kiss.I.html#info(java.lang.Object)">I#info(Object)</a></code> or
+<code><a aria-label="kiss.I" href="api/kiss.I.html#info(java.lang.String,java.lang.Object)">I#info(String, Object)</a></code>. These methods support various input types:</p><ul>
+							<li><code><a aria-label="java.lang.Object 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Object.html">Object</a></code> - Use <code><a aria-label="java.lang.Object 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Object.html#toString()">Object#toString()</a></code> representation as message.</li>
+							<li><code><a aria-label="java.util.function.Supplier 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Supplier.html">Supplier</a></code> - Delaying the construction of message avoids
+extra processing when the log level prevents writing.</li>
+							<li><code><a aria-label="java.lang.Throwable 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Throwable.html">Throwable</a></code> - A message and a stack trace back to the cause are written.</li>
+						</ul><pre class="lang-java"><code>void basic() {
+    I.trace(&quot;Write your message&quot;);
+}</code></pre><pre class="lang-java"><code>void lazyEvaluation() {
+    I.debug(() -&gt; &quot;Delaying the construction of message.&quot;);
+}</code></pre><pre class="lang-java"><code>void throwable() {
+    try {
+        mayBeThrowError();
+    } catch (Exception e) {
+        I.error(&quot;Write message and stack trace&quot;);
+        I.error(e);
+    }
+}</code></pre><p>Most methods come in two forms:</p><ul>
+							<li>Without category - logs to the default <b>system</b> category.</li>
+							<li>With category - the first argument specifies the log category, allowing fine-grained
+control.</li>
+						</ul><pre class="lang-java"><code>void categorized() {
+    I.debug(&quot;Write message in system category&quot;);
+    I.warn(&quot;database&quot;, &quot;Write message in database category&quot;);
+}</code></pre></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Logging.Configuration">
+					<header class="A l">
+						<h2>Configuration</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L1821-L1831"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>Logging behavior can be configured via environment variables (<code><a aria-label="kiss.I" href="api/kiss.I.html#env(java.lang.String)">I#env(String)</a></code>
+Configuration keys follow a specific pattern to allow both fine-grained and global
+control.</p><h4>Resolution Order</h4><p>When any environment variable is required, configuration values are resolved in the
+following order:</p><ol>
+							<li>Look for <code>category.property</code> (e.g. <code>system.file</code>)</li>
+							<li>If not found, look for <code>*.property</code> (e.g. <code>*.file</code>)</li>
+							<li>If still not found, use the built-in default (e.g. <code><a aria-label="java.lang.System.Logger.Level 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/System.Logger.Level.html#WARNING">Level#WARNING</a></code>)</li>
+						</ol></span></section>
+				<section class="A FB" id="sinobu.Manual.Logging.Configuration.Log_Appender">
+					<header class="A u">
+						<h3 icon="📄">Log Appender</h3>
+					</header><span class="A"><p>Log messages can be routed to different output destinations. While logs may go to the
+console by default (depending on the underlying <code><a aria-label="java.lang.System 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/System.html#out">System#out</a></code> implementation),
+Sinobu allows you to explicitly configure destinations. You can even configure
+<strong>multiple destinations</strong> for the same logger category.</p><table>
+							<thead>
+								<tr>
+									<th align="center">Property Key</th>
+									<th align="center">Value Type</th>
+									<th align="left">Description</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td align="center"><code>category.console</code></td>
+									<td align="center"><code><a aria-label="java.lang.System.Logger.Level 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/System.Logger.Level.html">Level</a></code></td>
+									<td align="left">Enables <strong>console logging</strong> for the specified  category.</td>
+								</tr>
+								<tr>
+									<td align="center"><code>category.file</code></td>
+									<td align="center"><code><a aria-label="java.lang.System.Logger.Level 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/System.Logger.Level.html">Level</a></code></td>
+									<td align="left">Enables <strong>file logging</strong> for the specified  category.</td>
+								</tr>
+								<tr>
+									<td align="center"><code>category.extra</code></td>
+									<td align="center"><code><a aria-label="java.lang.System.Logger.Level 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/System.Logger.Level.html">Level</a></code></td>
+									<td align="left">Enables <strong>extra logging</strong> for the specified  category.
+										<br/>  You must define <code><a aria-label="kiss.I" href="api/kiss.I.html#Logger">I#Logger</a></code> as extra logger.</td>
+								</tr>
+							</tbody>
+						</table></span></section>
+				<section class="A FB" id="sinobu.Manual.Logging.Configuration.File_Logging_Options">
+					<header class="A u">
+						<h3 icon="📄">File Logging Options</h3>
+					</header><span class="A"><p>Options specific to file logging when <code>category.file</code> is enabled.
+Log files are typically named <code>category&lt;Date&gt;.log</code> (e.g. <code>database2024-10-27.log</code>).</p><table>
+							<thead>
+								<tr>
+									<th align="center">Property Key</th>
+									<th align="center">Value Type</th>
+									<th align="left">Description</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td align="center"><code>category.dir</code></td>
+									<td align="center"><code><a aria-label="java.lang.String 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html">String</a></code></td>
+									<td align="left">Specifies the directory where log files  for this category should be created. Default is <code>.log</code></td>
+								</tr>
+								<tr>
+									<td align="center"><code>category.append</code></td>
+									<td align="center"><code>boolean</code></td>
+									<td align="left">If <code>true</code>, appends to existing log files  for this category. If <code>false</code>, overwrites. Default is <code>true</code>.</td>
+								</tr>
+								<tr>
+									<td align="center"><code>category.rotate</code></td>
+									<td align="center"><code>int</code></td>
+									<td align="left">Number of past daily log files to keep for this  category. Older files are deleted. <code>0</code> disables rotation. Default is 90.</td>
+								</tr>
+							</tbody>
+						</table></span></section>
+				<section class="A FB" id="sinobu.Manual.Logging.Configuration.Formatting_Options">
+					<header class="A u">
+						<h3 icon="📄">Formatting Options</h3>
+					</header><span class="A"><p>Options related to the formatting of log messages for a specific category.</p><table>
+							<thead>
+								<tr>
+									<th align="center">Property Key</th>
+									<th align="center">Value Type</th>
+									<th align="left">Description</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td align="center"><code>category.caller</code></td>
+									<td align="center"><code><a aria-label="java.lang.System.Logger.Level 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/System.Logger.Level.html">Level</a></code></td>
+									<td align="left">Includes caller info for messages in this  category at or above the given level. Can impact performance.</td>
+								</tr>
+							</tbody>
+						</table></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Persistence.Usage">
+					<header class="A l">
+						<h2>Usage</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L1885-L1904"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>Sinobu provides a simple mechanism for persisting the state of objects
+using the <code><a aria-label="kiss.Storable" href="api/kiss.Storable.html">Storable</a></code> interface. This allows objects to save their properties
+to JSON file and restore them later, making it easy to maintain application
+state across restarts.</p><h4>🦤 Interface Based</h4><p>Implement the <code><a aria-label="kiss.Storable" href="api/kiss.Storable.html">Storable</a></code> interface on your class to enable persistence.</p><pre class="lang-java"><code>class Data implements Storable&lt;Data&gt; {
+
+    public int property;
+}</code></pre><h4>⚒️ Saving Data</h4><p>The <code><a aria-label="kiss.Storable" href="api/kiss.Storable.html#store()">Storable#store()</a></code> method saves the current state of the object&apos;s properties
+to file. (check <a aria-label="sinobu.Manual.Object_Modeling.Property" href="doc/sinobu.Manual.Object_Modeling.html#sinobu.Manual.Object_Modeling.Property">property</a>)</p><pre class="lang-java"><code>void save() {
+    Data data = new Data();
+    data.property = 10;
+
+    data.store(); // save data to file
+}</code></pre><h4>⚒️ Restoring Data</h4><p>The <code><a aria-label="kiss.Storable" href="api/kiss.Storable.html#restore()">Storable#restore()</a></code> method restores the object&apos;s properties from file (check
+<a aria-label="sinobu.Manual.Object_Modeling.Property" href="doc/sinobu.Manual.Object_Modeling.html#sinobu.Manual.Object_Modeling.Property">property</a>). If the file doesn&apos;t exist or
+an error occurs during reading/parsing, the operation typically fails silently, leaving
+the object in its current state (often default values).</p><pre class="lang-java"><code>void restore() {
+    Data other = new Data();
+    other.restore(); // load data from file
+
+    assert other.property == 10;
+}</code></pre></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Persistence.Transient">
+					<header class="A l">
+						<h2>Transient</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L1928-L1937"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>Normally all properties are eligible for preservation, but there are several ways to make
+explicit which properties you do not want to preserve.</p><p>If the property is defined by field, add the transient modifier to the field
+declaration.</p><pre class="lang-java"><code>class TransientField implements Storable&lt;TransientField&gt; {
+
+    public transient int unstorableProperty;
+}</code></pre><p>If the property is defined by method, add <code><a aria-label="java.beans.Transient 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.desktop/java/beans/Transient.html">java.beans.Transient</a></code> annotation. (You
+only need to add it to either the setter or the getter)</p><pre class="lang-java"><code>class TransientMethod implements Storable&lt;TransientMethod&gt; {
+
+    private int value;
+
+    @java.beans.Transient
+    public int getUnstorableProperty() {
+        return value;
+    }
+
+    public void setUnstorableProperty(int value) {
+        this.value = value;
+    }
+}</code></pre></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Persistence.Automatic_Saving">
+					<header class="A l">
+						<h2>Automatic Saving</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L1961-L1977"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>Instead of manually calling <code><a aria-label="kiss.Storable" href="api/kiss.Storable.html#store()">Storable#store()</a></code> every time a change occurs,
+you can be configured to save their state automatically when their properties change.
+This is achieved using the <code><a aria-label="kiss.Storable" href="api/kiss.Storable.html#auto()">Storable#auto()</a></code> method.</p><p class="IMPORTANT">Since monitoring the values of arbitrary properties would be prohibitively expensive,
+value detection is only possible for properties defined by <code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a></code>.</p><p>Calling <code><a aria-label="kiss.Storable" href="api/kiss.Storable.html#auto()">Storable#auto()</a></code> instance monitors its (and nested) properties.
+When a change is detected, it schedules a save operation. By default, this operation is
+debounced (typically waiting 1 second after the last change) to avoid excessive writes
+during rapid changes.</p><pre class="lang-java"><code>void autoSave() {
+    class Data implements Storable&lt;Data&gt; {
+        public final Variable&lt;String&gt; name = Variable.empty();
+    }
+
+    Data data = new Data();
+    data.auto(); // enable auto-save
+
+    data.name.set(&quot;Misa&quot;); // save after 1 sec
+}</code></pre><p>Calling <code><a aria-label="kiss.Disposable" href="api/kiss.Disposable.html#dispose()">Disposable#dispose()</a></code> on the returned object will stop the automatic
+saving process for that instance.</p><pre class="lang-java"><code>void stopAutoSave() {
+    class Data implements Storable&lt;Data&gt; {
+        public final Variable&lt;String&gt; name = Variable.empty();
+    }
+
+    Data data = new Data();
+    Disposable stopper = data.auto();
+
+    stopper.dispose(); // stop auto-save
+}</code></pre></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Persistence.Storage_Location">
+					<header class="A l">
+						<h2>Storage Location</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L2004-L2009"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>By default, persistence file is stored in a directory named <code>.preferences</code> within
+the application&apos;s working directory. The filename is derived from the fully qualified
+class name of the storable object, ending with <code>.json</code>.
+(e.g., <code>.preferences/com.example.MyAppSettings.json</code>).</p><p>This location can be customized in two main ways:</p></span></section>
+				<section class="A FB" id="sinobu.Manual.Persistence.Storage_Location.Location_Method">
+					<header class="A u">
+						<h3 icon="📄">Location Method</h3>
+					</header><span class="A"><p>You can override the <code><a aria-label="kiss.Storable" href="api/kiss.Storable.html#locate()">Storable#locate()</a></code> method within your implementing class
+to return a custom <code><a aria-label="java.nio.file.Path 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/nio/file/Path.html">Path</a></code> for the persistence file.</p><pre class="lang-java"><code>class Custom implements Storable&lt;Custom&gt; {
+
+    public Path locate() {
+        return Path.of(&quot;setting.txt&quot;);
+    }
+}</code></pre></span></section>
+				<section class="A FB" id="sinobu.Manual.Persistence.Storage_Location.Environment_Variable">
+					<header class="A u">
+						<h3 icon="📄">Environment Variable</h3>
+					</header><span class="A"><p>You can set a global preference directory by defining the environment variable
+<code>PreferenceDirectory</code> using <code><a aria-label="kiss.I" href="api/kiss.I.html#env(java.lang.String,java.lang.Object)">I#env(String, Object)</a></code>. If this variable is set,
+the default implementation will use this directory instead of <code>.preferences</code>.</p><pre class="lang-java"><code>void define() {
+    I.env(&quot;PreferenceDirectory&quot;, &quot;/user/home/setting&quot;);
+}</code></pre></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Benchmark.Overview">
+					<header class="A l">
+						<h2>Overview</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L2046-L2084"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>This section presents benchmark results comparing the performance of Sinobu
+with other popular libraries for various common tasks. The goal is to provide
+objective data on Sinobu&apos;s efficiency in terms of execution speed,
+memory allocation, and garbage collection impact.</p><h4>🔬 Methodology</h4><p>Benchmarks were conducted using a custom benchmarking framework inspired by principles
+similar to JMH (Java Microbenchmark Harness). This includes dedicated warm-up phases
+to allow for JIT compilation and stabilization, and techniques like blackholes to prevent
+dead code elimination and ensure accurate measurement of the intended operations.
+Each major benchmark suite (e.g., JSON, Logging) is typically run in a separate JVM
+process
+to ensure isolation and prevent interference between tests.
+Benchmarks were run under specific hardware and software configurations. The results
+shown in the graphs typically represent throughput (operations per second), execution
+time, or memory allocation. Interpretation depends on the specific metric shown in each
+graph (e.g. higher throughput is better, lower time/allocation is better).</p><h4>📈 Comparisons and Metrics</h4><p>Comparisons are often made against well-known libraries relevant to each domain
+(e.g., Jackson/Gson for JSON, Logback/Log4j2 for Logging).
+The latest stable versions of competitor libraries available at the time of measurement
+were typically used.</p><p>Operations specific to each domain (e.g., JSON parsing, logging throughput, template
+rendering) are performed to measure key performance indicators such as:</p><ul>
+							<li>Execution speed (throughput or time per operation)</li>
+							<li>Garbage collection load (allocation rate)</li>
+							<li>Memory consumption (footprint, retained size - though less frequently shown in graphs)</li>
+						</ul><p class="NOTE">Lower values for time and allocation generally indicate better performance, while higher
+values for throughput are better.</p><h4>⚠️ Disclaimer</h4><p>Benchmark results can vary depending on the execution environment (JVM version, OS,
+hardware). These results should be considered indicative rather than absolute measures of
+performance in all scenarios.</p></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Benchmark.Logging">
+					<header class="A l">
+						<h2>Logging</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L2090-L2096"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>Compares the performance of Sinobu&apos;s logging framework against other logging libraries.
+Focuses on throughput (operations per second) and garbage generation under different
+scenarios, highlighting Sinobu&apos;s garbage-less design advantage.</p><img src="https://raw.githubusercontent.com/teletha/sinobu/refs/heads/master/benchmark/LogBenchmark.svg" width="700"/></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Benchmark.JSON">
+					<header class="A l">
+						<h2>JSON</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L2102-L2109"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>Compares Sinobu&apos;s JSON processing capabilities (parsing, traversing, mapping)
+against other well-known Java JSON libraries like FastJSON, Jackson, and Gson.
+Results highlight performance across various operations and document sizes.</p><ul>
+							<li><a href="https://github.com/teletha/sinobu">Sinobu</a></li>
+							<li><a href="https://github.com/alibaba/fastjson2">FastJSON</a></li>
+							<li><a href="https://github.com/FasterXML/jackson">Jackson</a></li>
+							<li><a href="https://github.com/google/gson">GSON</a></li>
+						</ul></span></section>
+				<section class="A FB" id="sinobu.Manual.Benchmark.JSON.Parse_Small">
+					<header class="A u">
+						<h3 icon="📄">Parse Small</h3>
+					</header><span class="A"><p>Measures the time and resources required to parse small JSON documents.</p><img src="https://raw.githubusercontent.com/teletha/sinobu/refs/heads/master/benchmark/JSONParseShortBenchmark.svg" width="700"/></span></section>
+				<section class="A FB" id="sinobu.Manual.Benchmark.JSON.Parse_Large">
+					<header class="A u">
+						<h3 icon="📄">Parse Large</h3>
+					</header><span class="A"><p>Measures the performance of parsing larger JSON documents, testing scalability.</p><img src="https://raw.githubusercontent.com/teletha/sinobu/refs/heads/master/benchmark/JSONParseLongBenchmark.svg" width="700"/></span></section>
+				<section class="A FB" id="sinobu.Manual.Benchmark.JSON.Parse_Huge">
+					<header class="A u">
+						<h3 icon="📄">Parse Huge</h3>
+					</header><span class="A"><p>Measures the performance of parsing very large (huge) JSON documents, stressing
+memory and CPU usage.</p><img src="https://raw.githubusercontent.com/teletha/sinobu/refs/heads/master/benchmark/JSONParseHugeBenchmark.svg" width="700"/></span></section>
+				<section class="A FB" id="sinobu.Manual.Benchmark.JSON.Traversing">
+					<header class="A u">
+						<h3 icon="📄">Traversing</h3>
+					</header><span class="A"><p>Evaluates the efficiency of navigating and accessing data within a parsed JSON
+structure (DOM-like access).</p><img src="https://raw.githubusercontent.com/teletha/sinobu/refs/heads/master/benchmark/JSONTraverseBenchmark.svg" width="700"/></span></section>
+				<section class="A FB" id="sinobu.Manual.Benchmark.JSON.Mapping">
+					<header class="A u">
+						<h3 icon="📄">Mapping</h3>
+					</header><span class="A"><p>Benchmarks the process of mapping JSON data directly to Java objects (POJOs/Records).</p><img src="https://raw.githubusercontent.com/teletha/sinobu/refs/heads/master/benchmark/JSONMappingBenchmark.svg" width="700"/></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Benchmark.HTML">
+					<header class="A l">
+						<h2>HTML</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L2166-L2172"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>Compares the performance of Sinobu&apos;s HTML/XML parser (including tag soup handling)
+against other Java parsers. Focuses on parsing speed and memory usage for typical
+web documents.</p><img src="https://raw.githubusercontent.com/teletha/sinobu/refs/heads/master/benchmark/XMLParseBenchmark.svg" width="700"/></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Benchmark.Template_Engine">
+					<header class="A l">
+						<h2>Template Engine</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L2178-L2183"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>Compares the performance of Sinobu&apos;s Mustache template engine implementation.
+Measures rendering speed and overhead for template processing with context data.</p><img src="https://raw.githubusercontent.com/teletha/sinobu/refs/heads/master/benchmark/ExpressionBenchmark.svg" width="700"/></span></section>
+			</div>
+		</article>
+		<aside class="V">
+			<div class="S">
+				<h5>Help improve document</h5>
+				<p>View this page on <a href="https://github.com/teletha/sinobu/blob/master/src/test/java/sinobu/Manual.java#L77">GitHub</a></p>
+				<p>Report a problem <a href="https://github.com/teletha/sinobu/issues/new?title=Improve document on sinobu.Manual&amp;labels=documentation,enhancement&amp;body=%23%23+What+specific+section+or+headline+is+this+issue+about%3F%0A%0A%0A%0A%23%23+What+information+was+incorrect%2C+unhelpful%2C+or+incomplete%3F%0A%0A%0A%0A%23%23+What+did+you+expect+to+see%3F%0A">with this page</a></p>
+			</div>
+		</aside>
+		<footer class="Z">
+			<p>Powered by <a href="https://github.com/teletha/evergarden" target="_">Evergarden</a></p>
+		</footer>
+	</body>
+	<script src="root.js"></script>
+	<script src="main.js" type="module"></script>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8"/>
+		<meta content="width=device-width, initial-scale=1" name="viewport"/>
+		<meta content="Explains how to use sinobu and its API. " name="description"/>
+		<link href="https://cdn.jsdelivr.net" rel="preconnect"/>
+		<link href="https://fonts.googleapis.com" rel="preconnect"/>
+		<link crossorigin="null" href="https://fonts.gstatic.com" rel="preconnect"/>
+		<link as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Inter" rel="preload"/>
+		<link href="https://fonts.googleapis.com/css2?display=swap&amp;family=Inter" media="print" onload="this.media=&apos;all&apos;" rel="stylesheet"/>
+		<link as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Material+Icons" rel="preload"/>
+		<link href="https://fonts.googleapis.com/css2?display=swap&amp;family=Material+Icons" media="print" onload="this.media=&apos;all&apos;" rel="stylesheet"/>
+		<link as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Vollkorn" rel="preload"/>
+		<link href="https://fonts.googleapis.com/css2?display=swap&amp;family=Vollkorn" media="print" onload="this.media=&apos;all&apos;" rel="stylesheet"/>
+		<title>sinobu API</title>
+		<base href="../"/>
+		<script src="mimic.js" type="module"></script>
+		<link href="https://cdn.jsdelivr.net/npm/ress@4.0.0/dist/ress.min.css" rel="stylesheet"/>
+		<link href="main.css" rel="stylesheet"/>
+	</head>
+	<body class="W">
+		<header class="X" date="2025-06-02">
+			<h1 class="n"><a href="index.html"><code>sinobu</code></a></h1>
+			<nav class="HB"><a href="doc/sinobu.Manual.Introduction.html" id="Manual"><svg class="text">
+						<use href="main.svg#text"/>
+					</svg>
+				</a><a href="api/main.html" id="API"><svg class="package">
+						<use href="main.svg#package"/>
+					</svg>
+				</a><a href="doc/changelog.html" id="Activity"><svg class="activity">
+						<use href="main.svg#activity"/>
+					</svg>
+				</a><a href="https://github.com/teletha/sinobu/discussions" id="Community" target="_blank"><svg class="user">
+						<use href="main.svg#user"/>
+					</svg>
+				</a><a href="https://github.com/teletha/sinobu" id="Repository" target="_blank"><svg class="github">
+						<use href="main.svg#github"/>
+					</svg>
+				</a></nav>
+			<div class="O"><a aria-label="Change color scheme" id="theme"><svg class="sun">
+						<use href="main.svg#sun"/>
+					</svg><svg class="moon">
+						<use href="main.svg#moon"/>
+					</svg>
+				</a></div>
+		</header>
+		<nav class="a"></nav>
+		<article class="Y" id="Article">
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Introduction.Overview">
+					<header class="A l">
+						<h2>Overview</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L77-L109"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>Sinobu is not obsolete framework but utility.
+It acts as an extremely condensed facade for common development tasks,
+designed to be intuitive and efficient.</p><p>Weighing in at approximately 120 KB with zero external dependencies,
+Sinobu prioritizes lightweight deployment and avoids dependency conflicts.
+Despite its small size, its various operations are engineered for high performance,
+often rivaling or exceeding competing specialized libraries (see
+Benchmark).</p><p>This library aims to simplify and consolidate functionalities frequently
+encountered in real-world projects, making them easier and safer to use.
+Key areas covered include:</p><ul>
+							<li><a href="https://en.wikipedia.org/wiki/Dependency_injection">Dependency Injection</a></li>
+							<li>Object lifecycle management</li>
+							<li>Property based object modeling</li>
+							<li>HTTP(S) Client</li>
+							<li>Web Socket Client</li>
+							<li><a href="https://en.wikipedia.org/wiki/JSON">JSON</a></li>
+							<li><a href="https://en.wikipedia.org/wiki/HTML">HTML</a> (Tag Soup Tolerant)</li>
+							<li><a href="https://en.wikipedia.org/wiki/XML">XML</a></li>
+							<li>Reactive Programming (<a href="http://reactivex.io">Rx</a>)</li>
+							<li>Asynchronous &amp; Parallel processing</li>
+							<li>Multilingualization</li>
+							<li>Template Engine (<a href="https://mustache.github.io/mustache.5.html">Mustache</a> Syntax)</li>
+							<li>Dynamic Extensibility / Plugin System</li>
+							<li>Object persistence</li>
+							<li>Logging (Garbage-Less)</li>
+							<li>Virtual Job Scheduler</li>
+							<li>Task Scheduling (<a href="https://en.wikipedia.org/wiki/Cron">Cron</a> Syntax)</li>
+						</ul><p>Sinobu adheres to core principles ensuring ease of use, safety, and efficiency.</p></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Introduction.Futures">
+					<header class="A l">
+						<h2>Futures</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L115-L149"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>Sinobu&apos;s design philosophy is guided by several core principles,
+aimed at delivering a powerful yet minimalistic development experience:</p><h4>🚀 Lightweight</h4><p>Sinobu maintains a minimal footprint (approximately 120 KB) with absolutely no external
+dependencies. This design choice results in faster startup times, significantly smaller
+deployment packages, and complete avoidance of dependency conflicts — an ideal fit
+for embedded systems, microservices, or any environment where lean execution is key.</p><h4>⚡ High Performance</h4><p>Performance is at the heart of every component. Internal operations are implemented with
+a focus on low memory overhead and high throughput. Most allocations are short-lived and
+garbage-friendly, which makes Sinobu suitable even for latency-sensitive systems. See the
+<a aria-label="sinobu.Manual.Benchmark" href="doc/sinobu.Manual.Benchmark.html">benchmark</a> section for in-depth comparative results.</p><h4>✨ Simplicity</h4><p>The API surface is deliberately kept minimal and expressive. Developers can often
+accomplish complex tasks using a few static methods on the <code><a aria-label="kiss.I" href="api/kiss.I.html">I</a></code> facade class. This
+reduces boilerplate, encourages readability, and lowers the learning curve for new
+contributors.</p><pre class="lang-java"><code>void access() {
+    I.http(&quot;http://xxx.com/&quot;, XML.class).to(html -&gt; {
+        String name = html.find(&quot;#user&quot;).text();
+    });
+}</code></pre><h4>🖥️ Multifunction</h4><p>Despite its small size, Sinobu is packed with a wide array of capabilities. These
+features are not isolated; they are thoughtfully composed so that they work together
+seamlessly, forming a cohesive and versatile toolkit.</p><h4>♻️ Reactivity</h4><p>Sinobu embraces reactivity as a foundation for composing asynchronous, event-driven
+logic. The <code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code> class acts as a reactive primitive that allows values to
+propagate through a declarative flow of transformations, observers, and combinators.</p><h4>🛡️ Type Safety</h4><p>All APIs are designed to leverage Java’s static type system to the fullest. This promotes
+correctness, allows for confident refactoring, and minimizes the risk of runtime errors.</p></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Introduction.How_to_install">
+					<header class="A l">
+						<h2>How to install</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L160-L170"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>It is probably easiest to use a build tool such as
+<a href="https://maven.apache.org">Maven</a> or <a href="https://gradle.org">Gradle</a>.
+Replace `` with the desired version number.</p><pre class="lang-xml"><code>&lt;dependency&gt;
+     &lt;groupId&gt;com.github.teletha&lt;/groupId&gt;
+     &lt;artifactId&gt;sinobu&lt;/artifactId&gt;
+     &lt;version&gt;VERSION&lt;version&gt;
+ &lt;/dependency&gt;</code></pre></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Introduction.Getting_Involved">
+					<header class="A l">
+						<h2>Getting Involved</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L176-L182"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>Sinobu is an open-source project hosted on GitHub. Contributions, bug reports,
+and feature requests are welcome.</p><ul>
+							<li><strong>Repository:</strong><a href="https://github.com/teletha/sinobu">https://github.com/teletha/sinobu</a></li>
+							<li><strong>Issues:</strong> Please report bugs or suggest features via GitHub Issues.</li>
+							<li><strong>Contributions:</strong> Pull requests are welcome! Please ensure code style consistency and
+include tests where applicable.</li>
+						</ul></span></section>
+			</div>
+			<div class="f"><a class="w h" href="doc/sinobu.Manual.Lifestyle_Management.html">Lifestyle Management</a></div>
+		</article>
+		<aside class="V">
+			<div class="S">
+				<h5>Help improve document</h5>
+				<p>View this page on <a href="https://github.com/teletha/sinobu/blob/master/src/test/java/sinobu/Manual.java#L77">GitHub</a></p>
+				<p>Report a problem <a href="https://github.com/teletha/sinobu/issues/new?title=Improve document on sinobu.Manual.Introduction&amp;labels=documentation,enhancement&amp;body=%23%23+What+specific+section+or+headline+is+this+issue+about%3F%0A%0A%0A%0A%23%23+What+information+was+incorrect%2C+unhelpful%2C+or+incomplete%3F%0A%0A%0A%0A%23%23+What+did+you+expect+to+see%3F%0A">with this page</a></p>
+			</div>
+			<p class="S">View in <a href="doc/one.html#sinobu.Manual.Introduction.Overview">onepager</a></p>
+		</aside>
+		<footer class="Z">
+			<p>Powered by <a href="https://github.com/teletha/evergarden" target="_">Evergarden</a></p>
+		</footer>
+	</body>
+	<script src="root.js"></script>
+	<script src="main.js" type="module"></script>
+</html>

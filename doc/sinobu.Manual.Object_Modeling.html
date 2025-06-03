@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8"/>
+		<meta content="width=device-width, initial-scale=1" name="viewport"/>
+		<meta content="Explains how to use sinobu and its API. " name="description"/>
+		<link href="https://cdn.jsdelivr.net" rel="preconnect"/>
+		<link href="https://fonts.googleapis.com" rel="preconnect"/>
+		<link crossorigin="null" href="https://fonts.gstatic.com" rel="preconnect"/>
+		<link as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Inter" rel="preload"/>
+		<link href="https://fonts.googleapis.com/css2?display=swap&amp;family=Inter" media="print" onload="this.media=&apos;all&apos;" rel="stylesheet"/>
+		<link as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Material+Icons" rel="preload"/>
+		<link href="https://fonts.googleapis.com/css2?display=swap&amp;family=Material+Icons" media="print" onload="this.media=&apos;all&apos;" rel="stylesheet"/>
+		<link as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Vollkorn" rel="preload"/>
+		<link href="https://fonts.googleapis.com/css2?display=swap&amp;family=Vollkorn" media="print" onload="this.media=&apos;all&apos;" rel="stylesheet"/>
+		<title>sinobu API</title>
+		<base href="../"/>
+		<script src="mimic.js" type="module"></script>
+		<link href="https://cdn.jsdelivr.net/npm/ress@4.0.0/dist/ress.min.css" rel="stylesheet"/>
+		<link href="main.css" rel="stylesheet"/>
+	</head>
+	<body class="W">
+		<header class="X" date="2025-06-02">
+			<h1 class="n"><a href="index.html"><code>sinobu</code></a></h1>
+			<nav class="HB"><a href="doc/sinobu.Manual.Introduction.html" id="Manual"><svg class="text">
+						<use href="main.svg#text"/>
+					</svg>
+				</a><a href="api/main.html" id="API"><svg class="package">
+						<use href="main.svg#package"/>
+					</svg>
+				</a><a href="doc/changelog.html" id="Activity"><svg class="activity">
+						<use href="main.svg#activity"/>
+					</svg>
+				</a><a href="https://github.com/teletha/sinobu/discussions" id="Community" target="_blank"><svg class="user">
+						<use href="main.svg#user"/>
+					</svg>
+				</a><a href="https://github.com/teletha/sinobu" id="Repository" target="_blank"><svg class="github">
+						<use href="main.svg#github"/>
+					</svg>
+				</a></nav>
+			<div class="O"><a aria-label="Change color scheme" id="theme"><svg class="sun">
+						<use href="main.svg#sun"/>
+					</svg><svg class="moon">
+						<use href="main.svg#moon"/>
+					</svg>
+				</a></div>
+		</header>
+		<nav class="a"></nav>
+		<article class="Y" id="Article">
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Object_Modeling.Concept">
+					<header class="A l">
+						<h2>Concept</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L475-L493"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>In the context of Java programming, a &apos;property&apos; generally refers to the characteristics
+or attributes of a class or object. These properties define the state of an object and
+encapsulate the data associated with it. In Java, properties are typically represented as
+private fields within a class, with corresponding getter and setter methods to access and
+modify their values.</p><p>Here&apos;s an example of a Java class with properties:</p><pre class="lang-java"><code>class Person {
+    private String name; // Property: name
+
+    private int age; // Property: age
+
+    // Constructor
+    public Person(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    // Getter method for name property
+    public String getName() {
+        return name;
+    }
+
+    // Setter method for name property
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    // Getter method for age property
+    public int getAge() {
+        return age;
+    }
+
+    // Setter method for age property
+    public void setAge(int age) {
+        this.age = age;
+    }
+}</code></pre><p>In this example, the Person class has two properties: name and age. These properties are
+declared as private fields within the class to encapsulate their implementation details
+and prevent direct access from outside the class. Getter and setter methods (getName(),
+setName(), getAge(), setAge()) are provided to allow controlled access to these
+properties.</p><p>Using properties in Java classes promotes encapsulation, which is one of the fundamental
+principles of object-oriented programming (OOP). Encapsulation hides the internal state
+of an object and exposes only the necessary interfaces for interacting with it, improving
+code maintainability, reusability, and flexibility.</p></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Object_Modeling.Models">
+					<header class="A l">
+						<h2>Models</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L531-L537"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>In Sinobu, model is a set of properties. If a class you define has properties, it is
+already a model.</p><p>Models can be retrieved from a class using the <code><a aria-label="kiss.Model" href="api/kiss.Model.html#of(java.lang.Class)">kiss.Model#of(Class)</a></code> method, but
+there should not be many situations where the end user needs to retrieve the model
+directly.</p><pre class="lang-java"><code>Model model = Model.of(Person.class);</code></pre></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Object_Modeling.Property">
+					<header class="A l">
+						<h2>Property</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L545-L546"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>In Sinobu, a property refers to a value accessible by name and defined by a field or
+method. Property name is arbitrary.</p></span></section>
+				<section class="A FB" id="sinobu.Manual.Object_Modeling.Property.By_Field">
+					<header class="A u">
+						<h3 icon="📄">By Field</h3>
+					</header><span class="A"><p>Property definition by field.</p><pre class="lang-java"><code>public String filedProperty = &quot;This is property&quot;;</code></pre><p>With the final modifier, the value cannot be changed and is therefore not treated as
+a property.</p><pre class="lang-java"><code>public final String finalField = &quot;This is NOT property&quot;;</code></pre><p>Access modifiers other than public are not treated as properties.</p><pre class="lang-java"><code>protected String nonPublicField = &quot;This is NOT property&quot;;</code></pre><p>If you want to treat fields with access modifiers other than public as properties,
+use the <code><a aria-label="kiss.Managed" href="api/kiss.Managed.html">Managed</a></code> annotation.</p><pre class="lang-java"><code>@Managed
+protected String managedField = &quot;This is property&quot;;</code></pre></span></section>
+				<section class="A FB" id="sinobu.Manual.Object_Modeling.Property.By_Variable_Field">
+					<header class="A u">
+						<h3 icon="📄">By Variable Field</h3>
+					</header><span class="A"><p>Property definition by <code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a></code> field.</p><pre class="lang-java"><code>public Variable&lt;String&gt; variableField = Variable.of(&quot;This is property&quot;);</code></pre><p>Unlike normal fields, they are treated as properties even if they have final
+modifier.</p><pre class="lang-java"><code>public final Variable&lt;String&gt; finalField = Variable.of(&quot;This is property&quot;);</code></pre><p>Access modifiers other than public are not treated as properties.</p><pre class="lang-java"><code>protected Variable&lt;String&gt; nonPublicField = Variable.of(&quot;This is NOT property&quot;);</code></pre><p>If you want to treat fields with access modifiers other than public as properties,
+use the <code><a aria-label="kiss.Managed" href="api/kiss.Managed.html">Managed</a></code> annotation.</p><pre class="lang-java"><code>@Managed
+protected Variable&lt;String&gt; managedField = Variable.of(&quot;This is property&quot;);</code></pre></span></section>
+				<section class="A FB" id="sinobu.Manual.Object_Modeling.Property.By_Method">
+					<header class="A u">
+						<h3 icon="📄">By Method</h3>
+					</header><span class="A"><p>Property definition by method. The getter and setter methods must be defined
+according to the Java Bean naming conventions.</p><pre class="lang-java"><code>class GetterAndSetter {
+    private String property = &quot;This is property&quot;;
+
+    public String getProperty() {
+        return property;
+    }
+
+    public void setProperty(String property) {
+        this.property = property;
+    }
+}</code></pre><p>The getter and setter methods do not need to have a public modifier.</p><pre class="lang-java"><code>class NonPublicGetterAndSetter {
+    private String property = &quot;This is property&quot;;
+
+    String getProperty() {
+        return property;
+    }
+
+    void setProperty(String property) {
+        this.property = property;
+    }
+}</code></pre></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Object_Modeling.Manipulation">
+					<header class="A l">
+						<h2>Manipulation</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L641-L644"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>Normally, end users do not use <code><a aria-label="kiss.Model" href="api/kiss.Model.html">Model</a></code> API to manipulate or traverse properties.
+The following is mainly required for framework and library production.</p><p>Models and properties can be used to get, set and monitor property values.</p></span></section>
+				<section class="A FB" id="sinobu.Manual.Object_Modeling.Manipulation.Get">
+					<header class="A u">
+						<h3 icon="📄">Get</h3>
+					</header><span class="A"><p>Get the value by name.</p><pre class="lang-java"><code>public void getProperty() {
+    Person person = new Person();
+    person.setAge(1);
+
+    Model model = Model.of(Person.class);
+    Property property = model.property(&quot;age&quot;);
+
+    assert model.get(person, property).equals(1);
+}</code></pre></span></section>
+				<section class="A FB" id="sinobu.Manual.Object_Modeling.Manipulation.Set">
+					<header class="A u">
+						<h3 icon="📄">Set</h3>
+					</header><span class="A"><p>Set the value by name.</p><pre class="lang-java"><code>public void setProperty() {
+    Person person = new Person();
+    Model model = Model.of(Person.class);
+    Property property = model.property(&quot;age&quot;);
+
+    // assign property value
+    model.set(person, property, 1);
+
+    assert 1 == person.getAge();
+}</code></pre><p>If you set a property value, it is recommended that you reassign the return value to
+the object. This is necessary because the Record is immutable.</p><pre class="lang-java"><code>public void setAtRecord() {
+    Point point = new Point(0, 0);
+    Model&lt;Point&gt; model = Model.of(Point.class);
+    point = model.set(point, model.property(&quot;x&quot;), 10);
+    assert point.x == 10;
+    point = model.set(point, model.property(&quot;y&quot;), 20d);
+    assert point.y == 20d;
+}</code></pre></span></section>
+				<section class="A FB" id="sinobu.Manual.Object_Modeling.Manipulation.Monitor">
+					<header class="A u">
+						<h3 icon="📄">Monitor</h3>
+					</header><span class="A"><p>Monitor the <code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a></code> value.</p><pre class="lang-java"><code>public void observeVariableProperty() {
+    class Item {
+        public Variable&lt;Integer&gt; count = Variable.of(0);
+    }
+
+    Item item = new Item();
+    Model model = Model.of(Item.class);
+    List&lt;Integer&gt; values = model.observe(item, model.property(&quot;count&quot;)).toList();
+    assert values.isEmpty();
+
+    item.count.set(1);
+    item.count.set(2);
+    item.count.set(3);
+    assert values.get(0) == 1;
+    assert values.get(1) == 2;
+    assert values.get(2) == 3;
+}</code></pre></span></section>
+			</div>
+			<div class="f"><a class="w g" href="doc/sinobu.Manual.Dependency_Injection.html">Dependency Injection</a><a class="w h" href="doc/sinobu.Manual.Extensibility.html">Extensibility</a></div>
+		</article>
+		<aside class="V">
+			<div class="S">
+				<h5>Help improve document</h5>
+				<p>View this page on <a href="https://github.com/teletha/sinobu/blob/master/src/test/java/sinobu/Manual.java#L475">GitHub</a></p>
+				<p>Report a problem <a href="https://github.com/teletha/sinobu/issues/new?title=Improve document on sinobu.Manual.Object_Modeling&amp;labels=documentation,enhancement&amp;body=%23%23+What+specific+section+or+headline+is+this+issue+about%3F%0A%0A%0A%0A%23%23+What+information+was+incorrect%2C+unhelpful%2C+or+incomplete%3F%0A%0A%0A%0A%23%23+What+did+you+expect+to+see%3F%0A">with this page</a></p>
+			</div>
+			<p class="S">View in <a href="doc/one.html#sinobu.Manual.Object_Modeling.Concept">onepager</a></p>
+		</aside>
+		<footer class="Z">
+			<p>Powered by <a href="https://github.com/teletha/evergarden" target="_">Evergarden</a></p>
+		</footer>
+	</body>
+	<script src="root.js"></script>
+	<script src="main.js" type="module"></script>
+</html>

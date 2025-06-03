@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8"/>
+		<meta content="width=device-width, initial-scale=1" name="viewport"/>
+		<meta content="Explains how to use sinobu and its API. " name="description"/>
+		<link href="https://cdn.jsdelivr.net" rel="preconnect"/>
+		<link href="https://fonts.googleapis.com" rel="preconnect"/>
+		<link crossorigin="null" href="https://fonts.gstatic.com" rel="preconnect"/>
+		<link as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Inter" rel="preload"/>
+		<link href="https://fonts.googleapis.com/css2?display=swap&amp;family=Inter" media="print" onload="this.media=&apos;all&apos;" rel="stylesheet"/>
+		<link as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Material+Icons" rel="preload"/>
+		<link href="https://fonts.googleapis.com/css2?display=swap&amp;family=Material+Icons" media="print" onload="this.media=&apos;all&apos;" rel="stylesheet"/>
+		<link as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Vollkorn" rel="preload"/>
+		<link href="https://fonts.googleapis.com/css2?display=swap&amp;family=Vollkorn" media="print" onload="this.media=&apos;all&apos;" rel="stylesheet"/>
+		<title>sinobu API</title>
+		<base href="../"/>
+		<script src="mimic.js" type="module"></script>
+		<link href="https://cdn.jsdelivr.net/npm/ress@4.0.0/dist/ress.min.css" rel="stylesheet"/>
+		<link href="main.css" rel="stylesheet"/>
+	</head>
+	<body class="W">
+		<header class="X" date="2025-06-02">
+			<h1 class="n"><a href="index.html"><code>sinobu</code></a></h1>
+			<nav class="HB"><a href="doc/sinobu.Manual.Introduction.html" id="Manual"><svg class="text">
+						<use href="main.svg#text"/>
+					</svg>
+				</a><a href="api/main.html" id="API"><svg class="package">
+						<use href="main.svg#package"/>
+					</svg>
+				</a><a href="doc/changelog.html" id="Activity"><svg class="activity">
+						<use href="main.svg#activity"/>
+					</svg>
+				</a><a href="https://github.com/teletha/sinobu/discussions" id="Community" target="_blank"><svg class="user">
+						<use href="main.svg#user"/>
+					</svg>
+				</a><a href="https://github.com/teletha/sinobu" id="Repository" target="_blank"><svg class="github">
+						<use href="main.svg#github"/>
+					</svg>
+				</a></nav>
+			<div class="O"><a aria-label="Change color scheme" id="theme"><svg class="sun">
+						<use href="main.svg#sun"/>
+					</svg><svg class="moon">
+						<use href="main.svg#moon"/>
+					</svg>
+				</a></div>
+		</header>
+		<nav class="a"></nav>
+		<article class="Y" id="Article">
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Persistence.Usage">
+					<header class="A l">
+						<h2>Usage</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L1885-L1904"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>Sinobu provides a simple mechanism for persisting the state of objects
+using the <code><a aria-label="kiss.Storable" href="api/kiss.Storable.html">Storable</a></code> interface. This allows objects to save their properties
+to JSON file and restore them later, making it easy to maintain application
+state across restarts.</p><h4>🦤 Interface Based</h4><p>Implement the <code><a aria-label="kiss.Storable" href="api/kiss.Storable.html">Storable</a></code> interface on your class to enable persistence.</p><pre class="lang-java"><code>class Data implements Storable&lt;Data&gt; {
+
+    public int property;
+}</code></pre><h4>⚒️ Saving Data</h4><p>The <code><a aria-label="kiss.Storable" href="api/kiss.Storable.html#store()">Storable#store()</a></code> method saves the current state of the object&apos;s properties
+to file. (check <a aria-label="sinobu.Manual.Object_Modeling.Property" href="doc/sinobu.Manual.Object_Modeling.html#sinobu.Manual.Object_Modeling.Property">property</a>)</p><pre class="lang-java"><code>void save() {
+    Data data = new Data();
+    data.property = 10;
+
+    data.store(); // save data to file
+}</code></pre><h4>⚒️ Restoring Data</h4><p>The <code><a aria-label="kiss.Storable" href="api/kiss.Storable.html#restore()">Storable#restore()</a></code> method restores the object&apos;s properties from file (check
+<a aria-label="sinobu.Manual.Object_Modeling.Property" href="doc/sinobu.Manual.Object_Modeling.html#sinobu.Manual.Object_Modeling.Property">property</a>). If the file doesn&apos;t exist or
+an error occurs during reading/parsing, the operation typically fails silently, leaving
+the object in its current state (often default values).</p><pre class="lang-java"><code>void restore() {
+    Data other = new Data();
+    other.restore(); // load data from file
+
+    assert other.property == 10;
+}</code></pre></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Persistence.Transient">
+					<header class="A l">
+						<h2>Transient</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L1928-L1937"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>Normally all properties are eligible for preservation, but there are several ways to make
+explicit which properties you do not want to preserve.</p><p>If the property is defined by field, add the transient modifier to the field
+declaration.</p><pre class="lang-java"><code>class TransientField implements Storable&lt;TransientField&gt; {
+
+    public transient int unstorableProperty;
+}</code></pre><p>If the property is defined by method, add <code><a aria-label="java.beans.Transient 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.desktop/java/beans/Transient.html">java.beans.Transient</a></code> annotation. (You
+only need to add it to either the setter or the getter)</p><pre class="lang-java"><code>class TransientMethod implements Storable&lt;TransientMethod&gt; {
+
+    private int value;
+
+    @java.beans.Transient
+    public int getUnstorableProperty() {
+        return value;
+    }
+
+    public void setUnstorableProperty(int value) {
+        this.value = value;
+    }
+}</code></pre></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Persistence.Automatic_Saving">
+					<header class="A l">
+						<h2>Automatic Saving</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L1961-L1977"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>Instead of manually calling <code><a aria-label="kiss.Storable" href="api/kiss.Storable.html#store()">Storable#store()</a></code> every time a change occurs,
+you can be configured to save their state automatically when their properties change.
+This is achieved using the <code><a aria-label="kiss.Storable" href="api/kiss.Storable.html#auto()">Storable#auto()</a></code> method.</p><p class="IMPORTANT">Since monitoring the values of arbitrary properties would be prohibitively expensive,
+value detection is only possible for properties defined by <code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a></code>.</p><p>Calling <code><a aria-label="kiss.Storable" href="api/kiss.Storable.html#auto()">Storable#auto()</a></code> instance monitors its (and nested) properties.
+When a change is detected, it schedules a save operation. By default, this operation is
+debounced (typically waiting 1 second after the last change) to avoid excessive writes
+during rapid changes.</p><pre class="lang-java"><code>void autoSave() {
+    class Data implements Storable&lt;Data&gt; {
+        public final Variable&lt;String&gt; name = Variable.empty();
+    }
+
+    Data data = new Data();
+    data.auto(); // enable auto-save
+
+    data.name.set(&quot;Misa&quot;); // save after 1 sec
+}</code></pre><p>Calling <code><a aria-label="kiss.Disposable" href="api/kiss.Disposable.html#dispose()">Disposable#dispose()</a></code> on the returned object will stop the automatic
+saving process for that instance.</p><pre class="lang-java"><code>void stopAutoSave() {
+    class Data implements Storable&lt;Data&gt; {
+        public final Variable&lt;String&gt; name = Variable.empty();
+    }
+
+    Data data = new Data();
+    Disposable stopper = data.auto();
+
+    stopper.dispose(); // stop auto-save
+}</code></pre></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Persistence.Storage_Location">
+					<header class="A l">
+						<h2>Storage Location</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L2004-L2009"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>By default, persistence file is stored in a directory named <code>.preferences</code> within
+the application&apos;s working directory. The filename is derived from the fully qualified
+class name of the storable object, ending with <code>.json</code>.
+(e.g., <code>.preferences/com.example.MyAppSettings.json</code>).</p><p>This location can be customized in two main ways:</p></span></section>
+				<section class="A FB" id="sinobu.Manual.Persistence.Storage_Location.Location_Method">
+					<header class="A u">
+						<h3 icon="📄">Location Method</h3>
+					</header><span class="A"><p>You can override the <code><a aria-label="kiss.Storable" href="api/kiss.Storable.html#locate()">Storable#locate()</a></code> method within your implementing class
+to return a custom <code><a aria-label="java.nio.file.Path 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/nio/file/Path.html">Path</a></code> for the persistence file.</p><pre class="lang-java"><code>class Custom implements Storable&lt;Custom&gt; {
+
+    public Path locate() {
+        return Path.of(&quot;setting.txt&quot;);
+    }
+}</code></pre></span></section>
+				<section class="A FB" id="sinobu.Manual.Persistence.Storage_Location.Environment_Variable">
+					<header class="A u">
+						<h3 icon="📄">Environment Variable</h3>
+					</header><span class="A"><p>You can set a global preference directory by defining the environment variable
+<code>PreferenceDirectory</code> using <code><a aria-label="kiss.I" href="api/kiss.I.html#env(java.lang.String,java.lang.Object)">I#env(String, Object)</a></code>. If this variable is set,
+the default implementation will use this directory instead of <code>.preferences</code>.</p><pre class="lang-java"><code>void define() {
+    I.env(&quot;PreferenceDirectory&quot;, &quot;/user/home/setting&quot;);
+}</code></pre></span></section>
+			</div>
+			<div class="f"><a class="w g" href="doc/sinobu.Manual.Logging.html">Logging</a><a class="w h" href="doc/sinobu.Manual.Benchmark.html">Benchmark</a></div>
+		</article>
+		<aside class="V">
+			<div class="S">
+				<h5>Help improve document</h5>
+				<p>View this page on <a href="https://github.com/teletha/sinobu/blob/master/src/test/java/sinobu/Manual.java#L1885">GitHub</a></p>
+				<p>Report a problem <a href="https://github.com/teletha/sinobu/issues/new?title=Improve document on sinobu.Manual.Persistence&amp;labels=documentation,enhancement&amp;body=%23%23+What+specific+section+or+headline+is+this+issue+about%3F%0A%0A%0A%0A%23%23+What+information+was+incorrect%2C+unhelpful%2C+or+incomplete%3F%0A%0A%0A%0A%23%23+What+did+you+expect+to+see%3F%0A">with this page</a></p>
+			</div>
+			<p class="S">View in <a href="doc/one.html#sinobu.Manual.Persistence.Usage">onepager</a></p>
+		</aside>
+		<footer class="Z">
+			<p>Powered by <a href="https://github.com/teletha/evergarden" target="_">Evergarden</a></p>
+		</footer>
+	</body>
+	<script src="root.js"></script>
+	<script src="main.js" type="module"></script>
+</html>

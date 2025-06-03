@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8"/>
+		<meta content="width=device-width, initial-scale=1" name="viewport"/>
+		<meta content="Explains how to use sinobu and its API. " name="description"/>
+		<link href="https://cdn.jsdelivr.net" rel="preconnect"/>
+		<link href="https://fonts.googleapis.com" rel="preconnect"/>
+		<link crossorigin="null" href="https://fonts.gstatic.com" rel="preconnect"/>
+		<link as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Inter" rel="preload"/>
+		<link href="https://fonts.googleapis.com/css2?display=swap&amp;family=Inter" media="print" onload="this.media=&apos;all&apos;" rel="stylesheet"/>
+		<link as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Material+Icons" rel="preload"/>
+		<link href="https://fonts.googleapis.com/css2?display=swap&amp;family=Material+Icons" media="print" onload="this.media=&apos;all&apos;" rel="stylesheet"/>
+		<link as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Vollkorn" rel="preload"/>
+		<link href="https://fonts.googleapis.com/css2?display=swap&amp;family=Vollkorn" media="print" onload="this.media=&apos;all&apos;" rel="stylesheet"/>
+		<title>sinobu API</title>
+		<base href="../"/>
+		<script src="mimic.js" type="module"></script>
+		<link href="https://cdn.jsdelivr.net/npm/ress@4.0.0/dist/ress.min.css" rel="stylesheet"/>
+		<link href="main.css" rel="stylesheet"/>
+	</head>
+	<body class="W">
+		<header class="X" date="2025-06-02">
+			<h1 class="n"><a href="index.html"><code>sinobu</code></a></h1>
+			<nav class="HB"><a href="doc/sinobu.Manual.Introduction.html" id="Manual"><svg class="text">
+						<use href="main.svg#text"/>
+					</svg>
+				</a><a href="api/main.html" id="API"><svg class="package">
+						<use href="main.svg#package"/>
+					</svg>
+				</a><a href="doc/changelog.html" id="Activity"><svg class="activity">
+						<use href="main.svg#activity"/>
+					</svg>
+				</a><a href="https://github.com/teletha/sinobu/discussions" id="Community" target="_blank"><svg class="user">
+						<use href="main.svg#user"/>
+					</svg>
+				</a><a href="https://github.com/teletha/sinobu" id="Repository" target="_blank"><svg class="github">
+						<use href="main.svg#github"/>
+					</svg>
+				</a></nav>
+			<div class="O"><a aria-label="Change color scheme" id="theme"><svg class="sun">
+						<use href="main.svg#sun"/>
+					</svg><svg class="moon">
+						<use href="main.svg#moon"/>
+					</svg>
+				</a></div>
+		</header>
+		<nav class="a"></nav>
+		<article class="Y" id="Article">
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Dependency_Injection.Concept">
+					<header class="A l">
+						<h2>Concept</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L367-L376"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>Dependency Injection (DI) is a mechanism that solves various problems related to
+component dependencies in &apos;a nice way&apos;. Component dependency refers to the relationship
+from upper layer to lower layer, such as Controller → Service → Repository in a general
+layered architecture.
+&apos;A nice way&apos; means that the framework will take care of the problem without the developer
+having to work hard manually.</p><p>In modern Java application development, DI is an almost indispensable mechanism.
+The detailed explanation of the DI concept is left to <a href="https://en.wikipedia.org/wiki/Dependency_injection">another
+website</a>.</p></span></section>
+				<section class="A FB" id="sinobu.Manual.Dependency_Injection.Concept.DI_Container">
+					<header class="A u">
+						<h3 icon="📄">DI Container</h3>
+					</header><span class="A"><p>Unlike other DI frameworks, there is no explicit DI container in Sinobu. It has only
+one container implicitly inside, but the user is not aware of it. Therefore, there is
+also no need to define dependencies explicitly by means of code or external files.
+All dependencies are automatically resolved based on type.</p></span></section>
+				<section class="A FB" id="sinobu.Manual.Dependency_Injection.Concept.Injection_Type">
+					<header class="A u">
+						<h3 icon="📄">Injection Type</h3>
+					</header><span class="A"><p>Commonly, there are four main types in which a client can receive injected services.</p><ul>
+							<li>Constructor injection, where dependencies are provided through a client&apos;s class
+constructor.</li>
+							<li>Setter injection, where the client exposes a setter method which accepts the
+dependency.</li>
+							<li>Field injection, where the client exposes a field which accepts the dependency.</li>
+							<li>Interface injection, where the dependency&apos;s interface provides an injector method
+that will inject the dependency into any client passed to it.</li>
+						</ul><p class="CAUTION">Sinobu supports constructor injection exclusively.
+Other forms of injection are intentionally not supported, as they compromise object
+safety and are unlikely to be supported in the future.</p></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Dependency_Injection.Constructor_Injection">
+					<header class="A l">
+						<h2>Constructor Injection</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L410-L414"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>The most common form of dependency injection is for a class to request its
+dependencies through its constructor. This ensures the client is always in a valid
+state, since it cannot be instantiated without its necessary dependencies.</p><pre class="lang-java"><code>public void objectInjection() {
+    class Injectable {
+    }
+
+    class Injection {
+        private Injectable value;
+
+        Injection(Injectable injectable) {
+            this.value = injectable;
+        }
+    }
+
+    assert I.make(Injection.class).value != null;
+}</code></pre></span></section>
+				<section class="A FB" id="sinobu.Manual.Dependency_Injection.Constructor_Injection.Injectable_Type">
+					<header class="A u">
+						<h3 icon="📄">Injectable Type</h3>
+					</header><span class="A"><p>Any type can be injectable, but there are a few types that receive special treatment.</p><ul>
+							<li>Primitives - A default value (0 for int, false for boolean) is assigned.</li>
+						</ul><pre class="lang-java"><code>public void primitiveIntInjection() {
+    class Injection {
+        private int value;
+
+        Injection(int injectable) {
+            this.value = injectable;
+        }
+    }
+
+    assert I.make(Injection.class).value == 0;
+}</code></pre><pre class="lang-java"><code>public void primitiveBooleanInjection() {
+    class Injection {
+        private boolean value;
+
+        Injection(boolean injectable) {
+            this.value = injectable;
+        }
+    }
+
+    assert I.make(Injection.class).value == false;
+}</code></pre><ul>
+							<li><code><a aria-label="kiss.Lifestyle" href="api/kiss.Lifestyle.html">Lifestyle</a></code> - The resolution of dependencies can be delayed until the user
+actually needs it. Type variables must be correctly specified.</li>
+						</ul><pre class="lang-java"><code>public void objectLazyInjection() {
+    class Injection {
+        private Lifestyle&lt;Person&gt; lazy;
+
+        Injection(Lifestyle&lt;Person&gt; injectable) {
+            this.lazy = injectable;
+        }
+    }
+
+    assert I.make(Injection.class).lazy.get() != null;
+}</code></pre><ul>
+							<li><code><a aria-label="java.lang.Class 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Class.html">Class</a></code> - The currently processing model type. This feature is mainly
+available when implementing the special generic <code><a aria-label="kiss.Lifestyle" href="api/kiss.Lifestyle.html">Lifestyle</a></code>.</li>
+						</ul><pre class="lang-java"><code>public void typeInjection() {
+    class Injection {
+        private Class type;
+
+        Injection(Class injectable) {
+            this.type = injectable;
+        }
+    }
+
+    assert I.make(Injection.class).type == null;
+}</code></pre></span></section>
+				<section class="A FB" id="sinobu.Manual.Dependency_Injection.Constructor_Injection.Priority">
+					<header class="A u">
+						<h3 icon="📄">Priority</h3>
+					</header><span class="A"><p>If only one constructor is defined for the class being injected, it is used. If more
+than one constructor is defined, it must detect which constructor is to be used.</p><p>The constructor with the <code><a aria-label="kiss.Managed" href="api/kiss.Managed.html">Managed</a></code> annotation has the highest priority.</p><pre class="lang-java"><code>public void priorityManaged() {
+    class Injection {
+
+        private int value;
+
+        Injection() {
+            value = 10;
+        }
+
+        // This constructore is used.
+        @Managed
+        Injection(int injectable) {
+            this.value = injectable;
+        }
+    }
+
+    assert I.make(Injection.class).value == 0;
+}</code></pre><p>Next priority is given to constructors with the Inject annotation. The Inject
+annotation targets all annotations with the simple name &apos;Inject&apos;, so annotations such
+as jakarta.inject.Inject used in JSR330 etc. can also be used.</p><pre class="lang-java"><code>public void priorityInject() {
+    class Injection {
+
+        private int value;
+
+        Injection() {
+            value = 10;
+        }
+
+        // This constructore is used.
+        @Inject
+        Injection(int injectable) {
+            this.value = injectable;
+        }
+    }
+
+    assert I.make(Injection.class).value == 0;
+}</code></pre><p>If no annotation is found, the constructor with the lowest number of arguments is
+used.</p><pre class="lang-java"><code>public void priorityMinParam() {
+    class Injection {
+
+        private int value;
+
+        // This constructore is used.
+        Injection() {
+            value = 10;
+        }
+
+        Injection(int injectable) {
+            this.value = injectable;
+        }
+    }
+
+    assert I.make(Injection.class).value == 10;
+}</code></pre><p>If several constructors with the smallest number of arguments are defined, the first
+constructor found among them is used. (which is implementation-dependent in the JDK)</p><pre class="lang-java"><code>public void priorityMinParams() {
+    class Injection {
+
+        private int value;
+
+        // This constructore is used.
+        Injection(boolean injectable) {
+            value = injectable ? 1 : 10;
+        }
+
+        Injection(int injectable) {
+            this.value = injectable;
+        }
+    }
+
+    assert I.make(Injection.class).value == 10;
+}</code></pre></span></section>
+				<section class="A FB" id="sinobu.Manual.Dependency_Injection.Constructor_Injection.Circular_Reference">
+					<header class="A u">
+						<h3 icon="📄">Circular Reference</h3>
+					</header><span class="A"><p>One of the problems with constructor injection is that it cannot resolve circular
+dependencies. To partially solve this problem, Sinobu provides a delayed dependency
+injection method, but it does not completely solve any situation. If a solution is
+not possible, an error will occur.</p><pre class="lang-java"><code>public static class CircularLifestyleA {
+
+    private Lifestyle&lt;CircularLifestyleB&gt; other;
+
+    private CircularLifestyleA(Lifestyle&lt;CircularLifestyleB&gt; other) {
+        this.other = other;
+    }
+}</code></pre><pre class="lang-java"><code>public static class CircularLifestyleB {
+
+    private Lifestyle&lt;CircularLifestyleA&gt; other;
+
+    private CircularLifestyleB(Lifestyle&lt;CircularLifestyleA&gt; other) {
+        this.other = other;
+    }
+}</code></pre><pre class="lang-java"><code>public void circularDependenciesWithProvider() {
+    CircularLifestyleA circularA = I.make(CircularLifestyleA.class);
+    assert circularA.other != null;
+
+    CircularLifestyleB circularB = I.make(CircularLifestyleB.class);
+    assert circularB.other != null;
+}</code></pre></span></section>
+			</div>
+			<div class="f"><a class="w g" href="doc/sinobu.Manual.Lifestyle_Management.html">Lifestyle Management</a><a class="w h" href="doc/sinobu.Manual.Object_Modeling.html">Object Modeling</a></div>
+		</article>
+		<aside class="V">
+			<div class="S">
+				<h5>Help improve document</h5>
+				<p>View this page on <a href="https://github.com/teletha/sinobu/blob/master/src/test/java/sinobu/Manual.java#L367">GitHub</a></p>
+				<p>Report a problem <a href="https://github.com/teletha/sinobu/issues/new?title=Improve document on sinobu.Manual.Dependency_Injection&amp;labels=documentation,enhancement&amp;body=%23%23+What+specific+section+or+headline+is+this+issue+about%3F%0A%0A%0A%0A%23%23+What+information+was+incorrect%2C+unhelpful%2C+or+incomplete%3F%0A%0A%0A%0A%23%23+What+did+you+expect+to+see%3F%0A">with this page</a></p>
+			</div>
+			<p class="S">View in <a href="doc/one.html#sinobu.Manual.Dependency_Injection.Concept">onepager</a></p>
+		</aside>
+		<footer class="Z">
+			<p>Powered by <a href="https://github.com/teletha/evergarden" target="_">Evergarden</a></p>
+		</footer>
+	</body>
+	<script src="root.js"></script>
+	<script src="main.js" type="module"></script>
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8"/>
+		<meta content="width=device-width, initial-scale=1" name="viewport"/>
+		<meta content="Explains how to use sinobu and its API. " name="description"/>
+		<link href="https://cdn.jsdelivr.net" rel="preconnect"/>
+		<link href="https://fonts.googleapis.com" rel="preconnect"/>
+		<link crossorigin="null" href="https://fonts.gstatic.com" rel="preconnect"/>
+		<link as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Inter" rel="preload"/>
+		<link href="https://fonts.googleapis.com/css2?display=swap&amp;family=Inter" media="print" onload="this.media=&apos;all&apos;" rel="stylesheet"/>
+		<link as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Material+Icons" rel="preload"/>
+		<link href="https://fonts.googleapis.com/css2?display=swap&amp;family=Material+Icons" media="print" onload="this.media=&apos;all&apos;" rel="stylesheet"/>
+		<link as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Vollkorn" rel="preload"/>
+		<link href="https://fonts.googleapis.com/css2?display=swap&amp;family=Vollkorn" media="print" onload="this.media=&apos;all&apos;" rel="stylesheet"/>
+		<title>sinobu API</title>
+		<base href="../"/>
+		<script src="mimic.js" type="module"></script>
+		<link href="https://cdn.jsdelivr.net/npm/ress@4.0.0/dist/ress.min.css" rel="stylesheet"/>
+		<link href="main.css" rel="stylesheet"/>
+	</head>
+	<body class="W">
+		<header class="X" date="2025-06-02">
+			<h1 class="n"><a href="index.html"><code>sinobu</code></a></h1>
+			<nav class="HB"><a href="doc/sinobu.Manual.Introduction.html" id="Manual"><svg class="text">
+						<use href="main.svg#text"/>
+					</svg>
+				</a><a href="api/main.html" id="API"><svg class="package">
+						<use href="main.svg#package"/>
+					</svg>
+				</a><a href="doc/changelog.html" id="Activity"><svg class="activity">
+						<use href="main.svg#activity"/>
+					</svg>
+				</a><a href="https://github.com/teletha/sinobu/discussions" id="Community" target="_blank"><svg class="user">
+						<use href="main.svg#user"/>
+					</svg>
+				</a><a href="https://github.com/teletha/sinobu" id="Repository" target="_blank"><svg class="github">
+						<use href="main.svg#github"/>
+					</svg>
+				</a></nav>
+			<div class="O"><a aria-label="Change color scheme" id="theme"><svg class="sun">
+						<use href="main.svg#sun"/>
+					</svg><svg class="moon">
+						<use href="main.svg#moon"/>
+					</svg>
+				</a></div>
+		</header>
+		<nav class="a"></nav>
+		<article class="Y" id="Article">
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Template_Engine.Usage">
+					<header class="A l">
+						<h2>Usage</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L1227-L1227"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><pre class="lang-java"><code>import org.junit.jupiter.api.Test;
+import kiss.I;
+
+class MustacheTest {
+
+    String template = &quot;She is {name}, {age} years old.&quot;;
+
+    record Person(String name, int age) {
+    }
+
+    @Test
+    void use() {
+        Person data = new Person(&quot;Takina Inoue&quot;, 16);
+        assert I.express(template, data).equals(&quot;She is Takina Inoue, 16 years old.&quot;);
+    }
+}</code></pre>
+					</span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Template_Engine.Mustache">
+					<header class="A l">
+						<h2>Mustache</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L1233-L1242"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>Mustache can be used for HTML, config files, source code - anything. It works by
+expanding tags in a template using values provided in a hash or object. We call it
+&quot;logic-less&quot; because there are no if statements, else clauses, or for loops. Instead
+there are only tags. Some tags are replaced with a value, some nothing, and others a
+series of values.</p><p>Java19 does not yet have a language built-in template syntax. Therefore, Sinobu
+provides
+a mechanism to parse <a href="https://mustache.github.io/">Mustache</a> syntax
+instead.</p></span></section>
+				<section class="A FB" id="sinobu.Manual.Template_Engine.Mustache.Syntax">
+					<header class="A u">
+						<h3 icon="📄">Syntax</h3>
+					</header><span class="A"><p>To use Mustache, you must first create a Mustache template, which is written
+using a
+markup language such as HTML or XML. In template, you use special symbols called
+Mustache delimiters to specify where the data should be inserted. Mustache
+delimiters
+are written in the following format:</p><pre class="lang-"><code>{placeholder}</code></pre><p>As you can see, Mustache delimiter is a string of characters enclosed in single
+brace, such as &quot;{placeholder}&quot;. This string specifies the location
+where
+the data should be inserted. For example, consider the following Mustache
+template:</p><pre class="lang-java"><code>String template = &quot;She is {name}, {age} years old.&quot;;</code></pre><p>When using this template, you need to provide data for placeholders. For
+instance,
+you might have the following JavaBean object as data:</p><pre class="lang-java"><code>record Person(String name, int age)</code></pre><p>Passing the template string and context data to method
+<code><a aria-label="kiss.I" href="api/kiss.I.html#express(java.lang.String,java.lang.Object...)">I#express(String, Object...)</a></code>, we get a string in which the various
+placeholders are replaced by its data.</p><pre class="lang-java"><code>Person data = new Person(&quot;Takina Inoue&quot;, 16);
+
+assert I.express(template, data).equals(&quot;She is Takina Inoue, 16 years old.&quot;);</code></pre><p>Next, within the program that uses the Mustache template, the Mustache engine is
+initialized. At this point, the Mustache engine is passed the template and the
+data.
+The data is written using data structures such as JavaScript objects.</p><p>Finally, the Mustache engine is used to render the Mustache template. At this
+time,
+the Mustache engine replaces the Mustache specifier in the template and populates
+the
+data to produce a finished HTML, XML, or other markup language document.</p><p>The specific usage varies depending on the programming language and framework,
+but
+the above steps are a rough outline of the basic procedure for using Mustache.</p></span></section>
+				<section class="A FB" id="sinobu.Manual.Template_Engine.Mustache.Usage_at_Sinobu">
+					<header class="A u">
+						<h3 icon="📄">Usage at Sinobu</h3>
+					</header><span class="A"><p>In SInobu, Mustache can be used by calling the
+<code><a aria-label="kiss.I" href="api/kiss.I.html#express(java.lang.String,java.lang.Object...)">I#express(String, Object...)</a></code>
+method. This method parses the given string, reads the necessary variables from
+the
+context, substitutes them, and returns the resulting string.</p></span></section>
+			</div>
+			<div class="f"><a class="w g" href="doc/sinobu.Manual.HTML.html">HTML</a><a class="w h" href="doc/sinobu.Manual.HTTP.html">HTTP</a></div>
+		</article>
+		<aside class="V">
+			<div class="S">
+				<h5>Help improve document</h5>
+				<p>View this page on <a href="https://github.com/teletha/sinobu/blob/master/src/test/java/sinobu/Manual.java#L1227">GitHub</a></p>
+				<p>Report a problem <a href="https://github.com/teletha/sinobu/issues/new?title=Improve document on sinobu.Manual.Template_Engine&amp;labels=documentation,enhancement&amp;body=%23%23+What+specific+section+or+headline+is+this+issue+about%3F%0A%0A%0A%0A%23%23+What+information+was+incorrect%2C+unhelpful%2C+or+incomplete%3F%0A%0A%0A%0A%23%23+What+did+you+expect+to+see%3F%0A">with this page</a></p>
+			</div>
+			<p class="S">View in <a href="doc/one.html#sinobu.Manual.Template_Engine.Usage">onepager</a></p>
+		</aside>
+		<footer class="Z">
+			<p>Powered by <a href="https://github.com/teletha/evergarden" target="_">Evergarden</a></p>
+		</footer>
+	</body>
+	<script src="root.js"></script>
+	<script src="main.js" type="module"></script>
+</html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8"/>
+		<meta content="width=device-width, initial-scale=1" name="viewport"/>
+		<meta content="Explains how to use sinobu and its API. " name="description"/>
+		<link href="https://cdn.jsdelivr.net" rel="preconnect"/>
+		<link href="https://fonts.googleapis.com" rel="preconnect"/>
+		<link crossorigin="null" href="https://fonts.gstatic.com" rel="preconnect"/>
+		<link as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Inter" rel="preload"/>
+		<link href="https://fonts.googleapis.com/css2?display=swap&amp;family=Inter" media="print" onload="this.media=&apos;all&apos;" rel="stylesheet"/>
+		<link as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Material+Icons" rel="preload"/>
+		<link href="https://fonts.googleapis.com/css2?display=swap&amp;family=Material+Icons" media="print" onload="this.media=&apos;all&apos;" rel="stylesheet"/>
+		<link as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Vollkorn" rel="preload"/>
+		<link href="https://fonts.googleapis.com/css2?display=swap&amp;family=Vollkorn" media="print" onload="this.media=&apos;all&apos;" rel="stylesheet"/>
+		<title>sinobu API</title>
+		<base href="../"/>
+		<script src="mimic.js" type="module"></script>
+		<link href="https://cdn.jsdelivr.net/npm/ress@4.0.0/dist/ress.min.css" rel="stylesheet"/>
+		<link href="main.css" rel="stylesheet"/>
+	</head>
+	<body class="W">
+		<header class="X" date="2025-06-02">
+			<h1 class="n"><a href="index.html"><code>sinobu</code></a></h1>
+			<nav class="HB"><a href="doc/sinobu.Manual.Introduction.html" id="Manual"><svg class="text">
+						<use href="main.svg#text"/>
+					</svg>
+				</a><a href="api/main.html" id="API"><svg class="package">
+						<use href="main.svg#package"/>
+					</svg>
+				</a><a href="doc/changelog.html" id="Activity"><svg class="activity">
+						<use href="main.svg#activity"/>
+					</svg>
+				</a><a href="https://github.com/teletha/sinobu/discussions" id="Community" target="_blank"><svg class="user">
+						<use href="main.svg#user"/>
+					</svg>
+				</a><a href="https://github.com/teletha/sinobu" id="Repository" target="_blank"><svg class="github">
+						<use href="main.svg#github"/>
+					</svg>
+				</a></nav>
+			<div class="O"><a aria-label="Change color scheme" id="theme"><svg class="sun">
+						<use href="main.svg#sun"/>
+					</svg><svg class="moon">
+						<use href="main.svg#moon"/>
+					</svg>
+				</a></div>
+		</header>
+		<nav class="a"></nav>
+		<article class="Y" id="Article">
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Benchmark.Overview">
+					<header class="A l">
+						<h2>Overview</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L2046-L2084"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>This section presents benchmark results comparing the performance of Sinobu
+with other popular libraries for various common tasks. The goal is to provide
+objective data on Sinobu&apos;s efficiency in terms of execution speed,
+memory allocation, and garbage collection impact.</p><h4>🔬 Methodology</h4><p>Benchmarks were conducted using a custom benchmarking framework inspired by principles
+similar to JMH (Java Microbenchmark Harness). This includes dedicated warm-up phases
+to allow for JIT compilation and stabilization, and techniques like blackholes to prevent
+dead code elimination and ensure accurate measurement of the intended operations.
+Each major benchmark suite (e.g., JSON, Logging) is typically run in a separate JVM
+process
+to ensure isolation and prevent interference between tests.
+Benchmarks were run under specific hardware and software configurations. The results
+shown in the graphs typically represent throughput (operations per second), execution
+time, or memory allocation. Interpretation depends on the specific metric shown in each
+graph (e.g. higher throughput is better, lower time/allocation is better).</p><h4>📈 Comparisons and Metrics</h4><p>Comparisons are often made against well-known libraries relevant to each domain
+(e.g., Jackson/Gson for JSON, Logback/Log4j2 for Logging).
+The latest stable versions of competitor libraries available at the time of measurement
+were typically used.</p><p>Operations specific to each domain (e.g., JSON parsing, logging throughput, template
+rendering) are performed to measure key performance indicators such as:</p><ul>
+							<li>Execution speed (throughput or time per operation)</li>
+							<li>Garbage collection load (allocation rate)</li>
+							<li>Memory consumption (footprint, retained size - though less frequently shown in graphs)</li>
+						</ul><p class="NOTE">Lower values for time and allocation generally indicate better performance, while higher
+values for throughput are better.</p><h4>⚠️ Disclaimer</h4><p>Benchmark results can vary depending on the execution environment (JVM version, OS,
+hardware). These results should be considered indicative rather than absolute measures of
+performance in all scenarios.</p></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Benchmark.Logging">
+					<header class="A l">
+						<h2>Logging</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L2090-L2096"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>Compares the performance of Sinobu&apos;s logging framework against other logging libraries.
+Focuses on throughput (operations per second) and garbage generation under different
+scenarios, highlighting Sinobu&apos;s garbage-less design advantage.</p><img src="https://raw.githubusercontent.com/teletha/sinobu/refs/heads/master/benchmark/LogBenchmark.svg" width="700"/></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Benchmark.JSON">
+					<header class="A l">
+						<h2>JSON</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L2102-L2109"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>Compares Sinobu&apos;s JSON processing capabilities (parsing, traversing, mapping)
+against other well-known Java JSON libraries like FastJSON, Jackson, and Gson.
+Results highlight performance across various operations and document sizes.</p><ul>
+							<li><a href="https://github.com/teletha/sinobu">Sinobu</a></li>
+							<li><a href="https://github.com/alibaba/fastjson2">FastJSON</a></li>
+							<li><a href="https://github.com/FasterXML/jackson">Jackson</a></li>
+							<li><a href="https://github.com/google/gson">GSON</a></li>
+						</ul></span></section>
+				<section class="A FB" id="sinobu.Manual.Benchmark.JSON.Parse_Small">
+					<header class="A u">
+						<h3 icon="📄">Parse Small</h3>
+					</header><span class="A"><p>Measures the time and resources required to parse small JSON documents.</p><img src="https://raw.githubusercontent.com/teletha/sinobu/refs/heads/master/benchmark/JSONParseShortBenchmark.svg" width="700"/></span></section>
+				<section class="A FB" id="sinobu.Manual.Benchmark.JSON.Parse_Large">
+					<header class="A u">
+						<h3 icon="📄">Parse Large</h3>
+					</header><span class="A"><p>Measures the performance of parsing larger JSON documents, testing scalability.</p><img src="https://raw.githubusercontent.com/teletha/sinobu/refs/heads/master/benchmark/JSONParseLongBenchmark.svg" width="700"/></span></section>
+				<section class="A FB" id="sinobu.Manual.Benchmark.JSON.Parse_Huge">
+					<header class="A u">
+						<h3 icon="📄">Parse Huge</h3>
+					</header><span class="A"><p>Measures the performance of parsing very large (huge) JSON documents, stressing
+memory and CPU usage.</p><img src="https://raw.githubusercontent.com/teletha/sinobu/refs/heads/master/benchmark/JSONParseHugeBenchmark.svg" width="700"/></span></section>
+				<section class="A FB" id="sinobu.Manual.Benchmark.JSON.Traversing">
+					<header class="A u">
+						<h3 icon="📄">Traversing</h3>
+					</header><span class="A"><p>Evaluates the efficiency of navigating and accessing data within a parsed JSON
+structure (DOM-like access).</p><img src="https://raw.githubusercontent.com/teletha/sinobu/refs/heads/master/benchmark/JSONTraverseBenchmark.svg" width="700"/></span></section>
+				<section class="A FB" id="sinobu.Manual.Benchmark.JSON.Mapping">
+					<header class="A u">
+						<h3 icon="📄">Mapping</h3>
+					</header><span class="A"><p>Benchmarks the process of mapping JSON data directly to Java objects (POJOs/Records).</p><img src="https://raw.githubusercontent.com/teletha/sinobu/refs/heads/master/benchmark/JSONMappingBenchmark.svg" width="700"/></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Benchmark.HTML">
+					<header class="A l">
+						<h2>HTML</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L2166-L2172"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>Compares the performance of Sinobu&apos;s HTML/XML parser (including tag soup handling)
+against other Java parsers. Focuses on parsing speed and memory usage for typical
+web documents.</p><img src="https://raw.githubusercontent.com/teletha/sinobu/refs/heads/master/benchmark/XMLParseBenchmark.svg" width="700"/></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.Benchmark.Template_Engine">
+					<header class="A l">
+						<h2>Template Engine</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L2178-L2183"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>Compares the performance of Sinobu&apos;s Mustache template engine implementation.
+Measures rendering speed and overhead for template processing with context data.</p><img src="https://raw.githubusercontent.com/teletha/sinobu/refs/heads/master/benchmark/ExpressionBenchmark.svg" width="700"/></span></section>
+			</div>
+			<div class="f"><a class="w g" href="doc/sinobu.Manual.Persistence.html">Persistence</a></div>
+		</article>
+		<aside class="V">
+			<div class="S">
+				<h5>Help improve document</h5>
+				<p>View this page on <a href="https://github.com/teletha/sinobu/blob/master/src/test/java/sinobu/Manual.java#L2046">GitHub</a></p>
+				<p>Report a problem <a href="https://github.com/teletha/sinobu/issues/new?title=Improve document on sinobu.Manual.Benchmark&amp;labels=documentation,enhancement&amp;body=%23%23+What+specific+section+or+headline+is+this+issue+about%3F%0A%0A%0A%0A%23%23+What+information+was+incorrect%2C+unhelpful%2C+or+incomplete%3F%0A%0A%0A%0A%23%23+What+did+you+expect+to+see%3F%0A">with this page</a></p>
+			</div>
+			<p class="S">View in <a href="doc/one.html#sinobu.Manual.Benchmark.Overview">onepager</a></p>
+		</aside>
+		<footer class="Z">
+			<p>Powered by <a href="https://github.com/teletha/evergarden" target="_">Evergarden</a></p>
+		</footer>
+	</body>
+	<script src="root.js"></script>
+	<script src="main.js" type="module"></script>
+</html>

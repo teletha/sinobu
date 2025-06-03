@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8"/>
+		<meta content="width=device-width, initial-scale=1" name="viewport"/>
+		<meta content="Explains how to use sinobu and its API. " name="description"/>
+		<link href="https://cdn.jsdelivr.net" rel="preconnect"/>
+		<link href="https://fonts.googleapis.com" rel="preconnect"/>
+		<link crossorigin="null" href="https://fonts.gstatic.com" rel="preconnect"/>
+		<link as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Inter" rel="preload"/>
+		<link href="https://fonts.googleapis.com/css2?display=swap&amp;family=Inter" media="print" onload="this.media=&apos;all&apos;" rel="stylesheet"/>
+		<link as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Material+Icons" rel="preload"/>
+		<link href="https://fonts.googleapis.com/css2?display=swap&amp;family=Material+Icons" media="print" onload="this.media=&apos;all&apos;" rel="stylesheet"/>
+		<link as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Vollkorn" rel="preload"/>
+		<link href="https://fonts.googleapis.com/css2?display=swap&amp;family=Vollkorn" media="print" onload="this.media=&apos;all&apos;" rel="stylesheet"/>
+		<title>sinobu API</title>
+		<base href="../"/>
+		<script src="mimic.js" type="module"></script>
+		<link href="https://cdn.jsdelivr.net/npm/ress@4.0.0/dist/ress.min.css" rel="stylesheet"/>
+		<link href="main.css" rel="stylesheet"/>
+	</head>
+	<body class="W">
+		<header class="X" date="2025-06-02">
+			<h1 class="n"><a href="index.html"><code>sinobu</code></a></h1>
+			<nav class="HB"><a href="doc/sinobu.Manual.Introduction.html" id="Manual"><svg class="text">
+						<use href="main.svg#text"/>
+					</svg>
+				</a><a href="api/main.html" id="API"><svg class="package">
+						<use href="main.svg#package"/>
+					</svg>
+				</a><a href="doc/changelog.html" id="Activity"><svg class="activity">
+						<use href="main.svg#activity"/>
+					</svg>
+				</a><a href="https://github.com/teletha/sinobu/discussions" id="Community" target="_blank"><svg class="user">
+						<use href="main.svg#user"/>
+					</svg>
+				</a><a href="https://github.com/teletha/sinobu" id="Repository" target="_blank"><svg class="github">
+						<use href="main.svg#github"/>
+					</svg>
+				</a></nav>
+			<div class="O"><a aria-label="Change color scheme" id="theme"><svg class="sun">
+						<use href="main.svg#sun"/>
+					</svg><svg class="moon">
+						<use href="main.svg#moon"/>
+					</svg>
+				</a></div>
+		</header>
+		<nav class="a"></nav>
+		<article class="Y" id="Article">
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.HTTP.Concept">
+					<header class="A l">
+						<h2>Concept</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L1311-L1334"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>Sinobu provides a concise and powerful API for making HTTP(S) requests and handling
+WebSocket connections, built on top of Java&apos;s standard <code><a aria-label="java.net.http.HttpClient 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.net.http/java/net/http/HttpClient.html">HttpClient</a></code>.
+It simplifies common tasks like handling responses, content negotiation,
+and asynchronous processing using <code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code>.</p><h4>💡 Fluent API</h4><p>Simple static methods in <code><a aria-label="kiss.I" href="api/kiss.I.html">I</a></code> enable common HTTP GET requests and WebSocket
+connections without boilerplate.</p><h4>🔧 Standard Integration</h4><p>Built on <code><a aria-label="java.net.http.HttpRequest.Builder 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.net.http/java/net/http/HttpRequest.Builder.html">java.net.http.HttpRequest.Builder</a></code>, allowing fine-grained control over
+headers, methods, and request bodies.</p><h4>🔄 Automatic Content Handling</h4><p>Response bodies are automatically converted to suitable types (String, JSON, XML, beans,
+etc.), with gzip/deflate decompression handled transparently.</p><h4>⚙️ Reactive Streams</h4><p>Both HTTP and WebSocket messages are streamed asynchronously via <code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code>,
+promoting non-blocking and reactive design.</p><h4>🔌 WebSocket Support</h4><p>Provides a simple API for establishing WebSocket connections and handling
+incoming/outgoing messages with ease.</p></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.HTTP.Request_and_Response">
+					<header class="A l">
+						<h2>Request and Response</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L1340-L1373"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>Making HTTP requests and processing responses is streamlined using <code><a aria-label="kiss.I" href="api/kiss.I.html#http">I#http</a></code>
+methods.
+You can make simple GET requests with just a URL or use Java&apos;s
+<code><a aria-label="java.net.http.HttpRequest.Builder 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.net.http/java/net/http/HttpRequest.Builder.html">java.net.http.HttpRequest.Builder</a></code>
+for full control over the request details (method, headers, body, etc.).
+Responses are delivered asynchronously as a <code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code>.</p><pre class="lang-java"><code>// Simple GET request, response as String
+ I.http(&quot;https://example.com/data&quot;, String.class).to(html -&gt; {
+     System.out.println(&quot;Fetched HTML: &quot; + html.substring(0, 100) + &quot;...&quot;);
+ });
+
+ // POST request with custom headers, response mapped to a User object
+ HttpRequest.Builder request = HttpRequest.newBuilder(URI.create(&quot;https://api.example.com/users&quot;))
+         .POST(HttpRequest.BodyPublishers.ofString(&quot;{\&quot;name\&quot;:\&quot;John\&quot;}&quot;))
+         .header(&quot;Content-Type&quot;, &quot;application/json&quot;)
+         .header(&quot;Authorization&quot;, &quot;Bearer your_token&quot;);
+
+ I.http(request, User.class).to(user -&gt; {
+     System.out.println(&quot;Created user: &quot; + user.getName());
+ });
+
+ // Synchronous execution (blocks until response or error)
+ try {
+     String result = I.http(&quot;https://example.com&quot;, String.class).waitForTerminate().to().exact();
+     System.out.println(&quot;Synchronous result: &quot; + result);
+ } catch (Exception e) {
+     System.err.println(&quot;Request failed: &quot; + e);
+ }</code></pre><p>Errors during the request (network issues, HTTP status codes &gt;= 400) are propagated
+through the <code><a aria-label="kiss.I" href="api/kiss.I.html#signalError(java.lang.Throwable)">I#signalError(Throwable)</a></code> channel.</p></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.HTTP.Supported_Type">
+					<header class="A l">
+						<h2>Supported Type</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L1379-L1399"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>The <code><a aria-label="kiss.I" href="api/kiss.I.html#http">I#http</a></code> methods automatically convert the response body to the specified Java
+type.
+This simplifies handling different content types.</p><p>Supported types include:</p><ul>
+							<li><code><a aria-label="java.lang.String 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html">String</a></code>: The response body is read as a UTF-8 string.</li>
+							<li><code><a aria-label="java.io.InputStream 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/io/InputStream.html">InputStream</a></code>: Provides direct access to the (potentially decompressed)
+ response body stream. You are responsible for closing this stream.</li>
+							<li><code><a aria-label="java.net.http.HttpResponse 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.net.http/java/net/http/HttpResponse.html">HttpResponse</a></code>: Provides the full `HttpResponse
+								<inputstream>` object, giving
+ access to status code, headers, and the body stream.</inputstream>
+								<li><code><a aria-label="kiss.XML" href="api/kiss.XML.html">XML</a></code>: Parses the response body as XML/HTML into an <code><a aria-label="kiss.XML" href="api/kiss.XML.html">XML</a></code> object.</li>
+								<li>JSON: Parses the response body as JSON into a JSON object.</li>
+								<li><b>Any JSON-mappable Bean/Record</b>: Parses the JSON response body and maps it to an
+ instance of the specified class using Sinobu&apos;s object mapping capabilities.</li>
+							</li>
+							<p><b>Automatic Decompression:</b>
+Sinobu automatically inspects the <code>Content-Encoding</code> response header. If the content is
+compressed using <code>gzip</code> or <code>deflate</code>, it will be decompressed transparently before
+being passed to the type converter or returned as an <code>InputStream</code>.</p>
+						</ul>
+					</span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.HTTP.WebSocket_Support">
+					<header class="A l">
+						<h2>WebSocket Support</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L1405-L1448"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>Sinobu provides a simple way to establish WebSocket connections using
+<code><a aria-label="kiss.I" href="api/kiss.I.html#http(java.lang.String,java.util.function.Consumer,java.net.http.HttpClient...)">I#http(String, Consumer, HttpClient...)</a></code>.
+Communication is handled reactively using <code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code> for incoming messages and a
+<code><a aria-label="java.net.http.WebSocket 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.net.http/java/net/http/WebSocket.html">WebSocket</a></code>
+object for sending messages.</p><pre class="lang-java"><code>Disposable connection = I.http(&quot;wss://echo.websocket.org&quot;, ws -&gt; {
+     // Connection opened callback - send a message
+     System.out.println(&quot;WebSocket Opened!&quot;);
+     ws.sendText(&quot;Hello WebSocket!&quot;, true);
+
+     // You can send more messages later using the &apos;ws&apos; object
+     // ws.sendText(&quot;Another message&quot;, true);
+
+     // Request more messages from the server (default is 1)
+     // ws.request(5); // Request up to 5 more messages
+
+ }).to(message -&gt; { // onNext - received message
+     System.out.println(&quot;Received: &quot; + message);
+     // ws.sendText(&quot;Got it: &quot; + message, true); // Example: Echo back
+ }, error -&gt; { // onError - connection error
+     System.err.println(&quot;WebSocket Error: &quot; + error);
+ }, () -&gt; { // onComplete - connection closed
+     System.out.println(&quot;WebSocket Closed&quot;);
+ });
+
+ // To close the connection later:
+ // connection.dispose();</code></pre><p>The <code>Consumer&lt;WebSocket&gt; open</code> lambda is executed once the connection is successfully
+established.
+The <code><a aria-label="java.net.http.WebSocket 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.net.http/java/net/http/WebSocket.html">WebSocket</a></code> instance provided allows you to send messages (<code>sendText</code>,
+<code>sendBinary</code>, <code>sendPing</code>, etc.)
+and manage the connection state (<code>request</code>, <code>sendClose</code>).</p><p>Incoming messages are received through the <code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code> returned by <code>I.http</code>.</p><p><b>Automatic Decompression:</b>
+Similar to HTTP responses, Sinobu automatically handles WebSocket messages compressed
+with the
+standard <code>permessage-deflate</code> extension (commonly used for gzip/deflate over WebSockets),
+ensuring you receive decompressed text messages in the <code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code>.</p></span></section>
+			</div>
+			<div class="BB">
+				<section class="A" id="sinobu.Manual.HTTP.Custom_HttpClient">
+					<header class="A l">
+						<h2>Custom HttpClient</h2>
+						<div class="r"><span class="perp s"><svg class="copy">
+									<use href="main.svg#copy"/>
+								</svg>
+							</span><a class="tweet s"><svg class="twitter">
+									<use href="main.svg#twitter"/>
+								</svg>
+							</a><a class="edit s" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L1454-L1481"><svg class="edit">
+									<use href="main.svg#edit"/>
+								</svg>
+							</a></div>
+					</header><span class="A"><p>While <code><a aria-label="kiss.I" href="api/kiss.I.html#http">I#http</a></code> methods use a default, shared <code><a aria-label="java.net.http.HttpClient 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.net.http/java/net/http/HttpClient.html">HttpClient</a></code> instance
+internally,
+you can provide your own configured <code>HttpClient</code> instance(s) as optional trailing
+arguments
+to any of the <code>I.http</code> methods. This allows customization of timeouts, proxies, SSL
+contexts,
+authenticators, cookie handlers, etc., using the standard Java <code>HttpClient.Builder</code> API.</p><pre class="lang-java"><code>HttpClient customClient = HttpClient.newBuilder()
+      .connectTimeout(Duration.ofSeconds(10))
+      .followRedirects(HttpClient.Redirect.NORMAL)
+      // .proxy(...)
+      // .sslContext(...)
+      // .authenticator(...)
+      // .cookieHandler(...)
+      .build();
+
+ // Use the custom client for the request
+ I.http(&quot;https://example.com&quot;, String.class, customClient).to(response -&gt; { ... });
+
+ // Use it for WebSocket too
+ I.http(&quot;wss://example.com/ws&quot;, ws -&gt; { ... }, customClient).to(message -&gt; { ... });</code></pre><p>If multiple clients are passed, the first non-null one is used. If none are provided or
+all are null,
+the default client (<code>I.client</code>) is used.</p></span></section>
+			</div>
+			<div class="f"><a class="w g" href="doc/sinobu.Manual.Template_Engine.html">Template Engine</a><a class="w h" href="doc/sinobu.Manual.Reactivity.html">Reactivity</a></div>
+		</article>
+		<aside class="V">
+			<div class="S">
+				<h5>Help improve document</h5>
+				<p>View this page on <a href="https://github.com/teletha/sinobu/blob/master/src/test/java/sinobu/Manual.java#L1311">GitHub</a></p>
+				<p>Report a problem <a href="https://github.com/teletha/sinobu/issues/new?title=Improve document on sinobu.Manual.HTTP&amp;labels=documentation,enhancement&amp;body=%23%23+What+specific+section+or+headline+is+this+issue+about%3F%0A%0A%0A%0A%23%23+What+information+was+incorrect%2C+unhelpful%2C+or+incomplete%3F%0A%0A%0A%0A%23%23+What+did+you+expect+to+see%3F%0A">with this page</a></p>
+			</div>
+			<p class="S">View in <a href="doc/one.html#sinobu.Manual.HTTP.Concept">onepager</a></p>
+		</aside>
+		<footer class="Z">
+			<p>Powered by <a href="https://github.com/teletha/evergarden" target="_">Evergarden</a></p>
+		</footer>
+	</body>
+	<script src="root.js"></script>
+	<script src="main.js" type="module"></script>
+</html>

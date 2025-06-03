@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8"/>
+		<meta content="width=device-width, initial-scale=1" name="viewport"/>
+		<meta content="Explains how to use sinobu and its API. " name="description"/>
+		<link href="https://cdn.jsdelivr.net" rel="preconnect"/>
+		<link href="https://fonts.googleapis.com" rel="preconnect"/>
+		<link crossorigin="null" href="https://fonts.gstatic.com" rel="preconnect"/>
+		<link as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Inter" rel="preload"/>
+		<link href="https://fonts.googleapis.com/css2?display=swap&amp;family=Inter" media="print" onload="this.media=&apos;all&apos;" rel="stylesheet"/>
+		<link as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Material+Icons" rel="preload"/>
+		<link href="https://fonts.googleapis.com/css2?display=swap&amp;family=Material+Icons" media="print" onload="this.media=&apos;all&apos;" rel="stylesheet"/>
+		<link as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Vollkorn" rel="preload"/>
+		<link href="https://fonts.googleapis.com/css2?display=swap&amp;family=Vollkorn" media="print" onload="this.media=&apos;all&apos;" rel="stylesheet"/>
+		<title>sinobu API</title>
+		<base href="../"/>
+		<script src="mimic.js" type="module"></script>
+		<link href="https://cdn.jsdelivr.net/npm/ress@4.0.0/dist/ress.min.css" rel="stylesheet"/>
+		<link href="main.css" rel="stylesheet"/>
+	</head>
+	<body class="W">
+		<header class="X" date="2025-06-02">
+			<h1 class="n"><a href="index.html"><code>sinobu</code></a></h1>
+			<nav class="HB"><a href="doc/sinobu.Manual.Introduction.html" id="Manual"><svg class="text">
+						<use href="main.svg#text"/>
+					</svg>
+				</a><a href="api/main.html" id="API"><svg class="package">
+						<use href="main.svg#package"/>
+					</svg>
+				</a><a href="doc/changelog.html" id="Activity"><svg class="activity">
+						<use href="main.svg#activity"/>
+					</svg>
+				</a><a href="https://github.com/teletha/sinobu/discussions" id="Community" target="_blank"><svg class="user">
+						<use href="main.svg#user"/>
+					</svg>
+				</a><a href="https://github.com/teletha/sinobu" id="Repository" target="_blank"><svg class="github">
+						<use href="main.svg#github"/>
+					</svg>
+				</a></nav>
+			<div class="O"><a aria-label="Change color scheme" id="theme"><svg class="sun">
+						<use href="main.svg#sun"/>
+					</svg><svg class="moon">
+						<use href="main.svg#moon"/>
+					</svg>
+				</a></div>
+		</header>
+		<nav class="a"></nav>
+		<article class="Y" id="Article">
+			<div class="BB">
+				<section class="A">
+					<h2>sinobu API Overview</h2>
+					<p>This page provides a concise overview of the available APIs, including their purpose, key functionalities, and usage patterns. It serves as a starting point for developers to understand how to integrate and interact with the system effectively.</p>
+					<section class="A">
+						<h4>🛠️ Interface</h4>
+						<table>
+							<tr>
+								<td><code><a href="api/kiss.Storable.html">Storable</a></code></td>
+								<td>There are two main ways to change the default save location. One is specified by overriding the
+#locate() method. The other is to specify a value for &quot;PreferenceDirectory&quot; in global
+application environment (see I#env(String)).</td>
+							</tr>
+							<tr>
+								<td><code><a href="api/kiss.Extensible.html">Extensible</a></code></td>
+								<td>
+ This is a marker interface for Extension Point of your application.
+ </td>
+							</tr>
+						</table>
+					</section>
+					<section class="A">
+						<h4>🛠️ Functional Interface</h4>
+						<table>
+							<tr>
+								<td><code><a href="api/kiss.Decoder.html">Decoder</a></code></td>
+								<td>Codec for interconversion of object and String.</td>
+							</tr>
+							<tr>
+								<td><code><a href="api/kiss.WiseTriFunction.html">WiseTriFunction</a></code></td>
+								<td>no description</td>
+							</tr>
+							<tr>
+								<td><code><a href="api/kiss.WiseConsumer.html">WiseConsumer</a></code></td>
+								<td>no description</td>
+							</tr>
+							<tr>
+								<td><code><a href="api/kiss.WiseFunction.html">WiseFunction</a></code></td>
+								<td>no description</td>
+							</tr>
+							<tr>
+								<td><code><a href="api/kiss.WiseBiFunction.html">WiseBiFunction</a></code></td>
+								<td>no description</td>
+							</tr>
+							<tr>
+								<td><code><a href="api/kiss.Wise.html">Wise</a></code></td>
+								<td>General purpose flexible and invokable function interface.</td>
+							</tr>
+							<tr>
+								<td><code><a href="api/kiss.ExtensionFactory.html">ExtensionFactory</a></code></td>
+								<td>This is an extension point to dynamically create and retrieve an extension corresponding to a
+given extension key at the associated extension point.</td>
+							</tr>
+							<tr>
+								<td><code><a href="api/kiss.WiseTriConsumer.html">WiseTriConsumer</a></code></td>
+								<td>no description</td>
+							</tr>
+							<tr>
+								<td><code><a href="api/kiss.Observer.html">Observer</a></code></td>
+								<td>Provides a mechanism for receiving push-based notifications.</td>
+							</tr>
+							<tr>
+								<td><code><a href="api/kiss.Lifestyle.html">Lifestyle</a></code></td>
+								<td>
+ Lifestyle manages the instance in the specific context. Sinobu provides two commonly used
+ lifestyles (I#prototype(Class) and Singleton.
+ </td>
+							</tr>
+							<tr>
+								<td><code><a href="api/kiss.Encoder.html">Encoder</a></code></td>
+								<td>Codec for interconversion of object and String.</td>
+							</tr>
+							<tr>
+								<td><code><a href="api/kiss.Disposable.html">Disposable</a></code></td>
+								<td>The Disposable interface is used when components need to deallocate and dispose resources
+prior to their destruction.</td>
+							</tr>
+							<tr>
+								<td><code><a href="api/kiss.WiseSupplier.html">WiseSupplier</a></code></td>
+								<td>no description</td>
+							</tr>
+							<tr>
+								<td><code><a href="api/kiss.WiseBiConsumer.html">WiseBiConsumer</a></code></td>
+								<td>no description</td>
+							</tr>
+							<tr>
+								<td><code><a href="api/kiss.WiseRunnable.html">WiseRunnable</a></code></td>
+								<td>no description</td>
+							</tr>
+							<tr>
+								<td><code><a href="api/kiss.Narrow.html">Narrow</a></code></td>
+								<td>Provide the partial application functionality.</td>
+							</tr>
+						</table>
+					</section>
+					<section class="A">
+						<h4>🛠️ Class</h4>
+						<table>
+							<tr>
+								<td><code><a href="api/kiss.XML.html">XML</a></code></td>
+								<td>A class for parsing, traversing, and manipulating XML and HTML documents
+with a jQuery-like fluent API.</td>
+							</tr>
+							<tr>
+								<td><code><a href="api/kiss.Singleton.html">Singleton</a></code></td>
+								<td>This lifestyle guarantees that only one instance of the specific class exists in Sinobu.</td>
+							</tr>
+							<tr>
+								<td><code><a href="api/kiss.I.html">I</a></code></td>
+								<td>
+ Sinobu is not obsolete framework but utility, which can manipulate objects as a
+ extremely-condensed facade.
+ </td>
+							</tr>
+							<tr>
+								<td><code><a href="api/kiss.Scheduler.html">Scheduler</a></code></td>
+								<td>A custom scheduler implementation based on the ScheduledExecutorService interface,
+using virtual threads to schedule tasks with specified delays or intervals.</td>
+							</tr>
+							<tr>
+								<td><code><a href="api/kiss.Ⅱ.html">Ⅱ</a></code></td>
+								<td>no description</td>
+							</tr>
+							<tr>
+								<td><code><a href="api/kiss.JSON.html">JSON</a></code></td>
+								<td>no description</td>
+							</tr>
+							<tr>
+								<td><code><a href="api/kiss.Ⅲ.html">Ⅲ</a></code></td>
+								<td>List#of(Object, Object)</td>
+							</tr>
+							<tr>
+								<td><code><a href="api/kiss.Model.html">Model</a></code></td>
+								<td>Model</td>
+							</tr>
+							<tr>
+								<td><code><a href="api/kiss.Signal.html">Signal</a></code></td>
+								<td>
+ The Signal class that implements the Reactive Pattern. This class provides methods for
+ subscribing to the Signal as well as delegate methods to the various observers.
+ </td>
+							</tr>
+							<tr>
+								<td><code><a href="api/kiss.Property.html">Property</a></code></td>
+								<td>This class represents a property of object model.</td>
+							</tr>
+							<tr>
+								<td><code><a href="api/kiss.Variable.html">Variable</a></code></td>
+								<td>A re-assignable container object which may or may not contain a non-null value. If a value is
+present, #isPresent() returns true. If no value is present, the object is considered
+empty and #isPresent() returns false. Unlike Optional, this container is
+re-assignable.</td>
+							</tr>
+							<tr>
+								<td><code><a href="api/kiss.Signaling.html">Signaling</a></code></td>
+								<td>Simple Signal support subject.</td>
+							</tr>
+						</table>
+					</section>
+					<section class="A">
+						<h4>🛠️ Annotation</h4>
+						<table>
+							<tr>
+								<td><code><a href="api/kiss.Managed.html">Managed</a></code></td>
+								<td>Annotation that is managed by some domain.</td>
+							</tr>
+						</table>
+					</section>
+				</section>
+			</div>
+		</article>
+		<aside class="V"></aside>
+		<footer class="Z">
+			<p>Powered by <a href="https://github.com/teletha/evergarden" target="_">Evergarden</a></p>
+		</footer>
+	</body>
+	<script src="root.js"></script>
+	<script src="main.js" type="module"></script>
+</html>
