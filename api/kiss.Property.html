@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="UTF-8"/>
 		<meta content="width=device-width, initial-scale=1" name="viewport"/>
-		<meta content="Explains how to use sinobu and its API. " name="description"/>
+		<meta content="Explains how to use Sinobu and its API. Sinobu is not obsolete framework but utility, which can manipulate objects as a extremely-condensed facade. This is extremely lightweight at approximately 120KB without relying on other libraries." name="description"/>
 		<link href="https://cdn.jsdelivr.net" rel="preconnect"/>
 		<link href="https://fonts.googleapis.com" rel="preconnect"/>
 		<link crossorigin="null" href="https://fonts.gstatic.com" rel="preconnect"/>
@@ -13,16 +13,16 @@
 		<link href="https://fonts.googleapis.com/css2?display=swap&amp;family=Material+Icons" media="print" onload="this.media=&apos;all&apos;" rel="stylesheet"/>
 		<link as="style" fetchpriority="high" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Vollkorn" rel="preload"/>
 		<link href="https://fonts.googleapis.com/css2?display=swap&amp;family=Vollkorn" media="print" onload="this.media=&apos;all&apos;" rel="stylesheet"/>
-		<title>sinobu API</title>
+		<title>Sinobu API</title>
 		<base href="../"/>
 		<script src="mimic.js" type="module"></script>
 		<link href="https://cdn.jsdelivr.net/npm/ress@4.0.0/dist/ress.min.css" rel="stylesheet"/>
 		<link href="main.css" rel="stylesheet"/>
 	</head>
-	<body class="W">
-		<header class="X" date="2025-06-02">
-			<h1 class="n"><a href="index.html"><code>sinobu</code></a></h1>
-			<nav class="HB"><a href="doc/sinobu.Manual.Introduction.html" id="Manual"><svg class="text">
+	<body class="m">
+		<header class="h" date="2025-06-02">
+			<h1 class="i"><a href="index.html"><code>Sinobu</code></a></h1>
+			<nav class="e"><a href="doc/sinobu.Manual.Introduction.html" id="Manual"><svg class="text">
 						<use href="main.svg#text"/>
 					</svg>
 				</a><a href="api/main.html" id="API"><svg class="package">
@@ -38,68 +38,68 @@
 						<use href="main.svg#github"/>
 					</svg>
 				</a></nav>
-			<div class="O"><a aria-label="Change color scheme" id="theme"><svg class="sun">
+			<div class="j"><a aria-label="Change color scheme" id="theme"><svg class="sun">
 						<use href="main.svg#sun"/>
 					</svg><svg class="moon">
 						<use href="main.svg#moon"/>
 					</svg>
 				</a></div>
 		</header>
-		<nav class="a"></nav>
-		<article class="Y" id="Article">
-			<section class="BB"><code class="y">kiss</code>
-				<h2 class="Class b"><code class="DB">Property</code></h2>
-				<div class="K"></div><span class="A"><p>This class represents a property of object model.</p><p>
+		<nav class="T"></nav>
+		<article class="b" id="Article">
+			<section class="y"><code class="p">kiss</code>
+				<h2 class="Class AB"><code class="GB">Property</code></h2>
+				<div class="l"></div><span class="A"><p>This class represents a property of object model.</p><p>
  Note: Care should be exercised if <code><a aria-label="kiss.Property" href="api/kiss.Property.html">Property</a></code> objects are used as keys in a
  <code><a aria-label="java.util.SortedMap 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/SortedMap.html">java.util.SortedMap</a></code> or elements in a <code><a aria-label="java.util.SortedSet 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/SortedSet.html">java.util.SortedSet</a></code> since Property&apos;s natural
  ordering is inconsistent with equals. See <code><a aria-label="java.lang.Comparable 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Comparable.html">Comparable</a></code>, <code><a aria-label="java.util.SortedMap 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/SortedMap.html">java.util.SortedMap</a></code> or
  <code><a aria-label="java.util.SortedSet 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/SortedSet.html">java.util.SortedSet</a></code> for more information.
 </p>
 				</span></section>
-			<section class="BB" id="model">
-				<h2 class="EB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="DB">model</code><i class="M"><code class="return"><a aria-label="kiss.Model" href="api/kiss.Model.html">Model</a></code></i></h2><span class="A"><p>The associated object model with this <code><a aria-label="kiss.Property" href="api/kiss.Property.html">Property</a></code>.</p></span></section>
-			<section class="BB" id="name">
-				<h2 class="EB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="DB">name</code><i class="M"><code class="return"><a aria-label="java.lang.String 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html">String</a></code></i></h2><span class="A"><p>The human-readable identifier of this <code><a aria-label="kiss.Property" href="api/kiss.Property.html">Property</a></code>.</p></span></section>
-			<section class="BB" id="transitory">
-				<h2 class="EB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="DB">transitory</code><i class="M"><code class="return">boolean</code></i></h2><span class="A"><p>Whether this <code><a aria-label="kiss.Property" href="api/kiss.Property.html">Property</a></code> is transient or not.</p></span></section>
-			<section class="BB" id="getter">
-				<h2 class="EB"><i class="PUBLIC"></i><code class="DB">getter</code><i class="M"><code class="return"><a aria-label="kiss.WiseFunction" href="api/kiss.WiseFunction.html">WiseFunction</a></code></i></h2><span class="A"><p>The property accessor.</p></span></section>
-			<section class="BB" id="setter">
-				<h2 class="EB"><i class="PUBLIC"></i><code class="DB">setter</code><i class="M"><code class="return"><a aria-label="kiss.WiseBiFunction" href="api/kiss.WiseBiFunction.html">WiseBiFunction</a></code></i></h2><span class="A"><p>The property accessor.</p></span></section>
-			<section class="BB" id="Property(kiss.Model,java.lang.String,java.lang.Object)">
-				<h2 class="EB"><i class="PUBLIC"></i><code class="DB">Property</code><code class="U">(<code><a aria-label="kiss.Model" href="api/kiss.Model.html">Model</a></code><code class="parameterName">model</code>, <code><a aria-label="java.lang.String 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html">String</a></code><code class="parameterName">name</code>, <code>M</code><code class="parameterName">mem</code>)</code></h2>
-				<table class="GB">
-					<tr class="Q">
+			<section class="y" id="model">
+				<h2 class="O"><i class="FINAL"><i class="PUBLIC"></i></i><code class="GB">model</code><i class="S"><code class="return"><a aria-label="kiss.Model" href="api/kiss.Model.html">Model</a></code></i></h2><span class="A"><p>The associated object model with this <code><a aria-label="kiss.Property" href="api/kiss.Property.html">Property</a></code>.</p></span></section>
+			<section class="y" id="name">
+				<h2 class="O"><i class="FINAL"><i class="PUBLIC"></i></i><code class="GB">name</code><i class="S"><code class="return"><a aria-label="java.lang.String 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html">String</a></code></i></h2><span class="A"><p>The human-readable identifier of this <code><a aria-label="kiss.Property" href="api/kiss.Property.html">Property</a></code>.</p></span></section>
+			<section class="y" id="transitory">
+				<h2 class="O"><i class="FINAL"><i class="PUBLIC"></i></i><code class="GB">transitory</code><i class="S"><code class="return">boolean</code></i></h2><span class="A"><p>Whether this <code><a aria-label="kiss.Property" href="api/kiss.Property.html">Property</a></code> is transient or not.</p></span></section>
+			<section class="y" id="getter">
+				<h2 class="O"><i class="PUBLIC"></i><code class="GB">getter</code><i class="S"><code class="return"><a aria-label="kiss.WiseFunction" href="api/kiss.WiseFunction.html">WiseFunction</a></code></i></h2><span class="A"><p>The property accessor.</p></span></section>
+			<section class="y" id="setter">
+				<h2 class="O"><i class="PUBLIC"></i><code class="GB">setter</code><i class="S"><code class="return"><a aria-label="kiss.WiseBiFunction" href="api/kiss.WiseBiFunction.html">WiseBiFunction</a></code></i></h2><span class="A"><p>The property accessor.</p></span></section>
+			<section class="y" id="Property(kiss.Model,java.lang.String,java.lang.Object)">
+				<h2 class="O"><i class="PUBLIC"></i><code class="GB">Property</code><code class="g">(<code><a aria-label="kiss.Model" href="api/kiss.Model.html">Model</a></code><code class="parameterName">model</code>, <code><a aria-label="java.lang.String 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html">String</a></code><code class="parameterName">name</code>, <code>M</code><code class="parameterName">mem</code>)</code></h2>
+				<table class="BB">
+					<tr class="v">
 						<td><code>M</code><code class="extends"><code><a aria-label="java.lang.reflect.AccessibleObject 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/reflect/AccessibleObject.html">AccessibleObject</a></code> &amp; <code><a aria-label="java.lang.reflect.Member 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/reflect/Member.html">Member</a></code></code></td>
 						<td></td>
 					</tr>
-					<tr class="z">
+					<tr class="M">
 						<td><code><a aria-label="kiss.Model" href="api/kiss.Model.html">Model</a></code><code class="parameterName">model</code></td>
 						<td><span><p>A model that this property belongs to.</p></span></td>
 					</tr>
-					<tr class="z">
+					<tr class="M">
 						<td><code><a aria-label="java.lang.String 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html">String</a></code><code class="parameterName">name</code></td>
 						<td><span><p>A property name.</p></span></td>
 					</tr>
-					<tr class="z">
+					<tr class="M">
 						<td><code>M</code><code class="parameterName">mem</code></td>
 						<td><span><p>An associated member (filed or method).</p></span></td>
 					</tr>
 				</table><span class="A"><p>Create a property.</p></span></section>
 		</article>
 		<aside class="V">
-			<div class="J">
-				<h5 class="N">Constructors</h5>
+			<div class="HB">
+				<h5 class="d">Constructors</h5>
 				<ul>
-					<li class="AB"><i class="PUBLIC"></i><code><a href="api/kiss.Property.html#Property(kiss.Model,java.lang.String,java.lang.Object)">Property</a></code><code class="U">(<code><a aria-label="kiss.Model" href="api/kiss.Model.html">Model</a></code><code class="parameterName">model</code>, <code><a aria-label="java.lang.String 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html">String</a></code><code class="parameterName">name</code>, <code>M</code><code class="parameterName">mem</code>)</code></li>
+					<li class="U"><i class="PUBLIC"></i><code><a href="api/kiss.Property.html#Property(kiss.Model,java.lang.String,java.lang.Object)">Property</a></code><code class="g">(<code><a aria-label="kiss.Model" href="api/kiss.Model.html">Model</a></code><code class="parameterName">model</code>, <code><a aria-label="java.lang.String 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html">String</a></code><code class="parameterName">name</code>, <code>M</code><code class="parameterName">mem</code>)</code></li>
 				</ul>
-				<h5 class="N">Fields</h5>
+				<h5 class="d">Fields</h5>
 				<ul>
-					<li class="AB"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Property.html#model">model</a></code><i class="o"><code class="return"><a aria-label="kiss.Model" href="api/kiss.Model.html">Model</a></code></i></li>
-					<li class="AB"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Property.html#name">name</a></code><i class="o"><code class="return"><a aria-label="java.lang.String 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html">String</a></code></i></li>
-					<li class="AB"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Property.html#transitory">transitory</a></code><i class="o"><code class="return">boolean</code></i></li>
-					<li class="AB"><i class="PUBLIC"></i><code><a href="api/kiss.Property.html#getter">getter</a></code><i class="o"><code class="return"><a aria-label="kiss.WiseFunction" href="api/kiss.WiseFunction.html">WiseFunction</a></code></i></li>
-					<li class="AB"><i class="PUBLIC"></i><code><a href="api/kiss.Property.html#setter">setter</a></code><i class="o"><code class="return"><a aria-label="kiss.WiseBiFunction" href="api/kiss.WiseBiFunction.html">WiseBiFunction</a></code></i></li>
+					<li class="U"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Property.html#model">model</a></code><i class="x"><code class="return"><a aria-label="kiss.Model" href="api/kiss.Model.html">Model</a></code></i></li>
+					<li class="U"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Property.html#name">name</a></code><i class="x"><code class="return"><a aria-label="java.lang.String 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html">String</a></code></i></li>
+					<li class="U"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Property.html#transitory">transitory</a></code><i class="x"><code class="return">boolean</code></i></li>
+					<li class="U"><i class="PUBLIC"></i><code><a href="api/kiss.Property.html#getter">getter</a></code><i class="x"><code class="return"><a aria-label="kiss.WiseFunction" href="api/kiss.WiseFunction.html">WiseFunction</a></code></i></li>
+					<li class="U"><i class="PUBLIC"></i><code><a href="api/kiss.Property.html#setter">setter</a></code><i class="x"><code class="return"><a aria-label="kiss.WiseBiFunction" href="api/kiss.WiseBiFunction.html">WiseBiFunction</a></code></i></li>
 				</ul>
 			</div>
 		</aside>
