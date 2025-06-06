@@ -19,10 +19,10 @@
 		<link href="https://cdn.jsdelivr.net/npm/ress@4.0.0/dist/ress.min.css" rel="stylesheet"/>
 		<link href="main.css" rel="stylesheet"/>
 	</head>
-	<body class="T">
-		<header class="U" date="2025-06-02">
-			<h1 class="O"><a href="index.html"><code>Sinobu</code></a></h1>
-			<nav class="S"><a href="doc/sinobu.Manual.Introduction.html" id="Manual"><svg class="text">
+	<body class="w">
+		<header class="c" date="2025-06-02">
+			<h1 class="d"><a href="index.html"><code>Sinobu</code></a></h1>
+			<nav class="e"><a href="doc/sinobu.Manual.Introduction.html" id="Manual"><svg class="text">
 						<use href="main.svg#text"/>
 					</svg>
 				</a><a href="api/main.html" id="API"><svg class="package">
@@ -38,34 +38,34 @@
 						<use href="main.svg#github"/>
 					</svg>
 				</a></nav>
-			<div class="P"><a aria-label="Change color scheme" id="theme"><svg class="sun">
+			<div class="f"><a aria-label="Change color scheme" id="theme"><svg class="sun">
 						<use href="main.svg#sun"/>
 					</svg><svg class="moon">
 						<use href="main.svg#moon"/>
 					</svg>
 				</a></div>
 		</header>
-		<nav class="X"></nav>
-		<article class="V" id="Article">
-			<div class="HB">
+		<nav class="q"></nav>
+		<article class="r" id="Article">
+			<div class="O">
 				<section class="A" id="sinobu.Manual.Lifestyle_Management.Concept">
-					<header class="A v">
+					<header class="A g">
 						<h2>Concept</h2>
-						<div class="DB"><span class="perp Z"><svg class="copy">
+						<div class="Z"><span class="perp GB"><svg class="copy">
 									<use href="main.svg#copy"/>
 								</svg>
-							</span><a class="tweet Z"><svg class="twitter">
+							</span><a class="tweet GB"><svg class="twitter">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit Z" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L191-L193"><svg class="edit">
+							</a><a class="edit GB" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L191-L193"><svg class="edit">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
 					</header><span class="A"><p>In Sinobu, lifestyle refers to the way an object is created and managed, corresponding to
 the scope in terms of DI containers such as SpringFramework and Guice, but without the
 process of registering with the container or destroying the object.</p></span></section>
-				<section class="A BB" id="sinobu.Manual.Lifestyle_Management.Concept.Creating_an_object">
-					<header class="A J">
+				<section class="A CB" id="sinobu.Manual.Lifestyle_Management.Concept.Creating_an_object">
+					<header class="A p">
 						<h3 icon="📄">Creating an object</h3>
 					</header><span class="A"><p>In Java, it is common to use the new operator on the constructor to create a new
 object. In many cases, this is sufficient, but in the following situations, it is a
@@ -86,17 +86,17 @@ shows the creation of an object using DI container.</p><pre class="lang-java"><c
 only one global container in the JVM, and that object cannot be accessed directly. In
 order to create an object from a container, we need to call <code><a aria-label="kiss.I" href="api/kiss.I.html#make(java.lang.Class)">I#make(Class)</a></code>.</p></span></section>
 			</div>
-			<div class="HB">
+			<div class="O">
 				<section class="A" id="sinobu.Manual.Lifestyle_Management.Defining_lifestyle">
-					<header class="A v">
+					<header class="A g">
 						<h2>Defining lifestyle</h2>
-						<div class="DB"><span class="perp Z"><svg class="copy">
+						<div class="Z"><span class="perp GB"><svg class="copy">
 									<use href="main.svg#copy"/>
 								</svg>
-							</span><a class="tweet Z"><svg class="twitter">
+							</span><a class="tweet GB"><svg class="twitter">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit Z" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L230-L239"><svg class="edit">
+							</a><a class="edit GB" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L230-L239"><svg class="edit">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
@@ -108,8 +108,8 @@ type. It makes the following 3 decisions:</p><ol>
 							<li>How to manage the instances.</li>
 						</ol><p>Sinobu defines two lifestyles that are frequently used. One is the prototype pattern and
 the other is the singleton pattern.</p></span></section>
-				<section class="A BB" id="sinobu.Manual.Lifestyle_Management.Defining_lifestyle.Prototype">
-					<header class="A J">
+				<section class="A CB" id="sinobu.Manual.Lifestyle_Management.Defining_lifestyle.Prototype">
+					<header class="A p">
 						<h3 icon="📄">Prototype</h3>
 					</header><span class="A"><p>The default lifestyle is Prototype, it creates a new instance on demand. This is
 applied automatically and you have to configure nothing.</p><pre class="lang-java"><code>public void prototype() {
@@ -120,8 +120,8 @@ applied automatically and you have to configure nothing.</p><pre class="lang-jav
     Tweet other = I.make(Tweet.class);
     assert one != other; // two different instances
 }</code></pre></span></section>
-				<section class="A BB" id="sinobu.Manual.Lifestyle_Management.Defining_lifestyle.Singleton">
-					<header class="A J">
+				<section class="A CB" id="sinobu.Manual.Lifestyle_Management.Defining_lifestyle.Singleton">
+					<header class="A p">
 						<h3 icon="📄">Singleton</h3>
 					</header><span class="A"><p>The other is the singleton lifestyle, which keeps a single instance in the JVM and
 always returns it. This time, the lifestyle is applied with annotations when defining
@@ -134,8 +134,8 @@ the class.</p><pre class="lang-java"><code>public void singleton() {
     Tweet other = I.make(Tweet.class);
     assert one == other; // same instance
 }</code></pre></span></section>
-				<section class="A BB" id="sinobu.Manual.Lifestyle_Management.Defining_lifestyle.Custom_lifestyle">
-					<header class="A J">
+				<section class="A CB" id="sinobu.Manual.Lifestyle_Management.Defining_lifestyle.Custom_lifestyle">
+					<header class="A p">
 						<h3 icon="📄">Custom lifestyle</h3>
 					</header><span class="A"><p>You can also implement lifestyles tied to specific contexts. Custom class requires to
 implement the Lifestyle interface and receive the requested type in the constructor.
@@ -169,8 +169,8 @@ can use any instantiation technique.</p><pre class="lang-java"><code>class PerTh
         assert user1 != user3; // different
     }).start();
 }</code></pre></span></section>
-				<section class="A BB" id="sinobu.Manual.Lifestyle_Management.Defining_lifestyle.Builtin_lifestyles">
-					<header class="A J">
+				<section class="A CB" id="sinobu.Manual.Lifestyle_Management.Defining_lifestyle.Builtin_lifestyles">
+					<header class="A p">
 						<h3 icon="📄">Builtin lifestyles</h3>
 					</header><span class="A"><p>Sinobu has built-in defined lifestyles for specific types.</p><ul>
 							<li><code><a aria-label="java.util.List 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/List.html">List</a></code> - Create new instance each time. (<code><a aria-label="java.util.ArrayList 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/ArrayList.html">ArrayList</a></code>)</li>
@@ -180,31 +180,31 @@ can use any instantiation technique.</p><pre class="lang-java"><code>class PerTh
 <code><a aria-label="java.util.Locale 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/Locale.html#getDefault()">Locale#getDefault()</a></code>.</li>
 						</ul></span></section>
 			</div>
-			<div class="HB">
+			<div class="O">
 				<section class="A" id="sinobu.Manual.Lifestyle_Management.Applying_lifestyle">
-					<header class="A v">
+					<header class="A g">
 						<h2>Applying lifestyle</h2>
-						<div class="DB"><span class="perp Z"><svg class="copy">
+						<div class="Z"><span class="perp GB"><svg class="copy">
 									<use href="main.svg#copy"/>
 								</svg>
-							</span><a class="tweet Z"><svg class="twitter">
+							</span><a class="tweet GB"><svg class="twitter">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit Z" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L321-L322"><svg class="edit">
+							</a><a class="edit GB" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L321-L322"><svg class="edit">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
 					</header><span class="A"><p>To apply a non-prototype lifestyle, you need to configure each class individually. There
 are two ways to do this.</p></span></section>
-				<section class="A BB" id="sinobu.Manual.Lifestyle_Management.Applying_lifestyle.Use_Managed_annotation">
-					<header class="A J">
+				<section class="A CB" id="sinobu.Manual.Lifestyle_Management.Applying_lifestyle.Use_Managed_annotation">
+					<header class="A p">
 						<h3 icon="📄">Use Managed annotation</h3>
 					</header><span class="A"><p>One is to use <code><a aria-label="kiss.Managed" href="api/kiss.Managed.html">Managed</a></code> annotation. This method is useful if you want to apply
 lifestyle to classes that are under your control.</p><pre class="lang-java"><code>@Managed(Singleton.class)
 class UnderYourControl {
 }</code></pre></span></section>
-				<section class="A BB" id="sinobu.Manual.Lifestyle_Management.Applying_lifestyle.Use_Lifestyle_extension">
-					<header class="A J">
+				<section class="A CB" id="sinobu.Manual.Lifestyle_Management.Applying_lifestyle.Use_Lifestyle_extension">
+					<header class="A p">
 						<h3 icon="📄">Use Lifestyle extension</h3>
 					</header><span class="A"><p>Another is to load the Lifestyle implementation. Sinobu has a wide variety of
 extension points, and Lifestyle is one of them. This method is useful if you want to
@@ -219,17 +219,17 @@ apply lifestyle to classes that are not under your control.</p><pre class="lang-
     I.load(GlobalThreadPool.class);
 }</code></pre></span></section>
 			</div>
-			<div class="KB"><a class="CB g" href="doc/sinobu.Manual.Introduction.html">Introduction</a><a class="CB FB" href="doc/sinobu.Manual.Dependency_Injection.html">Dependency Injection</a></div>
+			<div class="AB"><a class="k b" href="doc/sinobu.Manual.Introduction.html">Introduction</a><a class="k U" href="doc/sinobu.Manual.Dependency_Injection.html">Dependency Injection</a></div>
 		</article>
-		<aside class="Y">
-			<div class="M">
+		<aside class="R">
+			<div class="z">
 				<h5>Help improve document</h5>
 				<p>View this page on <a href="https://github.com/teletha/sinobu/blob/master/src/test/java/sinobu/Manual.java#L191">GitHub</a></p>
 				<p>Report a problem <a href="https://github.com/teletha/sinobu/issues/new?title=Improve document on sinobu.Manual.Lifestyle_Management&amp;labels=documentation,enhancement&amp;body=%23%23+What+specific+section+or+headline+is+this+issue+about%3F%0A%0A%0A%0A%23%23+What+information+was+incorrect%2C+unhelpful%2C+or+incomplete%3F%0A%0A%0A%0A%23%23+What+did+you+expect+to+see%3F%0A">with this page</a></p>
 			</div>
-			<p class="M">View in <a href="doc/one.html#sinobu.Manual.Lifestyle_Management.Concept">onepager</a></p>
+			<p class="z">View in <a href="doc/one.html#sinobu.Manual.Lifestyle_Management.Concept">onepager</a></p>
 		</aside>
-		<footer class="W">
+		<footer class="x">
 			<p>Powered by <a href="https://github.com/teletha/evergarden" target="_">Evergarden</a></p>
 		</footer>
 	</body>
