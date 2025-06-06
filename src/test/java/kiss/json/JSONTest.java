@@ -163,6 +163,41 @@ class JSONTest {
     }
 
     @Test
+    void listObject() {
+        class Persons {
+            public List<Person> list = new ArrayList();
+        }
+
+        Persons persons = new Persons();
+        persons.list.add(person("Ami", 22));
+        persons.list.add(person("Kei", 24));
+
+        validate(persons, """
+                {
+                  'list': [
+                    {
+                      'age': 22,
+                      'firstName': 'Ami',
+                      'lastName': null
+                    },
+                    {
+                      'age': 24,
+                      'firstName': 'Kei',
+                      'lastName': null
+                    }
+                  ]
+                }""");
+    }
+
+    private Person person(String name, int age) {
+        Person p = new Person();
+        p.setFirstName(name);
+        p.setAge(age);
+
+        return p;
+    }
+
+    @Test
     void listNull() {
         List<String> list = new ArrayList();
         list.add(null);
