@@ -19,10 +19,10 @@
 		<link href="https://cdn.jsdelivr.net/npm/ress@4.0.0/dist/ress.min.css" rel="stylesheet"/>
 		<link href="main.css" rel="stylesheet"/>
 	</head>
-	<body class="m">
-		<header class="h" date="2025-06-02">
-			<h1 class="i"><a href="index.html"><code>Sinobu</code></a></h1>
-			<nav class="e"><a href="doc/sinobu.Manual.Introduction.html" id="Manual"><svg class="text">
+	<body class="z">
+		<header class="K" date="2025-06-02">
+			<h1 class="L"><a href="index.html"><code>Sinobu</code></a></h1>
+			<nav class="M"><a href="doc/sinobu.Manual.Introduction.html" id="Manual"><svg class="text">
 						<use href="main.svg#text"/>
 					</svg>
 				</a><a href="api/main.html" id="API"><svg class="package">
@@ -38,26 +38,26 @@
 						<use href="main.svg#github"/>
 					</svg>
 				</a></nav>
-			<div class="j"><a aria-label="Change color scheme" id="theme"><svg class="sun">
+			<div class="N"><a aria-label="Change color scheme" id="theme"><svg class="sun">
 						<use href="main.svg#sun"/>
 					</svg><svg class="moon">
 						<use href="main.svg#moon"/>
 					</svg>
 				</a></div>
 		</header>
-		<nav class="T"></nav>
-		<article class="b" id="Article">
-			<div class="y">
+		<nav class="J"></nav>
+		<article class="Z" id="Article">
+			<div class="JB">
 				<section class="A" id="sinobu.Manual.Dependency_Injection.Concept">
-					<header class="A Q">
+					<header class="A GB">
 						<h2>Concept</h2>
-						<div class="t"><span class="perp KB"><svg class="copy">
+						<div class="s"><span class="perp AB"><svg class="copy">
 									<use href="main.svg#copy"/>
 								</svg>
-							</span><a class="tweet KB"><svg class="twitter">
+							</span><a class="tweet AB"><svg class="twitter">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit KB" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L367-L376"><svg class="edit">
+							</a><a class="edit AB" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L367-L376"><svg class="edit">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
@@ -69,15 +69,15 @@ layered architecture.
 having to work hard manually.</p><p>In modern Java application development, DI is an almost indispensable mechanism.
 The detailed explanation of the DI concept is left to <a href="https://en.wikipedia.org/wiki/Dependency_injection">another
 website</a>.</p></span></section>
-				<section class="A q" id="sinobu.Manual.Dependency_Injection.Concept.DI_Container">
-					<header class="A R">
+				<section class="A S" id="sinobu.Manual.Dependency_Injection.Concept.DI_Container">
+					<header class="A HB">
 						<h3 icon="📄">DI Container</h3>
 					</header><span class="A"><p>Unlike other DI frameworks, there is no explicit DI container in Sinobu. It has only
 one container implicitly inside, but the user is not aware of it. Therefore, there is
 also no need to define dependencies explicitly by means of code or external files.
 All dependencies are automatically resolved based on type.</p></span></section>
-				<section class="A q" id="sinobu.Manual.Dependency_Injection.Concept.Injection_Type">
-					<header class="A R">
+				<section class="A S" id="sinobu.Manual.Dependency_Injection.Concept.Injection_Type">
+					<header class="A HB">
 						<h3 icon="📄">Injection Type</h3>
 					</header><span class="A"><p>Commonly, there are four main types in which a client can receive injected services.</p><ul>
 							<li>Constructor injection, where dependencies are provided through a client&apos;s class
@@ -91,17 +91,17 @@ that will inject the dependency into any client passed to it.</li>
 Other forms of injection are intentionally not supported, as they compromise object
 safety and are unlikely to be supported in the future.</p></span></section>
 			</div>
-			<div class="y">
+			<div class="JB">
 				<section class="A" id="sinobu.Manual.Dependency_Injection.Constructor_Injection">
-					<header class="A Q">
+					<header class="A GB">
 						<h2>Constructor Injection</h2>
-						<div class="t"><span class="perp KB"><svg class="copy">
+						<div class="s"><span class="perp AB"><svg class="copy">
 									<use href="main.svg#copy"/>
 								</svg>
-							</span><a class="tweet KB"><svg class="twitter">
+							</span><a class="tweet AB"><svg class="twitter">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit KB" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L410-L414"><svg class="edit">
+							</a><a class="edit AB" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L410-L414"><svg class="edit">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
@@ -121,8 +121,8 @@ state, since it cannot be instantiated without its necessary dependencies.</p><p
 
     assert I.make(Injection.class).value != null;
 }</code></pre></span></section>
-				<section class="A q" id="sinobu.Manual.Dependency_Injection.Constructor_Injection.Injectable_Type">
-					<header class="A R">
+				<section class="A S" id="sinobu.Manual.Dependency_Injection.Constructor_Injection.Injectable_Type">
+					<header class="A HB">
 						<h3 icon="📄">Injectable Type</h3>
 					</header><span class="A"><p>Any type can be injectable, but there are a few types that receive special treatment.</p><ul>
 							<li>Primitives - A default value (0 for int, false for boolean) is assigned.</li>
@@ -173,8 +173,8 @@ available when implementing the special generic <code><a aria-label="kiss.Lifest
 
     assert I.make(Injection.class).type == null;
 }</code></pre></span></section>
-				<section class="A q" id="sinobu.Manual.Dependency_Injection.Constructor_Injection.Priority">
-					<header class="A R">
+				<section class="A S" id="sinobu.Manual.Dependency_Injection.Constructor_Injection.Priority">
+					<header class="A HB">
 						<h3 icon="📄">Priority</h3>
 					</header><span class="A"><p>If only one constructor is defined for the class being injected, it is used. If more
 than one constructor is defined, it must detect which constructor is to be used.</p><p>The constructor with the <code><a aria-label="kiss.Managed" href="api/kiss.Managed.html">Managed</a></code> annotation has the highest priority.</p><pre class="lang-java"><code>public void priorityManaged() {
@@ -248,8 +248,8 @@ constructor found among them is used. (which is implementation-dependent in the 
 
     assert I.make(Injection.class).value == 10;
 }</code></pre></span></section>
-				<section class="A q" id="sinobu.Manual.Dependency_Injection.Constructor_Injection.Circular_Reference">
-					<header class="A R">
+				<section class="A S" id="sinobu.Manual.Dependency_Injection.Constructor_Injection.Circular_Reference">
+					<header class="A HB">
 						<h3 icon="📄">Circular Reference</h3>
 					</header><span class="A"><p>One of the problems with constructor injection is that it cannot resolve circular
 dependencies. To partially solve this problem, Sinobu provides a delayed dependency
@@ -276,17 +276,17 @@ not possible, an error will occur.</p><pre class="lang-java"><code>public static
     assert circularB.other != null;
 }</code></pre></span></section>
 			</div>
-			<div class="J"><a class="k K" href="doc/sinobu.Manual.Lifestyle_Management.html">Lifestyle Management</a><a class="k L" href="doc/sinobu.Manual.Object_Modeling.html">Object Modeling</a></div>
+			<div class="g"><a class="U O" href="doc/sinobu.Manual.Lifestyle_Management.html">Lifestyle Management</a><a class="U h" href="doc/sinobu.Manual.Object_Modeling.html">Object Modeling</a></div>
 		</article>
-		<aside class="V">
-			<div class="Y">
+		<aside class="j">
+			<div class="n">
 				<h5>Help improve document</h5>
 				<p>View this page on <a href="https://github.com/teletha/sinobu/blob/master/src/test/java/sinobu/Manual.java#L367">GitHub</a></p>
 				<p>Report a problem <a href="https://github.com/teletha/sinobu/issues/new?title=Improve document on sinobu.Manual.Dependency_Injection&amp;labels=documentation,enhancement&amp;body=%23%23+What+specific+section+or+headline+is+this+issue+about%3F%0A%0A%0A%0A%23%23+What+information+was+incorrect%2C+unhelpful%2C+or+incomplete%3F%0A%0A%0A%0A%23%23+What+did+you+expect+to+see%3F%0A">with this page</a></p>
 			</div>
-			<p class="Y">View in <a href="doc/one.html#sinobu.Manual.Dependency_Injection.Concept">onepager</a></p>
+			<p class="n">View in <a href="doc/one.html#sinobu.Manual.Dependency_Injection.Concept">onepager</a></p>
 		</aside>
-		<footer class="Z">
+		<footer class="y">
 			<p>Powered by <a href="https://github.com/teletha/evergarden" target="_">Evergarden</a></p>
 		</footer>
 	</body>
