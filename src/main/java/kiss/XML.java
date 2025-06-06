@@ -34,6 +34,7 @@ import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Element;
+import org.w3c.dom.ElementTraversal;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -657,7 +658,17 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      * @return A new {@code XML} object containing the first child element of each matched element.
      */
     public final XML firstChild() {
-        return find(">*:first-child");
+        // don't use the following codes because of performance
+        // return find("> *::first-child");
+        List<Node> list = new ArrayList();
+
+        for (Node node : nodes) {
+            Element e = ((ElementTraversal) node).getFirstElementChild();
+            if (e != null) {
+                list.add(e);
+            }
+        }
+        return new XML(doc, list);
     }
 
     /**
@@ -668,7 +679,17 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      * @return A new {@code XML} object containing the last child element of each matched element.
      */
     public final XML lastChild() {
-        return find(">*:last-child");
+        // don't use the following codes because of performance
+        // return find("> *::last-child");
+        List<Node> list = new ArrayList();
+
+        for (Node node : nodes) {
+            Element e = ((ElementTraversal) node).getLastElementChild();
+            if (e != null) {
+                list.add(e);
+            }
+        }
+        return new XML(doc, list);
     }
 
     /**
@@ -684,7 +705,6 @@ public class XML implements Iterable<XML>, Consumer<XML> {
 
         for (Node node : nodes) {
             Node p = node.getParentNode();
-
             if (p != null) {
                 list.addIfAbsent(p instanceof Element ? p : node);
             }
@@ -714,7 +734,17 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      *         element.
      */
     public final XML prev() {
-        return find("<*");
+        // don't use the following codes because of performance
+        // return find("<*");
+        List<Node> list = new ArrayList();
+
+        for (Node node : nodes) {
+            Element e = ((ElementTraversal) node).getPreviousElementSibling();
+            if (e != null) {
+                list.add(e);
+            }
+        }
+        return new XML(doc, list);
     }
 
     /**
@@ -737,7 +767,17 @@ public class XML implements Iterable<XML>, Consumer<XML> {
      * @return A new {@code XML} object containing the next sibling element of each matched element.
      */
     public final XML next() {
-        return find("+*");
+        // don't use the following codes because of performance
+        // return find("+*");
+        List<Node> list = new ArrayList();
+
+        for (Node node : nodes) {
+            Element e = ((ElementTraversal) node).getNextElementSibling();
+            if (e != null) {
+                list.add(e);
+            }
+        }
+        return new XML(doc, list);
     }
 
     /**
