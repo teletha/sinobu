@@ -493,11 +493,17 @@ public class JSON implements Serializable {
             if (model == null) {
                 ((Map) object).put(name, value(null));
             } else {
-                Property p = model.property(name);
-                if (p.model.atomic) {
-                    model.set(object, p, p.model.decoder.decode((String) value(p.model)));
+                if (name.equals("#")) {
+                    Class impl = I.type((String) value(null));
+                    model = Model.of(impl);
+                    object = I.make(model.type);
                 } else {
-                    model.set(object, p, value(p.model));
+                    Property p = model.property(name);
+                    Object value = value(p.model);
+                    if (value != null && p.model.atomic && p.model.type != String.class) {
+                        value = p.model.decoder.decode((String) value);
+                    }
+                    object = model.set(object, p, value);
                 }
             }
         } while (readSeparator('}'));
@@ -750,6 +756,7 @@ public class JSON implements Serializable {
     void write(Model model, Property property, Object value) {
         if (!property.transitory && property.name != null) {
             try {
+
                 // non-first properties requires separator
                 if (index++ != 0) out.append(',');
 
@@ -758,7 +765,7 @@ public class JSON implements Serializable {
                     out.append('\n').append("\t".repeat(fill)); // indent
 
                     // property key (List node doesn't need key)
-                    if (model.type != List.class) {
+                    if (!List.class.isAssignableFrom(model.type)) {
                         write(property.name, String.class);
                         out.append(": ");
                     }
@@ -774,7 +781,8 @@ public class JSON implements Serializable {
 
                     JSON walker = new JSON(out);
                     walker.fill = fill + 1;
-                    out.append(property.model.type == List.class ? '[' : '{');
+
+                    out.append(List.class.isAssignableFrom(property.model.type) ? '[' : '{');
                     Model<Object> m = property.model;
                     if ((m.type.getModifiers() & Modifier.ABSTRACT) != 0 && m.getClass() == Model.class) {
                         m = Model.of(value);
@@ -782,7 +790,7 @@ public class JSON implements Serializable {
                     }
                     m.walk(value, walker::write);
                     if (walker.index != 0) out.append('\n').append("\t".repeat(fill)); // indent
-                    out.append(property.model.type == List.class ? ']' : '}');
+                    out.append(List.class.isAssignableFrom(property.model.type) ? ']' : '}');
                 }
             } catch (IOException e) {
                 throw I.quiet(e);

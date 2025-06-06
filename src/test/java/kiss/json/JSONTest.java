@@ -62,14 +62,12 @@ class JSONTest {
         Person person = new Person();
         person.setAge(20);
 
-        // @formatter:off
-        validate(person,
-        "{",
-        "  'age': 20,",
-        "  'firstName': null,",
-        "  'lastName': null",
-        "}");
-        // @formatter:on
+        validate(person, """
+                {
+                  "age": 20,
+                  "firstName": null,
+                  "lastName": null
+                }""");
     }
 
     @Test
@@ -431,6 +429,62 @@ class JSONTest {
         // @formatter:on
     }
 
+    @Test
+    void recordRoot() {
+        record Person(String name, int age) {
+        }
+
+        Person person = new Person("Misa", 28);
+        validate(person, """
+                {
+                  "age": 28,
+                  "name": "Misa"
+                }""");
+    }
+
+    @Test
+    void recordInList() {
+        record Person(String name, int age) {
+        }
+
+        @SuppressWarnings("serial")
+        class Members extends ArrayList<Person> {
+        }
+
+        Members members = new Members();
+        members.add(new Person("Misa", 28));
+        members.add(new Person("Ayu", 27));
+
+        validate(members, """
+                [
+                  {
+                    "age": 28,
+                    "name": "Misa"
+                  },
+                  {
+                    "age": 27,
+                    "name": "Ayu"
+                  }
+                ]""");
+    }
+
+    @Test
+    void recordWithList() {
+        record Person(String name, List<String> nicks) {
+        }
+
+        Person person = new Person("Misa", List.of("Micha", "Mipi"));
+
+        validate(person, """
+                {
+                  "name": "Misa",
+                  "nicks": [
+                    "Micha",
+                    "Mipi"
+                  ]
+                }""");
+    }
+
     static class AnimalRef {
         public Animal animal;
     }
@@ -475,6 +529,7 @@ class JSONTest {
 
         // write and read
         validate(model, object, I.json(serialized).as(model.type));
+        validate(model, object, I.json(serialized, model.type));
     }
 
     /**
