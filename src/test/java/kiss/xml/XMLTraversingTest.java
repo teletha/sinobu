@@ -477,6 +477,127 @@ public class XMLTraversingTest {
     }
 
     /**
+     * @see XML#element(String)
+     */
+    @Test
+    public void elementFromSingleParent() {
+        String text = """
+                <root>
+                    <child1/>
+                    <child2/>
+                    <child3/>
+                </root>
+                """;
+        XML root = I.xml(text);
+
+        XML c2 = root.element("child2");
+        assert c2.size() == 1;
+        assert c2.name().equals("child2");
+    }
+
+    @Test
+    public void elementFromMultipleParents() {
+        String text = """
+                <doc>
+                    <parent1>
+                        <item/>
+                        <shared/>
+                    </parent1>
+                    <parent2>
+                        <item/>
+                        <shared/>
+                    </parent2>
+                </doc>
+                """;
+        XML parents = I.xml(text).find("parent1, parent2");
+        assert parents.size() == 2;
+
+        XML items = parents.element("item");
+        assert items.size() == 2;
+
+        List<String> names = I.signal(items).map(XML::name).toList();
+        assert names.equals(List.of("item", "item"));
+    }
+
+    @Test
+    public void elementWithNoMatchingTags() {
+        XML root = I.xml("""
+                <root>
+                    <child1/>
+                    <child2/>
+                </root>
+                """);
+
+        XML result = root.element("nonexistent");
+        assert result.size() == 0;
+    }
+
+    @Test
+    public void elementWithNestedDescendants() {
+        XML root = I.xml("""
+                <root>
+                    <a>
+                        <b>
+                            <target/>
+                        </b>
+                    </a>
+                </root>
+                """);
+
+        XML targets = root.element("target");
+        assert targets.size() == 1;
+        assert targets.name().equals("target");
+    }
+
+    @Test
+    public void elementAvoidsDuplicates() {
+        XML root = I.xml("""
+                <root>
+                    <group>
+                        <item id="1"/>
+                    </group>
+                    <group>
+                        <item id="1"/>
+                    </group>
+                </root>
+                """);
+
+        XML items = root.element("item");
+        assert items.size() == 2;
+    }
+
+    @Test
+    public void elementWithWildcard() {
+        XML root = I.xml("""
+                <root>
+                    <a/><b/><c/>
+                </root>
+                """);
+
+        XML all = root.element("*");
+        assert all.size() == 3;
+
+        List<String> names = I.signal(all).map(XML::name).toList();
+        assert names.equals(List.of("a", "b", "c"));
+    }
+
+    @Test
+    public void elementFromEmptySet() {
+        XML empty = I.xml("<root/>").find("nonexistent");
+        assert empty.size() == 0;
+
+        XML result = empty.element("child");
+        assert result.size() == 0;
+    }
+
+    @Test
+    public void elementFromParentWithOnlyText() {
+        XML root = I.xml("<root>some text</root>");
+        XML result = root.element("any");
+        assert result.size() == 0;
+    }
+
+    /**
      * @see XML#firstChild()
      */
     @Test

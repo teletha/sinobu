@@ -651,6 +651,26 @@ public class XML implements Iterable<XML>, Consumer<XML> {
     }
 
     /**
+     * Retrieves all descendant elements with the specified tag name from each element
+     * in the current set of matched elements.
+     *
+     * @param name The tag name of the elements to retrieve. A value of "*" retrieves all descendant
+     *            elements.
+     * @return A new {@code XML} object containing the matching descendant elements.
+     */
+    public final XML element(String name) {
+        CopyOnWriteArrayList<Node> list = new CopyOnWriteArrayList();
+
+        for (Node node : nodes) {
+            NodeList nodes = ((Element) node).getElementsByTagName(name);
+            for (int i = 0; i < nodes.getLength(); i++) {
+                list.addIfAbsent(nodes.item(i));
+            }
+        }
+        return new XML(doc, list);
+    }
+
+    /**
      * Get the first child element of each element in the current set of matched elements.
      * This is equivalent to {@code find(">*:first-child")}.
      * If an element in the set has no child elements, it contributes nothing to the result.
