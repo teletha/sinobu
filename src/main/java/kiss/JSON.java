@@ -479,32 +479,39 @@ public class JSON implements Serializable {
      * @throws IOException If an I/O error occurs.
      */
     private Object object(Model model) throws IOException {
-        Object object = model == null ? new HashMap() : I.make(model.type);
         readUnspace();
         if (current == '}') {
             readUnspace();
-            return object;
+            return model == null ? new HashMap() : I.make(model.type);
         }
+
+        Object object = null;
         do {
             if (current != '"') expected('"');
             String name = string();
             if (current != ':') expected(":");
             readUnspace();
+
             if (model == null) {
+                if (object == null) object = new HashMap();
                 ((Map) object).put(name, value(null));
             } else {
-                if (name.equals("#")) {
-                    Class impl = I.type((String) value(null));
-                    model = Model.of(impl);
-                    object = I.make(model.type);
-                } else {
-                    Property p = model.property(name);
-                    Object value = value(p.model);
-                    if (value != null && p.model.atomic && p.model.type != String.class) {
-                        value = p.model.decoder.decode((String) value);
+                if (object == null) {
+                    if (name.equals("#")) {
+                        model = Model.of(I.type((String) value(null)));
+                        object = I.make(model.type);
+                        continue;
+                    } else {
+                        object = I.make(model.type);
                     }
-                    object = model.set(object, p, value);
                 }
+
+                Property p = model.property(name);
+                Object value = value(p.model);
+                if (value != null && p.model.atomic && p.model.type != String.class) {
+                    value = p.model.decoder.decode((String) value);
+                }
+                object = model.set(object, p, value);
             }
         } while (readSeparator('}'));
         return object;
