@@ -36,6 +36,7 @@ import kiss.sample.bean.StringMapProperty;
 import kiss.sample.bean.Student;
 import kiss.sample.bean.TransientBean;
 
+@SuppressWarnings("serial")
 class JSONTest {
 
     @Test
@@ -57,37 +58,32 @@ class JSONTest {
 
     @Test
     void singleProperty() {
-        Person person = new Person();
-        person.setAge(20);
+        record A(int num) {
+        }
 
-        validate(person, """
+        validate(new A(20), """
                 {
-                  "age": 20,
-                  "firstName": null,
-                  "lastName": null
+                  "num": 20
                 }
                 """);
     }
 
     @Test
     void multipleProperties() {
-        Person person = new Person();
-        person.setAge(20);
-        person.setFirstName("Umi");
-        person.setLastName("Sonoda");
+        record A(int num, String name) {
+        }
 
-        validate(person, """
+        validate(new A(20, "Umi"), """
                 {
-                  "age": 20,
-                  "firstName": "Umi",
-                  "lastName": "Sonoda"
+                  "name": "Umi",
+                  "num": 20
                 }
                 """);
     }
 
     @Test
     void transientProperty() {
-        TransientBean bean = I.make(TransientBean.class);
+        TransientBean bean = new TransientBean();
         bean.field = "transient";
         bean.noneField = "serializable";
         bean.variable.set("transient");
@@ -101,14 +97,14 @@ class JSONTest {
                 """);
     }
 
-    @SuppressWarnings("unused")
     @Test
+    @SuppressWarnings("unused")
     void defaultValue() {
         class PropertyWithDefaultValue {
 
             public String value = "default";
 
-            public List<String> items = new ArrayList(Collections.singleton("default"));
+            public List<String> items = I.list("default");
         }
 
         PropertyWithDefaultValue instant = new PropertyWithDefaultValue();
@@ -135,15 +131,15 @@ class JSONTest {
     }
 
     @Test
-    void list() {
-        List<String> list = new ArrayList();
-        list.add("one");
-        list.add("two");
-        list.add("three");
-        StringListProperty strings = I.make(StringListProperty.class);
-        strings.setList(list);
+    void listStringProperty() {
+        class Some {
+            public List<String> list = new ArrayList();
+        }
 
-        validate(strings, """
+        Some instance = new Some();
+        instance.list.addAll(I.list("one", "two", "three"));
+
+        validate(instance, """
                 {
                   "list": [
                     "one",
@@ -155,77 +151,304 @@ class JSONTest {
     }
 
     @Test
-    void listObject() {
-        class Persons {
-            public List<Person> list = new ArrayList();
+    void listIntegerProperty() {
+        class Some {
+            public List<Integer> list = new ArrayList();
         }
 
-        Persons persons = new Persons();
-        persons.list.add(person("Ami", 22));
-        persons.list.add(person("Kei", 24));
+        Some instance = new Some();
+        instance.list.addAll(I.list(1, 2, 3));
 
-        validate(persons, """
+        validate(instance, """
                 {
                   "list": [
+                    1,
+                    2,
+                    3
+                  ]
+                }
+                """);
+    }
+
+    @Test
+    void listLongProperty() {
+        class Some {
+            public List<Long> list = new ArrayList();
+        }
+
+        Some instance = new Some();
+        instance.list.addAll(I.list(1L, 2L));
+
+        validate(instance, """
+                {
+                  "list": [
+                    1,
+                    2
+                  ]
+                }
+                """);
+    }
+
+    @Test
+    void listDoubleProperty() {
+        class Some {
+            public List<Double> list = new ArrayList();
+        }
+
+        Some instance = new Some();
+        instance.list.addAll(I.list(1D, 2D));
+
+        validate(instance, """
+                {
+                  "list": [
+                    1.0,
+                    2.0
+                  ]
+                }
+                """);
+    }
+
+    @Test
+    void listShortProperty() {
+        class Some {
+            public List<Short> list = new ArrayList();
+        }
+
+        Some instance = new Some();
+        instance.list.addAll(I.list((short) 1, (short) 2));
+
+        validate(instance, """
+                {
+                  "list": [
+                    1,
+                    2
+                  ]
+                }
+                """);
+    }
+
+    @Test
+    void listByteProperty() {
+        class Some {
+            public List<Byte> list = new ArrayList();
+        }
+
+        Some instance = new Some();
+        instance.list.addAll(I.list((byte) 1, (byte) 2));
+
+        validate(instance, """
+                {
+                  "list": [
+                    1,
+                    2
+                  ]
+                }
+                """);
+    }
+
+    @Test
+    void listFloatProperty() {
+        class Some {
+            public List<Float> list = new ArrayList();
+        }
+
+        Some instance = new Some();
+        instance.list.addAll(I.list(1F, 2F));
+
+        validate(instance, """
+                {
+                  "list": [
+                    1.0,
+                    2.0
+                  ]
+                }
+                """);
+    }
+
+    @Test
+    void listBooleanProperty() {
+        class Some {
+            public List<Boolean> list = new ArrayList();
+        }
+
+        Some instance = new Some();
+        instance.list.addAll(I.list(true, false));
+
+        validate(instance, """
+                {
+                  "list": [
+                    true,
+                    false
+                  ]
+                }
+                """);
+    }
+
+    @Test
+    void listObjectProperty() {
+        record Person(String name, int age) {
+        }
+
+        class Group {
+            public List<Person> member = new ArrayList();
+        }
+
+        Group group = new Group();
+        group.member.add(new Person("Ami", 22));
+        group.member.add(new Person("Kei", 24));
+
+        validate(group, """
+                {
+                  "member": [
                     {
                       "age": 22,
-                      "firstName": "Ami",
-                      "lastName": null
+                      "name": "Ami"
                     },
                     {
                       "age": 24,
-                      "firstName": "Kei",
-                      "lastName": null
+                      "name": "Kei"
                     }
                   ]
                 }
                 """);
     }
 
-    private Person person(String name, int age) {
-        Person p = new Person();
-        p.setFirstName(name);
-        p.setAge(age);
-
-        return p;
-    }
-
     @Test
-    @SuppressWarnings("serial")
-    void listInteger() {
-        class Ints extends ArrayList<Integer> {
+    void listIntegerType() {
+        class Some extends ArrayList<Integer> {
         }
 
-        Ints list = new Ints();
-        list.add(1);
-        list.add(2);
+        Some instance = new Some();
+        instance.addAll((I.list(1, 2)));
 
-        validate(list, """
+        validate(instance, """
                 [
                   1,
                   2
                 ]
                 """);
-
     }
 
     @Test
-    @SuppressWarnings("serial")
-    void listBoolean() {
-        class Bools extends ArrayList<Boolean> {
+    void listLongType() {
+        class Some extends ArrayList<Long> {
         }
 
-        Bools list = new Bools();
-        list.add(true);
-        list.add(false);
+        Some instance = new Some();
+        instance.addAll((I.list(1L, 2L)));
 
-        validate(list, """
+        validate(instance, """
+                [
+                  1,
+                  2
+                ]
+                """);
+    }
+
+    @Test
+    void listFloatType() {
+        class Some extends ArrayList<Float> {
+        }
+
+        Some instance = new Some();
+        instance.addAll((I.list(1F, 2F)));
+
+        validate(instance, """
+                [
+                  1.0,
+                  2.0
+                ]
+                """);
+    }
+
+    @Test
+    void listDoubleType() {
+        class Some extends ArrayList<Double> {
+        }
+
+        Some instance = new Some();
+        instance.addAll((I.list(1D, 2D)));
+
+        validate(instance, """
+                [
+                  1.0,
+                  2.0
+                ]
+                """);
+    }
+
+    @Test
+    void listShortType() {
+        class Some extends ArrayList<Short> {
+        }
+
+        Some instance = new Some();
+        instance.addAll((I.list((short) 1, (short) 2)));
+
+        validate(instance, """
+                [
+                  1,
+                  2
+                ]
+                """);
+    }
+
+    @Test
+    void listByteType() {
+        class Some extends ArrayList<Byte> {
+        }
+
+        Some instance = new Some();
+        instance.addAll((I.list((byte) 1, (byte) 2)));
+
+        validate(instance, """
+                [
+                  1,
+                  2
+                ]
+                """);
+    }
+
+    @Test
+    void listBooleanType() {
+        class Some extends ArrayList<Boolean> {
+        }
+
+        Some instance = new Some();
+        instance.addAll((I.list(true, false)));
+
+        validate(instance, """
                 [
                   true,
                   false
                 ]
                 """);
+    }
 
+    @Test
+    void listObjectType() {
+        record Person(String name, int age) {
+        }
+
+        class Group extends ArrayList<Person> {
+        }
+
+        Group group = new Group();
+        group.add(new Person("Ami", 22));
+        group.add(new Person("Kei", 24));
+
+        validate(group, """
+                [
+                  {
+                    "age": 22,
+                    "name": "Ami"
+                  },
+                  {
+                    "age": 24,
+                    "name": "Kei"
+                  }
+                ]
+                """);
     }
 
     @Test
@@ -520,7 +743,6 @@ class JSONTest {
         record Person(String name, int age) {
         }
 
-        @SuppressWarnings("serial")
         class Members extends ArrayList<Person> {
         }
 
@@ -599,53 +821,67 @@ class JSONTest {
     }
 
     /**
-     * Write JSON.
-     * 
-     * @param texts
+     * Validates that the given object can be correctly serialized to JSON and then
+     * deserialized back without losing any information.
+     * <p>
+     * This method performs a round-trip test to ensure that:
+     * <ul>
+     * <li>The object can be serialized into the expected JSON string.</li>
+     * <li>The JSON can be deserialized back into an equivalent object.</li>
+     * <li>The object's internal state remains consistent via model-based property comparisons.</li>
+     * </ul>
+     *
+     * @param object The object to serialize and validate.
+     * @param text The expected JSON string representation.
+     * @param <M> The type of the object.
      */
     private static <M> void validate(M object, String text) {
         StringBuilder output = new StringBuilder();
-        I.write(object, output);
+        I.write(object, output); // serialize the object
         String serialized = output.toString();
 
-        // validate serialized text
+        // Normalize formatting and compare to expected JSON
         text = text.trim();
         serialized = serialized.replaceAll("\t", "  ");
         assert text.equals(serialized);
 
-        // validate model and properties
+        // Validate deserialization and internal model consistency
         Model model = Model.of(object.getClass());
-
-        // write and read
-        validate(model, object, I.json(serialized).as(model.type));
-        validate(model, object, I.json(serialized, model.type));
+        validate(model, object, I.json(serialized).as(model.type)); // implicit type
+        validate(model, object, I.json(serialized, model.type)); // explicit type
     }
 
     /**
-     * Validate object by model.
-     * 
-     * @param model
-     * @param one
-     * @param other
+     * Recursively compares all properties of two objects based on the given model.
+     * <p>
+     * This method traverses the model structure to validate that all corresponding
+     * properties in the original and deserialized objects are equal. Atomic values are
+     * compared via {@code equals()}, and nested models are validated recursively.
+     *
+     * @param model The model definition that describes the structure of the objects.
+     * @param one The original object.
+     * @param other The deserialized object.
      */
     @SuppressWarnings("unused")
     private static void validate(Model<Object> model, Object one, Object other) {
-        List<Property> properties = new ArrayList();
-        model.walk(one, (m, p, o) -> properties.add(p));
+        List<Property> properties = new ArrayList<>();
+        model.walk(one, (m, p, o) -> properties.add(p)); // collect all properties
 
         for (Property property : properties) {
             Object oneValue = model.get(one, property);
             Object otherValue = model.get(other, property);
 
             if (property.transitory) {
-                // ignore
+                // Skip transient fields (e.g., not serialized)
             } else if (property.model.atomic) {
+                // Directly compare atomic values
                 if (oneValue == null) {
                     assert otherValue == null;
                 } else {
                     assert oneValue.equals(otherValue);
                 }
             } else {
+                // Recurse for nested models
                 validate(property.model, oneValue, otherValue);
             }
         }

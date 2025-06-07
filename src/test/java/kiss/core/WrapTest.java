@@ -26,12 +26,23 @@ class WrapTest {
         assert Byte.class == I.wrap(byte.class);
         assert Short.class == I.wrap(short.class);
         assert Character.class == I.wrap(char.class);
+        assert Void.class == I.wrap(void.class);
         assert String.class == I.wrap(String.class);
     }
 
     @Test
-    void wrapClass() {
+    void wrapNonPrimitives() {
         assert String.class == I.wrap(String.class);
+        assert Object.class == I.wrap(Object.class);
+        assert Enum.class == I.wrap(Enum.class);
+        assert Class.class == I.wrap(Class.class);
+    }
+
+    @Test
+    void wrapAlreadyWrapped() {
+        assert Integer.class == I.wrap(Integer.class);
+        assert Boolean.class == I.wrap(Boolean.class);
+        assert Void.class == I.wrap(Void.class);
     }
 
     @Test

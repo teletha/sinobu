@@ -132,7 +132,7 @@ public class JSON implements Serializable {
 
                     // convert value
                     if (p.model.atomic) {
-                        value = I.transform(value, p.model.type);
+                        value = fix(p.model, value);
                     } else if (value != null) {
                         Object nest = model.get(java, p);
                         String impl = (String) ((Map) value).get("#");
@@ -384,11 +384,80 @@ public class JSON implements Serializable {
         if (current == '"') {
             return string();
         } else if (current == '{') {
-            return object(model);
+            readUnspace();
+            if (current == '}') {
+                readUnspace();
+                return model == null ? new HashMap() : I.make(model.type);
+            }
+
+            Object object = null;
+            do {
+                if (current != '"') expected('"');
+                String name = string();
+                if (current != ':') expected(":");
+                readUnspace();
+
+                if (model == null) {
+                    if (object == null) object = new HashMap();
+                    ((Map) object).put(name, value(null));
+                } else {
+                    if (object == null) {
+                        if (name.equals("#")) {
+                            model = Model.of(I.type((String) value(null)));
+                            object = I.make(model.type);
+                            continue;
+                        } else {
+                            object = I.make(model.type);
+                        }
+                    }
+
+                    Property p = model.property(name);
+                    object = model.set(object, p, fix(p.model, value(p.model)));
+                }
+            } while (readSeparator('}'));
+            return object;
         } else if (current == '[') {
-            return array(model);
+            Object array = model == null ? new LinkedHashMap() : I.make(model.type);
+            readUnspace();
+            if (current == ']') {
+                readUnspace();
+                return array;
+            }
+
+            int count = -1;
+            do {
+                if (model == null) {
+                    String name = ++count <= 9 ? C[count] : Integer.toString(count);
+                    ((Map) array).put(name, value(null));
+                } else {
+                    Model m = ((ListModel) model).item;
+                    ((List) array).add(fix(m, value(m)));
+                }
+            } while (readSeparator(']'));
+            return array;
         } else if ((current >= '0' && current <= '9') || current == '-') {
-            return num();
+            captureStart = index - 1;
+
+            if (current == '-') read();
+            if (current == '0') {
+                read();
+            } else {
+                digit();
+            }
+
+            // fraction
+            if (current == '.') {
+                read();
+                digit();
+            }
+
+            // exponent
+            if (current == 'e' || current == 'E') {
+                read();
+                if (current == '+' || current == '-') read();
+                digit();
+            }
+            return endCapture();
         } else if (current == 't') {
             if (index + 3 > fill) fill(3);
             if (buffer[index++] == 'r' && buffer[index++] == 'u' && buffer[index++] == 'e') {
@@ -414,112 +483,23 @@ public class JSON implements Serializable {
     }
 
     /**
-     * Parses a number value from the buffer.
+     * Converts the given value if necessary based on the model's configuration.
+     * <p>
+     * If the provided {@link Model} is marked as {@code atomic} and its type is not {@link String},
+     * the method assumes the input value is a {@link String} and decodes it using the model's
+     * {@code decoder}. Otherwise, the value is returned unchanged.
+     * </p>
      *
-     * @return The parsed number as a String.
-     * @throws IOException If an I/O error occurs.
+     * @param m the model describing the expected type and conversion rules
+     * @param value the input value to convert, typically a {@link String}
+     * @return the decoded object if conversion is needed, or the original value otherwise
      */
-    private Object num() throws IOException {
-        captureStart = index - 1;
-
-        if (current == '-') read();
-        if (current == '0') {
-            read();
+    private static Object fix(Model m, Object value) {
+        if (value != null && m.atomic && m.type != String.class) {
+            return m.decoder.decode((String) value);
         } else {
-            digit();
+            return value;
         }
-
-        // fraction
-        if (current == '.') {
-            read();
-            digit();
-        }
-
-        // exponent
-        if (current == 'e' || current == 'E') {
-            read();
-            if (current == '+' || current == '-') read();
-            digit();
-        }
-        return endCapture();
-    }
-
-    /**
-     * Parses a JSON array.
-     *
-     * @param model The model describing the array structure.
-     * @return The parsed array as a Map or List.
-     * @throws IOException If an I/O error occurs.
-     */
-    private Object array(Model model) throws IOException {
-        Object array = model == null ? new LinkedHashMap() : I.make(model.type);
-        readUnspace();
-        if (current == ']') {
-            readUnspace();
-            return array;
-        }
-
-        int count = -1;
-        do {
-            if (model == null) {
-                String name = ++count <= 9 ? C[count] : Integer.toString(count);
-                ((Map) array).put(name, value(null));
-            } else {
-                Model m = ((ListModel) model).item;
-                Object value = value(m);
-                if (value != null && m.atomic && m.type != String.class) {
-                    value = m.decoder.decode((String) value);
-                }
-                ((List) array).add(value);
-            }
-        } while (readSeparator(']'));
-        return array;
-    }
-
-    /**
-     * Parses a JSON object.
-     *
-     * @param model The model describing the object structure.
-     * @return The parsed object as a Map or a model instance.
-     * @throws IOException If an I/O error occurs.
-     */
-    private Object object(Model model) throws IOException {
-        readUnspace();
-        if (current == '}') {
-            readUnspace();
-            return model == null ? new HashMap() : I.make(model.type);
-        }
-
-        Object object = null;
-        do {
-            if (current != '"') expected('"');
-            String name = string();
-            if (current != ':') expected(":");
-            readUnspace();
-
-            if (model == null) {
-                if (object == null) object = new HashMap();
-                ((Map) object).put(name, value(null));
-            } else {
-                if (object == null) {
-                    if (name.equals("#")) {
-                        model = Model.of(I.type((String) value(null)));
-                        object = I.make(model.type);
-                        continue;
-                    } else {
-                        object = I.make(model.type);
-                    }
-                }
-
-                Property p = model.property(name);
-                Object value = value(p.model);
-                if (value != null && p.model.atomic && p.model.type != String.class) {
-                    value = p.model.decoder.decode((String) value);
-                }
-                object = model.set(object, p, value);
-            }
-        } while (readSeparator('}'));
-        return object;
     }
 
     /**
