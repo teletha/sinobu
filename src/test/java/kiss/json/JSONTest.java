@@ -228,6 +228,23 @@ class JSONTest {
     }
 
     @Test
+    void emptyListAndMap() {
+        @SuppressWarnings("unused")
+        class Container {
+            public List<String> emptyList = new ArrayList<>();
+
+            public Map<String, String> emptyMap = Collections.emptyMap();
+        }
+
+        validate(new Container(), """
+                {
+                  "emptyList": [],
+                  "emptyMap": {}
+                }
+                """);
+    }
+
+    @Test
     void map() {
         Map<String, String> map = new LinkedHashMap();
         map.put("one", "1");
@@ -350,6 +367,28 @@ class JSONTest {
                 }
                 """);
 
+    }
+
+    @Test
+    @SuppressWarnings("unused")
+    void nestedNulls() {
+
+        class Inner {
+            public String name;
+        }
+
+        class Outer {
+            public Inner inner;
+        }
+
+        Outer outer = new Outer();
+        outer.inner = null;
+
+        validate(outer, """
+                {
+                  "inner": null
+                }
+                """);
     }
 
     @Test
@@ -479,6 +518,24 @@ class JSONTest {
                     "Micha",
                     "Mipi"
                   ]
+                }
+                """);
+    }
+
+    @Test
+    @SuppressWarnings("unused")
+    void enumField() {
+        enum Status {
+            ACTIVE, INACTIVE
+        }
+
+        class WithEnum {
+            public Status status = Status.ACTIVE;
+        }
+
+        validate(new WithEnum(), """
+                {
+                  "status": "ACTIVE"
                 }
                 """);
     }
