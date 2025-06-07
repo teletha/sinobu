@@ -18,7 +18,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.StringJoiner;
 
 import org.junit.jupiter.api.Test;
 
@@ -43,18 +42,17 @@ class JSONTest {
     void empty() {
         BuiltinBean instance = new BuiltinBean();
 
-        // @formatter:off
-        validate(instance,
-        "{",
-        "  'bigDecimal': null,",
-        "  'bigInteger': null,",
-        "  'file': null,",
-        "  'schoolEnum': null,",
-        "  'someClass': null,",
-        "  'stringBuffer': null,",
-        "  'stringBuilder': null",
-        "}");
-        // @formatter:on
+        validate(instance, """
+                {
+                  "bigDecimal": null,
+                  "bigInteger": null,
+                  "file": null,
+                  "schoolEnum": null,
+                  "someClass": null,
+                  "stringBuffer": null,
+                  "stringBuilder": null
+                }
+                """);
     }
 
     @Test
@@ -67,7 +65,8 @@ class JSONTest {
                   "age": 20,
                   "firstName": null,
                   "lastName": null
-                }""");
+                }
+                """);
     }
 
     @Test
@@ -77,14 +76,13 @@ class JSONTest {
         person.setFirstName("Umi");
         person.setLastName("Sonoda");
 
-        // @formatter:off
-        validate(person,
-        "{",
-        "  'age': 20,",
-        "  'firstName': 'Umi',",
-        "  'lastName': 'Sonoda'",
-        "}");
-        // @formatter:on
+        validate(person, """
+                {
+                  "age": 20,
+                  "firstName": "Umi",
+                  "lastName": "Sonoda"
+                }
+                """);
     }
 
     @Test
@@ -95,13 +93,12 @@ class JSONTest {
         bean.variable.set("transient");
         bean.noneVariable.set("serializable");
 
-        // @formatter:off
-        validate(bean,
-        "{",
-        "  'noneField': 'serializable',",
-        "  'noneVariable': 'serializable'",
-        "}");
-        // @formatter:on
+        validate(bean, """
+                {
+                  "noneField": "serializable",
+                  "noneVariable": "serializable"
+                }
+                """);
     }
 
     @SuppressWarnings("unused")
@@ -116,27 +113,25 @@ class JSONTest {
 
         PropertyWithDefaultValue instant = new PropertyWithDefaultValue();
 
-        // @formatter:off
-        validate(instant,
-        "{",
-        "  'items': [",
-        "    'default'",
-        "  ],",
-        "  'value': 'default'",
-        "}");
-         // @formatter:on
+        validate(instant, """
+                {
+                  "items": [
+                    "default"
+                  ],
+                  "value": "default"
+                }
+                """);
 
         // clear value
         instant.value = null;
         instant.items = null;
 
-        // @formatter:off
-        validate(instant,
-        "{",
-        "  'items': null,",
-        "  'value': null",
-        "}");
-        // @formatter:on
+        validate(instant, """
+                {
+                  "items": null,
+                  "value": null
+                }
+                """);
     }
 
     @Test
@@ -148,16 +143,15 @@ class JSONTest {
         StringListProperty strings = I.make(StringListProperty.class);
         strings.setList(list);
 
-        // @formatter:off
-        validate(strings,
-        "{",
-        "  'list': [",
-        "    'one',",
-        "    'two',",
-        "    'three'",
-        "  ]",
-        "}");
-        // @formatter:on
+        validate(strings, """
+                {
+                  "list": [
+                    "one",
+                    "two",
+                    "three"
+                  ]
+                }
+                """);
     }
 
     @Test
@@ -172,19 +166,20 @@ class JSONTest {
 
         validate(persons, """
                 {
-                  'list': [
+                  "list": [
                     {
-                      'age': 22,
-                      'firstName': 'Ami',
-                      'lastName': null
+                      "age": 22,
+                      "firstName": "Ami",
+                      "lastName": null
                     },
                     {
-                      'age': 24,
-                      'firstName': 'Kei',
-                      'lastName': null
+                      "age": 24,
+                      "firstName": "Kei",
+                      "lastName": null
                     }
                   ]
-                }""");
+                }
+                """);
     }
 
     private Person person(String name, int age) {
@@ -204,16 +199,16 @@ class JSONTest {
         StringListProperty strings = I.make(StringListProperty.class);
         strings.setList(list);
 
-        // @formatter:off
-        validate(strings,
-        "{",
-        "  'list': [",
-        "    null,",
-        "    'null',",
-        "    null",
-        "  ]",
-        "}");
-        // @formatter:on
+        validate(strings, """
+                {
+                  "list": [
+                    null,
+                    "null",
+                    null
+                  ]
+                }
+                """);
+
     }
 
     @Test
@@ -221,15 +216,15 @@ class JSONTest {
         NestingList list = I.make(NestingList.class);
         list.setNesting(Arrays.asList(Collections.EMPTY_LIST, Collections.EMPTY_LIST));
 
-        // @formatter:off
-        validate(list,
-        "{",
-        "  'nesting': [",
-        "    [],",
-        "    []",
-        "  ]",
-        "}");
-        // @formatter:on
+        validate(list, """
+                {
+                  "nesting": [
+                    [],
+                    []
+                  ]
+                }
+                """);
+
     }
 
     @Test
@@ -241,16 +236,16 @@ class JSONTest {
         StringMapProperty strings = I.make(StringMapProperty.class);
         strings.setMap(map);
 
-        // @formatter:off
-        validate(strings,
-        "{",
-        "  'map': {",
-        "    'one': '1',",
-        "    'two': '2',",
-        "    'three': '3'",
-        "  }",
-        "}");
-        // @formatter:on
+        validate(strings, """
+                {
+                  "map": {
+                    "one": "1",
+                    "two": "2",
+                    "three": "3"
+                  }
+                }
+                """);
+
     }
 
     @Test
@@ -261,14 +256,14 @@ class JSONTest {
         StringMapProperty strings = I.make(StringMapProperty.class);
         strings.setMap(map);
 
-        // @formatter:off
-        validate(strings,
-        "{",
-        "  'map': {",
-        "    'null': 'NULL'",
-        "  }",
-        "}");
-        // @formatter:on
+        validate(strings, """
+                {
+                  "map": {
+                    "null": "NULL"
+                  }
+                }
+                """);
+
     }
 
     @Test
@@ -279,19 +274,19 @@ class JSONTest {
         primitive.setInt(-5);
         primitive.setFloat(0.1f);
 
-        // @formatter:off
-        validate(primitive,
-        "{",
-        "  'boolean': true,",
-        "  'byte': 0,",
-        "  'char': 'c',",
-        "  'double': 0.0,",
-        "  'float': 0.1,",
-        "  'int': -5,",
-        "  'long': 0,",
-        "  'short': 0",
-        "}");
-        // @formatter:on
+        validate(primitive, """
+                {
+                  "boolean": true,
+                  "byte": 0,
+                  "char": "c",
+                  "double": 0.0,
+                  "float": 0.1,
+                  "int": -5,
+                  "long": 0,
+                  "short": 0
+                }
+                """);
+
     }
 
     @Test
@@ -301,14 +296,14 @@ class JSONTest {
         person.setFirstName("A\r\nA\t");
         person.setLastName("B\n\"\\B");
 
-        // @formatter:off
-        validate(person,
-        "{",
-        "  'age': 20,",
-        "  'firstName': 'A\\r\\nA\\t',",
-        "  'lastName': 'B\\n\\\"\\\\B'",
-        "}");
-        // @formatter:on
+        validate(person, """
+                {
+                  "age": 20,
+                  "firstName": "A\\r\\nA\\t",
+                  "lastName": "B\\n\\\"\\\\B"
+                }
+                """);
+
     }
 
     @Test
@@ -317,18 +312,18 @@ class JSONTest {
         bean.setSomeClass(String.class);
         bean.setBigInteger(new BigInteger("1234567890987654321"));
 
-        // @formatter:off
-        validate(bean,
-        "{",
-        "  'bigDecimal': null,",
-        "  'bigInteger': '1234567890987654321',",
-        "  'file': null,",
-        "  'schoolEnum': null,",
-        "  'someClass': 'java.lang.String',",
-        "  'stringBuffer': null,",
-        "  'stringBuilder': null",
-        "}");
-        // @formatter:on
+        validate(bean, """
+                {
+                  "bigDecimal": null,
+                  "bigInteger": "1234567890987654321",
+                  "file": null,
+                  "schoolEnum": null,
+                  "someClass": "java.lang.String",
+                  "stringBuffer": null,
+                  "stringBuilder": null
+                }
+                """);
+
     }
 
     @Test
@@ -342,19 +337,19 @@ class JSONTest {
         student.setLastName("Akiyama");
         student.setSchool(school);
 
-        // @formatter:off
-        validate(student,
-        "{",
-        "  'age': 15,",
-        "  'firstName': 'Mio',",
-        "  'lastName': 'Akiyama',",
-        "  'school': {",
-        "    'name': 'Sakura High School',",
-        "    'students': [],",
-        "    'teachers': null",
-        "  }",
-        "}");
-        // @formatter:on
+        validate(student, """
+                {
+                  "age": 15,
+                  "firstName": "Mio",
+                  "lastName": "Akiyama",
+                  "school": {
+                    "name": "Sakura High School",
+                    "students": [],
+                    "teachers": null
+                  }
+                }
+                """);
+
     }
 
     @Test
@@ -362,7 +357,7 @@ class JSONTest {
         assertThrows(ClassCircularityError.class, () -> {
             ChainBean chain = I.make(ChainBean.class);
             chain.setNext(chain);
-            validate(chain);
+            validate(chain, "");
         });
     }
 
@@ -398,35 +393,35 @@ class JSONTest {
         animals.member.add(dog);
         animals.member.add(cat);
 
-        // @formatter:off
-        validate(animals,
-        "{",
-        "  'member': [",
-        "    {",
-        "      '#': 'kiss.json.JSONTest$Dog',",
-        "      'name': 'pochi',",
-        "      'size': 3",
-        "    },",
-        "    {",
-        "      '#': 'kiss.json.JSONTest$Cat',",
-        "      'name': 'mike',",
-        "      'weight': 4",
-        "    }",
-        "  ]",
-        "}");
-        // @formatter:on
+        validate(animals, """
+                {
+                  "member": [
+                    {
+                      "#": "kiss.json.JSONTest$Dog",
+                      "name": "pochi",
+                      "size": 3
+                    },
+                    {
+                      "#": "kiss.json.JSONTest$Cat",
+                      "name": "mike",
+                      "weight": 4
+                    }
+                  ]
+                }
+                """);
+
     }
 
     @Test
     void storeImplementationForNull() {
         AnimalRef animals = new AnimalRef();
 
-        // @formatter:off
-        validate(animals,
-        "{",
-        "  'animal': null",
-        "}");
-        // @formatter:on
+        validate(animals, """
+                {
+                  "animal": null
+                }
+                """);
+
     }
 
     @Test
@@ -439,7 +434,8 @@ class JSONTest {
                 {
                   "age": 28,
                   "name": "Misa"
-                }""");
+                }
+                """);
     }
 
     @Test
@@ -465,7 +461,8 @@ class JSONTest {
                     "age": 27,
                     "name": "Ayu"
                   }
-                ]""");
+                ]
+                """);
     }
 
     @Test
@@ -482,7 +479,8 @@ class JSONTest {
                     "Micha",
                     "Mipi"
                   ]
-                }""");
+                }
+                """);
     }
 
     static class AnimalRef {
@@ -510,19 +508,15 @@ class JSONTest {
      * 
      * @param texts
      */
-    private static <M> void validate(M object, String... texts) {
+    private static <M> void validate(M object, String text) {
         StringBuilder output = new StringBuilder();
         I.write(object, output);
         String serialized = output.toString();
 
-        StringJoiner joiner = new StringJoiner("\n");
-        for (String text : texts) {
-            text = text.replaceAll("'", "\"");
-            joiner.add(text.replaceAll("  ", "\t"));
-        }
-
         // validate serialized text
-        assert joiner.toString().equals(serialized);
+        text = text.trim();
+        serialized = serialized.replaceAll("\t", "  ");
+        assert text.equals(serialized);
 
         // validate model and properties
         Model model = Model.of(object.getClass());
@@ -539,6 +533,7 @@ class JSONTest {
      * @param one
      * @param other
      */
+    @SuppressWarnings("unused")
     private static void validate(Model<Object> model, Object one, Object other) {
         List<Property> properties = new ArrayList();
         model.walk(one, (m, p, o) -> properties.add(p));
