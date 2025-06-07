@@ -465,7 +465,12 @@ public class JSON implements Serializable {
                 String name = ++count <= 9 ? C[count] : Integer.toString(count);
                 ((Map) array).put(name, value(null));
             } else {
-                ((List) array).add(value(((ListModel) model).item));
+                Model m = ((ListModel) model).item;
+                Object value = value(m);
+                if (value != null && m.atomic && m.type != String.class) {
+                    value = m.decoder.decode((String) value);
+                }
+                ((List) array).add(value);
             }
         } while (readSeparator(']'));
         return array;
