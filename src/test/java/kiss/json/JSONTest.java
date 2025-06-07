@@ -191,6 +191,44 @@ class JSONTest {
     }
 
     @Test
+    @SuppressWarnings("serial")
+    void listInteger() {
+        class Ints extends ArrayList<Integer> {
+        }
+
+        Ints list = new Ints();
+        list.add(1);
+        list.add(2);
+
+        validate(list, """
+                [
+                  1,
+                  2
+                ]
+                """);
+
+    }
+
+    @Test
+    @SuppressWarnings("serial")
+    void listBoolean() {
+        class Bools extends ArrayList<Boolean> {
+        }
+
+        Bools list = new Bools();
+        list.add(true);
+        list.add(false);
+
+        validate(list, """
+                [
+                  true,
+                  false
+                ]
+                """);
+
+    }
+
+    @Test
     void listNull() {
         List<String> list = new ArrayList();
         list.add(null);

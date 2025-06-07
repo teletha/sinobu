@@ -2360,6 +2360,34 @@ public class I implements ParameterizedType {
     }
 
     /**
+     * Returns the primitive type corresponding to the given wrapper class (boxed type).
+     * If the given class is not a wrapper type, the class itself is returned unchanged.
+     * <p>
+     * The mapping is as follows:
+     * <ul>
+     * <li>Boolean.class → boolean.class</li>
+     * <li>Byte.class → byte.class</li>
+     * <li>Character.class → char.class</li>
+     * <li>Short.class → short.class</li>
+     * <li>Integer.class → int.class</li>
+     * <li>Long.class → long.class</li>
+     * <li>Float.class → float.class</li>
+     * <li>Double.class → double.class</li>
+     * <li>Void.class → void.class</li>
+     * </ul>
+     *
+     * @param type the class to convert to its primitive type (must not be {@code null})
+     * @return the corresponding primitive class, or {@code type} itself if it's not a wrapper type
+     * @throws NullPointerException if {@code type} is {@code null}
+     */
+    public static Class unwrap(Class type) {
+        if (!type.isPrimitive()) for (int i = 9; i < 18; i++) {
+            if (types[i] == type) return types[i - 9];
+        }
+        return type;
+    }
+
+    /**
      * Obtains the last non-null value from the specified array. If there is no suitable value in
      * the array or the array itself, the default value is retrieved.
      * 
@@ -2493,12 +2521,25 @@ public class I implements ParameterizedType {
     }
 
     /**
-     * Return a non-primitive {@link Class} of the specified {@link Class} object. <code>null</code>
-     * will be return <code>null</code>.
+     * Returns the wrapper class (boxed type) corresponding to the given primitive type.
+     * If the given class is not a primitive, the class itself is returned unchanged.
+     * <p>
+     * The mapping is as follows:
+     * <ul>
+     * <li>boolean.class → Boolean.class</li>
+     * <li>byte.class → Byte.class</li>
+     * <li>char.class → Character.class</li>
+     * <li>short.class → Short.class</li>
+     * <li>int.class → Integer.class</li>
+     * <li>long.class → Long.class</li>
+     * <li>float.class → Float.class</li>
+     * <li>double.class → Double.class</li>
+     * <li>void.class → Void.class</li>
+     * </ul>
      *
-     * @param type A {@link Class} object to convert to non-primitive class.
-     * @return A non-primitive {@link Class} object.
-     * @throws NullPointerException Parameter type is null.
+     * @param type the class to convert to its wrapper type (must not be {@code null})
+     * @return the corresponding wrapper class, or {@code type} itself if it's not primitive
+     * @throws NullPointerException if {@code type} is {@code null}
      */
     public static Class wrap(Class type) {
         if (type.isPrimitive()) for (int i = 0; i < 9; i++) {

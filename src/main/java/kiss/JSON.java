@@ -816,6 +816,7 @@ public class JSON implements Serializable {
         if (value == null) {
             out.append("null");
         } else {
+            type = I.unwrap(type);
             boolean primitive = type.isPrimitive() && type != char.class;
 
             if (!primitive) out.append('"');
