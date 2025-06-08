@@ -1,5 +1,21 @@
 # Changelog
 
+## [4.13.0](https://github.com/teletha/sinobu/compare/4.12.0...4.13.0) (2025-06-08)
+
+
+### Features
+
+* add I#unwrap ([3931200](https://github.com/teletha/sinobu/commit/3931200289d5eefe75566e5e61b7ed5c94373d4f))
+* add XML#element for fast traversing ([8ce891c](https://github.com/teletha/sinobu/commit/8ce891cd4939b9b4286291234e46152f8f80ab77))
+* significant performance improvements in XML traversing ([c7813ec](https://github.com/teletha/sinobu/commit/c7813ec71f076745bf96248a3b593699acd9c563))
+* support sub-typed json parsing ([0d42c1e](https://github.com/teletha/sinobu/commit/0d42c1e2433f8c32d38670da113517c4437f57eb))
+
+
+### Bug Fixes
+
+* JSON can resolve primitive types in List ([866ff13](https://github.com/teletha/sinobu/commit/866ff13fb0504bd1de094a2749a44d4b161b7ad4))
+* reduce code size ([5fb2e05](https://github.com/teletha/sinobu/commit/5fb2e0572658cf1b341b8bfd9d03189f142bbd06))
+
 ## [4.12.0](https://github.com/teletha/sinobu/compare/4.11.1...4.12.0) (2025-06-02)
 
 
