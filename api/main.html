@@ -19,10 +19,10 @@
 		<link href="https://cdn.jsdelivr.net/npm/ress@4.0.0/dist/ress.min.css" rel="stylesheet"/>
 		<link href="main.css" rel="stylesheet"/>
 	</head>
-	<body class="S">
-		<header class="T" date="2025-06-02">
-			<h1 class="r"><a href="index.html"><code>Sinobu</code></a></h1>
-			<nav class="n"><a href="doc/sinobu.Manual.Introduction.html" id="Manual"><svg class="text">
+	<body class="f">
+		<header class="M" date="2025-06-02">
+			<h1 class="N"><a href="index.html"><code>Sinobu</code></a></h1>
+			<nav class="L"><a href="doc/sinobu.Manual.Introduction.html" id="Manual"><svg class="text">
 						<use href="main.svg#text"/>
 					</svg>
 				</a><a href="api/main.html" id="API"><svg class="package">
@@ -38,16 +38,16 @@
 						<use href="main.svg#github"/>
 					</svg>
 				</a></nav>
-			<div class="b"><a aria-label="Change color scheme" id="theme"><svg class="sun">
+			<div class="O"><a aria-label="Change color scheme" id="theme"><svg class="sun">
 						<use href="main.svg#sun"/>
 					</svg><svg class="moon">
 						<use href="main.svg#moon"/>
 					</svg>
 				</a></div>
 		</header>
-		<nav class="V"></nav>
-		<article class="P" id="Article">
-			<div class="Y">
+		<nav class="Q"></nav>
+		<article class="d" id="Article">
+			<div class="R">
 				<section class="A">
 					<h2>Sinobu API Overview</h2>
 					<p>This page provides a concise overview of the available APIs, including their purpose, key functionalities, and usage patterns. It serves as a starting point for developers to understand how to integrate and interact with the system effectively.</p>
@@ -72,41 +72,8 @@ application environment (see I#env(String)).</td>
 						<h4>🛠️ Functional Interface</h4>
 						<table>
 							<tr>
-								<td><code><a href="api/kiss.Decoder.html">Decoder</a></code></td>
-								<td>Codec for interconversion of object and String.</td>
-							</tr>
-							<tr>
 								<td><code><a href="api/kiss.WiseTriFunction.html">WiseTriFunction</a></code></td>
 								<td>no description</td>
-							</tr>
-							<tr>
-								<td><code><a href="api/kiss.WiseConsumer.html">WiseConsumer</a></code></td>
-								<td>no description</td>
-							</tr>
-							<tr>
-								<td><code><a href="api/kiss.WiseFunction.html">WiseFunction</a></code></td>
-								<td>no description</td>
-							</tr>
-							<tr>
-								<td><code><a href="api/kiss.WiseBiFunction.html">WiseBiFunction</a></code></td>
-								<td>no description</td>
-							</tr>
-							<tr>
-								<td><code><a href="api/kiss.Wise.html">Wise</a></code></td>
-								<td>General purpose flexible and invokable function interface.</td>
-							</tr>
-							<tr>
-								<td><code><a href="api/kiss.ExtensionFactory.html">ExtensionFactory</a></code></td>
-								<td>This is an extension point to dynamically create and retrieve an extension corresponding to a
-given extension key at the associated extension point.</td>
-							</tr>
-							<tr>
-								<td><code><a href="api/kiss.WiseTriConsumer.html">WiseTriConsumer</a></code></td>
-								<td>no description</td>
-							</tr>
-							<tr>
-								<td><code><a href="api/kiss.Observer.html">Observer</a></code></td>
-								<td>Provides a mechanism for receiving push-based notifications.</td>
 							</tr>
 							<tr>
 								<td><code><a href="api/kiss.Lifestyle.html">Lifestyle</a></code></td>
@@ -116,8 +83,20 @@ given extension key at the associated extension point.</td>
  </td>
 							</tr>
 							<tr>
-								<td><code><a href="api/kiss.Encoder.html">Encoder</a></code></td>
+								<td><code><a href="api/kiss.Narrow.html">Narrow</a></code></td>
+								<td>Provide the partial application functionality.</td>
+							</tr>
+							<tr>
+								<td><code><a href="api/kiss.Decoder.html">Decoder</a></code></td>
 								<td>Codec for interconversion of object and String.</td>
+							</tr>
+							<tr>
+								<td><code><a href="api/kiss.WiseRunnable.html">WiseRunnable</a></code></td>
+								<td>no description</td>
+							</tr>
+							<tr>
+								<td><code><a href="api/kiss.Wise.html">Wise</a></code></td>
+								<td>General purpose flexible and invokable function interface.</td>
 							</tr>
 							<tr>
 								<td><code><a href="api/kiss.Disposable.html">Disposable</a></code></td>
@@ -129,43 +108,43 @@ prior to their destruction.</td>
 								<td>no description</td>
 							</tr>
 							<tr>
+								<td><code><a href="api/kiss.WiseBiFunction.html">WiseBiFunction</a></code></td>
+								<td>no description</td>
+							</tr>
+							<tr>
+								<td><code><a href="api/kiss.ExtensionFactory.html">ExtensionFactory</a></code></td>
+								<td>This is an extension point to dynamically create and retrieve an extension corresponding to a
+given extension key at the associated extension point.</td>
+							</tr>
+							<tr>
+								<td><code><a href="api/kiss.WiseFunction.html">WiseFunction</a></code></td>
+								<td>no description</td>
+							</tr>
+							<tr>
+								<td><code><a href="api/kiss.WiseTriConsumer.html">WiseTriConsumer</a></code></td>
+								<td>no description</td>
+							</tr>
+							<tr>
+								<td><code><a href="api/kiss.Encoder.html">Encoder</a></code></td>
+								<td>Codec for interconversion of object and String.</td>
+							</tr>
+							<tr>
+								<td><code><a href="api/kiss.Observer.html">Observer</a></code></td>
+								<td>Provides a mechanism for receiving push-based notifications.</td>
+							</tr>
+							<tr>
 								<td><code><a href="api/kiss.WiseBiConsumer.html">WiseBiConsumer</a></code></td>
 								<td>no description</td>
 							</tr>
 							<tr>
-								<td><code><a href="api/kiss.WiseRunnable.html">WiseRunnable</a></code></td>
+								<td><code><a href="api/kiss.WiseConsumer.html">WiseConsumer</a></code></td>
 								<td>no description</td>
-							</tr>
-							<tr>
-								<td><code><a href="api/kiss.Narrow.html">Narrow</a></code></td>
-								<td>Provide the partial application functionality.</td>
 							</tr>
 						</table>
 					</section>
 					<section class="A">
 						<h4>🛠️ Class</h4>
 						<table>
-							<tr>
-								<td><code><a href="api/kiss.XML.html">XML</a></code></td>
-								<td>A class for parsing, traversing, and manipulating XML and HTML documents
-with a jQuery-like fluent API.</td>
-							</tr>
-							<tr>
-								<td><code><a href="api/kiss.Singleton.html">Singleton</a></code></td>
-								<td>This lifestyle guarantees that only one instance of the specific class exists in Sinobu.</td>
-							</tr>
-							<tr>
-								<td><code><a href="api/kiss.I.html">I</a></code></td>
-								<td>
- Sinobu is not obsolete framework but utility, which can manipulate objects as a
- extremely-condensed facade.
- </td>
-							</tr>
-							<tr>
-								<td><code><a href="api/kiss.Scheduler.html">Scheduler</a></code></td>
-								<td>A custom scheduler implementation based on the ScheduledExecutorService interface,
-using virtual threads to schedule tasks with specified delays or intervals.</td>
-							</tr>
 							<tr>
 								<td><code><a href="api/kiss.Ⅱ.html">Ⅱ</a></code></td>
 								<td>no description</td>
@@ -175,12 +154,23 @@ using virtual threads to schedule tasks with specified delays or intervals.</td>
 								<td>no description</td>
 							</tr>
 							<tr>
-								<td><code><a href="api/kiss.Ⅲ.html">Ⅲ</a></code></td>
-								<td>List#of(Object, Object)</td>
+								<td><code><a href="api/kiss.Variable.html">Variable</a></code></td>
+								<td>A re-assignable container object which may or may not contain a non-null value. If a value is
+present, #isPresent() returns true. If no value is present, the object is considered
+empty and #isPresent() returns false. Unlike Optional, this container is
+re-assignable.</td>
 							</tr>
 							<tr>
 								<td><code><a href="api/kiss.Model.html">Model</a></code></td>
 								<td>Model</td>
+							</tr>
+							<tr>
+								<td><code><a href="api/kiss.Ⅲ.html">Ⅲ</a></code></td>
+								<td>List#of(Object, Object)</td>
+							</tr>
+							<tr>
+								<td><code><a href="api/kiss.Signaling.html">Signaling</a></code></td>
+								<td>Simple Signal support subject.</td>
 							</tr>
 							<tr>
 								<td><code><a href="api/kiss.Signal.html">Signal</a></code></td>
@@ -190,19 +180,29 @@ using virtual threads to schedule tasks with specified delays or intervals.</td>
  </td>
 							</tr>
 							<tr>
+								<td><code><a href="api/kiss.I.html">I</a></code></td>
+								<td>
+ Sinobu is not obsolete framework but utility, which can manipulate objects as a
+ extremely-condensed facade.
+ </td>
+							</tr>
+							<tr>
 								<td><code><a href="api/kiss.Property.html">Property</a></code></td>
 								<td>This class represents a property of object model.</td>
 							</tr>
 							<tr>
-								<td><code><a href="api/kiss.Variable.html">Variable</a></code></td>
-								<td>A re-assignable container object which may or may not contain a non-null value. If a value is
-present, #isPresent() returns true. If no value is present, the object is considered
-empty and #isPresent() returns false. Unlike Optional, this container is
-re-assignable.</td>
+								<td><code><a href="api/kiss.Singleton.html">Singleton</a></code></td>
+								<td>This lifestyle guarantees that only one instance of the specific class exists in Sinobu.</td>
 							</tr>
 							<tr>
-								<td><code><a href="api/kiss.Signaling.html">Signaling</a></code></td>
-								<td>Simple Signal support subject.</td>
+								<td><code><a href="api/kiss.XML.html">XML</a></code></td>
+								<td>A class for parsing, traversing, and manipulating XML and HTML documents
+with a jQuery-like fluent API.</td>
+							</tr>
+							<tr>
+								<td><code><a href="api/kiss.Scheduler.html">Scheduler</a></code></td>
+								<td>A custom scheduler implementation based on the ScheduledExecutorService interface,
+using virtual threads to schedule tasks with specified delays or intervals.</td>
 							</tr>
 						</table>
 					</section>
@@ -218,8 +218,8 @@ re-assignable.</td>
 				</section>
 			</div>
 		</article>
-		<aside class="Q"></aside>
-		<footer class="U">
+		<aside class="g"></aside>
+		<footer class="a">
 			<p>Powered by <a href="https://github.com/teletha/evergarden" target="_">Evergarden</a></p>
 		</footer>
 	</body>
