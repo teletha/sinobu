@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.13.1](https://github.com/teletha/sinobu/compare/4.13.0...4.13.1) (2025-07-20)
+
+
+### Bug Fixes
+
+* JSON parser can ignore the unknown property well ([2b73f47](https://github.com/teletha/sinobu/commit/2b73f472ff6fdc5f5680d69168b2260a7144a9d4))
+
 ## [4.13.0](https://github.com/teletha/sinobu/compare/4.12.0...4.13.0) (2025-06-08)
 
 
