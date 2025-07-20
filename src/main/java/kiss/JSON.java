@@ -412,7 +412,11 @@ public class JSON implements Serializable {
                     }
 
                     Property p = model.property(name);
-                    object = model.set(object, p, fix(p.model, value(p.model)));
+                    if (p == null) {
+                        value(null);
+                    } else {
+                        object = model.set(object, p, fix(p.model, value(p.model)));
+                    }
                 }
             } while (readSeparator('}'));
             return object;

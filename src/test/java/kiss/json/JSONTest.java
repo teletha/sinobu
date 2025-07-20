@@ -800,6 +800,22 @@ class JSONTest {
                 """);
     }
 
+    @Test
+    void ignoreUnknownProperty() {
+        class Bean {
+            public String name;
+        }
+
+        Bean bean = I.json("""
+                {
+                    "name": "test",
+                    "unknown": "value"
+                }
+                """, Bean.class);
+
+        assert bean.name.equals("test");
+    }
+
     static class AnimalRef {
         public Animal animal;
     }
