@@ -19,10 +19,10 @@
 		<link href="https://cdn.jsdelivr.net/npm/ress@4.0.0/dist/ress.min.css" rel="stylesheet"/>
 		<link href="main.css" rel="stylesheet"/>
 	</head>
-	<body class="f">
-		<header class="M" date="2025-06-02">
-			<h1 class="N"><a href="index.html"><code>Sinobu</code></a></h1>
-			<nav class="L"><a href="doc/sinobu.Manual.Introduction.html" id="Manual"><svg class="text">
+	<body class="V">
+		<header class="W" date="2025-06-08">
+			<h1 class="n"><a href="index.html"><code>Sinobu</code></a></h1>
+			<nav class="o"><a href="doc/sinobu.Manual.Introduction.html" id="Manual"><svg class="text">
 						<use href="main.svg#text"/>
 					</svg>
 				</a><a href="api/main.html" id="API"><svg class="package">
@@ -38,18 +38,18 @@
 						<use href="main.svg#github"/>
 					</svg>
 				</a></nav>
-			<div class="O"><a aria-label="Change color scheme" id="theme"><svg class="sun">
+			<div class="p"><a aria-label="Change color scheme" id="theme"><svg class="sun">
 						<use href="main.svg#sun"/>
 					</svg><svg class="moon">
 						<use href="main.svg#moon"/>
 					</svg>
 				</a></div>
 		</header>
-		<nav class="Q"></nav>
-		<article class="d" id="Article">
-			<section class="R"><code class="S">kiss</code>
-				<h2 class="Class JB"><code class="T">Variable</code><code class="k">&lt;<code>V</code>&gt;</code></h2>
-				<div class="e">
+		<nav class="Z"></nav>
+		<article class="X" id="Article">
+			<section class="h"><code class="x">kiss</code>
+				<h2 class="Class i"><code class="r">Variable</code><code class="T">&lt;<code>V</code>&gt;</code></h2>
+				<div class="L">
 					<ul class="E F">
 						<li><code>V</code></li>
 					</ul>
@@ -69,355 +69,355 @@ re-assignable.</p><p>
 						</p>
 					</p>
 				</span></section>
-			<section class="R" id="v">
-				<h2 class="BB"><i class="FINAL TRANSIENT"><i class="PUBLIC"></i></i><code class="T">v</code><i class="U"><code class="return">V</code></i></h2><span class="A"><p>The current value. This value is not final but read-only.</p></span></section>
-			<section class="R" id="Variable(java.lang.Object)">
-				<h2 class="BB"><i class="PROTECTED"></i><code class="T">Variable</code><code class="k">(<code>V</code><code class="parameterName">value</code>)</code></h2>
-				<table class="w">
-					<tr class="o">
+			<section class="h" id="v">
+				<h2 class="CB"><i class="FINAL TRANSIENT"><i class="PUBLIC"></i></i><code class="r">v</code><i class="y"><code class="return">V</code></i></h2><span class="A"><p>The current value. This value is not final but read-only.</p></span></section>
+			<section class="h" id="Variable(java.lang.Object)">
+				<h2 class="CB"><i class="PROTECTED"></i><code class="r">Variable</code><code class="T">(<code>V</code><code class="parameterName">value</code>)</code></h2>
+				<table class="Q">
+					<tr class="c">
 						<td><code>V</code><code class="parameterName">value</code></td>
 						<td></td>
 					</tr>
 				</table><span class="A"><p>Hide constructor.</p></span></section>
-			<section class="R" id="accept(java.lang.Object)">
-				<h2 class="BB"><i class="OVERRIDE PUBLIC"></i><code class="T">accept</code><code class="k">(<code>V</code><code class="parameterName">value</code>)</code><i class="U"><code>void</code></i></h2>
-				<table class="w">
-					<tr class="o">
+			<section class="h" id="accept(java.lang.Object)">
+				<h2 class="CB"><i class="OVERRIDE PUBLIC"></i><code class="r">accept</code><code class="T">(<code>V</code><code class="parameterName">value</code>)</code><i class="y"><code>void</code></i></h2>
+				<table class="Q">
+					<tr class="c">
 						<td><code>V</code><code class="parameterName">value</code></td>
 						<td></td>
 					</tr>
 				</table>
 			</section>
-			<section class="R" id="acquire()">
-				<h2 class="BB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="T">acquire</code><code class="k">()</code><i class="U"><code>V</code></i></h2>
-				<table class="w">
-					<tr class="j">
+			<section class="h" id="acquire()">
+				<h2 class="CB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="r">acquire</code><code class="T">()</code><i class="y"><code>V</code></i></h2>
+				<table class="Q">
+					<tr class="AB">
 						<td><code>V</code></td>
 						<td><span><p>Current value or next value.</p></span></td>
 					</tr>
 				</table><span class="A"><p>Get the current value. If there is no value, wait until the value is set.</p></span></section>
-			<section class="R" id="exact()">
-				<h2 class="BB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="T">exact</code><code class="k">()</code><i class="U"><code>V</code></i></h2>
-				<table class="w">
-					<tr class="j">
+			<section class="h" id="exact()">
+				<h2 class="CB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="r">exact</code><code class="T">()</code><i class="y"><code>V</code></i></h2>
+				<table class="Q">
+					<tr class="AB">
 						<td><code>V</code></td>
 						<td><span><p>Current value or throws error.</p></span></td>
 					</tr>
 				</table><span class="A"><p>Get the current value. If there is no value, <code><a aria-label="java.lang.NullPointerException 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/NullPointerException.html">NullPointerException</a></code> will be thrown.</p></span></section>
-			<section class="R" id="get()">
-				<h2 class="BB"><i class="FINAL"><i class="OVERRIDE PUBLIC"></i></i><code class="T">get</code><code class="k">()</code><i class="U"><code>V</code></i></h2>
-				<table class="w">
-					<tr class="j">
+			<section class="h" id="get()">
+				<h2 class="CB"><i class="FINAL"><i class="OVERRIDE PUBLIC"></i></i><code class="r">get</code><code class="T">()</code><i class="y"><code>V</code></i></h2>
+				<table class="Q">
+					<tr class="AB">
 						<td><code>V</code></td>
 						<td><span><p>Current value or null.</p></span></td>
 					</tr>
 				</table><span class="A"><p>Get the current value. If there is no value, returns null.</p></span></section>
-			<section class="R" id="intercept(kiss.WiseBiFunction)">
-				<h2 class="BB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="T">intercept</code><code class="k">(<code><a aria-label="kiss.WiseBiFunction" href="api/kiss.WiseBiFunction.html">WiseBiFunction</a><code class="parameters"><code>V</code>, <code>V</code>, <code>V</code></code></code><code class="parameterName">interceptor</code>)</code><i class="U"><code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>V</code></code></code></i></h2>
-				<table class="w">
-					<tr class="o">
+			<section class="h" id="intercept(kiss.WiseBiFunction)">
+				<h2 class="CB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="r">intercept</code><code class="T">(<code><a aria-label="kiss.WiseBiFunction" href="api/kiss.WiseBiFunction.html">WiseBiFunction</a><code class="parameters"><code>V</code>, <code>V</code>, <code>V</code></code></code><code class="parameterName">interceptor</code>)</code><i class="y"><code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>V</code></code></code></i></h2>
+				<table class="Q">
+					<tr class="c">
 						<td><code><a aria-label="kiss.WiseBiFunction" href="api/kiss.WiseBiFunction.html">WiseBiFunction</a><code class="parameters"><code>V</code>, <code>V</code>, <code>V</code></code></code><code class="parameterName">interceptor</code></td>
 						<td><span><p>An interceptor for value modification. First parameter is the current
 value, Second parameter is the new value.</p></span></td>
 					</tr>
-					<tr class="j">
+					<tr class="AB">
 						<td><code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>V</code></code></code></td>
 						<td><span><p>Chainable API.</p></span></td>
 					</tr>
 				</table><span class="A"><p>Intercept the value modification.</p></span></section>
-			<section class="R" id="is(java.lang.Object)">
-				<h2 class="BB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="T">is</code><code class="k">(<code>V</code><code class="parameterName">value</code>)</code><i class="U"><code>boolean</code></i></h2>
-				<table class="w">
-					<tr class="o">
+			<section class="h" id="is(java.lang.Object)">
+				<h2 class="CB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="r">is</code><code class="T">(<code>V</code><code class="parameterName">value</code>)</code><i class="y"><code>boolean</code></i></h2>
+				<table class="Q">
+					<tr class="c">
 						<td><code>V</code><code class="parameterName">value</code></td>
 						<td><span><p>A value to check the equality.</p></span></td>
 					</tr>
-					<tr class="j">
+					<tr class="AB">
 						<td><code>boolean</code></td>
 						<td><span><p>A result of equality.</p></span></td>
 					</tr>
 				</table><span class="A"><p>Test whether the current value is equal to the specified value or not.</p></span></section>
-			<section class="R" id="is(java.util.function.Predicate)">
-				<h2 class="BB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="T">is</code><code class="k">(<code><a aria-label="java.util.function.Predicate 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Predicate.html">Predicate</a><code class="parameters"><code>V</code></code></code><code class="parameterName">condition</code>)</code><i class="U"><code>boolean</code></i></h2>
-				<table class="w">
-					<tr class="o">
+			<section class="h" id="is(java.util.function.Predicate)">
+				<h2 class="CB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="r">is</code><code class="T">(<code><a aria-label="java.util.function.Predicate 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Predicate.html">Predicate</a><code class="parameters"><code>V</code></code></code><code class="parameterName">condition</code>)</code><i class="y"><code>boolean</code></i></h2>
+				<table class="Q">
+					<tr class="c">
 						<td><code><a aria-label="java.util.function.Predicate 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Predicate.html">Predicate</a><code class="parameters"><code>V</code></code></code><code class="parameterName">condition</code></td>
 						<td><span><p>A value validator.</p></span></td>
 					</tr>
-					<tr class="j">
+					<tr class="AB">
 						<td><code>boolean</code></td>
 						<td><span><p>A result of validation.</p></span></td>
 					</tr>
 				</table><span class="A"><p>Test whether the current value fulfills the specified condition or not.</p></span></section>
-			<section class="R" id="isNot(java.lang.Object)">
-				<h2 class="BB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="T">isNot</code><code class="k">(<code>V</code><code class="parameterName">value</code>)</code><i class="U"><code>boolean</code></i></h2>
-				<table class="w">
-					<tr class="o">
+			<section class="h" id="isNot(java.lang.Object)">
+				<h2 class="CB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="r">isNot</code><code class="T">(<code>V</code><code class="parameterName">value</code>)</code><i class="y"><code>boolean</code></i></h2>
+				<table class="Q">
+					<tr class="c">
 						<td><code>V</code><code class="parameterName">value</code></td>
 						<td><span><p>A value to check the equality.</p></span></td>
 					</tr>
-					<tr class="j">
+					<tr class="AB">
 						<td><code>boolean</code></td>
 						<td><span><p>A result of equality.</p></span></td>
 					</tr>
 				</table><span class="A"><p>Test whether the current value is NOT equal to the specified value or not.</p></span></section>
-			<section class="R" id="isNot(java.util.function.Predicate)">
-				<h2 class="BB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="T">isNot</code><code class="k">(<code><a aria-label="java.util.function.Predicate 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Predicate.html">Predicate</a><code class="parameters"><code>V</code></code></code><code class="parameterName">condition</code>)</code><i class="U"><code>boolean</code></i></h2>
-				<table class="w">
-					<tr class="o">
+			<section class="h" id="isNot(java.util.function.Predicate)">
+				<h2 class="CB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="r">isNot</code><code class="T">(<code><a aria-label="java.util.function.Predicate 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Predicate.html">Predicate</a><code class="parameters"><code>V</code></code></code><code class="parameterName">condition</code>)</code><i class="y"><code>boolean</code></i></h2>
+				<table class="Q">
+					<tr class="c">
 						<td><code><a aria-label="java.util.function.Predicate 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Predicate.html">Predicate</a><code class="parameters"><code>V</code></code></code><code class="parameterName">condition</code></td>
 						<td><span><p>A value validator.</p></span></td>
 					</tr>
-					<tr class="j">
+					<tr class="AB">
 						<td><code>boolean</code></td>
 						<td><span><p>A result of validation.</p></span></td>
 					</tr>
 				</table><span class="A"><p>Test whether the current value does NOT fulfill the specified condition or not.</p></span></section>
-			<section class="R" id="isAbsent()">
-				<h2 class="BB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="T">isAbsent</code><code class="k">()</code><i class="U"><code>boolean</code></i></h2>
-				<table class="w">
-					<tr class="j">
+			<section class="h" id="isAbsent()">
+				<h2 class="CB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="r">isAbsent</code><code class="T">()</code><i class="y"><code>boolean</code></i></h2>
+				<table class="Q">
+					<tr class="AB">
 						<td><code>boolean</code></td>
 						<td><span><p>A result.</p></span></td>
 					</tr>
 				</table><span class="A"><p>Check whether the value is absent or not.</p></span></section>
-			<section class="R" id="isPresent()">
-				<h2 class="BB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="T">isPresent</code><code class="k">()</code><i class="U"><code>boolean</code></i></h2>
-				<table class="w">
-					<tr class="j">
+			<section class="h" id="isPresent()">
+				<h2 class="CB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="r">isPresent</code><code class="T">()</code><i class="y"><code>boolean</code></i></h2>
+				<table class="Q">
+					<tr class="AB">
 						<td><code>boolean</code></td>
 						<td><span><p>A result.</p></span></td>
 					</tr>
 				</table><span class="A"><p>Check whether the value is present or not.</p></span></section>
-			<section class="R" id="isFixed()">
-				<h2 class="BB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="T">isFixed</code><code class="k">()</code><i class="U"><code>boolean</code></i></h2>
-				<table class="w">
-					<tr class="j">
+			<section class="h" id="isFixed()">
+				<h2 class="CB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="r">isFixed</code><code class="T">()</code><i class="y"><code>boolean</code></i></h2>
+				<table class="Q">
+					<tr class="AB">
 						<td><code>boolean</code></td>
 						<td><span><p>A result.</p></span></td>
 					</tr>
 				</table><span class="A"><p>Check whether the value is fixed or not.</p></span></section>
-			<section class="R" id="fix()">
-				<h2 class="BB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="T">fix</code><code class="k">()</code><i class="U"><code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>V</code></code></code></i></h2>
-				<table class="w">
-					<tr class="j">
+			<section class="h" id="fix()">
+				<h2 class="CB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="r">fix</code><code class="T">()</code><i class="y"><code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>V</code></code></code></i></h2>
+				<table class="Q">
+					<tr class="AB">
 						<td><code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>V</code></code></code></td>
 						<td><span><p>Chainable API.</p></span></td>
 					</tr>
 				</table><span class="A"><p>Fix this value as immutable.</p></span></section>
-			<section class="R" id="flip(java.util.function.Supplier)">
-				<h2 class="BB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="T">flip</code><code class="k">(<code><a aria-label="java.util.function.Supplier 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code>?</code><code class="extends"><code>R</code></code></code></code><code class="parameterName">then</code>)</code><i class="U"><code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>R</code></code></code></i></h2>
-				<table class="w">
-					<tr class="x">
+			<section class="h" id="flip(java.util.function.Supplier)">
+				<h2 class="CB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="r">flip</code><code class="T">(<code><a aria-label="java.util.function.Supplier 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code>?</code><code class="extends"><code>R</code></code></code></code><code class="parameterName">then</code>)</code><i class="y"><code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>R</code></code></code></i></h2>
+				<table class="Q">
+					<tr class="z">
 						<td><code>R</code></td>
 						<td></td>
 					</tr>
-					<tr class="o">
+					<tr class="c">
 						<td><code><a aria-label="java.util.function.Supplier 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code>?</code><code class="extends"><code>R</code></code></code></code><code class="parameterName">then</code></td>
 						<td><span><p>An action to perform.</p></span></td>
 					</tr>
-					<tr class="j">
+					<tr class="AB">
 						<td><code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>R</code></code></code></td>
 						<td><span><p>The computed <code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a></code>.</p></span></td>
 					</tr>
 				</table><span class="A"><p>Perform the specified action if the value is absent.</p></span></section>
-			<section class="R" id="flatFlip(java.util.function.Supplier)">
-				<h2 class="BB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="T">flatFlip</code><code class="k">(<code><a aria-label="java.util.function.Supplier 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>R</code></code></code></code></code><code class="parameterName">mapper</code>)</code><i class="U"><code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>R</code></code></code></i></h2>
-				<table class="w">
-					<tr class="x">
+			<section class="h" id="flatFlip(java.util.function.Supplier)">
+				<h2 class="CB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="r">flatFlip</code><code class="T">(<code><a aria-label="java.util.function.Supplier 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>R</code></code></code></code></code><code class="parameterName">mapper</code>)</code><i class="y"><code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>R</code></code></code></i></h2>
+				<table class="Q">
+					<tr class="z">
 						<td><code>R</code></td>
 						<td></td>
 					</tr>
-					<tr class="o">
+					<tr class="c">
 						<td><code><a aria-label="java.util.function.Supplier 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>R</code></code></code></code></code><code class="parameterName">mapper</code></td>
 						<td><span><p>The mapping function to apply to a value, if present.</p></span></td>
 					</tr>
-					<tr class="j">
+					<tr class="AB">
 						<td><code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>R</code></code></code></td>
 						<td><span><p>The computed <code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a></code>.</p></span></td>
 					</tr>
 				</table><span class="A"><p>If a value is present, returns the result of applying the given <code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a></code>-bearing
 mapping function to the value, otherwise returns an empty <code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a></code>.</p></span></section>
-			<section class="R" id="map(java.util.function.Function)">
-				<h2 class="BB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="T">map</code><code class="k">(<code><a aria-label="java.util.function.Function 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Function.html">Function</a><code class="parameters"><code>?</code><code class="super"><code>V</code></code>, <code>?</code><code class="extends"><code>R</code></code></code></code><code class="parameterName">then</code>)</code><i class="U"><code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>R</code></code></code></i></h2>
-				<table class="w">
-					<tr class="x">
+			<section class="h" id="map(java.util.function.Function)">
+				<h2 class="CB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="r">map</code><code class="T">(<code><a aria-label="java.util.function.Function 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Function.html">Function</a><code class="parameters"><code>?</code><code class="super"><code>V</code></code>, <code>?</code><code class="extends"><code>R</code></code></code></code><code class="parameterName">then</code>)</code><i class="y"><code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>R</code></code></code></i></h2>
+				<table class="Q">
+					<tr class="z">
 						<td><code>R</code></td>
 						<td></td>
 					</tr>
-					<tr class="o">
+					<tr class="c">
 						<td><code><a aria-label="java.util.function.Function 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Function.html">Function</a><code class="parameters"><code>?</code><code class="super"><code>V</code></code>, <code>?</code><code class="extends"><code>R</code></code></code></code><code class="parameterName">then</code></td>
 						<td><span><p>An action to perform.</p></span></td>
 					</tr>
-					<tr class="j">
+					<tr class="AB">
 						<td><code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>R</code></code></code></td>
 						<td><span><p>The computed <code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a></code>.</p></span></td>
 					</tr>
 				</table><span class="A"><p>Perform the specified action if the value is present.</p></span></section>
-			<section class="R" id="flatMap(java.util.function.Function)">
-				<h2 class="BB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="T">flatMap</code><code class="k">(<code><a aria-label="java.util.function.Function 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Function.html">Function</a><code class="parameters"><code>V</code>, <code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>R</code></code></code></code></code><code class="parameterName">mapper</code>)</code><i class="U"><code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>R</code></code></code></i></h2>
-				<table class="w">
-					<tr class="x">
+			<section class="h" id="flatMap(java.util.function.Function)">
+				<h2 class="CB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="r">flatMap</code><code class="T">(<code><a aria-label="java.util.function.Function 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Function.html">Function</a><code class="parameters"><code>V</code>, <code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>R</code></code></code></code></code><code class="parameterName">mapper</code>)</code><i class="y"><code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>R</code></code></code></i></h2>
+				<table class="Q">
+					<tr class="z">
 						<td><code>R</code></td>
 						<td></td>
 					</tr>
-					<tr class="o">
+					<tr class="c">
 						<td><code><a aria-label="java.util.function.Function 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Function.html">Function</a><code class="parameters"><code>V</code>, <code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>R</code></code></code></code></code><code class="parameterName">mapper</code></td>
 						<td><span><p>The mapping function to apply to a value, if present.</p></span></td>
 					</tr>
-					<tr class="j">
+					<tr class="AB">
 						<td><code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>R</code></code></code></td>
 						<td><span><p>The computed <code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a></code>.</p></span></td>
 					</tr>
 				</table><span class="A"><p>If a value is present, returns the result of applying the given <code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a></code>-bearing
 mapping function to the value, otherwise returns an empty <code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a></code>.</p></span></section>
-			<section class="R" id="next()">
-				<h2 class="BB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="T">next</code><code class="k">()</code><i class="U"><code>V</code></i></h2>
-				<table class="w">
-					<tr class="j">
+			<section class="h" id="next()">
+				<h2 class="CB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="r">next</code><code class="T">()</code><i class="y"><code>V</code></i></h2>
+				<table class="Q">
+					<tr class="AB">
 						<td><code>V</code></td>
 						<td><span><p>The next value.</p></span></td>
 					</tr>
 				</table><span class="A"><p>Get the value to be set next. The method waits until a new value is set.</p></span></section>
-			<section class="R" id="observe()">
-				<h2 class="BB"><i class="FINAL SYNCHRONIZED"><i class="PUBLIC"></i></i><code class="T">observe</code><code class="k">()</code><i class="U"><code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a><code class="parameters"><code>V</code></code></code></i></h2>
-				<table class="w">
-					<tr class="j">
+			<section class="h" id="observe()">
+				<h2 class="CB"><i class="SYNCHRONIZED FINAL"><i class="PUBLIC"></i></i><code class="r">observe</code><code class="T">()</code><i class="y"><code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a><code class="parameters"><code>V</code></code></code></i></h2>
+				<table class="Q">
+					<tr class="AB">
 						<td><code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a><code class="parameters"><code>V</code></code></code></td>
 						<td><span><p>The <code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code> which notifies value modification.</p></span></td>
 					</tr>
 				</table><span class="A"><p>Observe this <code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a></code>.</p></span></section>
-			<section class="R" id="observing()">
-				<h2 class="BB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="T">observing</code><code class="k">()</code><i class="U"><code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a><code class="parameters"><code>V</code></code></code></i></h2>
-				<table class="w">
-					<tr class="j">
+			<section class="h" id="observing()">
+				<h2 class="CB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="r">observing</code><code class="T">()</code><i class="y"><code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a><code class="parameters"><code>V</code></code></code></i></h2>
+				<table class="Q">
+					<tr class="AB">
 						<td><code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a><code class="parameters"><code>V</code></code></code></td>
 						<td><span><p>The <code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a></code> which notifies value modification.</p></span></td>
 					</tr>
 				</table><span class="A"><p>Observe this <code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a></code> with the current value.</p></span></section>
-			<section class="R" id="or(java.lang.Object)">
-				<h2 class="BB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="T">or</code><code class="k">(<code>V</code><code class="parameterName">other</code>)</code><i class="U"><code>V</code></i></h2>
-				<table class="w">
-					<tr class="o">
+			<section class="h" id="or(java.lang.Object)">
+				<h2 class="CB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="r">or</code><code class="T">(<code>V</code><code class="parameterName">other</code>)</code><i class="y"><code>V</code></i></h2>
+				<table class="Q">
+					<tr class="c">
 						<td><code>V</code><code class="parameterName">other</code></td>
 						<td><span><p>A value to be returned if there is no value present, may be null.</p></span></td>
 					</tr>
-					<tr class="j">
+					<tr class="AB">
 						<td><code>V</code></td>
 						<td><span><p>The current value or alternative value.</p></span></td>
 					</tr>
 				</table><span class="A"><p>Get the current value. If there is no value, returns the specified alternative value.</p></span></section>
-			<section class="R" id="or(java.util.function.Supplier)">
-				<h2 class="BB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="T">or</code><code class="k">(<code><a aria-label="java.util.function.Supplier 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code>V</code></code></code><code class="parameterName">other</code>)</code><i class="U"><code>V</code></i></h2>
-				<table class="w">
-					<tr class="o">
+			<section class="h" id="or(java.util.function.Supplier)">
+				<h2 class="CB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="r">or</code><code class="T">(<code><a aria-label="java.util.function.Supplier 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code>V</code></code></code><code class="parameterName">other</code>)</code><i class="y"><code>V</code></i></h2>
+				<table class="Q">
+					<tr class="c">
 						<td><code><a aria-label="java.util.function.Supplier 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code>V</code></code></code><code class="parameterName">other</code></td>
 						<td><span><p>A value to be returned if there is no value present, may be null.</p></span></td>
 					</tr>
-					<tr class="j">
+					<tr class="AB">
 						<td><code>V</code></td>
 						<td><span><p>The current value or alternative value.</p></span></td>
 					</tr>
 				</table><span class="A"><p>Get the current value. If there is no value, returns the specified alternative value.</p></span></section>
-			<section class="R" id="set(java.lang.Object)">
-				<h2 class="BB"><i class="FINAL SYNCHRONIZED"><i class="PUBLIC"></i></i><code class="T">set</code><code class="k">(<code>V</code><code class="parameterName">value</code>)</code><i class="U"><code>V</code></i></h2>
-				<table class="w">
-					<tr class="o">
+			<section class="h" id="set(java.lang.Object)">
+				<h2 class="CB"><i class="SYNCHRONIZED FINAL"><i class="PUBLIC"></i></i><code class="r">set</code><code class="T">(<code>V</code><code class="parameterName">value</code>)</code><i class="y"><code>V</code></i></h2>
+				<table class="Q">
+					<tr class="c">
 						<td><code>V</code><code class="parameterName">value</code></td>
 						<td><span><p>A value to assign.</p></span></td>
 					</tr>
-					<tr class="j">
+					<tr class="AB">
 						<td><code>V</code></td>
 						<td><span><p>A previous value.</p></span></td>
 					</tr>
 				</table><span class="A"><p>Assign the new value.</p></span></section>
-			<section class="R" id="set(java.util.function.Supplier)">
-				<h2 class="BB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="T">set</code><code class="k">(<code><a aria-label="java.util.function.Supplier 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code>V</code></code></code><code class="parameterName">value</code>)</code><i class="U"><code>V</code></i></h2>
-				<table class="w">
-					<tr class="o">
+			<section class="h" id="set(java.util.function.Supplier)">
+				<h2 class="CB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="r">set</code><code class="T">(<code><a aria-label="java.util.function.Supplier 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code>V</code></code></code><code class="parameterName">value</code>)</code><i class="y"><code>V</code></i></h2>
+				<table class="Q">
+					<tr class="c">
 						<td><code><a aria-label="java.util.function.Supplier 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code>V</code></code></code><code class="parameterName">value</code></td>
 						<td><span><p>A value generator.</p></span></td>
 					</tr>
-					<tr class="j">
+					<tr class="AB">
 						<td><code>V</code></td>
 						<td><span><p>A previous value.</p></span></td>
 					</tr>
 				</table><span class="A"><p>Assign the new value.</p></span></section>
-			<section class="R" id="set(java.util.function.UnaryOperator)">
-				<h2 class="BB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="T">set</code><code class="k">(<code><a aria-label="java.util.function.UnaryOperator 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/UnaryOperator.html">UnaryOperator</a><code class="parameters"><code>V</code></code></code><code class="parameterName">value</code>)</code><i class="U"><code>V</code></i></h2>
-				<table class="w">
-					<tr class="o">
+			<section class="h" id="set(java.util.function.UnaryOperator)">
+				<h2 class="CB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="r">set</code><code class="T">(<code><a aria-label="java.util.function.UnaryOperator 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/UnaryOperator.html">UnaryOperator</a><code class="parameters"><code>V</code></code></code><code class="parameterName">value</code>)</code><i class="y"><code>V</code></i></h2>
+				<table class="Q">
+					<tr class="c">
 						<td><code><a aria-label="java.util.function.UnaryOperator 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/UnaryOperator.html">UnaryOperator</a><code class="parameters"><code>V</code></code></code><code class="parameterName">value</code></td>
 						<td><span><p>A value generator.</p></span></td>
 					</tr>
-					<tr class="j">
+					<tr class="AB">
 						<td><code>V</code></td>
 						<td><span><p>A previous value.</p></span></td>
 					</tr>
 				</table><span class="A"><p>Assign the new value.</p></span></section>
-			<section class="R" id="to(java.util.function.Consumer)">
-				<h2 class="BB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="T">to</code><code class="k">(<code><a aria-label="java.util.function.Consumer 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>V</code></code></code><code class="parameterName">some</code>)</code><i class="U"><code>void</code></i></h2>
-				<table class="w">
-					<tr class="o">
+			<section class="h" id="to(java.util.function.Consumer)">
+				<h2 class="CB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="r">to</code><code class="T">(<code><a aria-label="java.util.function.Consumer 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>V</code></code></code><code class="parameterName">some</code>)</code><i class="y"><code>void</code></i></h2>
+				<table class="Q">
+					<tr class="c">
 						<td><code><a aria-label="java.util.function.Consumer 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>V</code></code></code><code class="parameterName">some</code></td>
 						<td><span><p>A user action.</p></span></td>
 					</tr>
 				</table><span class="A"><p>Execute the specified action if the value is present.</p></span></section>
-			<section class="R" id="to(java.util.function.Consumer,java.lang.Runnable)">
-				<h2 class="BB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="T">to</code><code class="k">(<code><a aria-label="java.util.function.Consumer 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>V</code></code></code><code class="parameterName">some</code>, <code><a aria-label="java.lang.Runnable 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code><code class="parameterName">none</code>)</code><i class="U"><code>void</code></i></h2>
-				<table class="w">
-					<tr class="o">
+			<section class="h" id="to(java.util.function.Consumer,java.lang.Runnable)">
+				<h2 class="CB"><i class="FINAL"><i class="PUBLIC"></i></i><code class="r">to</code><code class="T">(<code><a aria-label="java.util.function.Consumer 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>V</code></code></code><code class="parameterName">some</code>, <code><a aria-label="java.lang.Runnable 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code><code class="parameterName">none</code>)</code><i class="y"><code>void</code></i></h2>
+				<table class="Q">
+					<tr class="c">
 						<td><code><a aria-label="java.util.function.Consumer 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>V</code></code></code><code class="parameterName">some</code></td>
 						<td><span><p>A user action.</p></span></td>
 					</tr>
-					<tr class="o">
+					<tr class="c">
 						<td><code><a aria-label="java.lang.Runnable 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code><code class="parameterName">none</code></td>
 						<td></td>
 					</tr>
 				</table><span class="A"><p>Execute the specified action.</p></span></section>
-			<section class="R" id="hashCode()">
-				<h2 class="BB"><i class="FINAL"><i class="OVERRIDE PUBLIC"></i></i><code class="T">hashCode</code><code class="k">()</code><i class="U"><code>int</code></i></h2>
-				<table class="w">
-					<tr class="j">
+			<section class="h" id="hashCode()">
+				<h2 class="CB"><i class="FINAL"><i class="OVERRIDE PUBLIC"></i></i><code class="r">hashCode</code><code class="T">()</code><i class="y"><code>int</code></i></h2>
+				<table class="Q">
+					<tr class="AB">
 						<td><code>int</code></td>
 						<td></td>
 					</tr>
 				</table>
 			</section>
-			<section class="R" id="equals(java.lang.Object)">
-				<h2 class="BB"><i class="FINAL"><i class="OVERRIDE PUBLIC"></i></i><code class="T">equals</code><code class="k">(<code><a aria-label="java.lang.Object 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Object.html">Object</a></code><code class="parameterName">obj</code>)</code><i class="U"><code>boolean</code></i></h2>
-				<table class="w">
-					<tr class="o">
+			<section class="h" id="equals(java.lang.Object)">
+				<h2 class="CB"><i class="FINAL"><i class="OVERRIDE PUBLIC"></i></i><code class="r">equals</code><code class="T">(<code><a aria-label="java.lang.Object 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Object.html">Object</a></code><code class="parameterName">obj</code>)</code><i class="y"><code>boolean</code></i></h2>
+				<table class="Q">
+					<tr class="c">
 						<td><code><a aria-label="java.lang.Object 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Object.html">Object</a></code><code class="parameterName">obj</code></td>
 						<td></td>
 					</tr>
-					<tr class="j">
+					<tr class="AB">
 						<td><code>boolean</code></td>
 						<td></td>
 					</tr>
 				</table>
 			</section>
-			<section class="R" id="toString()">
-				<h2 class="BB"><i class="OVERRIDE PUBLIC"></i><code class="T">toString</code><code class="k">()</code><i class="U"><code><a aria-label="java.lang.String 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html">String</a></code></i></h2>
-				<table class="w">
-					<tr class="j">
+			<section class="h" id="toString()">
+				<h2 class="CB"><i class="OVERRIDE PUBLIC"></i><code class="r">toString</code><code class="T">()</code><i class="y"><code><a aria-label="java.lang.String 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html">String</a></code></i></h2>
+				<table class="Q">
+					<tr class="AB">
 						<td><code><a aria-label="java.lang.String 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html">String</a></code></td>
 						<td></td>
 					</tr>
 				</table>
 			</section>
-			<section class="R" id="of(java.lang.Object)">
-				<h2 class="BB"><i class="PUBLIC STATIC"></i><code class="T">of</code><code class="k">(<code>T</code><code class="parameterName">value</code>)</code><i class="U"><code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>T</code></code></code></i></h2>
-				<table class="w">
-					<tr class="x">
+			<section class="h" id="of(java.lang.Object)">
+				<h2 class="CB"><i class="PUBLIC STATIC"></i><code class="r">of</code><code class="T">(<code>T</code><code class="parameterName">value</code>)</code><i class="y"><code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>T</code></code></code></i></h2>
+				<table class="Q">
+					<tr class="z">
 						<td><code>T</code></td>
 						<td></td>
 					</tr>
-					<tr class="o">
+					<tr class="c">
 						<td><code>T</code><code class="parameterName">value</code></td>
 						<td><span><p>An actual value, <code>null</code> will be acceptable.</p></span></td>
 					</tr>
-					<tr class="j">
+					<tr class="AB">
 						<td><code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>T</code></code></code></td>
 						<td><span><p>A created <code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a></code>.</p></span></td>
 					</tr>
@@ -425,14 +425,14 @@ mapping function to the value, otherwise returns an empty <code><a aria-label="k
  Create <code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a></code> with the specified value.
  </p>
 				</span></section>
-			<section class="R" id="empty()">
-				<h2 class="BB"><i class="PUBLIC STATIC"></i><code class="T">empty</code><code class="k">()</code><i class="U"><code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>T</code></code></code></i></h2>
-				<table class="w">
-					<tr class="x">
+			<section class="h" id="empty()">
+				<h2 class="CB"><i class="PUBLIC STATIC"></i><code class="r">empty</code><code class="T">()</code><i class="y"><code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>T</code></code></code></i></h2>
+				<table class="Q">
+					<tr class="z">
 						<td><code>T</code></td>
 						<td></td>
 					</tr>
-					<tr class="j">
+					<tr class="AB">
 						<td><code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>T</code></code></code></td>
 						<td><span><p>A new empty <code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a></code>.</p></span></td>
 					</tr>
@@ -441,57 +441,57 @@ mapping function to the value, otherwise returns an empty <code><a aria-label="k
  </p>
 				</span></section>
 		</article>
-		<aside class="g">
-			<div class="Y">
-				<h5 class="GB">Constructors</h5>
+		<aside class="U">
+			<div class="k">
+				<h5 class="l">Constructors</h5>
 				<ul>
-					<li class="AB"><i class="PROTECTED"></i><code><a href="api/kiss.Variable.html#Variable(java.lang.Object)">Variable</a></code><code class="k">(<code>V</code><code class="parameterName">value</code>)</code></li>
+					<li class="t"><i class="PROTECTED"></i><code><a href="api/kiss.Variable.html#Variable(java.lang.Object)">Variable</a></code><code class="T">(<code>V</code><code class="parameterName">value</code>)</code></li>
 				</ul>
-				<h5 class="GB">Fields</h5>
+				<h5 class="l">Fields</h5>
 				<ul>
-					<li class="AB"><i class="FINAL TRANSIENT"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#v">v</a></code><i class="X"><code class="return">V</code></i></li>
+					<li class="t"><i class="FINAL TRANSIENT"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#v">v</a></code><i class="O"><code class="return">V</code></i></li>
 				</ul>
-				<h5 class="GB">Static Methods</h5>
+				<h5 class="l">Static Methods</h5>
 				<ul>
-					<li class="AB"><i class="PUBLIC STATIC"></i><code><a href="api/kiss.Variable.html#of(java.lang.Object)">of</a></code><code class="k">(<code>T</code><code class="parameterName">value</code>)</code><i class="X"><code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>T</code></code></code></i></li>
-					<li class="AB"><i class="PUBLIC STATIC"></i><code><a href="api/kiss.Variable.html#empty()">empty</a></code><code class="k">()</code><i class="X"><code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>T</code></code></code></i></li>
+					<li class="t"><i class="PUBLIC STATIC"></i><code><a href="api/kiss.Variable.html#of(java.lang.Object)">of</a></code><code class="T">(<code>T</code><code class="parameterName">value</code>)</code><i class="O"><code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>T</code></code></code></i></li>
+					<li class="t"><i class="PUBLIC STATIC"></i><code><a href="api/kiss.Variable.html#empty()">empty</a></code><code class="T">()</code><i class="O"><code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>T</code></code></code></i></li>
 				</ul>
-				<h5 class="GB">Methods</h5>
+				<h5 class="l">Methods</h5>
 				<ul>
-					<li class="AB"><i class="OVERRIDE PUBLIC"></i><code><a href="api/kiss.Variable.html#accept(java.lang.Object)">accept</a></code><code class="k">(<code>V</code><code class="parameterName">value</code>)</code><i class="X"><code>void</code></i></li>
-					<li class="AB"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#acquire()">acquire</a></code><code class="k">()</code><i class="X"><code>V</code></i></li>
-					<li class="AB"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#exact()">exact</a></code><code class="k">()</code><i class="X"><code>V</code></i></li>
-					<li class="AB"><i class="FINAL"><i class="OVERRIDE PUBLIC"></i></i><code><a href="api/kiss.Variable.html#get()">get</a></code><code class="k">()</code><i class="X"><code>V</code></i></li>
-					<li class="AB"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#intercept(kiss.WiseBiFunction)">intercept</a></code><code class="k">(<code><a aria-label="kiss.WiseBiFunction" href="api/kiss.WiseBiFunction.html">WiseBiFunction</a><code class="parameters"><code>V</code>, <code>V</code>, <code>V</code></code></code><code class="parameterName">interceptor</code>)</code><i class="X"><code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>V</code></code></code></i></li>
-					<li class="AB"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#is(java.lang.Object)">is</a></code><code class="k">(<code>V</code><code class="parameterName">value</code>)</code><i class="X"><code>boolean</code></i></li>
-					<li class="AB"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#is(java.util.function.Predicate)">is</a></code><code class="k">(<code><a aria-label="java.util.function.Predicate 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Predicate.html">Predicate</a><code class="parameters"><code>V</code></code></code><code class="parameterName">condition</code>)</code><i class="X"><code>boolean</code></i></li>
-					<li class="AB"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#isNot(java.lang.Object)">isNot</a></code><code class="k">(<code>V</code><code class="parameterName">value</code>)</code><i class="X"><code>boolean</code></i></li>
-					<li class="AB"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#isNot(java.util.function.Predicate)">isNot</a></code><code class="k">(<code><a aria-label="java.util.function.Predicate 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Predicate.html">Predicate</a><code class="parameters"><code>V</code></code></code><code class="parameterName">condition</code>)</code><i class="X"><code>boolean</code></i></li>
-					<li class="AB"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#isAbsent()">isAbsent</a></code><code class="k">()</code><i class="X"><code>boolean</code></i></li>
-					<li class="AB"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#isPresent()">isPresent</a></code><code class="k">()</code><i class="X"><code>boolean</code></i></li>
-					<li class="AB"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#isFixed()">isFixed</a></code><code class="k">()</code><i class="X"><code>boolean</code></i></li>
-					<li class="AB"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#fix()">fix</a></code><code class="k">()</code><i class="X"><code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>V</code></code></code></i></li>
-					<li class="AB"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#flip(java.util.function.Supplier)">flip</a></code><code class="k">(<code><a aria-label="java.util.function.Supplier 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code>?</code><code class="extends"><code>R</code></code></code></code><code class="parameterName">then</code>)</code><i class="X"><code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>R</code></code></code></i></li>
-					<li class="AB"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#flatFlip(java.util.function.Supplier)">flatFlip</a></code><code class="k">(<code><a aria-label="java.util.function.Supplier 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>R</code></code></code></code></code><code class="parameterName">mapper</code>)</code><i class="X"><code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>R</code></code></code></i></li>
-					<li class="AB"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#map(java.util.function.Function)">map</a></code><code class="k">(<code><a aria-label="java.util.function.Function 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Function.html">Function</a><code class="parameters"><code>?</code><code class="super"><code>V</code></code>, <code>?</code><code class="extends"><code>R</code></code></code></code><code class="parameterName">then</code>)</code><i class="X"><code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>R</code></code></code></i></li>
-					<li class="AB"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#flatMap(java.util.function.Function)">flatMap</a></code><code class="k">(<code><a aria-label="java.util.function.Function 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Function.html">Function</a><code class="parameters"><code>V</code>, <code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>R</code></code></code></code></code><code class="parameterName">mapper</code>)</code><i class="X"><code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>R</code></code></code></i></li>
-					<li class="AB"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#next()">next</a></code><code class="k">()</code><i class="X"><code>V</code></i></li>
-					<li class="AB"><i class="FINAL SYNCHRONIZED"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#observe()">observe</a></code><code class="k">()</code><i class="X"><code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a><code class="parameters"><code>V</code></code></code></i></li>
-					<li class="AB"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#observing()">observing</a></code><code class="k">()</code><i class="X"><code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a><code class="parameters"><code>V</code></code></code></i></li>
-					<li class="AB"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#or(java.lang.Object)">or</a></code><code class="k">(<code>V</code><code class="parameterName">other</code>)</code><i class="X"><code>V</code></i></li>
-					<li class="AB"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#or(java.util.function.Supplier)">or</a></code><code class="k">(<code><a aria-label="java.util.function.Supplier 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code>V</code></code></code><code class="parameterName">other</code>)</code><i class="X"><code>V</code></i></li>
-					<li class="AB"><i class="FINAL SYNCHRONIZED"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#set(java.lang.Object)">set</a></code><code class="k">(<code>V</code><code class="parameterName">value</code>)</code><i class="X"><code>V</code></i></li>
-					<li class="AB"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#set(java.util.function.Supplier)">set</a></code><code class="k">(<code><a aria-label="java.util.function.Supplier 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code>V</code></code></code><code class="parameterName">value</code>)</code><i class="X"><code>V</code></i></li>
-					<li class="AB"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#set(java.util.function.UnaryOperator)">set</a></code><code class="k">(<code><a aria-label="java.util.function.UnaryOperator 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/UnaryOperator.html">UnaryOperator</a><code class="parameters"><code>V</code></code></code><code class="parameterName">value</code>)</code><i class="X"><code>V</code></i></li>
-					<li class="AB"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#to(java.util.function.Consumer)">to</a></code><code class="k">(<code><a aria-label="java.util.function.Consumer 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>V</code></code></code><code class="parameterName">some</code>)</code><i class="X"><code>void</code></i></li>
-					<li class="AB"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#to(java.util.function.Consumer,java.lang.Runnable)">to</a></code><code class="k">(<code><a aria-label="java.util.function.Consumer 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>V</code></code></code><code class="parameterName">some</code>, <code><a aria-label="java.lang.Runnable 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code><code class="parameterName">none</code>)</code><i class="X"><code>void</code></i></li>
-					<li class="AB"><i class="FINAL"><i class="OVERRIDE PUBLIC"></i></i><code><a href="api/kiss.Variable.html#hashCode()">hashCode</a></code><code class="k">()</code><i class="X"><code>int</code></i></li>
-					<li class="AB"><i class="FINAL"><i class="OVERRIDE PUBLIC"></i></i><code><a href="api/kiss.Variable.html#equals(java.lang.Object)">equals</a></code><code class="k">(<code><a aria-label="java.lang.Object 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Object.html">Object</a></code><code class="parameterName">obj</code>)</code><i class="X"><code>boolean</code></i></li>
-					<li class="AB"><i class="OVERRIDE PUBLIC"></i><code><a href="api/kiss.Variable.html#toString()">toString</a></code><code class="k">()</code><i class="X"><code><a aria-label="java.lang.String 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html">String</a></code></i></li>
+					<li class="t"><i class="OVERRIDE PUBLIC"></i><code><a href="api/kiss.Variable.html#accept(java.lang.Object)">accept</a></code><code class="T">(<code>V</code><code class="parameterName">value</code>)</code><i class="O"><code>void</code></i></li>
+					<li class="t"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#acquire()">acquire</a></code><code class="T">()</code><i class="O"><code>V</code></i></li>
+					<li class="t"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#exact()">exact</a></code><code class="T">()</code><i class="O"><code>V</code></i></li>
+					<li class="t"><i class="FINAL"><i class="OVERRIDE PUBLIC"></i></i><code><a href="api/kiss.Variable.html#get()">get</a></code><code class="T">()</code><i class="O"><code>V</code></i></li>
+					<li class="t"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#intercept(kiss.WiseBiFunction)">intercept</a></code><code class="T">(<code><a aria-label="kiss.WiseBiFunction" href="api/kiss.WiseBiFunction.html">WiseBiFunction</a><code class="parameters"><code>V</code>, <code>V</code>, <code>V</code></code></code><code class="parameterName">interceptor</code>)</code><i class="O"><code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>V</code></code></code></i></li>
+					<li class="t"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#is(java.lang.Object)">is</a></code><code class="T">(<code>V</code><code class="parameterName">value</code>)</code><i class="O"><code>boolean</code></i></li>
+					<li class="t"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#is(java.util.function.Predicate)">is</a></code><code class="T">(<code><a aria-label="java.util.function.Predicate 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Predicate.html">Predicate</a><code class="parameters"><code>V</code></code></code><code class="parameterName">condition</code>)</code><i class="O"><code>boolean</code></i></li>
+					<li class="t"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#isNot(java.lang.Object)">isNot</a></code><code class="T">(<code>V</code><code class="parameterName">value</code>)</code><i class="O"><code>boolean</code></i></li>
+					<li class="t"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#isNot(java.util.function.Predicate)">isNot</a></code><code class="T">(<code><a aria-label="java.util.function.Predicate 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Predicate.html">Predicate</a><code class="parameters"><code>V</code></code></code><code class="parameterName">condition</code>)</code><i class="O"><code>boolean</code></i></li>
+					<li class="t"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#isAbsent()">isAbsent</a></code><code class="T">()</code><i class="O"><code>boolean</code></i></li>
+					<li class="t"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#isPresent()">isPresent</a></code><code class="T">()</code><i class="O"><code>boolean</code></i></li>
+					<li class="t"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#isFixed()">isFixed</a></code><code class="T">()</code><i class="O"><code>boolean</code></i></li>
+					<li class="t"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#fix()">fix</a></code><code class="T">()</code><i class="O"><code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>V</code></code></code></i></li>
+					<li class="t"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#flip(java.util.function.Supplier)">flip</a></code><code class="T">(<code><a aria-label="java.util.function.Supplier 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code>?</code><code class="extends"><code>R</code></code></code></code><code class="parameterName">then</code>)</code><i class="O"><code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>R</code></code></code></i></li>
+					<li class="t"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#flatFlip(java.util.function.Supplier)">flatFlip</a></code><code class="T">(<code><a aria-label="java.util.function.Supplier 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>R</code></code></code></code></code><code class="parameterName">mapper</code>)</code><i class="O"><code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>R</code></code></code></i></li>
+					<li class="t"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#map(java.util.function.Function)">map</a></code><code class="T">(<code><a aria-label="java.util.function.Function 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Function.html">Function</a><code class="parameters"><code>?</code><code class="super"><code>V</code></code>, <code>?</code><code class="extends"><code>R</code></code></code></code><code class="parameterName">then</code>)</code><i class="O"><code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>R</code></code></code></i></li>
+					<li class="t"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#flatMap(java.util.function.Function)">flatMap</a></code><code class="T">(<code><a aria-label="java.util.function.Function 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Function.html">Function</a><code class="parameters"><code>V</code>, <code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>R</code></code></code></code></code><code class="parameterName">mapper</code>)</code><i class="O"><code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a><code class="parameters"><code>R</code></code></code></i></li>
+					<li class="t"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#next()">next</a></code><code class="T">()</code><i class="O"><code>V</code></i></li>
+					<li class="t"><i class="SYNCHRONIZED FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#observe()">observe</a></code><code class="T">()</code><i class="O"><code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a><code class="parameters"><code>V</code></code></code></i></li>
+					<li class="t"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#observing()">observing</a></code><code class="T">()</code><i class="O"><code><a aria-label="kiss.Signal" href="api/kiss.Signal.html">Signal</a><code class="parameters"><code>V</code></code></code></i></li>
+					<li class="t"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#or(java.lang.Object)">or</a></code><code class="T">(<code>V</code><code class="parameterName">other</code>)</code><i class="O"><code>V</code></i></li>
+					<li class="t"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#or(java.util.function.Supplier)">or</a></code><code class="T">(<code><a aria-label="java.util.function.Supplier 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code>V</code></code></code><code class="parameterName">other</code>)</code><i class="O"><code>V</code></i></li>
+					<li class="t"><i class="SYNCHRONIZED FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#set(java.lang.Object)">set</a></code><code class="T">(<code>V</code><code class="parameterName">value</code>)</code><i class="O"><code>V</code></i></li>
+					<li class="t"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#set(java.util.function.Supplier)">set</a></code><code class="T">(<code><a aria-label="java.util.function.Supplier 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Supplier.html">Supplier</a><code class="parameters"><code>V</code></code></code><code class="parameterName">value</code>)</code><i class="O"><code>V</code></i></li>
+					<li class="t"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#set(java.util.function.UnaryOperator)">set</a></code><code class="T">(<code><a aria-label="java.util.function.UnaryOperator 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/UnaryOperator.html">UnaryOperator</a><code class="parameters"><code>V</code></code></code><code class="parameterName">value</code>)</code><i class="O"><code>V</code></i></li>
+					<li class="t"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#to(java.util.function.Consumer)">to</a></code><code class="T">(<code><a aria-label="java.util.function.Consumer 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>V</code></code></code><code class="parameterName">some</code>)</code><i class="O"><code>void</code></i></li>
+					<li class="t"><i class="FINAL"><i class="PUBLIC"></i></i><code><a href="api/kiss.Variable.html#to(java.util.function.Consumer,java.lang.Runnable)">to</a></code><code class="T">(<code><a aria-label="java.util.function.Consumer 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/util/function/Consumer.html">Consumer</a><code class="parameters"><code>V</code></code></code><code class="parameterName">some</code>, <code><a aria-label="java.lang.Runnable 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Runnable.html">Runnable</a></code><code class="parameterName">none</code>)</code><i class="O"><code>void</code></i></li>
+					<li class="t"><i class="FINAL"><i class="OVERRIDE PUBLIC"></i></i><code><a href="api/kiss.Variable.html#hashCode()">hashCode</a></code><code class="T">()</code><i class="O"><code>int</code></i></li>
+					<li class="t"><i class="FINAL"><i class="OVERRIDE PUBLIC"></i></i><code><a href="api/kiss.Variable.html#equals(java.lang.Object)">equals</a></code><code class="T">(<code><a aria-label="java.lang.Object 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/Object.html">Object</a></code><code class="parameterName">obj</code>)</code><i class="O"><code>boolean</code></i></li>
+					<li class="t"><i class="OVERRIDE PUBLIC"></i><code><a href="api/kiss.Variable.html#toString()">toString</a></code><code class="T">()</code><i class="O"><code><a aria-label="java.lang.String 🚀" href="https://docs.oracle.com/en/java/javase/24/docs/api/java.base/java/lang/String.html">String</a></code></i></li>
 				</ul>
 			</div>
 		</aside>
-		<footer class="a">
+		<footer class="Y">
 			<p>Powered by <a href="https://github.com/teletha/evergarden" target="_">Evergarden</a></p>
 		</footer>
 	</body>
