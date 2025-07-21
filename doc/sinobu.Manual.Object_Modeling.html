@@ -19,10 +19,10 @@
 		<link href="https://cdn.jsdelivr.net/npm/ress@4.0.0/dist/ress.min.css" rel="stylesheet"/>
 		<link href="main.css" rel="stylesheet"/>
 	</head>
-	<body class="V">
-		<header class="W" date="2025-06-08">
-			<h1 class="n"><a href="index.html"><code>Sinobu</code></a></h1>
-			<nav class="o"><a href="doc/sinobu.Manual.Introduction.html" id="Manual"><svg class="text">
+	<body class="EB">
+		<header class="e" date="2025-06-08">
+			<h1 class="f"><a href="index.html"><code>Sinobu</code></a></h1>
+			<nav class="J"><a href="doc/sinobu.Manual.Introduction.html" id="Manual"><svg class="text">
 						<use href="main.svg#text"/>
 					</svg>
 				</a><a href="api/main.html" id="API"><svg class="package">
@@ -38,26 +38,26 @@
 						<use href="main.svg#github"/>
 					</svg>
 				</a></nav>
-			<div class="p"><a aria-label="Change color scheme" id="theme"><svg class="sun">
+			<div class="Q"><a aria-label="Change color scheme" id="theme"><svg class="sun">
 						<use href="main.svg#sun"/>
 					</svg><svg class="moon">
 						<use href="main.svg#moon"/>
 					</svg>
 				</a></div>
 		</header>
-		<nav class="Z"></nav>
-		<article class="X" id="Article">
-			<div class="h">
+		<nav class="s"></nav>
+		<article class="j" id="Article">
+			<div class="IB">
 				<section class="A" id="sinobu.Manual.Object_Modeling.Concept">
-					<header class="A K">
+					<header class="A m">
 						<h2>Concept</h2>
-						<div class="GB"><span class="perp JB"><svg class="copy">
+						<div class="d"><span class="perp o"><svg class="copy">
 									<use href="main.svg#copy"/>
 								</svg>
-							</span><a class="tweet JB"><svg class="twitter">
+							</span><a class="tweet o"><svg class="twitter">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit JB" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L475-L493"><svg class="edit">
+							</a><a class="edit o" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L475-L493"><svg class="edit">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
@@ -104,17 +104,17 @@ principles of object-oriented programming (OOP). Encapsulation hides the interna
 of an object and exposes only the necessary interfaces for interacting with it, improving
 code maintainability, reusability, and flexibility.</p></span></section>
 			</div>
-			<div class="h">
+			<div class="IB">
 				<section class="A" id="sinobu.Manual.Object_Modeling.Models">
-					<header class="A K">
+					<header class="A m">
 						<h2>Models</h2>
-						<div class="GB"><span class="perp JB"><svg class="copy">
+						<div class="d"><span class="perp o"><svg class="copy">
 									<use href="main.svg#copy"/>
 								</svg>
-							</span><a class="tweet JB"><svg class="twitter">
+							</span><a class="tweet o"><svg class="twitter">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit JB" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L531-L537"><svg class="edit">
+							</a><a class="edit o" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L531-L537"><svg class="edit">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
@@ -123,38 +123,38 @@ already a model.</p><p>Models can be retrieved from a class using the <code><a a
 there should not be many situations where the end user needs to retrieve the model
 directly.</p><pre class="lang-java"><code>Model model = Model.of(Person.class);</code></pre></span></section>
 			</div>
-			<div class="h">
+			<div class="IB">
 				<section class="A" id="sinobu.Manual.Object_Modeling.Property">
-					<header class="A K">
+					<header class="A m">
 						<h2>Property</h2>
-						<div class="GB"><span class="perp JB"><svg class="copy">
+						<div class="d"><span class="perp o"><svg class="copy">
 									<use href="main.svg#copy"/>
 								</svg>
-							</span><a class="tweet JB"><svg class="twitter">
+							</span><a class="tweet o"><svg class="twitter">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit JB" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L545-L546"><svg class="edit">
+							</a><a class="edit o" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L545-L546"><svg class="edit">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
 					</header><span class="A"><p>In Sinobu, a property refers to a value accessible by name and defined by a field or
 method. Property name is arbitrary.</p></span></section>
-				<section class="A N" id="sinobu.Manual.Object_Modeling.Property.By_Field">
-					<header class="A DB">
+				<section class="A v" id="sinobu.Manual.Object_Modeling.Property.By_Field">
+					<header class="A CB">
 						<h3 icon="📄">By Field</h3>
 					</header><span class="A"><p>Property definition by field.</p><pre class="lang-java"><code>public String filedProperty = &quot;This is property&quot;;</code></pre><p>With the final modifier, the value cannot be changed and is therefore not treated as
 a property.</p><pre class="lang-java"><code>public final String finalField = &quot;This is NOT property&quot;;</code></pre><p>Access modifiers other than public are not treated as properties.</p><pre class="lang-java"><code>protected String nonPublicField = &quot;This is NOT property&quot;;</code></pre><p>If you want to treat fields with access modifiers other than public as properties,
 use the <code><a aria-label="kiss.Managed" href="api/kiss.Managed.html">Managed</a></code> annotation.</p><pre class="lang-java"><code>@Managed
 protected String managedField = &quot;This is property&quot;;</code></pre></span></section>
-				<section class="A N" id="sinobu.Manual.Object_Modeling.Property.By_Variable_Field">
-					<header class="A DB">
+				<section class="A v" id="sinobu.Manual.Object_Modeling.Property.By_Variable_Field">
+					<header class="A CB">
 						<h3 icon="📄">By Variable Field</h3>
 					</header><span class="A"><p>Property definition by <code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a></code> field.</p><pre class="lang-java"><code>public Variable&lt;String&gt; variableField = Variable.of(&quot;This is property&quot;);</code></pre><p>Unlike normal fields, they are treated as properties even if they have final
 modifier.</p><pre class="lang-java"><code>public final Variable&lt;String&gt; finalField = Variable.of(&quot;This is property&quot;);</code></pre><p>Access modifiers other than public are not treated as properties.</p><pre class="lang-java"><code>protected Variable&lt;String&gt; nonPublicField = Variable.of(&quot;This is NOT property&quot;);</code></pre><p>If you want to treat fields with access modifiers other than public as properties,
 use the <code><a aria-label="kiss.Managed" href="api/kiss.Managed.html">Managed</a></code> annotation.</p><pre class="lang-java"><code>@Managed
 protected Variable&lt;String&gt; managedField = Variable.of(&quot;This is property&quot;);</code></pre></span></section>
-				<section class="A N" id="sinobu.Manual.Object_Modeling.Property.By_Method">
-					<header class="A DB">
+				<section class="A v" id="sinobu.Manual.Object_Modeling.Property.By_Method">
+					<header class="A CB">
 						<h3 icon="📄">By Method</h3>
 					</header><span class="A"><p>Property definition by method. The getter and setter methods must be defined
 according to the Java Bean naming conventions.</p><pre class="lang-java"><code>class GetterAndSetter {
@@ -179,24 +179,24 @@ according to the Java Bean naming conventions.</p><pre class="lang-java"><code>c
     }
 }</code></pre></span></section>
 			</div>
-			<div class="h">
+			<div class="IB">
 				<section class="A" id="sinobu.Manual.Object_Modeling.Manipulation">
-					<header class="A K">
+					<header class="A m">
 						<h2>Manipulation</h2>
-						<div class="GB"><span class="perp JB"><svg class="copy">
+						<div class="d"><span class="perp o"><svg class="copy">
 									<use href="main.svg#copy"/>
 								</svg>
-							</span><a class="tweet JB"><svg class="twitter">
+							</span><a class="tweet o"><svg class="twitter">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit JB" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L641-L644"><svg class="edit">
+							</a><a class="edit o" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L641-L644"><svg class="edit">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
 					</header><span class="A"><p>Normally, end users do not use <code><a aria-label="kiss.Model" href="api/kiss.Model.html">Model</a></code> API to manipulate or traverse properties.
 The following is mainly required for framework and library production.</p><p>Models and properties can be used to get, set and monitor property values.</p></span></section>
-				<section class="A N" id="sinobu.Manual.Object_Modeling.Manipulation.Get">
-					<header class="A DB">
+				<section class="A v" id="sinobu.Manual.Object_Modeling.Manipulation.Get">
+					<header class="A CB">
 						<h3 icon="📄">Get</h3>
 					</header><span class="A"><p>Get the value by name.</p><pre class="lang-java"><code>public void getProperty() {
     Person person = new Person();
@@ -207,8 +207,8 @@ The following is mainly required for framework and library production.</p><p>Mod
 
     assert model.get(person, property).equals(1);
 }</code></pre></span></section>
-				<section class="A N" id="sinobu.Manual.Object_Modeling.Manipulation.Set">
-					<header class="A DB">
+				<section class="A v" id="sinobu.Manual.Object_Modeling.Manipulation.Set">
+					<header class="A CB">
 						<h3 icon="📄">Set</h3>
 					</header><span class="A"><p>Set the value by name.</p><pre class="lang-java"><code>public void setProperty() {
     Person person = new Person();
@@ -228,8 +228,8 @@ the object. This is necessary because the Record is immutable.</p><pre class="la
     point = model.set(point, model.property(&quot;y&quot;), 20d);
     assert point.y == 20d;
 }</code></pre></span></section>
-				<section class="A N" id="sinobu.Manual.Object_Modeling.Manipulation.Monitor">
-					<header class="A DB">
+				<section class="A v" id="sinobu.Manual.Object_Modeling.Manipulation.Monitor">
+					<header class="A CB">
 						<h3 icon="📄">Monitor</h3>
 					</header><span class="A"><p>Monitor the <code><a aria-label="kiss.Variable" href="api/kiss.Variable.html">Variable</a></code> value.</p><pre class="lang-java"><code>public void observeVariableProperty() {
     class Item {
@@ -249,17 +249,17 @@ the object. This is necessary because the Record is immutable.</p><pre class="la
     assert values.get(2) == 3;
 }</code></pre></span></section>
 			</div>
-			<div class="LB"><a class="FB M" href="doc/sinobu.Manual.Dependency_Injection.html">Dependency Injection</a><a class="FB j" href="doc/sinobu.Manual.Extensibility.html">Extensibility</a></div>
+			<div class="X"><a class="V Y" href="doc/sinobu.Manual.Dependency_Injection.html">Dependency Injection</a><a class="V L" href="doc/sinobu.Manual.Extensibility.html">Extensibility</a></div>
 		</article>
-		<aside class="U">
-			<div class="b">
+		<aside class="c">
+			<div class="M">
 				<h5>Help improve document</h5>
 				<p>View this page on <a href="https://github.com/teletha/sinobu/blob/master/src/test/java/sinobu/Manual.java#L475">GitHub</a></p>
 				<p>Report a problem <a href="https://github.com/teletha/sinobu/issues/new?title=Improve document on sinobu.Manual.Object_Modeling&amp;labels=documentation,enhancement&amp;body=%23%23+What+specific+section+or+headline+is+this+issue+about%3F%0A%0A%0A%0A%23%23+What+information+was+incorrect%2C+unhelpful%2C+or+incomplete%3F%0A%0A%0A%0A%23%23+What+did+you+expect+to+see%3F%0A">with this page</a></p>
 			</div>
-			<p class="b">View in <a href="doc/one.html#sinobu.Manual.Object_Modeling.Concept">onepager</a></p>
+			<p class="M">View in <a href="doc/one.html#sinobu.Manual.Object_Modeling.Concept">onepager</a></p>
 		</aside>
-		<footer class="Y">
+		<footer class="T">
 			<p>Powered by <a href="https://github.com/teletha/evergarden" target="_">Evergarden</a></p>
 		</footer>
 	</body>
