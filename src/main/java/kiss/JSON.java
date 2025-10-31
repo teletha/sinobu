@@ -762,14 +762,15 @@ public class JSON implements Serializable {
 
                     // property key (List node doesn't need key)
                     if (!List.class.isAssignableFrom(model.type)) {
-                        write(property.name, String.class);
+                        write(property.name, false);
                         out.append(": ");
                     }
                 }
 
                 // property value
                 if (property.model.atomic) {
-                    write(I.transform(value, String.class), property.model.type);
+                    Class type = I.unwrap(property.model.type);
+                    write(I.transform(value, String.class), type.isPrimitive() && type != char.class || property.model.decoder.raw());
                 } else if (value == null) {
                     out.append("null");
                 } else {
@@ -801,13 +802,10 @@ public class JSON implements Serializable {
      * @param type A value type.
      * @throws IOException
      */
-    private void write(String value, Class type) throws IOException {
+    private void write(String value, boolean primitive) throws IOException {
         if (value == null) {
             out.append("null");
         } else {
-            type = I.unwrap(type);
-            boolean primitive = type.isPrimitive() && type != char.class;
-
             if (!primitive) out.append('"');
 
             for (int i = 0; i < value.length(); i++) {

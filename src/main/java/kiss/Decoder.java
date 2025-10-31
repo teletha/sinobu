@@ -28,4 +28,8 @@ public interface Decoder<M> extends Extensible {
      * @throws IllegalArgumentException If the given value is illegal format.
      */
     M decode(String value);
+
+    default boolean raw() {
+        return false;
+    }
 }
