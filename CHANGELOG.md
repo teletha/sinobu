@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.14.0](https://github.com/teletha/sinobu/compare/4.13.1...4.14.0) (2025-10-31)
+
+
+### Features
+
+* add Decorder#raw ([7616b99](https://github.com/teletha/sinobu/commit/7616b9933ffa466e39341a1eac181b79e1940abe))
+
 ## [4.13.1](https://github.com/teletha/sinobu/compare/4.13.0...4.13.1) (2025-07-20)
 
 
