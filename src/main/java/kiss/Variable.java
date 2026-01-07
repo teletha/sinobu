@@ -220,11 +220,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      */
     public final <R> Variable<R> flip(Supplier<? extends R> then) {
         if (v == null && then != null) {
-            try {
-                return of(then.get());
-            } catch (Throwable e) {
-                // ignore
-            }
+            return of(then.get());
         }
         return empty();
     }
@@ -248,11 +244,7 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
      */
     public final <R> Variable<R> map(Function<? super V, ? extends R> then) {
         if (v != null && then != null) {
-            try {
-                return of(then.apply(v));
-            } catch (Throwable e) {
-                // ignore
-            }
+            return of(then.apply(v));
         }
         return empty();
     }
