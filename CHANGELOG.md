@@ -1,5 +1,17 @@
 # Changelog
 
+## [4.14.0](https://github.com/teletha/sinobu/compare/4.13.1...4.14.0) (2026-01-07)
+
+
+### Features
+
+* add Decorder#raw ([7616b99](https://github.com/teletha/sinobu/commit/7616b9933ffa466e39341a1eac181b79e1940abe))
+
+
+### Bug Fixes
+
+* throw error in Variable#map ([f6b21a6](https://github.com/teletha/sinobu/commit/f6b21a6b90f939dd9f0b94cb7d5ed1f3ef8cb1a5))
+
 ## [4.13.1](https://github.com/teletha/sinobu/compare/4.13.0...4.13.1) (2025-07-20)
 
 
