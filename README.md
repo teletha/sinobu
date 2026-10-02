@@ -283,7 +283,7 @@ Sinobu depends on the following products on runtime.
 
 
 ## License
-Copyright (C) 2025 The SINOBU Development Team
+Copyright (C) 2026 The SINOBU Development Team
 
 MIT License
 
