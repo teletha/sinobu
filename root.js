@@ -647,17 +647,17 @@ const root = {
 			"type": "Class"
 		},
 		{
-			"name": "Variable",
+			"name": "Scheduler",
 			"packageName": "kiss",
 			"type": "Class"
 		},
 		{
-			"name": "WiseConsumer",
+			"name": "Storable",
 			"packageName": "kiss",
-			"type": "Functional"
+			"type": "Interface"
 		},
 		{
-			"name": "WiseRunnable",
+			"name": "Observer",
 			"packageName": "kiss",
 			"type": "Functional"
 		},
@@ -667,9 +667,14 @@ const root = {
 			"type": "Functional"
 		},
 		{
-			"name": "Narrow",
+			"name": "WiseSupplier",
 			"packageName": "kiss",
 			"type": "Functional"
+		},
+		{
+			"name": "Singleton",
+			"packageName": "kiss",
+			"type": "Class"
 		},
 		{
 			"name": "Lifestyle",
@@ -677,19 +682,69 @@ const root = {
 			"type": "Functional"
 		},
 		{
-			"name": "WiseTriFunction",
+			"name": "Managed",
+			"packageName": "kiss",
+			"type": "Annotation"
+		},
+		{
+			"name": "XML",
+			"packageName": "kiss",
+			"type": "Class"
+		},
+		{
+			"name": "Ⅲ",
+			"packageName": "kiss",
+			"type": "Class"
+		},
+		{
+			"name": "Narrow",
 			"packageName": "kiss",
 			"type": "Functional"
+		},
+		{
+			"name": "Wise",
+			"packageName": "kiss",
+			"type": "Functional"
+		},
+		{
+			"name": "Signal",
+			"packageName": "kiss",
+			"type": "Class"
+		},
+		{
+			"name": "WiseBiFunction",
+			"packageName": "kiss",
+			"type": "Functional"
+		},
+		{
+			"name": "WiseBiConsumer",
+			"packageName": "kiss",
+			"type": "Functional"
+		},
+		{
+			"name": "WiseConsumer",
+			"packageName": "kiss",
+			"type": "Functional"
+		},
+		{
+			"name": "Disposable",
+			"packageName": "kiss",
+			"type": "Functional"
+		},
+		{
+			"name": "Extensible",
+			"packageName": "kiss",
+			"type": "Interface"
+		},
+		{
+			"name": "Ⅱ",
+			"packageName": "kiss",
+			"type": "Class"
 		},
 		{
 			"name": "WiseTriConsumer",
 			"packageName": "kiss",
 			"type": "Functional"
-		},
-		{
-			"name": "Property",
-			"packageName": "kiss",
-			"type": "Class"
 		},
 		{
 			"name": "WiseFunction",
@@ -702,47 +757,12 @@ const root = {
 			"type": "Class"
 		},
 		{
-			"name": "Ⅲ",
-			"packageName": "kiss",
-			"type": "Class"
-		},
-		{
-			"name": "Managed",
-			"packageName": "kiss",
-			"type": "Annotation"
-		},
-		{
-			"name": "Storable",
-			"packageName": "kiss",
-			"type": "Interface"
-		},
-		{
-			"name": "Signal",
-			"packageName": "kiss",
-			"type": "Class"
-		},
-		{
-			"name": "Decoder",
+			"name": "WiseTriFunction",
 			"packageName": "kiss",
 			"type": "Functional"
 		},
 		{
-			"name": "Scheduler",
-			"packageName": "kiss",
-			"type": "Class"
-		},
-		{
-			"name": "WiseSupplier",
-			"packageName": "kiss",
-			"type": "Functional"
-		},
-		{
-			"name": "WiseBiFunction",
-			"packageName": "kiss",
-			"type": "Functional"
-		},
-		{
-			"name": "XML",
+			"name": "Signaling",
 			"packageName": "kiss",
 			"type": "Class"
 		},
@@ -752,47 +772,27 @@ const root = {
 			"type": "Functional"
 		},
 		{
-			"name": "Observer",
-			"packageName": "kiss",
-			"type": "Functional"
-		},
-		{
-			"name": "Disposable",
-			"packageName": "kiss",
-			"type": "Functional"
-		},
-		{
-			"name": "WiseBiConsumer",
-			"packageName": "kiss",
-			"type": "Functional"
-		},
-		{
-			"name": "Ⅱ",
-			"packageName": "kiss",
-			"type": "Class"
-		},
-		{
 			"name": "I",
 			"packageName": "kiss",
 			"type": "Class"
 		},
 		{
-			"name": "Extensible",
-			"packageName": "kiss",
-			"type": "Interface"
-		},
-		{
-			"name": "Singleton",
+			"name": "Variable",
 			"packageName": "kiss",
 			"type": "Class"
 		},
 		{
-			"name": "Wise",
+			"name": "Decoder",
 			"packageName": "kiss",
 			"type": "Functional"
 		},
 		{
-			"name": "Signaling",
+			"name": "WiseRunnable",
+			"packageName": "kiss",
+			"type": "Functional"
+		},
+		{
+			"name": "Property",
 			"packageName": "kiss",
 			"type": "Class"
 		}
