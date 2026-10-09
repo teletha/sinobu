@@ -1080,7 +1080,7 @@ public class Signal<V> {
                     d.dispose();
                 }
 
-                latest.set(I.schedule(time.v, 0, unit, false, scheduler).to(() -> {
+                latest.set(I.schedule(time.get(), 0, unit, false, scheduler).to(() -> {
                     latest.set(null);
                     observer.accept(list.getAndSet(new ArrayList<>()));
                 }));
@@ -2701,7 +2701,7 @@ public class Signal<V> {
      *         signaled.
      */
     public Signal<V> skipIf(Function<V, Signal<?>> condition) {
-        return skip(v -> condition.apply(v).isEmitted().to().v);
+        return skip(v -> condition.apply(v).isEmitted().to().get());
     }
 
     /**
@@ -3184,7 +3184,7 @@ public class Signal<V> {
      *         signaled.
      */
     public Signal<V> takeIf(Function<V, Signal<?>> condition) {
-        return take(v -> condition.apply(v).isEmitted().to().v);
+        return take(v -> condition.apply(v).isEmitted().to().get());
     }
 
     /**

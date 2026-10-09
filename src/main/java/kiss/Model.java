@@ -191,7 +191,7 @@ public class Model<M> {
                                         // variable
                                         Property property = new Property(of(collectParameters(field
                                                 .getGenericType(), Variable.class, type)[0], type), field.getName(), field);
-                                        property.getter = m -> ((Variable) field.get(m)).v;
+                                        property.getter = m -> ((Variable) field.get(m)).get();
                                         property.setter = (m, v) -> {
                                             ((Variable) field.get(m)).set(v);
                                             return m;

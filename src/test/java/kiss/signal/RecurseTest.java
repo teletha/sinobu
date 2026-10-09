@@ -27,7 +27,7 @@ class RecurseTest extends SignalTester {
 
     @Test
     void recurseDontThrowStackOverflowError() {
-        assert I.signal(1).recurse(v -> v + 1).take(1234567).to().v == 1234567;
+        assert I.signal(1).recurse(v -> v + 1).take(1234567).to().get() == 1234567;
     }
 
     @Test

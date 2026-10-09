@@ -38,7 +38,7 @@ class TranscriptTest {
 
     @BeforeAll
     static void startup() {
-        originalLanguage = I.Lang.v;
+        originalLanguage = I.Lang.get();
     }
 
     @AfterAll

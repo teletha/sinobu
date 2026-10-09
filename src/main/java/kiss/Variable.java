@@ -9,9 +9,6 @@
  */
 package kiss;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Field;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -34,22 +31,8 @@ import java.util.function.UnaryOperator;
  */
 public class Variable<V> implements Consumer<V>, Supplier<V> {
 
-    /** The modifier base. */
-    private static final MethodHandle set;
-
-    static {
-        try {
-            Field modify = Variable.class.getField("v");
-            modify.setAccessible(true);
-
-            set = MethodHandles.lookup().unreflectSetter(modify);
-        } catch (Exception e) {
-            throw I.quiet(e);
-        }
-    }
-
     /** The current value. This value is not final but read-only. */
-    public transient final V v;
+    private transient V v;
 
     /** The immutability. */
     private boolean fix;
@@ -344,20 +327,14 @@ public class Variable<V> implements Consumer<V>, Supplier<V> {
         V prev = v;
 
         if (!fix) {
-            try {
-                if (interceptor != null) {
-                    value = interceptor.apply(this.v, value);
-                }
+            if (interceptor != null) {
+                value = interceptor.apply(this.v, value);
+            }
 
-                set.invoke(this, value);
+            this.v = value;
 
-                if (signaling != null) {
-                    signaling.accept(v);
-                }
-            } catch (RuntimeException e) {
-                // ignore
-            } catch (Throwable e) {
-                throw I.quiet(e);
+            if (signaling != null) {
+                signaling.accept(v);
             }
         }
         return prev;

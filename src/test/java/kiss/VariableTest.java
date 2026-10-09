@@ -34,15 +34,15 @@ class VariableTest {
     void of() {
         Variable<String> var = Variable.of("A");
         assert var != null;
-        assert var.v != null;
-        assert var.v.equals("A");
+        assert var.get() != null;
+        assert var.get().equals("A");
     }
 
     @Test
     void ofNull() {
         Variable<String> var = Variable.of((String) null);
         assert var != null;
-        assert var.v == null;
+        assert var.get() == null;
     }
 
     @Test

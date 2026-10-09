@@ -18,7 +18,7 @@ import bee.task.Jar;
 public class Project extends bee.api.Project {
 
     {
-        product("com.github.teletha", "sinobu", ref("version.txt"));
+        product("io.github.teletha", "sinobu", ref("version.txt"));
         license(MIT);
         describe("""
                 Sinobu is not obsolete framework but utility, which can manipulate objects as a extremely-condensed facade.
@@ -52,7 +52,7 @@ public class Project extends bee.api.Project {
 
         require(SourceVersion.latest(), SourceVersion.RELEASE_24);
 
-        require("com.github.teletha", "antibug").atTest();
+        require("io.github.teletha", "antibug").atTest();
         require("com.pgs-soft", "HttpClientMock").atTest();
         require("io.reactivex.rxjava3", "rxjava").atTest();
         require("javax", "javaee-api").atTest();

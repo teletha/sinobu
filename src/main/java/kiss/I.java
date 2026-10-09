@@ -1951,7 +1951,7 @@ public class I implements ParameterizedType {
     public static <A, B> WiseBiConsumer<A, B> recurse(WiseTriConsumer<WiseBiConsumer<A, B>, A, B> function) {
         Variable<WiseBiConsumer<A, B>> ref = Variable.empty();
         ref.set(function.bindLazily(ref));
-        return ref.v;
+        return ref.get();
     }
 
     /**
@@ -1970,7 +1970,7 @@ public class I implements ParameterizedType {
     public static <A, B, R> WiseBiFunction<A, B, R> recurse(WiseTriFunction<WiseBiFunction<A, B, R>, A, B, R> function) {
         Variable<WiseBiFunction<A, B, R>> ref = Variable.empty();
         ref.set(function.bindLazily(ref));
-        return ref.v;
+        return ref.get();
     }
 
     /**
@@ -1989,7 +1989,7 @@ public class I implements ParameterizedType {
     public static <A> WiseConsumer<A> recurse(WiseBiConsumer<WiseConsumer<A>, A> function) {
         Variable<WiseConsumer<A>> ref = Variable.empty();
         ref.set(function.bindLazily(ref));
-        return ref.v;
+        return ref.get();
     }
 
     /**
@@ -2008,7 +2008,7 @@ public class I implements ParameterizedType {
     public static <A, R> WiseFunction<A, R> recurse(WiseBiFunction<WiseFunction<A, R>, A, R> function) {
         Variable<WiseFunction<A, R>> ref = Variable.empty();
         ref.set(function.bindLazily(ref));
-        return ref.v;
+        return ref.get();
     }
 
     /**
@@ -2027,7 +2027,7 @@ public class I implements ParameterizedType {
     public static WiseRunnable recurse(WiseConsumer<WiseRunnable> function) {
         Variable<WiseRunnable> ref = Variable.empty();
         ref.set(function.bindLazily(ref));
-        return ref.v;
+        return ref.get();
     }
 
     /**
@@ -2046,7 +2046,7 @@ public class I implements ParameterizedType {
     public static <R> WiseSupplier<R> recurse(WiseFunction<WiseSupplier<R>, R> function) {
         Variable<WiseSupplier<R>> ref = Variable.empty();
         ref.set(function.bindLazily(ref));
-        return ref.v;
+        return ref.get();
     }
 
     /**
