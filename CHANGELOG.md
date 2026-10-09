@@ -1,5 +1,20 @@
 # Changelog
 
+## [4.14.0](https://github.com/teletha/sinobu/compare/4.13.1...4.14.0) (2026-10-09)
+
+
+### Features
+
+* add Decorder#raw ([7616b99](https://github.com/teletha/sinobu/commit/7616b9933ffa466e39341a1eac181b79e1940abe))
+* make final mean final ([2758da8](https://github.com/teletha/sinobu/commit/2758da895e06ffa7df08697a569682c7e3fb5b42))
+
+
+### Bug Fixes
+
+* throw error in Variable#map ([f6b21a6](https://github.com/teletha/sinobu/commit/f6b21a6b90f939dd9f0b94cb7d5ed1f3ef8cb1a5))
+* update antibug ([24a85a5](https://github.com/teletha/sinobu/commit/24a85a59c5168ae63aab335fa656a82b0bceb966))
+* use human-readable error message ([7489f58](https://github.com/teletha/sinobu/commit/7489f584bb41a5489997ef3130cec48215ca8790))
+
 ## [4.13.1](https://github.com/teletha/sinobu/compare/4.13.0...4.13.1) (2025-07-20)
 
 
