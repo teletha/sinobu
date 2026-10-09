@@ -19,10 +19,10 @@
 		<link href="https://cdn.jsdelivr.net/npm/ress@4.0.0/dist/ress.min.css" rel="stylesheet"/>
 		<link href="main.css" rel="stylesheet"/>
 	</head>
-	<body class="V">
-		<header class="W" date="2025-07-20">
-			<h1 class="P"><a href="index.html"><code>Sinobu</code></a></h1>
-			<nav class="q"><a href="doc/sinobu.Manual.Introduction.html" id="Manual"><svg class="text">
+	<body class="f">
+		<header class="g" date="2025-07-20">
+			<h1 class="J"><a href="index.html"><code>Sinobu</code></a></h1>
+			<nav class="j"><a href="doc/sinobu.Manual.Introduction.html" id="Manual"><svg class="text">
 						<use href="main.svg#text"/>
 					</svg>
 				</a><a href="api/main.html" id="API"><svg class="package">
@@ -38,18 +38,18 @@
 						<use href="main.svg#github"/>
 					</svg>
 				</a></nav>
-			<div class="d"><a aria-label="Change color scheme" id="theme"><svg class="sun">
+			<div class="k"><a aria-label="Change color scheme" id="theme"><svg class="sun">
 						<use href="main.svg#sun"/>
 					</svg><svg class="moon">
 						<use href="main.svg#moon"/>
 					</svg>
 				</a></div>
 		</header>
-		<nav class="Z"></nav>
-		<article class="X" id="Article">
-			<section class="w"><code class="AB">kiss</code>
-				<h2 class="Interface y"><code class="N">Extensible</code></h2>
-				<div class="HB">
+		<nav class="i"></nav>
+		<article class="e" id="Article">
+			<section class="v"><code class="IB">kiss</code>
+				<h2 class="Interface S"><code class="M">Extensible</code></h2>
+				<div class="N">
 					<ul class="E I">
 						<li><code><a aria-label="kiss.Decoder" href="api/kiss.Decoder.html">Decoder</a><code class="parameters"><code>M</code></code></code></li>
 						<li><code><a aria-label="kiss.Encoder" href="api/kiss.Encoder.html">Encoder</a><code class="parameters"><code>M</code></code></code></li>
@@ -58,62 +58,62 @@
 						<li><code><a aria-label="kiss.Singleton" href="api/kiss.Singleton.html">Singleton</a><code class="parameters"><code>M</code></code></code></li>
 					</ul>
 				</div><span class="A"><p>
- This is a marker interface for Extension Point of your application.
- </p><p>
- All Extension Points are recognized automatically by Sinobu if you use <code><a aria-label="kiss.I" href="api/kiss.I.html#load(java.lang.Class)">I#load(Class)</a></code> or
- <code><a aria-label="kiss.I" href="api/kiss.I.html#load(java.net.URL)">I#load(java.net.URL)</a></code> methods properly. And an Extension Point will provide some
- Extensions.
- </p><h2 id="ExtensionPoint">What is Extension Point?</h2><p>
- We give a definition of <em>Extension Point</em> like the following.
- </p><ul>
+This is a marker interface for Extension Point of your application.
+</p><p>
+All Extension Points are recognized automatically by Sinobu if you use <code><a aria-label="kiss.I" href="api/kiss.I.html#load(java.lang.Class)">I#load(Class)</a></code> or
+<code><a aria-label="kiss.I" href="api/kiss.I.html#load(java.net.URL)">I#load(java.net.URL)</a></code> methods properly. And an Extension Point will provide some
+Extensions.
+</p><h2 id="ExtensionPoint">What is Extension Point?</h2><p>
+We give a definition of <em>Extension Point</em> like the following.
+</p><ul>
 						<li>It implements <code><a aria-label="kiss.Extensible" href="api/kiss.Extensible.html">Extensible</a></code> interface.</li>
 						<li>It has <code><a aria-label="kiss.Extensible" href="api/kiss.Extensible.html">Extensible</a></code> interface in not ancestor but parent.</li>
 					</ul><pre class="lang-java"><code>interface ThisIsExtensionPoint extends Extensible {
- }
- 
- interface ThisIsNotExtensionPoint implements ThisIsExtensionPoint {
- }
- 
- class ThisIsAlsoExtensionPoint implements Extensible {
-     // This is both Extension Point and Extension.
- }</code></pre><h2 id="Extension">What is Extension?</h2><p>
- We give a definition of <em>Extension</em> like the following.
- </p><ul>
+}
+
+interface ThisIsNotExtensionPoint implements ThisIsExtensionPoint {
+}
+
+class ThisIsAlsoExtensionPoint implements Extensible {
+    // This is both Extension Point and Extension.
+}</code></pre><h2 id="Extension">What is Extension?</h2><p>
+We give a definition of <em>Extension</em> like the following.
+</p><ul>
 						<li>It implements any Extension Point or is Extension Point itself.</li>
 						<li>It must be concrete class and has a suitable constructor for Sinobu (see also
- <code><a aria-label="kiss.I" href="api/kiss.I.html#make(java.lang.Class)">I#make(Class)</a></code> method).</li>
+<code><a aria-label="kiss.I" href="api/kiss.I.html#make(java.lang.Class)">I#make(Class)</a></code> method).</li>
 					</ul><pre class="lang-java"><code>class ThisIsExtension implements Extensible {
-     // This is both Extension Point and Extension.
- }
- 
- class ThisIsAlsoExtension extends ThisIsExtension {
-     // But not Extension Point.
- }
- 
- class ThisIsNotExtension extends ThisIsExtension {
- 
-     public ThisIsNotExtension(NotInjectable object) {
-         // because of invalid constructor
-     }
- }</code></pre><h2 id="ExtensionKey">What is Extension Key?</h2><p>
- You can provide <em>Extension Key</em> for each Extensions by using parameter. The key makes easy
- finding an Extension you need (see also <code><a aria-label="kiss.I" href="api/kiss.I.html#find(java.lang.Class,java.lang.Class)">I#find(Class, Class)</a></code>).
- </p><pre class="lang-java"><code>interface ExtensionPointWithKey&lt;K&gt; extends Extensible {
- }
- 
- class ExtensionWithKey implements ExtensionPointWithKey&lt;String&gt; {
-     // Associate this Extension with String class.
- }
- 
- class ExtensionWithAnotherKey implements ExtensionPointWithKey&lt;List&gt; {
-     // Associate this Extension with List interface.
- }</code></pre>
+    // This is both Extension Point and Extension.
+}
+
+class ThisIsAlsoExtension extends ThisIsExtension {
+    // But not Extension Point.
+}
+
+class ThisIsNotExtension extends ThisIsExtension {
+
+    public ThisIsNotExtension(NotInjectable object) {
+        // because of invalid constructor
+    }
+}</code></pre><h2 id="ExtensionKey">What is Extension Key?</h2><p>
+You can provide <em>Extension Key</em> for each Extensions by using parameter. The key makes easy
+finding an Extension you need (see also <code><a aria-label="kiss.I" href="api/kiss.I.html#find(java.lang.Class,java.lang.Class)">I#find(Class, Class)</a></code>).
+</p><pre class="lang-java"><code>interface ExtensionPointWithKey&lt;K&gt; extends Extensible {
+}
+
+class ExtensionWithKey implements ExtensionPointWithKey&lt;String&gt; {
+    // Associate this Extension with String class.
+}
+
+class ExtensionWithAnotherKey implements ExtensionPointWithKey&lt;List&gt; {
+    // Associate this Extension with List interface.
+}</code></pre>
 				</span></section>
 		</article>
-		<aside class="a">
-			<div class="LB"></div>
+		<aside class="Q">
+			<div class="a"></div>
 		</aside>
-		<footer class="Y">
+		<footer class="h">
 			<p>Powered by <a href="https://github.com/teletha/evergarden" target="_">Evergarden</a></p>
 		</footer>
 	</body>
