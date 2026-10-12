@@ -1198,7 +1198,6 @@ public class XML implements Iterable<XML>, Consumer<XML> {
 
         boolean init = true;
         int start = 0;
-        String current = null;
         StringBuilder xpath = new StringBuilder();
         Matcher matcher = SELECTOR.matcher(selector.trim());
 
@@ -1239,7 +1238,6 @@ public class XML implements Iterable<XML>, Consumer<XML> {
                     case ',': // selector separator
                         // reset processing context
                         init = true;
-                        current = null;
                         start = xpath.length() + 1;
 
                         xpath.append('|');
@@ -1259,10 +1257,8 @@ public class XML implements Iterable<XML>, Consumer<XML> {
             // =================================================
             match = matcher.group(2);
             if (match != null) {
-                if (match.equals("*")) {
-                    current = "*";
-                } else {
-                    xpath.append("[local-name()='").append(current = match.replaceAll("\\\\(.)", "$1")).append("']");
+                if (!match.equals("*")) {
+                    xpath.append("[local-name()='").append(match.replaceAll("\\\\(.)", "$1")).append("']");
                 }
                 continue;
             }

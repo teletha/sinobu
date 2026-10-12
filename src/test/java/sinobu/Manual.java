@@ -66,6 +66,7 @@ import sinobu.ExtensionTest.Codec;
 import sinobu.ExtensionTest.LocalDateCodec;
 import sinobu.MustacheTest.Person;
 
+@SuppressWarnings("unused")
 public class Manual {
 
     static {
@@ -1608,8 +1609,10 @@ public class Manual {
         }
 
         /// A Cron expression consists of five or six fields, separated by spaces.
-        /// From left to right, they represent seconds, minutes, hours, days, months, and days of the week, with seconds being optional.
-        /// The possible values for each field are as follows, and some special function characters can also be used.
+        /// From left to right, they represent seconds, minutes, hours, days, months, and days of the
+        /// week, with seconds being optional.
+        /// The possible values for each field are as follows, and some special function characters
+        /// can also be used.
         ///
         /// If you want to specify 9:00 every morning, it would look like this
         /// ```
@@ -1628,60 +1631,68 @@ public class Manual {
         /// | Hours         | Yes      | 0 ~ 23                                                 | `,` `-` `*` `/` `R`                  |
         /// | Days           | Yes       | 1 ~ 31                                               | `,` `-` `*` `/` `?` `L` `W` `R`  |
         /// | Months      | Yes      | 1 ~ 12 or JAN ~ DEC                               | `,` `-` `*` `/` `R`                   |
-        /// | Weekdays  | Yes      | 0 ~ 7 or SUN ~ SAT<br/>0 and 7 represent Sunday | `,` `-` `*` `/` `?` `L` `#` `R`    |
+        /// | Weekdays  | Yes      | 0 ~ 7 or SUN ~ SAT<br/>0 and 7 represent Sunday | `,` `-` `*` `/` `?` `L` `#` `R` |
         public class Format {
 
-            /// The seconds field can be a number from 0 to 59. It is optional and does not have to be specified.
+            /// The seconds field can be a number from 0 to 59. It is optional and does not have to
+            /// be specified.
             ///
-            /// | Expression | Description    | Example        | Execution Timing            |
+            /// | Expression | Description | Example | Execution Timing |
             /// |:----------:|:------------:|:--------------:|-----------------------------|
-            /// | `*`        | Every minute    | `* * * * *`    |  every minute        |
-            /// | `*/5`      | Every 5 minutes | `*/5 * * * *`  |  every 5 minutes     |
-            /// | `5`        | Specific minute | `5 * * * *`    |  at the 5th minute   |
-            /// | `1-30`     | Range           | `1-30 * * * *` |  from minute 1 to 30 |
-            /// | `0,30`     | Multiple values | `0,30 * * * *` |  at minutes 0 and 30 |
+            /// | `*` | Every minute | `* * * * *` | every minute |
+            /// | `*/5` | Every 5 minutes | `*/5 * * * *` | every 5 minutes |
+            /// | `5` | Specific minute | `5 * * * *` | at the 5th minute |
+            /// | `1-30` | Range | `1-30 * * * *` | from minute 1 to 30 |
+            /// | `0,30` | Multiple values | `0,30 * * * *` | at minutes 0 and 30 |
             public class Second {
             }
 
             /// The time field can be a number from 0 to 23.
             ///
-            /// | Expression   | Description           | Example        | Execution Timing                   |
+            /// | Expression | Description | Example | Execution Timing |
             /// |:-----------:|:-----------------:|:-------------:|------------------------------------|
-            /// | `*`          | Every hour            | `0 * * * *`    |  at the 0th minute of every hour |
-            /// | `*/3`        | Every 3 hours         | `0 */3 * * *`  |  every 3 hours at the 0th minute |
-            /// | `0`          | Midnight              | `0 0 * * *`    |  at 12:00 AM every day         |
-            /// | `9-17`       | Business hours        | `0 9-17 * * *` |  at the 0th minute between 9 AM and 5 PM |
-            /// | `8,12,18`    | Multiple times        | `0 8,12,18 * * *` |  at 8 AM, 12 PM, and 6 PM | 
+            /// | `*` | Every hour | `0 * * * *` | at the 0th minute of every hour |
+            /// | `*/3` | Every 3 hours | `0 */3 * * *` | every 3 hours at the 0th minute |
+            /// | `0` | Midnight | `0 0 * * *` | at 12:00 AM every day |
+            /// | `9-17` | Business hours | `0 9-17 * * *` | at the 0th minute between 9 AM and 5 PM
+            /// |
+            /// | `8,12,18` | Multiple times | `0 8,12,18 * * *` | at 8 AM, 12 PM, and 6 PM |
             public class Hour {
             }
 
             /// The date field can be a number between 1 and 31.
             ///
-            /// | Expression | Description        | Example         | Execution Timing                       |
+            /// | Expression | Description | Example | Execution Timing |
             /// |:----------:|:---------------:|:-------------:|----------------------------------------|
-            /// | `*`        | Every day           | `0 0 * * *`     |  at 12:00 AM every day         |
-            /// | `1`        | First day of month  | `0 0 1 * *`     |  at 12:00 AM on the 1st of every month |
-            /// | `L`        | Last day of month   | `0 0 L * *`     |  at 12:00 AM on the last day of every month |
-            /// | `*/2`      | Every other day     | `0 0 */2 * *`   |  at 12:00 AM every other day   |
-            /// | `1,15`     | Multiple days       | `0 0 1,15 * *`  |  at 12:00 AM on the 1st and 15th of every month |
-            /// | `15W`      | Nearest weekday     | `0 0 15W * *`   |  at 12:00 AM on the nearest weekday to the 15th |
+            /// | `*` | Every day | `0 0 * * *` | at 12:00 AM every day |
+            /// | `1` | First day of month | `0 0 1 * *` | at 12:00 AM on the 1st of every month |
+            /// | `L` | Last day of month | `0 0 L * *` | at 12:00 AM on the last day of every month
+            /// |
+            /// | `*/2` | Every other day | `0 0 */2 * *` | at 12:00 AM every other day |
+            /// | `1,15` | Multiple days | `0 0 1,15 * *` | at 12:00 AM on the 1st and 15th of every
+            /// month |
+            /// | `15W` | Nearest weekday | `0 0 15W * *` | at 12:00 AM on the nearest weekday to the
+            /// 15th |
             public class Day {
             }
 
             /// The month field can be a number from 1 to 12.
             /// It can also be specified in English abbreviations such as `JUN`, `FEB`, `MAR`, etc.
             ///
-            /// | Expression         | Description          | Example           | Execution Timing                           |
+            /// | Expression | Description | Example | Execution Timing |
             /// |:---------------:|:-----------------:|:--------------:|--------------------------------------------|
-            /// | `*`                | Every month          | `0 0 1 * *`       |  at 12:00 AM on the 1st of every month |
-            /// | `1` or `JAN`       | January              | `0 0 1 1 *`       |  at 12:00 AM on January 1st        |
-            /// | `*/3`              | Quarterly            | `0 0 1 */3 *`     |  at 12:00 AM on the 1st every 3 months |
-            /// | `3-5`              | Specified period     | `0 0 1 3-5 *`     |  at 12:00 AM on the 1st from March to May |
-            /// | `1,6,12`           | Multiple months      | `0 0 1 1,6,12 *`  |  at 12:00 AM on January 1st, June 1st, and December 1st |
+            /// | `*` | Every month | `0 0 1 * *` | at 12:00 AM on the 1st of every month |
+            /// | `1` or `JAN` | January | `0 0 1 1 *` | at 12:00 AM on January 1st |
+            /// | `*/3` | Quarterly | `0 0 1 */3 *` | at 12:00 AM on the 1st every 3 months |
+            /// | `3-5` | Specified period | `0 0 1 3-5 *` | at 12:00 AM on the 1st from March to May
+            /// |
+            /// | `1,6,12` | Multiple months | `0 0 1 1,6,12 *` | at 12:00 AM on January 1st, June
+            /// 1st, and December 1st |
             public class Month {
             }
 
-            /// The day of the week field can be a number from 0 to 7, where 0 is Sunday, 1 is Monday, 2 is Tuesday, and so on, returning to Sunday at 7.
+            /// The day of the week field can be a number from 0 to 7, where 0 is Sunday, 1 is
+            /// Monday, 2 is Tuesday, and so on, returning to Sunday at 7.
             /// You can also specify the English abbreviation of `SUN`, `MON`, `TUE`, etc.
             ///
             /// | Expression | Description | Example | Execution Timing |
@@ -1695,45 +1706,53 @@ public class Manual {
             }
         }
 
-        /// In addition to numbers, each field can contain characters with special meanings and functions.
+        /// In addition to numbers, each field can contain characters with special meanings and
+        /// functions.
         ///
         /// | Character | Description | Example | Execution Timing |
         /// |:---------:|:----------:|:--------:|----------------|
-        /// | `*`       | All values  | `* * * * *` |  every minute |
-        /// | `,`       | List of values | `1,15,30 * * * *` |  at 1 minute, 15 minutes, and 30 minutes past every hour |
-        /// | `-`       | Range       | `9-17 * * * *` |  every minute from 9 AM to 5 PM |
-        /// | `/`       | Interval    | `*/15 * * * *` |  every 15 minutes |
-        /// | `L`       | Last        | `0 0 L * *` |  at 00:00 on the last day of each month |
-        /// | `W`       | Nearest weekday | `0 0 15W * *` |  at 00:00 on the nearest weekday to the 15th |
-        /// | `#`       | Nth occurrence | `0 0 * * 1#1` |  at 00:00 on the first Monday of each month |
-        /// | `R`       | Random                       | `R 10 * * *` |  once at a random minute in 10:00 a.m |
-        /// | `?`       | No date specification | `0 0 ? * MON` |  at 00:00 every Monday |
+        /// | `*` | All values | `* * * * *` | every minute |
+        /// | `,` | List of values | `1,15,30 * * * *` | at 1 minute, 15 minutes, and 30 minutes past
+        /// every hour |
+        /// | `-` | Range | `9-17 * * * *` | every minute from 9 AM to 5 PM |
+        /// | `/` | Interval | `*/15 * * * *` | every 15 minutes |
+        /// | `L` | Last | `0 0 L * *` | at 00:00 on the last day of each month |
+        /// | `W` | Nearest weekday | `0 0 15W * *` | at 00:00 on the nearest weekday to the 15th |
+        /// | `#` | Nth occurrence | `0 0 * * 1#1` | at 00:00 on the first Monday of each month |
+        /// | `R` | Random | `R 10 * * *` | once at a random minute in 10:00 a.m |
+        /// | `?` | No date specification | `0 0 ? * MON` | at 00:00 every Monday |
         /// 
         /// 
-        /// Complex time specifications can be made by combining several special characters as follows
+        /// Complex time specifications can be made by combining several special characters as
+        /// follows
         ///
-        /// | Example                       | Execution Timing                                          |
+        /// | Example | Execution Timing |
         /// |:----------------------:|--------------------------------------------|
-        /// | `30 17 * * 5L`               |  at 17:30 on the last Friday of each month     |
-        /// | `*/30 9-17 * * 1-5`          |  every 30 minutes from 9 AM to 5 PM on weekdays |
-        /// | `0 0 1,15,L * *`              |  at 00:00 on the 1st, 15th, and last day of each month |
-        /// | `0 12 * * 1#2,1#4`          |  at 12:00 on the 2nd and 4th Monday of each month |
-        /// | `0 9 15W * *`                 |  at 09:00 on the nearest weekday to the 15th   |
-        /// | `0 22 * 1-3 0L`              |  at 22:00 on the last Sunday of each month from January to March |
-        /// | `15 9-17/2 * * 1,3,5`      |  every 2 hours from 09:15 to 17:15 on Mondays, Wednesdays, and Fridays |
-        /// | `0 0-5/2 * * *`              |  every 2 hours between 00:00 and 05:00 every day |
-        /// | `0 18-22 * * 1-5`            |  at every hour from 18:00 to 22:00 on weekdays |
-        /// | `0 0 1 * 2`                  |  at 00:00 on the first day of every month, but only if it is a Tuesday |
-        /// | `0 0 15 * 1#3`               |  at 00:00 on the third Monday of every month when it falls on the 15th |
-        /// | `0 12 1 1 *`                 |  at 12:00 on January 1st every year            |
-        /// | `*/10 * * * 6#3`             |  every 10 minutes on the third Saturday of each month |
-        /// | `0 8-18/3 * * 0`             |  every 3 hours from 08:00 to 18:00 on Sundays  |
-        /// | `0 0-23/6 * * *`             |  every 6 hours, at 00:00, 06:00, 12:00, and 18:00 every day |
-        /// | `0 15 1 1,7 *`               |  at 15:00 on January 1st and July 1st every year |
-        /// | `0 20 * * 1#2`               |  at 20:00 on the second Monday of each month    |
-        /// | `0-30R 10,22 * * *`               |  once each at random times between 0 and 30 minutes at 10:00 or 22:00    |
-        /// | `0 0 1-5,10-15 * *`          |  at 00:00 on the 1st to 5th and the 10th to 15th day of each month |
-        /// | `0 1-5/2,10-15 * * *`        |  at every 2 hours from 01:00 to 05:00 and every hour from 10:00 to 15:00 every day |
+        /// | `30 17 * * 5L` | at 17:30 on the last Friday of each month |
+        /// | `*/30 9-17 * * 1-5` | every 30 minutes from 9 AM to 5 PM on weekdays |
+        /// | `0 0 1,15,L * *` | at 00:00 on the 1st, 15th, and last day of each month |
+        /// | `0 12 * * 1#2,1#4` | at 12:00 on the 2nd and 4th Monday of each month |
+        /// | `0 9 15W * *` | at 09:00 on the nearest weekday to the 15th |
+        /// | `0 22 * 1-3 0L` | at 22:00 on the last Sunday of each month from January to March |
+        /// | `15 9-17/2 * * 1,3,5` | every 2 hours from 09:15 to 17:15 on Mondays, Wednesdays, and
+        /// Fridays |
+        /// | `0 0-5/2 * * *` | every 2 hours between 00:00 and 05:00 every day |
+        /// | `0 18-22 * * 1-5` | at every hour from 18:00 to 22:00 on weekdays |
+        /// | `0 0 1 * 2` | at 00:00 on the first day of every month, but only if it is a Tuesday |
+        /// | `0 0 15 * 1#3` | at 00:00 on the third Monday of every month when it falls on the 15th
+        /// |
+        /// | `0 12 1 1 *` | at 12:00 on January 1st every year |
+        /// | `*/10 * * * 6#3` | every 10 minutes on the third Saturday of each month |
+        /// | `0 8-18/3 * * 0` | every 3 hours from 08:00 to 18:00 on Sundays |
+        /// | `0 0-23/6 * * *` | every 6 hours, at 00:00, 06:00, 12:00, and 18:00 every day |
+        /// | `0 15 1 1,7 *` | at 15:00 on January 1st and July 1st every year |
+        /// | `0 20 * * 1#2` | at 20:00 on the second Monday of each month |
+        /// | `0-30R 10,22 * * *` | once each at random times between 0 and 30 minutes at 10:00 or
+        /// 22:00 |
+        /// | `0 0 1-5,10-15 * *` | at 00:00 on the 1st to 5th and the 10th to 15th day of each month
+        /// |
+        /// | `0 1-5/2,10-15 * * *` | at every 2 hours from 01:00 to 05:00 and every hour from 10:00
+        /// to 15:00 every day |
         public class Special_Characters {
         }
     }
