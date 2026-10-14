@@ -1063,7 +1063,8 @@ public class I implements ParameterizedType {
                                 observer.complete();
                                 return;
                             } else {
-                                e = new HttpRetryException(res.toString(), res.statusCode());
+                                e = new HttpRetryException(res.toString()
+                                        .concat(new String(res.body().readAllBytes(), StandardCharsets.UTF_8)), res.statusCode());
                             }
                         } catch (Exception x) {
                             e = x; // fall-through to error handling

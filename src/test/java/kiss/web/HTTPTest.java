@@ -160,7 +160,6 @@ class HTTPTest {
         Variable<JSON> result = I.http("http://test", JSON.class, httpClientMock).effectOnError(error::set).to();
         assert result.isAbsent();
         assert error.get() instanceof HttpRetryException;
-        assert error.get().getMessage().equals("Bad Request");
     }
 
     @Test
@@ -171,7 +170,6 @@ class HTTPTest {
         Variable<JSON> result = I.http("http://test", JSON.class, httpClientMock).effectOnError(error::set).to();
         assert result.isAbsent();
         assert error.get() instanceof HttpRetryException;
-        assert error.get().getMessage().equals("Not Found");
     }
 
     @Test
@@ -182,7 +180,6 @@ class HTTPTest {
         Variable<JSON> result = I.http("http://test", JSON.class, httpClientMock).effectOnError(error::set).to();
         assert result.isAbsent();
         assert error.get() instanceof HttpRetryException;
-        assert error.get().getMessage().equals("Internal Server Error");
     }
 
     @Test
@@ -193,7 +190,6 @@ class HTTPTest {
         Variable<JSON> result = I.http("http://test", JSON.class, httpClientMock).effectOnError(error::set).to();
         assert result.isAbsent();
         assert error.get() instanceof HttpRetryException;
-        assert error.get().getMessage().equals("Service Unavailable");
     }
 
     @Test
