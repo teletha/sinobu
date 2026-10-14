@@ -19,10 +19,10 @@
 		<link href="https://cdn.jsdelivr.net/npm/ress@4.0.0/dist/ress.min.css" rel="stylesheet"/>
 		<link href="main.css" rel="stylesheet"/>
 	</head>
-	<body class="f">
-		<header class="Z" date="2026-10-12">
-			<h1 class="a"><a href="index.html"><code>Sinobu</code></a></h1>
-			<nav class="b"><a href="doc/sinobu.Manual.Introduction.html" id="Manual"><svg class="text">
+	<body class="EB">
+		<header class="BB" date="2026-10-14">
+			<h1 class="CB"><a href="index.html"><code>Sinobu</code></a></h1>
+			<nav class="v"><a href="doc/sinobu.Manual.Introduction.html" id="Manual"><svg class="text">
 						<use href="main.svg#text"/>
 					</svg>
 				</a><a href="api/main.html" id="API"><svg class="package">
@@ -38,26 +38,26 @@
 						<use href="main.svg#github"/>
 					</svg>
 				</a></nav>
-			<div class="c"><a aria-label="Change color scheme" id="theme"><svg class="sun">
+			<div class="k"><a aria-label="Change color scheme" id="theme"><svg class="sun">
 						<use href="main.svg#sun"/>
 					</svg><svg class="moon">
 						<use href="main.svg#moon"/>
 					</svg>
 				</a></div>
 		</header>
-		<nav class="i"></nav>
-		<article class="g" id="Article">
-			<div class="IB">
+		<nav class="S"></nav>
+		<article class="i" id="Article">
+			<div class="T">
 				<section class="A" id="sinobu.Manual.JSON.Concept">
-					<header class="A T">
+					<header class="A g">
 						<h2>Concept</h2>
-						<div class="p"><span class="perp w"><svg class="copy">
+						<div class="O"><span class="perp n"><svg class="copy">
 									<use href="main.svg#copy"/>
 								</svg>
-							</span><a class="tweet w"><svg class="twitter">
+							</span><a class="tweet n"><svg class="twitter">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit w" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L810-L832"><svg class="edit">
+							</a><a class="edit n" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L810-L832"><svg class="edit">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
@@ -101,25 +101,25 @@ intuitive syntax.</p><pre class="lang-java"><code>public void readValue() {
     assert json.get(boolean.class, &quot;bool&quot;) == false;
 }</code></pre></span></section>
 			</div>
-			<div class="IB">
+			<div class="T">
 				<section class="A" id="sinobu.Manual.JSON.Reading">
-					<header class="A T">
+					<header class="A g">
 						<h2>Reading</h2>
-						<div class="p"><span class="perp w"><svg class="copy">
+						<div class="O"><span class="perp n"><svg class="copy">
 									<use href="main.svg#copy"/>
 								</svg>
-							</span><a class="tweet w"><svg class="twitter">
+							</span><a class="tweet n"><svg class="twitter">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit w" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L846-L848"><svg class="edit">
+							</a><a class="edit n" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L846-L848"><svg class="edit">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
 					</header><span class="A"><p>You can read JSON from strings, files, and various inputs. All data will be expanded
 into memory in a tree format. It is not a streaming format, so please be careful when
 parsing very large JSON.</p></span></section>
-				<section class="A DB" id="sinobu.Manual.JSON.Reading.Access_to_the_value">
-					<header class="A z">
+				<section class="A y" id="sinobu.Manual.JSON.Reading.Access_to_the_value">
+					<header class="A r">
 						<h3 icon="📄">Access to the value</h3>
 					</header><span class="A"><p>You can access the value by specifying the key.</p><pre class="lang-java"><code>public void readValue() {
     JSON json = I.json(&quot;&quot;&quot;
@@ -132,8 +132,8 @@ parsing very large JSON.</p></span></section>
     assert json.get(int.class, &quot;number&quot;) == 10;
     assert json.get(boolean.class, &quot;bool&quot;) == false;
 }</code></pre></span></section>
-				<section class="A DB" id="sinobu.Manual.JSON.Reading.Access_to_the_nested_value">
-					<header class="A z">
+				<section class="A y" id="sinobu.Manual.JSON.Reading.Access_to_the_nested_value">
+					<header class="A r">
 						<h3 icon="📄">Access to the nested value</h3>
 					</header><span class="A"><p>You can specify a key multiple times to access nested values.</p><pre class="lang-java"><code>public void readNestedValue() {
     JSON json = I.json(&quot;&quot;&quot;
@@ -171,17 +171,17 @@ parsing very large JSON.</p></span></section>
     assert found.get(1).equals(&quot;second&quot;);
 }</code></pre></span></section>
 			</div>
-			<div class="IB">
+			<div class="T">
 				<section class="A" id="sinobu.Manual.JSON.Writing">
-					<header class="A T">
+					<header class="A g">
 						<h2>Writing</h2>
-						<div class="p"><span class="perp w"><svg class="copy">
+						<div class="O"><span class="perp n"><svg class="copy">
 									<use href="main.svg#copy"/>
 								</svg>
-							</span><a class="tweet w"><svg class="twitter">
+							</span><a class="tweet n"><svg class="twitter">
 									<use href="main.svg#twitter"/>
 								</svg>
-							</a><a class="edit w" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L872-L874"><svg class="edit">
+							</a><a class="edit n" href="https://github.com/teletha/sinobu/edit/master/src/test/java/sinobu/Manual.java#L872-L874"><svg class="edit">
 									<use href="main.svg#edit"/>
 								</svg>
 							</a></div>
@@ -200,17 +200,17 @@ parsing very large JSON.</p></span></section>
             &quot;&quot;&quot;);
 }</code></pre></span></section>
 			</div>
-			<div class="CB"><a class="Q m" href="doc/sinobu.Manual.Extensibility.html">Extensibility</a><a class="Q AB" href="doc/sinobu.Manual.HTML.html">HTML</a></div>
+			<div class="GB"><a class="c t" href="doc/sinobu.Manual.Extensibility.html">Extensibility</a><a class="c f" href="doc/sinobu.Manual.HTML.html">HTML</a></div>
 		</article>
-		<aside class="j">
-			<div class="U">
+		<aside class="P">
+			<div class="LB">
 				<h5>Help improve document</h5>
 				<p>View this page on <a href="https://github.com/teletha/sinobu/blob/master/src/test/java/sinobu/Manual.java#L810">GitHub</a></p>
 				<p>Report a problem <a href="https://github.com/teletha/sinobu/issues/new?title=Improve document on sinobu.Manual.JSON&amp;labels=documentation,enhancement&amp;body=%23%23+What+specific+section+or+headline+is+this+issue+about%3F%0A%0A%0A%0A%23%23+What+information+was+incorrect%2C+unhelpful%2C+or+incomplete%3F%0A%0A%0A%0A%23%23+What+did+you+expect+to+see%3F%0A">with this page</a></p>
 			</div>
-			<p class="U">View in <a href="doc/one.html#sinobu.Manual.JSON.Concept">onepager</a></p>
+			<p class="LB">View in <a href="doc/one.html#sinobu.Manual.JSON.Concept">onepager</a></p>
 		</aside>
-		<footer class="h">
+		<footer class="R">
 			<p>Powered by <a href="https://github.com/teletha/evergarden" target="_">Evergarden</a></p>
 		</footer>
 	</body>
