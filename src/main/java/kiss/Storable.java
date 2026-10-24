@@ -36,6 +36,7 @@ public interface Storable<Self> {
                 I.json(Files.newBufferedReader(locate())).as(this);
             } catch (Throwable e) {
                 // ignore error
+                I.error(e);
             }
             return (Self) this;
         }
