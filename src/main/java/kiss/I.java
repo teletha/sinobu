@@ -43,6 +43,7 @@ import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpClient.Redirect;
 import java.net.http.HttpRequest;
+import java.net.http.HttpRequest.Builder;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.net.http.WebSocket;
@@ -407,6 +408,28 @@ public class I implements ParameterizedType {
             // ignore
         }
         env.putAll(System.getenv());
+
+        // support infisical
+        String project = I.env("INFISICAL_PROJECT_ID");
+        String token = I.env("INFISICAL_CLIENT_SECRET");
+        if (project != null && token != null) {
+            Builder request = HttpRequest.newBuilder()
+                    .uri(URI.create("https://us.infisical.com/api/v4/secrets?environment=" + env("INFISICAL_ENV", "dev") + "&projectId=" + project))
+                    .header("Authorization", "Bearer ".concat(token))
+                    .timeout(Duration.ofSeconds(15));
+
+            // Do not use `I.http(...).waitForTerminate()` here. The response processing will run in
+            // a separate thread, and a deadlock will occur while waiting for the initialization
+            // lock on `I`.
+            try {
+                HttpResponse<InputStream> response = client.send(request.build(), BodyHandlers.ofInputStream());
+                if (response.statusCode() < 400) {
+                    I.json(response.body()).find("secrets", "*").forEach(x -> env.put(x.text("secretKey"), x.text("secretValue")));
+                }
+            } catch (Exception e) {
+                throw I.quiet(e);
+            }
+        }
 
         // clean up all buffered log at the end of JVM
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
