@@ -657,7 +657,8 @@ public class JSON implements Serializable {
     }
 
     /**
-     * Reads the next separator character (comma or ending character) in an array or object.
+     * Reads the next separator character (comma or ending character) in an array or object. A
+     * trailing comma just before the ending character is also accepted.
      *
      * @param end The expected ending character (e.g., ']' or '}').
      * @return {@code true} if a comma was found, {@code false} if the ending character was found.
@@ -667,6 +668,12 @@ public class JSON implements Serializable {
         while (true) {
             if (current == ',') {
                 readUnspace();
+
+                // tolerate a trailing comma
+                if (current == end) {
+                    readUnspace();
+                    return false;
+                }
                 return true;
             } else if (current == end) {
                 readUnspace();

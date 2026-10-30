@@ -11,6 +11,8 @@ package kiss.json;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 import kiss.I;
@@ -109,12 +111,71 @@ class ParserTest {
     }
 
     @Test
-    void invalidTailSeparator() {
+    void tailSeparatorInObject() {
+        JSON json = parse("""
+                {
+                    "true": true,
+                    "false": false,
+                }
+                """);
+
+        assert json.get(boolean.class, "true") == true;
+        assert json.get(boolean.class, "false") == false;
+    }
+
+    @Test
+    void tailSeparatorInArray() {
+        record A(List<Integer> values) {
+        }
+
+        A a = I.json("""
+                {
+                    "values": [1, 2, 3,]
+                }
+                """, A.class);
+
+        assert a.values.equals(I.list(1, 2, 3));
+    }
+
+    @Test
+    void tailSeparatorInNestedObject() {
+        record Nested(int value) {
+        }
+        record Root(Nested nested, List<Nested> list) {
+        }
+
+        Root root = I.json("""
+                {
+                    "nested": {
+                        "value": 1,
+                    },
+                    "list": [
+                        {"value": 2,},
+                    ],
+                }
+                """, Root.class);
+
+        assert root.nested.value == 1;
+        assert root.list.get(0).value == 2;
+    }
+
+    @Test
+    void invalidTailSeparatorOnly() {
         assertThrows(IllegalStateException.class, () -> {
             parse("""
                     {
-                        "true": true,
-                        "false": false,
+                        "values": [,]
+                    }
+                    """);
+        });
+    }
+
+    @Test
+    void invalidTailSeparatorTwice() {
+        assertThrows(IllegalStateException.class, () -> {
+            parse("""
+                    {
+                        "true": true,,
                     }
                     """);
         });
