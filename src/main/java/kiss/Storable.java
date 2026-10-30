@@ -15,6 +15,7 @@ import static java.util.concurrent.TimeUnit.*;
 
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.function.Function;
 
@@ -32,10 +33,11 @@ public interface Storable<Self> {
      */
     default Self restore() {
         synchronized (getClass()) {
-            try {
-                I.json(Files.newBufferedReader(locate())).as(this);
-            } catch (Throwable e) {
-                // ignore error
+            try (var reader = Files.newBufferedReader(locate())) {
+                I.json(reader).as(this);
+            } catch (NoSuchFileException e) {
+                // Not stored yet.
+            } catch (Exception e) {
                 I.error(e);
             }
             return (Self) this;
@@ -70,9 +72,10 @@ public interface Storable<Self> {
                     // But some implementation (e.g. jimfs) throws FileAlreadyExistsException,
                     // so we should remain that option
                     Files.move(tmp, file, ATOMIC_MOVE, REPLACE_EXISTING);
+                } finally {
+                    Files.deleteIfExists(tmp);
                 }
             } catch (Throwable e) {
-                // ignore
                 I.error(e);
             }
             return (Self) this;
