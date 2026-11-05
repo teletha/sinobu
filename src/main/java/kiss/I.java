@@ -2185,6 +2185,20 @@ public class I implements ParameterizedType {
     }
 
     /**
+     * Get the shortened URL. You need to set the "XGDAPIKey" on environment variable.
+     * 
+     * @param url A target URL to shorten.
+     * @return A shortened URL.
+     */
+    public static String shorten(String url) {
+        return I.http("https://xgd.io/V1/shorten?url=" + URLEncoder.encode(url, UTF_8) + "&key=" + env("XGDAPIKey"), JSON.class)
+                .waitForTerminate()
+                .to()
+                .exact()
+                .text("shorturl");
+    }
+
+    /**
      * Signal the specified values.
      *
      * @param values A list of values to emit.
