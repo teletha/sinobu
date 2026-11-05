@@ -642,42 +642,7 @@ const root = {
 	],
 	"types": [
 		{
-			"name": "JSON",
-			"packageName": "kiss",
-			"type": "Class"
-		},
-		{
-			"name": "Encoder",
-			"packageName": "kiss",
-			"type": "Functional"
-		},
-		{
-			"name": "Property",
-			"packageName": "kiss",
-			"type": "Class"
-		},
-		{
-			"name": "Extensible",
-			"packageName": "kiss",
-			"type": "Interface"
-		},
-		{
-			"name": "WiseBiConsumer",
-			"packageName": "kiss",
-			"type": "Functional"
-		},
-		{
-			"name": "Scheduler",
-			"packageName": "kiss",
-			"type": "Class"
-		},
-		{
-			"name": "Model",
-			"packageName": "kiss",
-			"type": "Class"
-		},
-		{
-			"name": "WiseBiFunction",
+			"name": "WiseRunnable",
 			"packageName": "kiss",
 			"type": "Functional"
 		},
@@ -687,14 +652,44 @@ const root = {
 			"type": "Class"
 		},
 		{
-			"name": "Storable",
-			"packageName": "kiss",
-			"type": "Interface"
-		},
-		{
-			"name": "Lifestyle",
+			"name": "Narrow",
 			"packageName": "kiss",
 			"type": "Functional"
+		},
+		{
+			"name": "I",
+			"packageName": "kiss",
+			"type": "Class"
+		},
+		{
+			"name": "WiseFunction",
+			"packageName": "kiss",
+			"type": "Functional"
+		},
+		{
+			"name": "ExtensionFactory",
+			"packageName": "kiss",
+			"type": "Functional"
+		},
+		{
+			"name": "Model",
+			"packageName": "kiss",
+			"type": "Class"
+		},
+		{
+			"name": "JSON",
+			"packageName": "kiss",
+			"type": "Class"
+		},
+		{
+			"name": "Ⅲ",
+			"packageName": "kiss",
+			"type": "Class"
+		},
+		{
+			"name": "Singleton",
+			"packageName": "kiss",
+			"type": "Class"
 		},
 		{
 			"name": "WiseTriConsumer",
@@ -702,12 +697,7 @@ const root = {
 			"type": "Functional"
 		},
 		{
-			"name": "WiseRunnable",
-			"packageName": "kiss",
-			"type": "Functional"
-		},
-		{
-			"name": "Wise",
+			"name": "Lifestyle",
 			"packageName": "kiss",
 			"type": "Functional"
 		},
@@ -717,14 +707,14 @@ const root = {
 			"type": "Functional"
 		},
 		{
-			"name": "Ⅲ",
+			"name": "Extensible",
 			"packageName": "kiss",
-			"type": "Class"
+			"type": "Interface"
 		},
 		{
-			"name": "I",
+			"name": "WiseBiFunction",
 			"packageName": "kiss",
-			"type": "Class"
+			"type": "Functional"
 		},
 		{
 			"name": "Signaling",
@@ -732,24 +722,9 @@ const root = {
 			"type": "Class"
 		},
 		{
-			"name": "ExtensionFactory",
-			"packageName": "kiss",
-			"type": "Functional"
-		},
-		{
 			"name": "WiseSupplier",
 			"packageName": "kiss",
 			"type": "Functional"
-		},
-		{
-			"name": "WiseTriFunction",
-			"packageName": "kiss",
-			"type": "Functional"
-		},
-		{
-			"name": "Variable",
-			"packageName": "kiss",
-			"type": "Class"
 		},
 		{
 			"name": "Managed",
@@ -757,29 +732,19 @@ const root = {
 			"type": "Annotation"
 		},
 		{
-			"name": "Narrow",
+			"name": "Storable",
+			"packageName": "kiss",
+			"type": "Interface"
+		},
+		{
+			"name": "Wise",
 			"packageName": "kiss",
 			"type": "Functional"
 		},
 		{
-			"name": "Signal",
-			"packageName": "kiss",
-			"type": "Class"
-		},
-		{
-			"name": "WiseConsumer",
+			"name": "Encoder",
 			"packageName": "kiss",
 			"type": "Functional"
-		},
-		{
-			"name": "WiseFunction",
-			"packageName": "kiss",
-			"type": "Functional"
-		},
-		{
-			"name": "XML",
-			"packageName": "kiss",
-			"type": "Class"
 		},
 		{
 			"name": "Disposable",
@@ -792,9 +757,44 @@ const root = {
 			"type": "Functional"
 		},
 		{
-			"name": "Singleton",
+			"name": "Scheduler",
 			"packageName": "kiss",
 			"type": "Class"
+		},
+		{
+			"name": "Signal",
+			"packageName": "kiss",
+			"type": "Class"
+		},
+		{
+			"name": "WiseTriFunction",
+			"packageName": "kiss",
+			"type": "Functional"
+		},
+		{
+			"name": "Property",
+			"packageName": "kiss",
+			"type": "Class"
+		},
+		{
+			"name": "WiseBiConsumer",
+			"packageName": "kiss",
+			"type": "Functional"
+		},
+		{
+			"name": "Variable",
+			"packageName": "kiss",
+			"type": "Class"
+		},
+		{
+			"name": "XML",
+			"packageName": "kiss",
+			"type": "Class"
+		},
+		{
+			"name": "WiseConsumer",
+			"packageName": "kiss",
+			"type": "Functional"
 		}
 	]
 }
