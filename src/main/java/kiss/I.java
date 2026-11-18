@@ -236,6 +236,8 @@ public class I implements ParameterizedType {
             .executor(Jobs)
             .build();
 
+    private static final Subscriber<String> urls;
+
     // initialization
     static {
         // built-in lifestyles
@@ -430,6 +432,9 @@ public class I implements ParameterizedType {
                 throw I.quiet(e);
             }
         }
+
+        // cache for shorthand url
+        urls = new Subscriber("url");
 
         // clean up all buffered log at the end of JVM
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
@@ -2191,11 +2196,18 @@ public class I implements ParameterizedType {
      * @return A shortened URL.
      */
     public static String shorten(String url) {
-        return I.http("https://xgd.io/V1/shorten?url=" + URLEncoder.encode(url, UTF_8) + "&key=" + env("XGDAPIKey"), JSON.class)
-                .waitForTerminate()
-                .to()
-                .exact()
-                .text("shorturl");
+        String s = urls.messages.get(url);
+        if (s == null) {
+            s = I.http("https://xgd.io/V1/shorten?url=" + URLEncoder.encode(url, UTF_8) + "&key=" + env("XGDAPIKey"), JSON.class)
+                    .waitForTerminate()
+                    .to()
+                    .exact()
+                    .text("shorturl");
+            if (urls.messages.size() > 4096) urls.messages.clear();
+            urls.messages.put(url, s);
+            urls.store();
+        }
+        return s;
     }
 
     /**
