@@ -69,6 +69,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.CompletableFuture;
@@ -2344,7 +2345,9 @@ public class I implements ParameterizedType {
      * The text will be automatically translated. Basic sentences must be written in English. It
      * will be translated online automatically into the language specified in the global variable
      * {@link #Lang}. Once the text is translated, it is saved to the local disk and loaded from
-     * there in the future.
+     * there in the future. If the text is defined in the <code>translate</code> resource bundle
+     * (e.g. <code>translate_ja.properties</code>), that translation takes precedence over the
+     * locally stored and the online translations.
      * 
      * @param text Basic English sentences.
      * @param context Parameters to be assigned to variables in a sentence. (Optional)
@@ -2357,7 +2360,9 @@ public class I implements ParameterizedType {
      * The text will be automatically translated. Basic sentences must be written in English. It
      * will be translated online automatically into the language specified in the global variable
      * {@link #Lang}. Once the text is translated, it is saved to the local disk and loaded from
-     * there in the future.
+     * there in the future. If the text is defined in the <code>translate</code> resource bundle
+     * (e.g. <code>translate_ja.properties</code>), that translation takes precedence over the
+     * locally stored and the online translations.
      * 
      * @param text Basic English sentences.
      * @param context Parameters to be assigned to variables in a sentence. (Optional)
@@ -2367,6 +2372,13 @@ public class I implements ParameterizedType {
         I.Lang.observing().switchMap(lang -> {
             // First, check inline cache.
             if ("en".equals(lang)) return I.signal(text);
+
+            try {
+                ResourceBundle resource = ResourceBundle.getBundle("translate", Locale.of(lang));
+                return I.signal(resource.getString(text));
+            } catch (Exception e) {
+                // ignore
+            }
 
             // The next step is to check for already translated text from
             // the locally stored bundle files. Iit can help reduce translation resources.

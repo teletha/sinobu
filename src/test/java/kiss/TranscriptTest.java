@@ -98,6 +98,16 @@ class TranscriptTest {
     }
 
     @Test
+    void translateByResourceBundle() {
+        // The resource bundle must take precedence over the locally stored bundle.
+        I.bundles.computeIfAbsent("ja", Subscriber::new).messages.put("resourcePriority", "ローカルバンドル");
+
+        I.Lang.set("ja");
+        assert I.translate("resourcePriority").is("リソースバンドル");
+        assert I.translate("resourceContext", "value").is("値は value です");
+    }
+
+    @Test
     void disposable() {
         createBundle("fr", "base", "nombre d'unités");
         createBundle("ja", "base", "基数");
